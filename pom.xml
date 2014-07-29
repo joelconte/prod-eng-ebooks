@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.lds.stack</groupId>
+		<artifactId>stack-master</artifactId>
+		<version>3.2.7</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>BookScan</artifactId>
+	<packaging>pom</packaging>
+	<name>${project.artifactId}</name>
+	<groupId>org.familysearch.prodeng</groupId>
+	<version>1.0</version>
+
+	<properties>
+		<projectName>BookScan</projectName>
+		<jdkVersion>1.7</jdkVersion>
+		<contextRoot>/BookScan</contextRoot>
+		<appUrl>http://localhost:8080${contextRoot}</appUrl>
+	</properties>
+
+	<modules>
+
+		<module>web</module>
+
+	</modules>
+
+	<repositories>
+		<repository>
+			<id>lds-main</id>
+			<name>LDS Main Repo</name>
+			<url>http://code.lds.org/nexus/content/groups/main-repo</url>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>lds-contained</id>
+			<name>Main Contained LDS Repo</name>
+			<url>http://code.lds.org/nexus/content/groups/contained-repo</url>
+		</repository>
+		    <repository>
+      <releases>
+        <enabled>false</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+      <id>codehausSnapshots</id>
+      <name>Codehaus Snapshots</name>
+      <url>http://snapshots.maven.codehaus.org/maven2</url>
+      <layout>default</layout>
+    </repository>
+    
+	</repositories>
+
+	<pluginRepositories />
+
+	<prerequisites>
+		<maven>${mavenVersion}</maven>
+	</prerequisites>
+
+	<distributionManagement>
+		<repository>
+			<id>lds-nexus</id>
+			<name>Stack Staging Repo</name>
+			<url>https://code.lds.org/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>lds-nexus</id>
+			<name>Snapshot Repo</name>
+			<url>https://code.lds.org/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<site>
+			<id>lds-nexus</id>
+			<name>LDS Maven2 Site Reports</name>
+			<url>https://code.lds.org/nexus/content/sites/maven-sites/BookScan/${project.version}</url>
+		</site>
+	</distributionManagement>
+</project>

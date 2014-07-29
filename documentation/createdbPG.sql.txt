@@ -1,0 +1,1165 @@
+﻿ 
+
+DROP TABLE AUTHORITY ;
+
+CREATE TABLE AUTHORITY
+(
+  ID  varchar(255       )                    NOT NULL
+);
+
+
+ 
+
+DROP TABLE BATCHCLASS ;
+
+CREATE TABLE BATCHCLASS
+(
+  ID             varchar(255    )            NOT NULL,
+  PROPERTYRIGHT  varchar(255   ),
+  START_CHAR     varchar(1   ),
+  END_CHAR       varchar(1   )
+);
+
+ 
+DROP TABLE BOOKMETADATAUPDATE cascade;
+
+
+CREATE TABLE BOOKMETADATAUPDATE
+(
+  TITLE                varchar(2047   )      NOT NULL,
+  AUTHOR               varchar(512 )       NOT NULL,
+  SUBJECT              varchar(4000   ),
+  TITLENO              varchar(255   )       NOT NULL,
+  OCLC_NUMBER          varchar(255   ),
+  ISBN_ISSN            varchar(255   ),
+  CALLNO               varchar(255   ),
+  PARTNER_LIB_CALLNO   varchar(255   ),
+  FILMNO               varchar(255   ),
+  PAGES                varchar(255   ),
+  SUMMARY              varchar(2047   ),
+  DGSNO                varchar(255   ),
+  LANGUAGE             varchar(255   ),
+  REQUESTING_LOCATION  varchar(255   ),
+  SCANNING_LOCATION    varchar(255   ),
+  RECORD_NUMBER        varchar(255   ),
+  DATE_ORIGINAL        TIMESTAMP(6),
+  PUBLISHER_ORIGINAL   varchar(255   ),
+  DATE_ADDED           TIMESTAMP(6),
+  METADATA_ADDER       varchar(255   ),
+  CHECK_COMPLETE       TIMESTAMP(6),
+  CHECKER              varchar(255   ),
+  SENT_TO_SCAN         TIMESTAMP(6),
+  SENDER               varchar(255   ),
+  FILENAME             varchar(255   ),
+  OWNING_INSTITUTION   varchar(255   )
+);
+
+
+DROP TABLE BOOKTEMP  cascade;
+
+
+CREATE TABLE BOOKTEMP
+(
+  TN                          varchar(255   ),
+  SECONDARY_IDENTIFIER        varchar(255   ),
+  OCLC_NUMBER                 varchar(255   ),
+  ISBN_ISSN                   varchar(255   ),
+  TITLE                       varchar(2047   ),
+  AUTHOR                      varchar(255   ),
+  PROPERTY_RIGHT              varchar(255   ),
+  PUBLICATION_TYPE            varchar(255   ),
+  CALL_NUM                      varchar(255   ),
+  PARTNER_LIB_CALL_NUM          varchar(255   ),
+  PRIORITY_ITEM               CHAR(1 )      DEFAULT 'F',
+  WITHDRAWN                   CHAR(1 ) DEFAULT 'F',
+  DIGITAL_COPY_ONLY           CHAR(1 ) DEFAULT 'F',
+  MEDIA_TYPE                  varchar(255   ),
+  METADATA_COMPLETE           TIMESTAMP(6),
+  BATCH_CLASS                 varchar(255   ),
+  LANGUAGE                    varchar(255   ),
+  REMARKS_FROM_SCAN_CENTER    varchar(2047   ),
+  REMARKS_ABOUT_BOOK          varchar(2047   ),
+  RECORD_NUMBER               varchar(255   ),
+  REQUESTING_LOCATION         varchar(255   ),
+  OWNING_INSTITUTION          varchar(255   ),
+  SCANNED_BY                  varchar(255   ),
+  SCAN_OPERATOR               varchar(255   ),
+  SCAN_MACHINE_ID             varchar(255   ),
+  SCAN_METADATA_COMPLETE      TIMESTAMP(6),
+  LOCATION                    varchar(255   ),
+  SCAN_START_DATE             TIMESTAMP(6),
+  SCAN_COMPLETE_DATE          TIMESTAMP(6),
+  SCAN_IMAGE_AUDITOR          varchar(255   ),
+  SCAN_IA_START_DATE          TIMESTAMP(6),
+  SCAN_IA_COMPLETE_DATE       TIMESTAMP(6),
+  FILES_SENT_TO_OREM          TIMESTAMP(6),
+  SCAN_NUM_OF_PAGES           integer,
+  NUM_OF_PAGES                integer,
+  FILES_RECEIVED_BY_OREM      TIMESTAMP(6),
+  IMAGE_AUDIT                 varchar(255   ),
+  IA_START_DATE               TIMESTAMP(6),
+  IA_COMPLETE_DATE            TIMESTAMP(6),
+  OCR_BY                      varchar(255   ),
+  OCR_START_DATE              TIMESTAMP(6),
+  OCR_COMPLETE_DATE           TIMESTAMP(6),
+  KOFAXED_BY                  varchar(255   ),
+  KOFAX_START_DATE            TIMESTAMP(6),
+  PDF_READY                   TIMESTAMP(6),
+  DATE_RELEASED               TIMESTAMP(6),
+  COMPRESSION_CODE            varchar(255   ),
+  LOADED_BY                   varchar(255   ),
+  DATE_LOADED                 TIMESTAMP(6),
+  COLLECTION                  varchar(255   ),
+  DNP                         varchar(255   ),
+  DNP_DELETED_OFF_LINE        varchar(255   ),
+  TN_CHANGE_HISTORY           varchar(255   ),
+  PDF_OREM_ARCHIVED_DATE      TIMESTAMP(6),
+  PDF_OREM_DRIVE_SERIAL_NUM     varchar(255   ),
+  PDF_OREM_DRIVE_NAME         varchar(255   ),
+  PDF_COPY2_ARCHIVED_DATE     TIMESTAMP(6),
+  PDF_COPY2_DRIVE_SERIAL_NUM    varchar(255   ),
+  PDF_COPY2_DRIVE_NAME        varchar(255   ),
+  TIFF_OREM_ARCHIVED_DATE     TIMESTAMP(6),
+  TIFF_OREM_DRIVE_SERIAL_NUM    varchar(255   ),
+  TIFF_OREM_DRIVE_NAME        varchar(255   ),
+  TIFF_COPY2_ARCHIVED_DATE    TIMESTAMP(6),
+  TIFF_COPY2_DRIVE_SERIAL_NUM   varchar(255   ),
+  TIFF_COPY2_DRIVE_NAME       varchar(255   ),
+  PDF_SENT_TO_LOAD            TIMESTAMP(6),
+  SITE                        varchar(255   ),
+  URL                         varchar(255   ),
+  PID                         varchar(255   ),
+  PAGES_ONLINE                integer,
+  SUBJECT                     varchar(4000   ),
+  FILMNO                      varchar(255   ),
+  PAGES_PHYSICAL_DESCRIPTION  varchar(255   ),
+  SUMMARY                     varchar(2047   ),
+  DGSNO                       varchar(255   ),
+  DATE_ORIGINAL               TIMESTAMP(6),
+  PUBLISHER_ORIGINAL          varchar(255   )
+);
+ 
+DROP TABLE BOOK_LOCK  cascade;
+
+
+CREATE TABLE BOOK_LOCK
+(
+  TN           varchar(255   ),
+  OPERATOR     varchar(255   ),
+  TIME_LOCKED  TIMESTAMP(6)
+);
+
+ 
+DROP TABLE COMPRESSION_ENTRY ;
+
+CREATE TABLE COMPRESSION_ENTRY
+(
+  TN                 varchar(255   ),
+  COMPRESSION        varchar(255   ),
+  SENT_TO_BE_LOADED  TIMESTAMP(6)
+);
+ 
+
+DROP TABLE JP_UPDATE_TITLES ;
+
+CREATE TABLE JP_UPDATE_TITLES
+(
+  TN      varchar(255   ),
+  TITLE   varchar(2047   ),
+  AUTHOR  varchar(255   ),
+  CALL_NUM  varchar(255   )
+);
+ 
+
+DROP TABLE LANGUAGES cascade ;
+
+CREATE TABLE LANGUAGES
+(
+  ID            varchar(255   ),
+  PUBLISH_NAME  varchar(255   )
+);
+
+ 
+DROP TABLE MEDIA cascade ;
+
+CREATE TABLE MEDIA
+(
+  ID  varchar(255   )
+);
+ 
+DROP TABLE NUMBER_OF_IMAGES_ENTRY ;
+
+CREATE TABLE NUMBER_OF_IMAGES_ENTRY
+(
+  TN                varchar(255   ),
+  NUMBER_OF_IMAGES  integer
+);
+
+ 
+
+DROP TABLE PDF_ARCHIVING_COPY1_ENTRY ;
+
+CREATE TABLE PDF_ARCHIVING_COPY1_ENTRY
+(
+  TN                      varchar(255   ),
+  PDF_OREM_ARCHIVED_DATE  TIMESTAMP(6),
+  PDF_OREM_SERIAL_NUM       varchar(255   ),
+  PDF_OREM_DRIVE_NAME     varchar(255   )
+);
+
+ 
+DROP TABLE PDF_ARCHIVING_COPY2_ENTRY ;
+
+CREATE TABLE PDF_ARCHIVING_COPY2_ENTRY
+(
+  TN                       varchar(255   ),
+  PDF_COPY2_ARCHIVED_DATE  TIMESTAMP(6),
+  PDF_COPY2_SERIAL_NUM       varchar(255   ),
+  PDF_COPY2_DRIVE_NAME     varchar(255   )
+);
+
+ 
+
+DROP TABLE PROBLEMREASON cascade ;
+
+CREATE TABLE PROBLEMREASON
+(
+  ID            varchar(2047   ),
+  PROBLEM_AREA  varchar(255   )
+);
+ 
+DROP TABLE PROBLEM_STATUS cascade;
+
+CREATE TABLE PROBLEM_STATUS
+(
+  ID  varchar(255   )
+);
+
+ 
+
+DROP TABLE PROPERTYRIGHT cascade ;
+
+CREATE TABLE PROPERTYRIGHT
+(
+  ID  varchar(255   )
+);
+ 
+
+DROP TABLE PUBLICATION_TYPE  cascade ;
+
+
+CREATE TABLE PUBLICATION_TYPE
+(
+  ID  varchar(255   )
+);
+
+ 
+DROP TABLE SCANNED_BY_TN_REPORT  cascade ;
+
+
+CREATE TABLE SCANNED_BY_TN_REPORT
+(
+  TN           varchar(255   ),
+  DATE_LOADED  TIMESTAMP(6)
+);
+
+ 
+
+DROP TABLE SCAN_DATE_ENTRY  cascade ;
+
+
+CREATE TABLE SCAN_DATE_ENTRY
+(
+  TN         varchar(255   ),
+  SCAN_DATE  TIMESTAMP(6)
+);
+
+ 
+DROP TABLE SEARCH ;
+
+CREATE TABLE SEARCH
+(
+  ID            varchar(255   )              NOT NULL,
+  DESCRIPTION   varchar(2047   ),
+  QUERY_TEXT    varchar(2047   ),
+  OWNER         varchar(255   ),
+  DATE_UPDATED  TIMESTAMP(6)                    NOT NULL
+);
+
+ 
+
+DROP TABLE SITE cascade;
+
+CREATE TABLE SITE
+(
+  ID                      varchar(255   ),
+  PUBLISH_NAME            varchar(511   ),
+  LOCATION                varchar(510   ),
+  CONTACT                 varchar(255   ),
+  NUMBER_OF_OPERATORS     varchar(3   ),
+  IS_FHC                  CHAR(1 ) DEFAULT 'F',
+  IS_PARTNER_INSTITUTION  CHAR(1 ) DEFAULT 'F',
+  IS_SCAN_SITE            CHAR(1 ) DEFAULT 'F',
+  IS_PROCESS_SITE         CHAR(1 )          DEFAULT 'F',
+  IS_PHYSICAL_BOOK_SITE   CHAR(1 )          DEFAULT 'F'
+);
+ 
+
+DROP TABLE SITE_GOAL ;
+
+CREATE TABLE SITE_GOAL
+(
+  SITE                varchar(255   ),
+  YEAR                varchar(255   ),
+  GOAL_IMAGES_YEARLY  integer
+);
+
+ 
+DROP TABLE STATUS ;
+
+CREATE TABLE STATUS
+(
+  ID  varchar(255   )
+);
+
+ 
+
+DROP TABLE SWITCHBOARD_ITEMS ;
+
+CREATE TABLE SWITCHBOARD_ITEMS
+(
+  SWITCHBOARDID  integer,
+  ITEMNUMBER     integer                      DEFAULT 0,
+  ITEMTEXT       varchar(255   ),
+  COMMAND        integer                      DEFAULT 0,
+  ARGUMENT       varchar(255   )
+);
+
+ 
+
+DROP TABLE TBLNTF_BLANK ;
+
+CREATE TABLE TBLNTF_BLANK
+(
+  ID             integer                     NOT NULL,
+  FULL_TN        varchar(255   ),
+  DATE_SCANNED   DATE,
+  PAGES          integer                    DEFAULT 0,
+  W_O_PREFIX     varchar(255   ),
+  W_O_EXTENSION  varchar(255   ),
+  SITE           varchar(255   ),
+  DRIVE          varchar(255   ),
+  DATECREATED    DATE                           DEFAULT current_timestamp,
+  DATEUPDATED    DATE
+);
+ 
+
+DROP TABLE TBLROS_02TIF ;
+
+CREATE TABLE TBLROS_02TIF
+(
+  FOLDER   varchar(255   ),
+  TN       varchar(255   ),
+  CREATED  DATE
+);
+
+
+DROP TABLE TBLSEARCHBACKUPS ;
+
+CREATE TABLE TBLSEARCHBACKUPS
+(
+  EHDFOLDER     varchar(255   ),
+  TN            varchar(255   ),
+  DRIVE_NAME    varchar(255   ),
+  PARENTFOLDER  varchar(255   ),
+  FILES         varchar(255   )
+);
+
+ 
+
+DROP TABLE TF_LOADING_ENTRY ;
+
+CREATE TABLE TF_LOADING_ENTRY
+(
+  TN            varchar(255   ),
+  COLLECTION    varchar(255   ),
+  DATE_LOADED   TIMESTAMP(6),
+  LOADED_BY     varchar(255   ),
+  PAGES_ONLINE  varchar(255   ),
+  URL           varchar(255   ),
+  PID           varchar(255   )
+);
+ 
+
+DROP TABLE TF_RECEIVED_IMAGES_ENTRY ;
+
+CREATE TABLE TF_RECEIVED_IMAGES_ENTRY
+(
+  TN               varchar(255   ),
+  NOTES_FROM_SITE  varchar(2047   )
+);
+
+ 
+
+DROP TABLE TF_RELEASED_ENTRY ;
+
+CREATE TABLE TF_RELEASED_ENTRY
+(
+  TN             varchar(255   ),
+  DATE_RELEASED  TIMESTAMP(6),
+  SITE           varchar(255   )
+);
+
+ 
+DROP TABLE TIFF_ARCHIVING_COPY1_ENTRY ;
+
+CREATE TABLE TIFF_ARCHIVING_COPY1_ENTRY
+(
+  TN                       varchar(255   ),
+  TIFF_OREM_ARCHIVED_DATE  TIMESTAMP(6),
+  TIFF_OREM_SERIAL_NUM       varchar(255   ),
+  TIFF_OREM_DRIVE_NAME     varchar(255   )
+);
+ 
+
+DROP TABLE TIFF_ARCHIVING_COPY2_ENTRY ;
+
+CREATE TABLE TIFF_ARCHIVING_COPY2_ENTRY
+(
+  TN                        varchar(255   ),
+  TIFF_COPY2_ARCHIVED_DATE  TIMESTAMP(6),
+  TIFF_COPY2_SERIAL_NUM       varchar(255   ),
+  TIFF_COPY2_DRIVE_NAME     varchar(255   )
+);
+
+ 
+
+DROP TABLE USERS cascade ;
+
+CREATE TABLE USERS
+(
+  ID                varchar(255   )          NOT NULL,
+  NAME              varchar(255   ),
+  PRIMARY_LOCATION  varchar(255   ),
+  ENTRY_PAGE        varchar(255   ),
+  LAST_LOGGED_IN    TIMESTAMP(6),
+  DATE_ADDED        TIMESTAMP(6),
+  DATE_UPDATED      TIMESTAMP(6)                NOT NULL,
+  EMAIL             varchar(255   ),
+  SEND_SCAN_NOTICE  CHAR(1  )                DEFAULT 'F'
+);
+
+ 
+
+DROP TABLE USER_AUTHORITIES ;
+
+CREATE TABLE USER_AUTHORITIES
+(
+  ID    varchar(255   )                      NOT NULL,
+  ROLE  varchar(255   )                      NOT NULL
+);
+
+
+CREATE UNIQUE INDEX ID ON AUTHORITY
+(ID);
+
+
+CREATE UNIQUE INDEX ID_KEY ON BATCHCLASS
+(ID);
+
+
+CREATE INDEX PID ON TF_LOADING_ENTRY
+(PID);
+
+
+CREATE UNIQUE INDEX PK_COMPRESSION_ENTRY ON COMPRESSION_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX PK_JP_UPDATE_TITLES ON JP_UPDATE_TITLES
+(TN);
+
+
+CREATE UNIQUE INDEX PK_NUMBER_OF_IMAGES_ENTRY ON NUMBER_OF_IMAGES_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX PK_PDF_ARCHIVING_COPY1_ENTRY ON PDF_ARCHIVING_COPY1_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX PK_PDF_ARCHIVING_COPY2_ENTRY ON PDF_ARCHIVING_COPY2_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX PK_PROBLEMREASON ON PROBLEMREASON
+(ID);
+
+
+CREATE UNIQUE INDEX PK_SCANNED_BY_TN_REPORT ON SCANNED_BY_TN_REPORT
+(TN);
+
+
+CREATE UNIQUE INDEX PK_SCAN_DATE_ENTRY ON SCAN_DATE_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX PK_SWITCHBOARD_ITEMS ON SWITCHBOARD_ITEMS
+(SWITCHBOARDID, ITEMNUMBER);
+
+
+CREATE UNIQUE INDEX PK_TBLNTF_BLANK ON TBLNTF_BLANK
+(ID);
+
+
+CREATE UNIQUE INDEX PK_TF_LOADING_ENTRY ON TF_LOADING_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX PK_TF_RECEIVED_IMAGES_ENTRY ON TF_RECEIVED_IMAGES_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX PK_TF_RELEASED_ENTRY ON TF_RELEASED_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX PK_TIFF_ARCHIVING_COPY1_ENTRY ON TIFF_ARCHIVING_COPY1_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX PK_TIFF_ARCHIVING_COPY2_ENTRY ON TIFF_ARCHIVING_COPY2_ENTRY
+(TN);
+
+
+CREATE UNIQUE INDEX SEARCH_PK ON SEARCH
+(ID);
+
+
+CREATE UNIQUE INDEX SITE_GOAL_KEY ON SITE_GOAL
+(SITE, YEAR);
+
+ 
+
+CREATE UNIQUE INDEX TITLENO_KEY2 ON BOOKMETADATAUPDATE
+(TITLENO);
+
+
+CREATE UNIQUE INDEX USER_AUTH_PK ON USER_AUTHORITIES
+(ID, ROLE);
+
+
+CREATE UNIQUE INDEX USER_PK ON USERS
+(ID);
+
+ 
+
+DROP TABLE BOOK  cascade;
+
+CREATE TABLE BOOK
+(
+  TN                          varchar(255   ),
+  SECONDARY_IDENTIFIER        varchar(255   ),
+  OCLC_NUMBER                 varchar(255   ),
+  ISBN_ISSN                   varchar(255   ),
+  TITLE                       varchar(2047   ),
+  AUTHOR                      varchar(512  ),
+  PROPERTY_RIGHT              varchar(255   ),
+  PUBLICATION_TYPE            varchar(255   ),
+  CALL_NUM                      varchar(255   ),
+  PARTNER_LIB_CALL_NUM          varchar(255   ),
+  PRIORITY_ITEM               CHAR(1  )      DEFAULT 'F',
+  WITHDRAWN                   CHAR(1 )      DEFAULT 'F',
+  DIGITAL_COPY_ONLY           CHAR(1  )      DEFAULT 'F',
+  MEDIA_TYPE                  varchar(255   ),
+  METADATA_COMPLETE           TIMESTAMP(6),
+  BATCH_CLASS                 varchar(255   ),
+  LANGUAGE                    varchar(255   ),
+  REMARKS_FROM_SCAN_CENTER    varchar(2047   ),
+  REMARKS_ABOUT_BOOK          varchar(2047   ),
+  RECORD_NUMBER               varchar(255   ),
+  REQUESTING_LOCATION         varchar(255   ),
+  OWNING_INSTITUTION          varchar(255   ),
+  SCANNED_BY                  varchar(255   ),
+  SCAN_OPERATOR               varchar(255   ),
+  SCAN_MACHINE_ID             varchar(255   ),
+  SCAN_METADATA_COMPLETE      TIMESTAMP(6),
+  LOCATION                    varchar(255   ),
+  SCAN_START_DATE             TIMESTAMP(6),
+  SCAN_COMPLETE_DATE          TIMESTAMP(6),
+  SCAN_IMAGE_AUDITOR          varchar(255   ),
+  SCAN_IA_START_DATE          TIMESTAMP(6),
+  SCAN_IA_COMPLETE_DATE       TIMESTAMP(6),
+  FILES_SENT_TO_OREM          TIMESTAMP(6),
+  SCAN_NUM_OF_PAGES           integer,
+  NUM_OF_PAGES                integer,
+  FILES_RECEIVED_BY_OREM      TIMESTAMP(6),
+  IMAGE_AUDIT                 varchar(255   ),
+  IA_START_DATE               TIMESTAMP(6),
+  IA_COMPLETE_DATE            TIMESTAMP(6),
+  OCR_BY                      varchar(255   ),
+  OCR_COMPLETE_DATE           TIMESTAMP(6),
+  PDFREVIEW_BY                varchar(255   ),
+  PDFREVIEW_START_DATE        TIMESTAMP(6),
+  PDF_READY                   TIMESTAMP(6),
+  DATE_RELEASED               TIMESTAMP(6),
+  COMPRESSION_CODE            varchar(255   ),
+  LOADED_BY                   varchar(255   ),
+  DATE_LOADED                 TIMESTAMP(6),
+  COLLECTION                  varchar(255   ),
+  DNP                         varchar(255   ),
+  DNP_DELETED_OFF_LINE        varchar(255   ),
+  TN_CHANGE_HISTORY           varchar(255   ),
+  PDF_OREM_ARCHIVED_DATE      TIMESTAMP(6),
+  PDF_OREM_DRIVE_SERIAL_NUM     varchar(255   ),
+  PDF_OREM_DRIVE_NAME         varchar(255   ),
+  PDF_COPY2_ARCHIVED_DATE     TIMESTAMP(6),
+  PDF_COPY2_DRIVE_SERIAL_NUM    varchar(255   ),
+  PDF_COPY2_DRIVE_NAME        varchar(255   ),
+  TIFF_OREM_ARCHIVED_DATE     TIMESTAMP(6),
+  TIFF_OREM_DRIVE_SERIAL_NUM    varchar(255   ),
+  TIFF_OREM_DRIVE_NAME        varchar(255   ),
+  TIFF_COPY2_ARCHIVED_DATE    TIMESTAMP(6),
+  TIFF_COPY2_DRIVE_SERIAL_NUM   varchar(255   ),
+  TIFF_COPY2_DRIVE_NAME       varchar(255   ),
+  PDF_SENT_TO_LOAD            TIMESTAMP(6),
+  SITE                        varchar(255   ),
+  URL                         varchar(255   ),
+  PID                         varchar(255   ),
+  PAGES_ONLINE                integer,
+  SUBJECT                     varchar(4000   ),
+  FILMNO                      varchar(255   ),
+  PAGES_PHYSICAL_DESCRIPTION  varchar(255   ),
+  SUMMARY                     varchar(2047   ),
+  DGSNO                       varchar(255   ),
+  DATE_ORIGINAL               TIMESTAMP(6),
+  PUBLISHER_ORIGINAL          varchar(255   ),
+  FILENAME                    varchar(255   ),
+  PDF_DOWNLOAD_BY             varchar(255   ),
+  PDF_DOWNLOAD_DATE           TIMESTAMP(6),
+  OCR_START_DATE              TIMESTAMP(6),
+  FHC_TITLE                   varchar(2047   ),
+  FHC_TN                      varchar(255   ),
+  DATE_REPUBLISHED            TIMESTAMP(6)
+);
+  
+DROP TABLE BOOKMETADATA cascade;
+
+CREATE TABLE BOOKMETADATA
+(
+  TITLE                varchar(2047   )      NOT NULL,
+  AUTHOR               varchar(512  ),
+  SUBJECT              varchar(4000   ),
+  TITLENO              varchar(255   )       NOT NULL,
+  OCLC_NUMBER          varchar(255   ),
+  ISBN_ISSN            varchar(255   ),
+  CALLNO               varchar(255   ),
+  PARTNER_LIB_CALLNO   varchar(255   ),
+  FILMNO               varchar(255   ),
+  PAGES                varchar(255   ),
+  SUMMARY              varchar(2047   ),
+  DGSNO                varchar(255   ),
+  LANGUAGE             varchar(255   ),
+  REQUESTING_LOCATION  varchar(255   ),
+  SCANNING_LOCATION    varchar(255   ),
+  RECORD_NUMBER        varchar(255   ),
+  DATE_ORIGINAL        TIMESTAMP(6),
+  PUBLISHER_ORIGINAL   varchar(255   ),
+  DATE_ADDED           TIMESTAMP(6),
+  METADATA_ADDER       varchar(255   ),
+  CHECK_COMPLETE       TIMESTAMP(6),
+  CHECKER              varchar(255   ),
+  SENT_TO_SCAN         TIMESTAMP(6),
+  SENDER               varchar(255   ),
+  FILENAME             varchar(255   ),
+  OWNING_INSTITUTION   varchar(255   )
+);
+ 
+
+DROP TABLE IABOOKMETADATA ;
+
+CREATE TABLE IABOOKMETADATA
+(
+  TN                          varchar(255   ),
+  SECONDARY_IDENTIFIER        varchar(255   ),
+  OCLC_NUMBER                 varchar(255   ),
+  ISBN_ISSN                   varchar(255   ),
+  TITLE                       varchar(2047   ),
+  AUTHOR                      varchar(512),
+  PROPERTY_RIGHT              varchar(255   ),
+  PUBLICATION_TYPE            varchar(255   ),
+  CALL_NUM                      varchar(255   ),
+  PARTNER_LIB_CALL_NUM          varchar(255   ),
+  PRIORITY_ITEM               CHAR(1)      DEFAULT 'F',
+  WITHDRAWN                   CHAR(1)      DEFAULT 'F',
+  DIGITAL_COPY_ONLY           CHAR(1)      DEFAULT 'F',
+  MEDIA_TYPE                  varchar(255   ),
+  METADATA_COMPLETE           TIMESTAMP(6),
+  BATCH_CLASS                 varchar(255   ),
+  LANGUAGE                    varchar(255   ),
+  REMARKS_FROM_SCAN_CENTER    varchar(2047   ),
+  REMARKS_ABOUT_BOOK          varchar(2047   ),
+  RECORD_NUMBER               varchar(255   ),
+  REQUESTING_LOCATION         varchar(255   ),
+  OWNING_INSTITUTION          varchar(255   ),
+  SCANNED_BY                  varchar(255   ),
+  SCAN_OPERATOR               varchar(255   ),
+  SCAN_MACHINE_ID             varchar(255   ),
+  SCAN_METADATA_COMPLETE      TIMESTAMP(6),
+  LOCATION                    varchar(255   ),
+  SCAN_START_DATE             TIMESTAMP(6),
+  SCAN_COMPLETE_DATE          TIMESTAMP(6),
+  SCAN_IMAGE_AUDITOR          varchar(255   ),
+  SCAN_IA_START_DATE          TIMESTAMP(6),
+  SCAN_IA_COMPLETE_DATE       TIMESTAMP(6),
+  FILES_SENT_TO_OREM          TIMESTAMP(6),
+  SCAN_NUM_OF_PAGES           integer,
+  NUM_OF_PAGES                integer,
+  FILES_RECEIVED_BY_OREM      TIMESTAMP(6),
+  IMAGE_AUDIT                 varchar(255   ),
+  IA_START_DATE               TIMESTAMP(6),
+  IA_COMPLETE_DATE            TIMESTAMP(6),
+  OCR_BY                      varchar(255   ),
+  OCR_COMPLETE_DATE           TIMESTAMP(6),
+  PDFREVIEW_BY                varchar(255   ),
+  PDFREVIEW_START_DATE        TIMESTAMP(6),
+  PDF_READY                   TIMESTAMP(6),
+  DATE_RELEASED               TIMESTAMP(6),
+  COMPRESSION_CODE            varchar(255   ),
+  LOADED_BY                   varchar(255   ),
+  DATE_LOADED                 TIMESTAMP(6),
+  COLLECTION                  varchar(255   ),
+  DNP                         varchar(255   ),
+  DNP_DELETED_OFF_LINE        varchar(255   ),
+  TN_CHANGE_HISTORY           varchar(255   ),
+  PDF_OREM_ARCHIVED_DATE      TIMESTAMP(6),
+  PDF_OREM_DRIVE_SERIAL_NUM     varchar(255   ),
+  PDF_OREM_DRIVE_NAME         varchar(255   ),
+  PDF_COPY2_ARCHIVED_DATE     TIMESTAMP(6),
+  PDF_COPY2_DRIVE_SERIAL_NUM    varchar(255   ),
+  PDF_COPY2_DRIVE_NAME        varchar(255   ),
+  TIFF_OREM_ARCHIVED_DATE     TIMESTAMP(6),
+  TIFF_OREM_DRIVE_SERIAL_NUM    varchar(255   ),
+  TIFF_OREM_DRIVE_NAME        varchar(255   ),
+  TIFF_COPY2_ARCHIVED_DATE    TIMESTAMP(6),
+  TIFF_COPY2_DRIVE_SERIAL_NUM   varchar(255   ),
+  TIFF_COPY2_DRIVE_NAME       varchar(255   ),
+  PDF_SENT_TO_LOAD            TIMESTAMP(6),
+  SITE                        varchar(255   ),
+  URL                         varchar(255   ),
+  PID                         varchar(255   ),
+  PAGES_ONLINE                integer,
+  SUBJECT                     varchar(4000   ),
+  FILMNO                      varchar(255   ),
+  PAGES_PHYSICAL_DESCRIPTION  varchar(255   ),
+  SUMMARY                     varchar(2047   ),
+  DGSNO                       varchar(255   ),
+  DATE_ORIGINAL               TIMESTAMP(6),
+  PUBLISHER_ORIGINAL          varchar(255   ),
+  SENT_TO_SCAN                TIMESTAMP(6),
+  FHC_TITLE                   varchar(2047   ),
+  FHC_TN                      varchar(255   )
+);
+ 
+DROP TABLE TF_NOTES ;
+
+CREATE TABLE TF_NOTES
+(
+  ID                 integer              NOT NULL,
+  TN                 varchar(255   )         NOT NULL,
+  STATUS             varchar(255   ),
+  PROBLEM_REASON     varchar(2047   ),
+  PROBLEM_TEXT       varchar(2047   ),
+  PROBLEM_DATE       TIMESTAMP(6)               DEFAULT current_timestamp,
+  PROBLEM_INITIALS   varchar(255   ),
+  SOLUTION_TEXT      varchar(2047   ),
+  SOLUTION_DATE      TIMESTAMP(6),
+  SOLUTION_INITIALS  varchar(255   )
+);
+
+
+CREATE UNIQUE INDEX PK_BOOK ON BOOK
+(TN);
+
+
+CREATE UNIQUE INDEX PK_IABOOKMETADATA ON IABOOKMETADATA
+(TN);
+
+
+CREATE UNIQUE INDEX PK_TF_NOTES ON TF_NOTES
+(ID, TN);
+
+ 
+
+CREATE UNIQUE INDEX TITLENO_KEY ON BOOKMETADATA
+(TITLENO); 
+
+
+CREATE INDEX TN ON TF_NOTES
+(TN);
+
+
+ALTER TABLE AUTHORITY ADD 
+  CONSTRAINT ID_pk
+  PRIMARY KEY
+  (ID); 
+
+ALTER TABLE BATCHCLASS ADD 
+  CONSTRAINT ID_KEY_pk
+  PRIMARY KEY
+  (ID);
+
+ALTER TABLE BOOKMETADATAUPDATE ADD 
+  PRIMARY KEY
+  (TITLENO);
+ALTER TABLE BOOKMETADATAUPDATE ADD 
+  UNIQUE (OCLC_NUMBER);
+ALTER TABLE BOOKMETADATAUPDATE ADD 
+  UNIQUE (ISBN_ISSN);
+
+ALTER TABLE BOOKTEMP ADD 
+  CHECK (priority_item IN ('T', 'F'));
+ALTER TABLE BOOKTEMP ADD 
+  CHECK (Withdrawn IN ('T', 'F'));
+ALTER TABLE BOOKTEMP ADD 
+  CHECK (Digital_Copy_Only  IN ('T', 'F'));
+ALTER TABLE BOOKTEMP ADD 
+  UNIQUE (SECONDARY_IDENTIFIER);
+ALTER TABLE BOOKTEMP ADD 
+  UNIQUE (OCLC_NUMBER);
+ALTER TABLE BOOKTEMP ADD 
+  UNIQUE (ISBN_ISSN)
+   ;
+
+ALTER TABLE BOOK_LOCK ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE COMPRESSION_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE JP_UPDATE_TITLES ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE LANGUAGES ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE MEDIA ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE NUMBER_OF_IMAGES_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE PDF_ARCHIVING_COPY1_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE PDF_ARCHIVING_COPY2_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE PROBLEMREASON ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE PROBLEM_STATUS ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE PROPERTYRIGHT ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE PUBLICATION_TYPE ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE SCANNED_BY_TN_REPORT ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE SCAN_DATE_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+  ;
+
+ALTER TABLE SEARCH ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE SITE ADD 
+  CHECK (is_fhc  IN ('T', 'F'));
+ALTER TABLE SITE ADD 
+  CHECK (  is_partner_institution    IN ('T', 'F'));
+ALTER TABLE SITE ADD 
+  CHECK (  is_scan_site  IN ('T', 'F'));
+ALTER TABLE SITE ADD 
+  CHECK (  is_process_Site  IN ('T', 'F'));
+ALTER TABLE SITE ADD 
+  CHECK (  is_physical_book_site IN ('T', 'F'));
+ALTER TABLE SITE ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE SITE_GOAL ADD 
+  PRIMARY KEY
+  (SITE, YEAR)
+   ;
+
+ALTER TABLE STATUS ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE SWITCHBOARD_ITEMS ADD 
+  PRIMARY KEY
+  (SWITCHBOARDID, ITEMNUMBER)
+   ;
+
+ALTER TABLE TBLNTF_BLANK ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE TBLROS_02TIF ADD 
+  PRIMARY KEY
+  (FOLDER)
+   ;
+
+ALTER TABLE TF_LOADING_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE TF_RECEIVED_IMAGES_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE TF_RELEASED_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE TIFF_ARCHIVING_COPY1_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE TIFF_ARCHIVING_COPY2_ENTRY ADD 
+  PRIMARY KEY
+  (TN)
+   ;
+
+ALTER TABLE USERS ADD 
+  CHECK (send_scan_notice IN ('T', 'F'));
+ALTER TABLE USERS ADD 
+  PRIMARY KEY
+  (ID)
+   ;
+
+ALTER TABLE USER_AUTHORITIES ADD 
+  PRIMARY KEY
+  (ID, ROLE)
+   ;
+
+ALTER TABLE BOOK ADD 
+  CHECK (priority_item IN ('T', 'F'));
+ALTER TABLE BOOK ADD 
+  CHECK (Withdrawn IN ('T', 'F'));
+ALTER TABLE BOOK ADD 
+  CHECK (Digital_Copy_Only  IN ('T', 'F'));
+ALTER TABLE BOOK ADD 
+  PRIMARY KEY
+  (TN);
+ALTER TABLE BOOK ADD 
+  UNIQUE (SECONDARY_IDENTIFIER);
+ALTER TABLE BOOK ADD 
+  UNIQUE (ISBN_ISSN)
+   ;
+
+ALTER TABLE BOOKMETADATA ADD 
+  PRIMARY KEY
+  (TITLENO);
+ALTER TABLE BOOKMETADATA ADD 
+  UNIQUE (ISBN_ISSN)
+   ;
+
+ALTER TABLE IABOOKMETADATA ADD 
+  CHECK (priority_item IN ('T', 'F'));
+ALTER TABLE IABOOKMETADATA ADD 
+  CHECK (Withdrawn IN ('T', 'F'));
+ALTER TABLE IABOOKMETADATA ADD 
+  CHECK (Digital_Copy_Only  IN ('T', 'F'));
+ALTER TABLE IABOOKMETADATA ADD 
+  PRIMARY KEY
+  (TN)
+  ;
+ALTER TABLE IABOOKMETADATA ADD 
+  UNIQUE (SECONDARY_IDENTIFIER);
+ALTER TABLE IABOOKMETADATA ADD 
+  UNIQUE (ISBN_ISSN)
+   ;
+
+ALTER TABLE TF_NOTES ADD 
+  PRIMARY KEY
+  (ID, TN)
+   ;
+
+ALTER TABLE SITE_GOAL ADD 
+  CONSTRAINT FK_SITE_GOALS 
+  FOREIGN KEY (SITE) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE USERS ADD 
+  CONSTRAINT FK_USERS 
+  FOREIGN KEY (PRIMARY_LOCATION) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE USER_AUTHORITIES ADD 
+  CONSTRAINT FK_USER_ID 
+  FOREIGN KEY (ID) 
+  REFERENCES USERS (ID)
+  ON DELETE CASCADE
+   ;
+
+ALTER TABLE BOOK ADD 
+  CONSTRAINT FK_LANG_BOOKS 
+  FOREIGN KEY (LANGUAGE) 
+  REFERENCES LANGUAGES (ID);
+ALTER TABLE BOOK ADD 
+  CONSTRAINT FK_MEDIA_BOOKS 
+  FOREIGN KEY (MEDIA_TYPE) 
+  REFERENCES MEDIA (ID)
+   ;
+ALTER TABLE BOOK ADD 
+  CONSTRAINT FK_PROPERTY_BOOK 
+  FOREIGN KEY (PROPERTY_RIGHT) 
+  REFERENCES PROPERTYRIGHT (ID)
+   ;
+ALTER TABLE BOOK ADD 
+  CONSTRAINT FK_PUBLICATION_TYPE 
+  FOREIGN KEY (PUBLICATION_TYPE) 
+  REFERENCES PUBLICATION_TYPE (ID)
+   ;
+ALTER TABLE BOOK ADD 
+  CONSTRAINT FK_SITE_BOOKS 
+  FOREIGN KEY (SITE) 
+  REFERENCES SITE (ID)
+   ;
+ALTER TABLE BOOK ADD 
+  CONSTRAINT FK_SITE_BOOKS2 
+  FOREIGN KEY (SCANNED_BY) 
+  REFERENCES SITE (ID)
+   ;
+ALTER TABLE BOOK ADD 
+  CONSTRAINT FK_SITE_BOOKS3 
+  FOREIGN KEY (REQUESTING_LOCATION) 
+  REFERENCES SITE (ID)
+   ;
+ALTER TABLE BOOK ADD 
+  CONSTRAINT FK_SITE_BOOKS4 
+  FOREIGN KEY (OWNING_INSTITUTION) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE BOOKMETADATA ADD 
+  CONSTRAINT FK_LANG_BOOKMD 
+  FOREIGN KEY (LANGUAGE) 
+  REFERENCES LANGUAGES (ID)
+   ;
+
+ALTER TABLE BOOKMETADATA ADD 
+  CONSTRAINT FK_OWNINST_ID 
+  FOREIGN KEY (OWNING_INSTITUTION) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE BOOKMETADATA ADD 
+  CONSTRAINT FK_REQLOC_ID 
+  FOREIGN KEY (REQUESTING_LOCATION) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE BOOKMETADATA ADD 
+  CONSTRAINT FK_SITE_ID 
+  FOREIGN KEY (SCANNING_LOCATION) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE IABOOKMETADATA ADD 
+  CONSTRAINT FK_LANG_IABOOKMD 
+  FOREIGN KEY (LANGUAGE) 
+  REFERENCES LANGUAGES (ID)
+   ;
+
+ALTER TABLE IABOOKMETADATA ADD 
+  CONSTRAINT FK_MEDIA_IABOOKMETADATA 
+  FOREIGN KEY (MEDIA_TYPE) 
+  REFERENCES MEDIA (ID)
+   ;
+
+ALTER TABLE IABOOKMETADATA ADD 
+  CONSTRAINT FK_SITE_IABOOKMETADATA 
+  FOREIGN KEY (SITE) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE IABOOKMETADATA ADD 
+  CONSTRAINT FK_SITE_IABOOKMETADATA2 
+  FOREIGN KEY (SCANNED_BY) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE IABOOKMETADATA ADD 
+  CONSTRAINT FK_SITE_IABOOKMETADATA3 
+  FOREIGN KEY (REQUESTING_LOCATION) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE IABOOKMETADATA ADD 
+  CONSTRAINT FK_SITE_IABOOKMETADATA4 
+  FOREIGN KEY (OWNING_INSTITUTION) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE TF_NOTES ADD 
+  CONSTRAINT FK_NOTES_BOOK 
+  FOREIGN KEY (TN) 
+  REFERENCES BOOK (TN)
+  ON DELETE CASCADE
+   ;
+
+ALTER TABLE TF_NOTES ADD
+  CONSTRAINT FK_NOTES_REASON 
+  FOREIGN KEY (PROBLEM_REASON) 
+  REFERENCES PROBLEMREASON (ID)
+   ;
+
+ALTER TABLE TF_NOTES ADD
+  CONSTRAINT FK_NOTES_STATUS2 
+  FOREIGN KEY (STATUS) 
+  REFERENCES PROBLEM_STATUS (ID)
+   ;

@@ -1,0 +1,66 @@
+SET DEFINE OFF;
+ 
+
+DROP TABLE tblNTF_Blank CASCADE CONSTRAINTS;
+
+
+PROMPT Creating Table tblNTF_Blank ...
+CREATE TABLE tblNTF_Blank (
+  ID NUMBER(11,0) NOT NULL,
+  Full_TN VARCHAR2(255 CHAR),
+  Date_scanned DATE,
+  pages FLOAT DEFAULT 0,
+  w_o_prefix VARCHAR2(255 CHAR),
+  w_o_extension VARCHAR2(255 CHAR),
+  Site VARCHAR2(255 CHAR),
+  Drive VARCHAR2(255 CHAR),
+  DateCreated DATE DEFAULT SYSDATE,
+  DateUpdated DATE
+);
+
+ 
+
+PROMPT Creating Primary Key Constraint PK_tblNTF_Blank on table tblNTF_Blank ... 
+ALTER TABLE tblNTF_Blank
+ADD CONSTRAINT PK_tblNTF_Blank PRIMARY KEY
+(
+  ID
+)
+ENABLE
+;
+
+ 
+DROP TABLE tblRoS_02Tif CASCADE CONSTRAINTS;
+
+
+PROMPT Creating Table tblRoS_02Tif ...
+CREATE TABLE tblRoS_02Tif (
+  Folder VARCHAR2(255 CHAR) primary key,
+  TN VARCHAR2(255 CHAR) ,
+  Created DATE
+);
+
+
+DROP TABLE tblSearchBackups CASCADE CONSTRAINTS;
+
+
+
+CREATE TABLE tblSearchBackups (
+  EHDFolder VARCHAR2(255 CHAR),
+  TN VARCHAR2(255 CHAR),
+  Drive_Name VARCHAR2(255 CHAR),
+  ParentFolder VARCHAR2(255 CHAR),
+  Files VARCHAR2(255 CHAR)
+);
+
+
+
+
+ 
+DROP view qryReprocess;
+create or replace view  qryReprocess as 
+SELECT tblSearchBackups.TN, tblSearchBackups.EHDFolder, tblSearchBackups.ParentFolder, tblSearchBackups.Drive_Name, 
+				 tblSearchBackups.Files, tblNTF_Blank.w_o_prefix FROM tblNTF_Blank INNER JOIN tblSearchBackups 
+				 ON tblNTF_Blank.w_o_prefix = tblSearchBackups.TN 
+				 WHERE (tblSearchBackups.TN Is Not Null) 
+				 ORDER BY tblSearchBackups.TN; 

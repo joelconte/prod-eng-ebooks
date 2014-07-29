@@ -1,0 +1,843 @@
+
+DROP view S_TF_Problems;  
+create or replace view  S_TF_Problems as 
+SELECT TF_Notes.TN, Book.Call_#, TF_Notes.Problem_reason, TF_Notes.Problem_Text, TF_Notes.Problem_Date, TF_Notes.Problem_Initials, TF_Notes.Status, Book.DNP, Book.requesting_location, Book.Scanned_by
+FROM TF_Notes INNER JOIN Book ON TF_Notes.TN = Book.TN
+WHERE (  (status not in ('Notes', 'Problem Fixed') and status is not null) AND ((Book.DNP) Is Null) and book.property_right != 'Denied'  AND ((Book.DNP_deleted_off_line) Is Null)) and 
+Book.Files_Sent_to_Orem Is Null 
+AND files_received_by_orem is null 
+And Book.Date_Released Is Null 
+And Book.Date_loaded Is Null;
+
+DROP view S_TF_Solution_found; 
+create or replace view  S_TF_Solution_found as 
+SELECT TF_Notes.TN, Book.Call_#,   TF_Notes.Solution_Text, TF_Notes.Solution_Date, TF_Notes.Solution_initials, TF_Notes.Status,  TF_Notes.Problem_reason , TF_Notes.Problem_Text , Book.requesting_location,  Book.Scanned_by
+FROM TF_Notes INNER JOIN Book ON TF_Notes.TN=Book.TN
+WHERE ((TF_Notes.Status='Solution Found') AND ((Book.DNP_Deleted_off_line) Is Null) AND ((Book.DNP) Is Null) and book.property_right != 'Denied' );
+
+  
+ DROP view S_01_Ready_scan; 
+create or replace view  S_01_Ready_scan as 
+SELECT Book.TN, Book.partner_Lib_Call_#, Book.record_number, Book.title, Book.scan_num_of_pages, Book.scan_machine_id, Book.Scan_start_Date, Book.scan_Image_Auditor, Book.scan_IA_start_Date, Book.Files_Sent_to_Orem, Book.requesting_location, Book.scanned_by
+FROM Book  
+WHERE Book.Scan_start_Date Is  Null 
+ And Book.Date_Released Is Null 
+ And Book.Files_Sent_to_Orem Is Null
+ and book.files_received_by_orem is null
+ And Book.Date_loaded Is Null 
+ AND Book.DNP Is Null 
+and book.property_right != 'Denied' 
+ORDER BY Book.Scan_start_Date; 
+
+
+DROP view S_01B_scan_in_prog; 
+create or replace view  S_01B_scan_in_prog as 
+SELECT Book.TN,  Book.partner_Lib_Call_#, Book.record_number, Book.title, Book.scan_num_of_pages, Book.scan_machine_id, Book.Scan_start_Date, Book.scan_Image_Auditor, Book.scan_IA_start_Date, Book.Files_Sent_to_Orem,  Book.requesting_location, Book.scanned_by
+FROM Book 
+WHERE  Book.Scan_start_Date Is not  Null
+ And Book.Scan_complete_Date Is Null
+ And Book.Date_Released Is Null 
+ And Book.Files_Sent_to_Orem Is Null
+ and files_received_by_orem is null 
+ and Book.Date_loaded Is Null  
+AND Book.DNP Is Null 
+and book.property_right != 'Denied' 
+ORDER BY Book.Scan_start_Date;
+
+
+DROP view S_02_Ready_image_audit; 
+create or replace view  S_02_Ready_image_audit as 
+SELECT Book.TN,  Book.partner_Lib_Call_#, Book.record_number, Book.title, Book.scan_num_of_pages, Book.scan_machine_id, Book.Scan_start_Date, Book.scan_Image_Auditor, Book.scan_IA_start_Date, Book.Files_Sent_to_Orem,  Book.requesting_location, Book.scanned_by
+FROM Book 
+WHERE Book.Scan_complete_Date Is Not Null
+ And Book.Scan_IA_Start_Date Is Null
+ And Book.Files_Sent_to_Orem Is Null
+ and files_received_by_orem is null 
+ And  Book.Date_Released Is Null  
+ And   Book.Date_loaded Is Null 
+ AND Book.DNP Is Null 
+and book.property_right != 'Denied' 
+ORDER BY Book.Scan_start_Date;
+
+
+
+DROP view S_03_image_auditing_in_prog;
+create or replace view  S_03_image_auditing_in_prog as 
+SELECT Book.TN, Book.partner_Lib_Call_#, Book.record_number, Book.title,  Book.scan_Image_Auditor, Book.scan_num_of_pages, Book.scan_IA_start_Date, Book.Site, Book.scan_Machine_id,  Book.requesting_location, Book.scanned_by 
+FROM Book
+WHERE  Book.scan_Ia_start_date Is not Null  and  Book.scan_Ia_complete_date Is Null And 
+Book.Files_Sent_to_Orem Is Null and files_received_by_orem is null And  Book.Date_Released Is Null And   Book.Date_loaded Is Null AND Book.DNP Is Null 
+and book.property_right != 'Denied'  ;
+
+
+
+DROP view S_04_processed_ready_orem; 
+create or replace view  S_04_processed_ready_orem as 
+SELECT Book.TN, Book.partner_Lib_Call_#, Book.record_number, Book.title,  Book.scan_num_of_pages, Book.Scan_IA_Start_Date, Book.Remarks_from_Scan_Center , Book.Files_Sent_to_Orem,  Book.requesting_location, Book.scanned_by  
+FROM Book 
+WHERE Book.Scan_IA_complete_Date Is Not Null AND Book.Files_Sent_to_Orem Is Null
+ AND files_received_by_orem is null 
+ And Book.Date_Released Is Null  
+ And Book.Date_loaded Is Null 
+ AND Book.DNP Is Null 
+and book.property_right != 'Denied' 
+ORDER BY Book.Scan_IA_Start_Date, Book.Site DESC;
+
+
+
+
+
+DROP view S_0x_All_queues; 
+create or replace view  S_0x_All_queues as (
+select tn, 'A- Ready to Scan' as Step from S_01_Ready_scan 
+union select tn, 'B- Scan in Process'  as Step from S_01B_scan_in_prog
+union select tn, 'C- Ready to Image Audit'  as Step from S_02_Ready_image_audit
+union select tn, 'D- Image Auditing in Process'  as Step from S_03_image_auditing_in_prog
+union select tn, 'E- Processed Ready for Orem'  as Step from S_04_processed_ready_orem); 
+
+
+
+
+DROP VIEW a_Loaded_by_Year_Month;
+CREATE OR REPLACE VIEW a_Loaded_by_Year_Month
+AS
+SELECT TN ,
+       TO_CHAR(Date_Loaded, 'yyyymm') Date_Loaded_By_YearMonth  ,
+       Site ,
+       Pages_Online ,
+       COUNT(*) Count_Of_Books  
+  FROM Book 
+  GROUP BY TN,TO_CHAR(Date_Loaded, 'yyyymm'),Site,Pages_Online
+   HAVING ( ( (TO_CHAR(Date_Loaded, 'yyyymm')) IS NOT NULL ) )
+  ORDER BY TO_CHAR(Book.Date_Loaded, 'yyyymm') DESC,
+           Book.Site;
+
+
+
+ 
+DROP VIEW a_Released_by_Year_Month;
+CREATE OR REPLACE VIEW a_Released_by_Year_Month
+AS
+SELECT TN ,
+       TO_CHAR(Date_Released, 'yyyymm') Date_Released_By_YearMonth  ,
+       Site ,
+       num_of_pages ,
+       COUNT(*) Count_Of_Books  
+  FROM Book 
+  GROUP BY TN,TO_CHAR(Date_Released, 'yyyymm'),Site, num_of_pages
+   HAVING ( ( (TO_CHAR(Date_Released, 'yyyymm')) IS NOT NULL ) )
+  ORDER BY TO_CHAR(Book.Date_Released, 'yyyymm') DESC,
+           Book.Site;
+
+ 
+DROP VIEW a_Scanned_by_Year_Month;
+CREATE OR REPLACE VIEW a_Scanned_by_Year_Month
+AS
+SELECT TN ,
+       TO_CHAR(Files_Received_by_Orem, 'yyyymm') Date_Scanned_By_YearMonth  ,
+       Site ,
+       num_of_pages ,
+       COUNT(*) Count_Of_Books  
+  FROM Book 
+  GROUP BY TN,TO_CHAR(Files_Received_by_Orem, 'yyyymm'),Site,num_of_pages
+   HAVING ( ( (TO_CHAR(Files_Received_by_Orem, 'yyyymm')) IS NOT NULL )
+  AND ( NOT (Site) = 'DNP' )
+  AND ( (num_of_pages) IS NOT NULL ) )
+  ORDER BY TO_CHAR(Book.Files_Received_by_Orem, 'yyyymm') DESC,
+           Book.Site;
+
+
+DROP VIEW Books_Online_SLC_PDF_not_Arch;
+CREATE OR REPLACE VIEW Books_Online_SLC_PDF_not_Arch
+AS
+SELECT TN ,
+       Date_Loaded ,
+       Collection ,
+       PDF_Copy2_Drive_Name ,
+       PDF_Copy2_Drive_Serial_# 
+  FROM Book 
+  WHERE ( ( (Date_Loaded) IS NOT NULL )
+          AND ( (PDF_Copy2_Archived_Date) IS NULL ) )
+  ORDER BY Book.Collection;
+
+ 
+
+DROP VIEW Compression_Without_Match_Bks;
+CREATE OR REPLACE VIEW Compression_Without_Match_Bks
+AS
+SELECT Compression_Entry.TN ,
+       Book.Compression_Code ,
+       Book.PDF_Sent_to_Load ,
+       Book.Site ,
+       Book.Date_Released ,
+       Book.Date_Loaded ,
+       Book.Batch_Class ,
+       Book.PID ,
+       Book.TN TN_8  
+  FROM Compression_Entry 
+         LEFT JOIN Book 
+          ON Compression_Entry.TN = Book.TN;
+
+DROP VIEW Count_per_loc_per_spec_date;
+CREATE OR REPLACE VIEW Count_per_loc_per_spec_date
+AS
+SELECT COUNT(TN) CountOfTN  ,
+       SUM(Pages_Online) SumOfPages_Online  
+  FROM Book 
+  WHERE ( ( (Date_Loaded) >= TO_DATE('7/9/2009','dd/mm/yyyy')
+          AND (Date_Loaded) <= TO_DATE('7/30/2009','dd/mm/yyyy') ) );
+
+DROP VIEW Dawn_s_Site_by_Year_Pages_book;
+CREATE OR REPLACE VIEW Dawn_s_Site_by_Year_Pages_book
+AS
+SELECT TN ,
+       Collection ,
+       TO_CHAR(Date_Loaded, 'yyyy') Date_Loaded_By_Year  ,
+       Site ,
+       Pages_Online ,
+       COUNT(*) Count_Of_Books  
+  FROM Book 
+  GROUP BY TN,Collection,TO_CHAR(Date_Loaded, 'yyyy'),Site,Pages_Online,msaccess_utilities.year_(Date_Loaded)
+   HAVING ( ( (TO_CHAR(Date_Loaded, 'yyyy')) IS NOT NULL )
+  AND ( (TO_CHAR(Date_Loaded, 'yyyy')) IS NOT NULL ) )
+  ORDER BY TO_CHAR(Book.Date_Loaded, 'yyyy') DESC,
+           Book.Site;
+ 
+ 
+DROP VIEW List_of_books_loaded_online;
+CREATE OR REPLACE VIEW List_of_books_loaded_online
+AS
+SELECT * 
+  FROM Book 
+  WHERE ( ( (Date_Loaded) IS NOT NULL ) );
+
+ 
+ 
+DROP VIEW Number_of_Images_Without_Match;
+CREATE OR REPLACE VIEW Number_of_Images_Without_Match
+AS
+SELECT Number_of_Images_Entry.TN ,
+       Book.num_of_pages ,
+       Book.Date_Released 
+  FROM Number_of_Images_Entry 
+         LEFT JOIN Book 
+          ON Number_of_Images_Entry.TN = Book.TN;
+
+ 
+DROP VIEW Orem_Scan;
+CREATE OR REPLACE VIEW Orem_Scan
+AS
+SELECT COUNT(TN) CountOfTN  ,
+       Scan_Complete_Date ,
+       SUM(num_of_pages) SumOf#_of_pages  ,
+       COUNT(Title) CountOfTitle  ,
+       Scanned_by 
+  FROM Book 
+  GROUP BY Scan_Complete_Date,Scanned_by
+   HAVING ( ( (Scan_Complete_Date) = TO_DATE('3/2/2011','dd/mm/yyyy') ) );
+
+
+ 
+DROP VIEW Scan_Date_Without_Matching_BKs;
+CREATE OR REPLACE VIEW Scan_Date_Without_Matching_BKs
+AS
+SELECT Scan_Date_Entry.TN ,
+       Book.Scan_Complete_Date ,
+       Book.Num_of_pages ,
+       Book.Files_Received_by_Orem ,
+       Book.Site ,
+       Book.Date_Released ,
+       Book.TN TN_6  
+  FROM Scan_Date_Entry 
+         LEFT JOIN Book 
+          ON Scan_Date_Entry.TN = Book.TN;
+
+ 
+DROP VIEW Site_and_archive_not_online;
+CREATE OR REPLACE VIEW Site_and_archive_not_online
+AS
+SELECT TN ,
+       Date_Released ,
+       PDF_Orem_Archived_Date ,
+       PDF_Orem_Drive_Name ,
+       Site ,
+       PDF_Sent_to_Load 
+  FROM Book 
+  WHERE ( ( (PDF_Orem_Archived_Date) IS NOT NULL )
+          AND ( NOT (Site) = 'DNP' )
+          AND ( (PID) IS NULL ) )
+  ORDER BY Book.Date_Released;
+ 
+ 
+
+DROP VIEW Stats_Kofaxed;
+CREATE OR REPLACE VIEW Stats_Kofaxed
+AS
+SELECT Count(Book.TN) AS CountOfTN, Sum(Book.num_of_pages) AS Num_of_Pages, to_char(Date_Released, 'Month') AS Month, 
+to_char(Date_Released, 'yyyy') AS Year, Book.scanned_by as scanned_by, (trim(to_char(Date_Released, 'Month')) || to_char(Date_Released, 'yyyy') || scanned_by) AS ScannedByAndDate
+FROM Book
+WHERE (Book.Date_Released Is Not Null)
+GROUP BY to_char(Date_Released, 'Month'), to_char(Date_Released, 'yyyy'), Book.scanned_by
+order by ScannedByAndDate;
+
+
+DROP VIEW Stats_Loaded;
+CREATE OR REPLACE VIEW Stats_Loaded
+AS  SELECT Count(Book.TN) AS CountOfTN, Sum(Book.num_of_pages) AS num_of_pages, to_char( Date_Loaded, 'yyyy') AS Year, to_char( Date_Loaded, 'Month') AS Month, Book.scanned_by,  (trim(to_char(Date_Loaded, 'Month')) || to_char(Date_Loaded, 'yyyy') || scanned_by) AS ScannedByAndDate 
+FROM Book
+WHERE (Book.Date_Loaded Is Not Null)
+GROUP BY to_char( Date_Loaded, 'yyyy'), to_char( Date_Loaded , 'Month'), Book.scanned_by, to_char( Date_Loaded, 'Month')
+ORDER BY to_char( Date_Loaded, 'yyyy'), to_char( Date_Loaded, 'Month');
+
+ 
+DROP VIEW Stats_Scanned;
+CREATE OR REPLACE VIEW Stats_Scanned
+AS SELECT Count(Book.TN) AS CountOfTN, Sum(Book.scan_num_of_pages) AS num_of_pages, to_char( Scan_ia_Complete_Date, 'Month') AS Month,  to_char( Scan_ia_Complete_Date, 'yyyy') as Year, Book.scanned_by as scanned_by, (trim(to_char(Scan_ia_Complete_Date, 'Month')) || to_char(Scan_ia_Complete_Date, 'yyyy') || scanned_by) AS ScannedByAndDate 
+FROM Book
+WHERE (((Book.Scan_ia_Complete_Date) Is Not Null))
+GROUP BY to_char( Scan_ia_Complete_Date, 'Month'), to_char( Scan_ia_Complete_Date, 'yyyy'), Book.scanned_by
+order by to_char( Scan_ia_Complete_Date, 'Month') , to_char( Scan_ia_Complete_Date, 'yyyy'), Book.scanned_by;
+
+ 
+DROP VIEW Stats_scanned_by;
+CREATE OR REPLACE VIEW Stats_scanned_by
+AS
+SELECT Book.scanned_by
+FROM Book
+GROUP BY Book.scanned_by;
+
+
+DROP VIEW Stats_Years;
+CREATE OR REPLACE VIEW Stats_Years
+AS
+SELECT to_char(scan_start_date, 'yyyy') AS Year
+FROM Book
+GROUP BY to_char(scan_start_date, 'yyyy')
+HAVING  to_char(scan_start_date, 'yyyy') Is Not Null
+union
+SELECT to_char(Date_Loaded, 'yyyy') AS Year
+FROM Book
+GROUP BY to_char(Date_Loaded, 'yyyy')
+HAVING  to_char(Date_Loaded, 'yyyy') Is Not Null;
+
+
+DROP VIEW Stats_Months;
+CREATE OR REPLACE VIEW Stats_Months
+AS
+SELECT to_char(Date_Loaded, 'Month') AS Month
+FROM Book
+WHERE  to_char(Date_Loaded, 'mm') Is Not Null
+GROUP BY to_char(Date_Loaded, 'Month'), to_char(Date_Loaded, 'mm')
+ORDER BY  to_char(Date_Loaded, 'mm');
+
+
+DROP VIEW Stats_MonthYearScannedBy;
+CREATE OR REPLACE VIEW Stats_MonthYearScannedBy
+AS
+SELECT Stats_Years.Year, trim(Stats_Months.Month) as Month, Stats_scanned_by.scanned_by, (trim(Month) || Year || scanned_by) AS ScannedByAndDate
+FROM Stats_Years, Stats_Months, Stats_scanned_by
+order by scanned_by, month;
+
+DROP VIEW Stats_Final;
+CREATE OR REPLACE VIEW Stats_Final
+AS
+SELECT Stats_MonthYearScannedBy.Year, Stats_MonthYearScannedBy.Month, Stats_MonthYearScannedBy.scanned_by,
+CASE WHEN Stats_Scanned.CountOfTN>0 THEN Stats_Scanned.CountOfTN ELSE 0 END AS Titles_Scanned,
+CASE WHEN Stats_Scanned.Num_of_Pages>0 THEN Stats_Scanned.Num_of_Pages ELSE 0 END AS Pages_Scanned, 
+CASE WHEN Stats_Kofaxed.CountOfTN>0 THEN Stats_Kofaxed.CountOfTN ELSE 0 END AS Titles_Kofaxed, 
+CASE WHEN Stats_Kofaxed.Num_of_pages>0 THEN Stats_Kofaxed.Num_of_pages ELSE 0 END AS Pages_Kofaxed, 
+CASE WHEN Stats_Loaded.Num_of_pages>0 THEN Stats_Loaded.Num_of_pages ELSE 0 END AS Pages_Loaded, 
+CASE WHEN Stats_Loaded.CountOfTN>0 THEN Stats_Loaded.CountOfTN ELSE 0 END AS Titles_Loaded, 
+Stats_MonthYearScannedBy.ScannedByAndDate
+FROM ((Stats_MonthYearScannedBy LEFT JOIN Stats_Kofaxed ON Stats_MonthYearScannedBy.ScannedByAndDate=Stats_Kofaxed.ScannedByAndDate) 
+LEFT JOIN Stats_Loaded ON Stats_MonthYearScannedBy.ScannedByAndDate=Stats_Loaded.ScannedByAndDate) 
+LEFT JOIN Stats_Scanned ON Stats_MonthYearScannedBy.ScannedByAndDate=Stats_Scanned.ScannedByAndDate
+ORDER BY Stats_MonthYearScannedBy.Year DESC;
+
+
+
+
+
+DROP VIEW TF_AllProblems;
+CREATE OR REPLACE VIEW TF_AllProblems
+AS
+SELECT TF_Notes.TN ,
+       Book.Scanned_by ,
+       Book.Scan_Complete_Date ,
+	TF_Notes.Problem_reason ,
+       TF_Notes.Problem_Text ,
+       TF_Notes.Problem_Date ,
+       TF_Notes.Problem_Initials ,
+       TF_Notes.Status ,
+       Book.Title ,
+       Book.Call_# ,
+       Book.DNP, 
+       Case WHEN Book.files_sent_to_orem = '' OR Book.files_sent_to_orem IS NULL 
+     		THEN Book.requesting_location 
+     		ELSE Book.Site 
+	END as Problem_Location
+  FROM TF_Notes 
+         JOIN Book 
+          ON TF_Notes.TN = Book.TN
+  WHERE ( (status not in ('Notes', 'Problem Fixed') and status is not null) 
+          AND ( (Book.DNP) IS NULL ) 
+and book.property_right != 'Denied' );
+ 
+
+ 
+DROP VIEW TF_Problems;
+CREATE OR REPLACE VIEW TF_Problems
+AS
+SELECT TF_Notes.TN ,
+       Book.Scanned_by ,
+       Book.Scan_Complete_Date ,
+	TF_Notes.problem_reason, 
+       TF_Notes.Problem_Text ,
+       TF_Notes.Problem_Date ,
+       TF_Notes.Problem_Initials ,
+       TF_Notes.Status ,
+       Book.Title ,
+       Book.Call_# ,
+       Book.DNP 
+  FROM TF_Notes 
+         JOIN Book 
+          ON TF_Notes.TN = Book.TN
+  WHERE ( (status not in ('Notes', 'Problem Fixed') and status is not null) 
+          AND ( (Book.DNP) IS NULL ) )  
+and Book.Files_Sent_to_Orem Is not Null 
+and book.property_right != 'Denied' ;
+ 
+
+ 
+DROP VIEW TF_1_waiting_for_files;
+CREATE OR REPLACE VIEW TF_1_waiting_for_files
+AS
+SELECT Book.TN ,
+       Book.Num_of_pages ,
+       Book.Tiff_Orem_Drive_Name ,
+       Book.Tiff_Copy2_Drive_Name ,
+       Book.Priority_Item ,
+	book.scanned_by,
+       Book.Site ,
+       Book.Location ,
+       Book.DNP ,
+       Book.Files_sent_to_Orem ,
+	Book.Files_Received_by_Orem 
+  FROM Book 
+  WHERE Book.DNP IS NULL
+and book.property_right != 'Denied' 
+          AND Book.Files_Received_by_Orem IS NULL 
+	  AND Book.Files_sent_to_orem IS NOT NULL 
+          AND Book.IA_Start_Date IS NULL 
+          AND Book.Date_Released Is Null 
+	and site = 'Orem Digital Processing Center'
+  ORDER BY book.scanned_by;
+
+
+
+
+DROP VIEW TF_2_Ready_to_Title_Check;
+CREATE OR REPLACE VIEW TF_2_Ready_to_Title_Check
+AS
+SELECT Book.TN ,
+       Book.Num_of_pages ,
+       Book.Tiff_Orem_Drive_Name ,
+       Book.Tiff_Copy2_Drive_Name ,
+       Book.Priority_Item ,
+       Book.Site ,
+       Book.Location ,
+       Book.DNP ,
+       Book.Files_Received_by_Orem,
+	Book.scanned_by   
+  FROM Book 
+  WHERE Book.DNP IS NULL 
+and book.property_right != 'Denied' 
+          AND Book.Files_Received_by_Orem IS NOT NULL 
+          AND Book.IA_Start_Date IS NULL 
+	  AND Book.Date_Released Is Null 
+	and site = 'Orem Digital Processing Center'
+  ORDER BY Book.Files_Received_by_Orem;
+
+DROP VIEW TF_3_Title_Check_In_Process;
+CREATE OR REPLACE VIEW TF_3_Title_Check_In_Process
+AS
+SELECT BOOK.TN ,
+        BOOK.Priority_Item ,
+        BOOK.Image_Audit ,
+        BOOK.Num_of_pages ,
+        BOOK.IA_Start_Date ,
+        BOOK.IA_Complete_Date ,
+        BOOK.Site, 
+	Book.scanned_by   
+  FROM Book 
+  WHERE IA_Start_Date IS NOT NULL
+        AND IA_Complete_Date IS NULL 
+	and site = 'Orem Digital Processing Center'
+        AND Book.DNP IS NULL 
+and book.property_right != 'Denied' 
+        AND Book.Date_Released Is Null 
+  ORDER BY Book.Priority_Item,
+           Book.Image_Audit;
+
+DROP VIEW TF_4_Ready_to_OCR;
+CREATE OR REPLACE VIEW TF_4_Ready_to_OCR
+AS 
+SELECT Book.TN ,
+       Book.Tiff_Orem_Drive_Name ,
+       Book.Num_of_pages ,
+       Book.filename,
+       Book.Location ,
+       Book.Priority_Item ,
+       Book.Site ,
+       Book.Image_Audit ,
+       Book.IA_Complete_Date ,
+       Book.OCR_by  ,
+       Book.OCR_complete_Date ,
+       Book.Metadata_Complete ,
+       Book.DNP, 
+       Book.scanned_by  
+  FROM Book 
+  WHERE Book.IA_Complete_Date IS NOT NULL 
+          AND Book.ocr_start_Date IS NULL 
+	  And book.ocr_complete_date is null 
+          AND Book.DNP IS NULL 
+and book.property_right != 'Denied' 
+        AND Book.Date_Released Is Null 
+	and site = 'Orem Digital Processing Center'
+  ORDER BY Book.IA_Complete_Date;
+
+
+DROP VIEW TF_4a_OCR;
+CREATE OR REPLACE VIEW TF_4a_OCR
+AS 
+SELECT Book.TN ,
+       Book.Tiff_Orem_Drive_Name ,
+       Book.Num_of_pages ,
+       Book.filename ,
+       Book.Location ,
+       Book.Priority_Item ,
+       Book.Site ,
+       Book.Image_Audit ,
+       Book.IA_Complete_Date ,
+       Book.OCR_by  ,
+       Book.OCR_complete_Date ,
+       Book.Metadata_Complete ,
+       Book.DNP, 
+	Book.scanned_by  
+  FROM Book 
+WHERE Book.ocr_start_Date IS not NULL  
+ 	And book.ocr_complete_date is null 
+        AND Book.DNP IS NULL
+and book.property_right != 'Denied' 
+        AND Book.Date_Released Is Null 
+	and site = 'Orem Digital Processing Center'
+  ORDER BY Book.IA_Complete_Date;
+
+
+DROP VIEW tf_4b_pdf_download;
+CREATE OR REPLACE VIEW tf_4b_pdf_download
+AS 
+SELECT Book.TN ,
+       Book.Tiff_Orem_Drive_Name ,
+       Book.Num_of_pages ,
+       Book.filename ,
+       Book.Location ,
+       Book.Priority_Item ,
+       Book.Site ,
+       Book.Image_Audit ,
+       Book.IA_Complete_Date ,
+       Book.OCR_by  ,
+       Book.OCR_complete_Date ,
+       Book.Metadata_Complete ,
+       Book.DNP, 
+	Book.scanned_by  
+  FROM Book 
+WHERE Book.ocr_complete_Date IS not NULL 
+         And Book.pdf_download_Date IS NULL 
+   AND Book.pdfreview_Start_date IS NULL 
+          AND Book.DNP IS NULL 
+and book.property_right != 'Denied' 
+        AND Book.Date_Released Is Null 
+	and site = 'Orem Digital Processing Center'
+ORDER BY Book.IA_Complete_Date;
+
+
+DROP VIEW TF_5_Ready_to_pdfreview;
+CREATE OR REPLACE VIEW TF_5_Ready_to_pdfreview
+AS
+SELECT Book.Priority_Item ,
+       Book.Site ,
+       Book.TN ,
+       Book.Num_of_pages ,
+       Book.Image_Audit ,
+       Book.filename ,
+       Book.OCR_complete_Date ,
+	Book.scanned_by  
+  FROM Book 
+  WHERE Book.pdf_download_date IS NOT NULL
+          AND Book.pdfreview_Start_date IS NULL 
+          AND Book.DNP IS NULL 
+and book.property_right != 'Denied' 
+	and site = 'Orem Digital Processing Center'
+        AND Book.Date_Released Is Null 
+  ORDER BY Book. OCR_complete_Date;
+
+
+
+
+DROP VIEW TF_6_pdfreview_In_Process;
+CREATE OR REPLACE VIEW TF_6_pdfreview_In_Process
+AS
+SELECT BOOK.TN ,
+        BOOK.Num_of_pages ,
+        BOOK.Site ,
+        BOOK.pdfreview_by ,
+        BOOK.pdfreview_Start_date ,
+	Book.scanned_by  
+  FROM Book 
+  WHERE pdfreview_Start_date IS NOT NULL 
+          AND PDF_Ready IS NULL 
+   AND Book.DNP IS NULL 
+and book.property_right != 'Denied' 
+        AND Book.Date_Released Is Null 
+	and site = 'Orem Digital Processing Center'
+  ORDER BY Book.pdfreview_by;
+
+
+
+DROP view tf_0x_All_queues; 
+create or replace view  tf_0x_All_queues as (
+select tn, 'A- Files waiting to be received' as Step from TF_1_waiting_for_files 
+union select tn, 'B- Title Check'  as Step from TF_2_Ready_to_Title_Check
+union select tn, 'C- Title Check in Process'  as Step from TF_3_Title_Check_In_Process
+union select tn, 'D- OCR Transfer Ready'  as Step from TF_4_Ready_to_OCR
+union select tn, 'E- OCR Transfer in Process'  as Step from TF_4a_OCR
+union select tn, 'F- PDF Download'  as Step from tf_4b_pdf_download
+union select tn, 'G- PDF Review'  as Step from TF_5_Ready_to_pdfreview
+union select tn, 'H- PDF Review in Process'  as Step from TF_6_pdfreview_In_Process); 
+ 
+
+DROP view TFALL_0x_All_queues; 
+create or replace view  TFALL_0x_All_queues as (
+select tn, 'A- Ready to Scan' as Step from S_01_Ready_scan 
+union select tn, 'B- Scan in Process'  as Step from S_01B_scan_in_prog
+union select tn, 'C- Ready to Image Audit'  as Step from S_02_Ready_image_audit
+union select tn, 'D- Image Auditing in Process'  as Step from S_03_image_auditing_in_prog
+union select tn, 'E- Processed Ready for Orem'  as Step from S_04_processed_ready_orem
+union select tn, 'A- Files waiting to be received' as Step from TF_1_waiting_for_files 
+union select tn, 'B- Title Check'  as Step from TF_2_Ready_to_Title_Check
+union select tn, 'C- Title Check in Process'  as Step from TF_3_Title_Check_In_Process
+union select tn, 'D- OCR Transfer Ready'  as Step from TF_4_Ready_to_OCR
+union select tn, 'E- OCR Transfer in Process'  as Step from TF_4a_OCR
+union select tn, 'F- PDF Download'  as Step from tf_4b_pdf_download
+union select tn, 'G- PDF Review'  as Step from TF_5_Ready_to_pdfreview
+union select tn, 'H- PDF Review in Process'  as Step from TF_6_pdfreview_In_Process); 
+ 
+ 
+DROP VIEW TF_In_Proc_PDF_Date_no_rel_dat;
+CREATE OR REPLACE VIEW TF_In_Proc_PDF_Date_no_rel_dat
+AS
+SELECT TN ,
+       Num_of_pages ,
+       filename ,
+       scanned_by ,
+       PDF_Ready ,
+       Date_Released,
+	owning_institution
+  FROM Book 
+  WHERE (  ( (PDF_Ready) IS NOT NULL )
+          AND ( (Date_Released) IS NULL ) )
+  ORDER BY Book.Site,
+           Book.PDF_Ready;
+ 
+ 
+ 
+DROP VIEW TF_Loading_entry_With_date_alr;
+CREATE OR REPLACE VIEW TF_Loading_entry_With_date_alr
+AS
+SELECT TF_Loading_entry.TN ,
+       Book.Date_Loaded ,
+       Book.PID ,
+       TF_Loading_entry.PID Loading_Entry_PID  ,
+       CASE WHEN Book.PID = TF_Loading_entry.PID or Book.PID is null THEN 'Update OK' ELSE 'FALSE!!!!!' END AS PID_Match
+FROM TF_Loading_entry LEFT JOIN Book ON TF_Loading_entry.TN = Book.TN;
+      
+
+DROP VIEW TF_Loading_entry_Without_Match;
+CREATE OR REPLACE VIEW TF_Loading_entry_Without_Match
+AS
+SELECT TF_Loading_entry.TN ,
+       TF_Loading_entry.PID 
+  FROM TF_Loading_entry 
+         LEFT JOIN Book 
+          ON TF_Loading_entry.TN = Book.TN
+  WHERE ( ( (Book.TN) IS NULL ) );
+
+DROP VIEW TF_PDF_Archiving_Copy1_W_Date;
+CREATE OR REPLACE VIEW TF_PDF_Archiving_Copy1_W_Date
+AS
+SELECT PDF_Archiving_Copy1_Entry.TN ,
+       Book.Site ,
+       Book.PDF_Orem_Archived_Date ,
+       Book.PDF_Orem_Drive_Serial_# ,
+       Book.PDF_Orem_Drive_Name ,
+       Book.PDF_Copy2_Drive_Name ,
+       Book.PDF_Copy2_Archived_Date 
+  FROM PDF_Archiving_Copy1_Entry 
+         LEFT JOIN Book 
+          ON PDF_Archiving_Copy1_Entry.TN = Book.TN;
+
+DROP VIEW TF_PDF_Archiving_Copy1_Wo_M_B;
+CREATE OR REPLACE VIEW TF_PDF_Archiving_Copy1_Wo_M_B
+AS
+SELECT PDF_Archiving_Copy1_Entry.TN 
+  FROM PDF_Archiving_Copy1_Entry 
+         LEFT JOIN Book 
+          ON PDF_Archiving_Copy1_Entry.TN = Book.TN
+  WHERE ( ( (Book.TN) IS NULL ) );
+
+
+DROP VIEW TF_PDF_Archiving_Copy2_W_Date;
+CREATE OR REPLACE VIEW TF_PDF_Archiving_Copy2_W_Date
+AS
+SELECT PDF_Archiving_Copy2_Entry.TN ,
+       Book.PDF_Copy2_Drive_Serial_# ,
+       Book.PDF_Copy2_Drive_Name ,
+       Book.PDF_Copy2_Archived_Date ,
+       Book.PDF_Orem_Drive_Name ,
+       Book.PDF_Orem_Archived_Date 
+  FROM PDF_Archiving_Copy2_Entry 
+         LEFT JOIN Book 
+          ON PDF_Archiving_Copy2_Entry.TN = Book.TN
+  WHERE ( ( (Book.PDF_Copy2_Archived_Date) IS NOT NULL ) );
+
+
+DROP VIEW TF_PDF_Archiving_Copy2_Wo_M_B;
+CREATE OR REPLACE VIEW TF_PDF_Archiving_Copy2_Wo_M_B
+AS
+SELECT PDF_Archiving_Copy2_Entry.TN 
+  FROM PDF_Archiving_Copy2_Entry 
+         LEFT JOIN Book 
+          ON PDF_Archiving_Copy2_Entry.TN = Book.TN
+  WHERE ( ( (Book.TN) IS NULL ) );
+
+
+DROP VIEW TF_Received_Images_With_date;
+CREATE OR REPLACE VIEW TF_Received_Images_With_date
+AS
+SELECT TF_Received_Images_entry.TN ,
+       TF_Received_Images_entry.Notes_from_Site ,
+       TF_Notes.Problem_Text ,
+       TF_Notes.Problem_Date ,
+       Book.Remarks_from_Scan_Center ,
+       Book.Files_Received_by_Orem 
+  FROM ( TF_Received_Images_entry 
+         LEFT JOIN Book 
+          ON TF_Received_Images_entry.TN = Book.TN
+          ) 
+         JOIN TF_Notes 
+          ON TF_Received_Images_entry.TN = TF_Notes.TN;
+
+DROP VIEW TF_Received_Images_Wo_Mch_Bks;
+CREATE OR REPLACE VIEW TF_Received_Images_Wo_Mch_Bks
+AS
+SELECT TF_Received_Images_entry.TN 
+  FROM TF_Received_Images_entry 
+         LEFT JOIN Book 
+          ON TF_Received_Images_entry.TN = Book.TN
+  WHERE ( ( (Book.TN) IS NULL ) );
+
+DROP VIEW TF_Release_entry_Batch_Class;
+CREATE OR REPLACE VIEW TF_Release_entry_Batch_Class
+AS
+SELECT TF_Released_entry.TN ,
+       Book.Batch_Class ,
+       Book.Scanned_by ,
+       Book.Num_of_pages 
+  FROM TF_Released_entry 
+         LEFT JOIN Book 
+          ON TF_Released_entry.TN = Book.TN;
+
+
+DROP VIEW TF_Release_entry_With_date_alr;
+CREATE OR REPLACE VIEW TF_Release_entry_With_date_alr
+AS
+SELECT TF_Released_entry.TN ,
+       Book.Date_Released ,
+       Book.Site ,
+       Book.Num_of_pages ,
+       Book.Scanned_by ,
+       Book.Scan_Complete_Date ,
+       Book.Files_Received_by_Orem ,
+       Book.Image_Audit ,
+       Book.IA_Start_Date ,
+       Book.IA_Complete_Date ,
+       Book.ocr_by ,
+       Book.ocr_complete_Date ,
+       Book.pdfreview_by ,
+       Book.pdfreview_Start_date ,
+       Book.PDF_Ready ,
+       Book.PDF_Sent_to_Load 
+  FROM TF_Released_entry 
+         LEFT JOIN Book 
+          ON TF_Released_entry.TN = Book.TN;
+
+
+
+DROP VIEW TF_Release_entry_Without_Match;
+CREATE OR REPLACE VIEW TF_Release_entry_Without_Match
+AS
+SELECT TF_Released_entry.TN 
+  FROM TF_Released_entry 
+         LEFT JOIN Book 
+          ON TF_Released_entry.TN = Book.TN
+  WHERE ( ( (Book.TN) IS NULL ) );
+
+
+DROP VIEW TF_Tiff_Archiving_Copy1_W_date;
+CREATE OR REPLACE VIEW TF_Tiff_Archiving_Copy1_W_date
+AS
+SELECT Tiff_Archiving_Copy1_Entry.TN ,
+       Book.Tiff_Orem_Archived_Date ,
+       Book.Tiff_Orem_Drive_Serial_# ,
+       Book.Tiff_Orem_Drive_Name ,
+       Book.Tiff_Copy2_Drive_Name ,
+       Book.Date_Released 
+  FROM Tiff_Archiving_Copy1_Entry 
+         LEFT JOIN Book 
+          ON Tiff_Archiving_Copy1_Entry.TN = Book.TN;
+
+
+DROP VIEW TF_Tiff_Archiving_Copy1_Wo_M_B;
+CREATE OR REPLACE VIEW TF_Tiff_Archiving_Copy1_Wo_M_B
+AS
+SELECT Tiff_Archiving_Copy1_Entry.TN 
+  FROM Tiff_Archiving_Copy1_Entry 
+         LEFT JOIN Book 
+          ON Tiff_Archiving_Copy1_Entry.TN = Book.TN
+  WHERE ( ( (Book.TN) IS NULL ) );
+
+
+DROP VIEW TF_Tiff_Archiving_Copy2_W_date;
+CREATE OR REPLACE VIEW TF_Tiff_Archiving_Copy2_W_date
+AS
+SELECT Tiff_Archiving_Copy2_Entry.TN ,
+       Book.Tiff_Copy2_Drive_Serial_# ,
+       Book.Tiff_Copy2_Archived_Date ,
+       Book.Tiff_Copy2_Drive_Name ,
+       Book.Tiff_Orem_Drive_Name 
+  FROM Tiff_Archiving_Copy2_Entry 
+         LEFT JOIN Book 
+          ON Tiff_Archiving_Copy2_Entry.TN = Book.TN;
+
+DROP VIEW TF_Tiff_Archiving_Copy2_Wo_M_B;
+CREATE OR REPLACE VIEW TF_Tiff_Archiving_Copy2_Wo_M_B
+AS
+SELECT Tiff_Archiving_Copy2_Entry.TN 
+  FROM Tiff_Archiving_Copy2_Entry 
+         LEFT JOIN Book 
+          ON Tiff_Archiving_Copy2_Entry.TN = Book.TN
+  WHERE ( ( (Book.TN) IS NULL ) );
+ 
+
+

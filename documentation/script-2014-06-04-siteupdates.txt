@@ -1,0 +1,4 @@
+Vdone, ran it.
+ 
+ 
+update book set owning_institution = 'Los Angeles California FamilySearch Library' where scanned_by = 'Los Angeles California FamilySearch Library';

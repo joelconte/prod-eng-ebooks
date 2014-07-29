@@ -1,0 +1,21 @@
+http://www.oracle-base.com/articles/10g/oracle-data-pump-10g.php
+http://www.orafaq.com/wiki/Datapump
+
+
+
+To export:
+1  From commandline:  sqlplus (login with oracle schema owner id)
+SQL> create or replace directory test_dir as '/home/ebook/test_dir';   //on windows 'c:/temp/ebook' works
+2  quit sqlplus
+3 Commandline:  /home/ebook/test_dir>expdp include=table,view directory=test_dir dumpfile=data.dmp logfile=expdp-out.txt
+-Here I login with ID that is same as my schema (ie ebook) and so it exports ebook.* tables and views
+
+
+To import:
+
+1 create some dir ie (/home/ebook/test_dir) and copy DATA.DMP file to dir.
+2  From commandline:  sqlplus (login with oracle schema owner id)
+SQL> create or replace directory test_dir as '/home/ebook/test_dir';
+3  /home/ebook/test_dir>impdp include=table,view remap_schema=<old-schema>:<new-schema> directory=test_dir dumpfile=data.dmp logfile=importlog.txt
+-Here I login with new-schema ID and also need to remap old:new
+ 

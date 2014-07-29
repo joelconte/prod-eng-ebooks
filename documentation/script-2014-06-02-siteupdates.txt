@@ -1,0 +1,56 @@
+-done, ran it
+
+insert into site col(id, publish_name, is_fhc, is_scan_site) values('Logan Utah FamilySearch Library', 'Logan Utah FamilySearch Library, FamilySearch International;  http://www.familysearch.org/', 'T', 'F');end 
+insert into site col(id, publish_name, location, is_fhc, is_scan_site, is_partner_institution) values('BYU Family History Center', 'BYU Family History Center;  Brigham Young University  Harold B. Lee Library;  http://www.lib.byu.edu/', 'Provo, Utah','F', 'F', 'T');end 
+insert into site col(id, publish_name, is_fhc, is_scan_site) values('Los Angeles California FamilySearch Library', 'Los Angeles California FamilySearch Library; http://www.familyhistorycenter.info/index.html', 'T', 'T');
+ 
+ 
+
+update book set scanned_by = 'Logan Utah FamilySearch Library' where scanned_by = 'Logan Family History Center';end
+update book set site  = 'Logan Utah FamilySearch Library' where site  = 'Logan Family History Center';end
+update book set owning_institution = 'Logan Utah FamilySearch Library' where owning_institution = 'Logan Family History Center';end
+update book set Requesting_Location = 'Logan Utah FamilySearch Library'  where Requesting_Location = 'Logan Family History Center';end
+update bookMETADATA  set owning_institution = 'Logan Utah FamilySearch Library'  where owning_institution = 'Logan Family History Center';end
+update bookMETADATA  set Requesting_Location = 'Logan Utah FamilySearch Library'  where Requesting_Location = 'Logan Family History Center';end
+update bookMETADATA  set scanning_Location = 'Logan Utah FamilySearch Library'  where scanning_Location = 'Logan Family History Center';end
+update users set primary_location = 'Logan Utah FamilySearch Library' where  primary_location = 'Logan Family History Center'
+
+
+update book set scanned_by = 'BYU Family History Center' where scanned_by = 'BYU';end 
+update book set site  = 'BYU Family History Center' where site  = 'BYU';end
+update book set owning_institution =  'BYU Family History Center' where owning_institution = 'BYU';end
+update book set Requesting_Location =  'BYU Family History Center'  where Requesting_Location = 'BYU';end
+update bookMETADATA  set owning_institution = 'BYU Family History Center'  where owning_institution = 'BYU';end
+update bookMETADATA  set Requesting_Location = 'BYU Family History Center'  where Requesting_Location = 'BYU';end
+update bookMETADATA  set scanning_Location = 'BYU Family History Center'  where scanning_Location = 'BYU';end
+update users set primary_location = 'BYU Family History Center' where  primary_location = 'BYU'
+
+
+
+
+update book set scanned_by = 'BYU Family History Center' where scanned_by = 'Harold B. Lee Library (HBLL)';end 
+update book set site  = 'BYU Family History Center' where site  = 'Harold B. Lee Library (HBLL)';end 
+update book set owning_institution =  'BYU Family History Center' where owning_institution = 'Harold B. Lee Library (HBLL)';end 
+update book set Requesting_Location =  'BYU Family History Center'  where Requesting_Location = 'Harold B. Lee Library (HBLL)';end 
+update bookMETADATA  set owning_institution = 'BYU Family History Center'  where owning_institution = 'Harold B. Lee Library (HBLL)';end 
+update bookMETADATA  set Requesting_Location = 'BYU Family History Center'  where Requesting_Location = 'Harold B. Lee Library (HBLL)';end 
+update bookMETADATA  set scanning_Location = 'BYU Family History Center'  where scanning_Location = 'Harold B. Lee Library (HBLL)';end 
+update users set primary_location = 'BYU Family History Center' where  primary_location = 'Harold B. Lee Library (HBLL)';
+
+
+ 
+ 
+update book set scanned_by = 'Los Angeles California FamilySearch Library' where scanned_by = 'Los Angeles FHC (Orem)';end
+update book set site  = 'Los Angeles California FamilySearch Library' where site  = 'Los Angeles FHC (Orem)';end
+update book set owning_institution =  'Los Angeles California FamilySearch Library' where owning_institution = 'Los Angeles FHC (Orem)';end
+update book set Requesting_Location =  'Los Angeles California FamilySearch Library'  where Requesting_Location = 'Los Angeles FHC (Orem)';end
+update bookMETADATA  set owning_institution = 'Los Angeles California FamilySearch Library'  where owning_institution = 'Los Angeles FHC (Orem)';end
+update bookMETADATA  set Requesting_Location = 'Los Angeles California FamilySearch Library'  where Requesting_Location = 'Los Angeles FHC (Orem)';end 
+update bookMETADATA  set scanning_Location = 'Los Angeles California FamilySearch Library'  where scanning_Location = 'Los Angeles FHC (Orem)';end 
+update users set primary_location = 'Los Angeles California FamilySearch Library' where  primary_location = 'Los Angeles FHC (Orem)';
+
+
+delete from site where id = 'Logan Family History Center';end 
+delete from site where id = 'BYU';end 
+delete from site where id = 'Harold B. Lee Library (HBLL)';end 
+delete from site where id = 'Los Angeles FHC (Orem)';

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>BookScan</artifactId>
+		<groupId>org.familysearch.prodeng</groupId>
+		<version>1.0</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>BookScan-web</artifactId>
+	<name>${project.artifactId}</name>
+	<packaging>war</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo.jspc</groupId>
+				<artifactId>jspc-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+			</plugin>
+	
+     
+    
+		</plugins>
+	</build>
+
+
+	<dependencies>
+		<dependency> 
+		  <groupId>org.familysearch.cis</groupId>   
+		  <artifactId>cis-client</artifactId> 
+		  <version>2.9</version>
+		</dependency>  
+	    <dependency> 
+		  <groupId>org.familysearch.cis</groupId>   
+		  <artifactId>cis-public-api-schema</artifactId> 
+		  <version>2.9</version>
+		</dependency>  
+		<dependency>
+			<groupId>org.lds.stack.db</groupId>
+			<artifactId>stack-db-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ucp</artifactId>
+ 
+		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+	 
+		</dependency>
+		<dependency>
+    		<groupId>com.microsoft.sqlserver</groupId>
+    		<artifactId>sqljdbc4</artifactId>
+    		<version>4.0</version>
+		</dependency>
+			<dependency>
+   			<groupId>postgresql</groupId>
+    		<artifactId>postgresql</artifactId>
+    		<version>9.1-901-1.jdbc4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
+		</dependency>
+            
+
+       
+       
+        <dependency>
+   		  <groupId>org.apache.poi</groupId>
+    	  <artifactId>poi</artifactId>
+     	  <version>3.9</version>
+ 	    </dependency>
+ 
+ 	     <dependency>
+     <groupId>org.apache.poi</groupId>
+       <artifactId>poi-ooxml</artifactId>
+       <version>3.9</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
+     </dependency>
+ 	     <dependency>
+	<groupId>org.apache.xmlbeans</groupId>
+	<artifactId>xmlbeans</artifactId>
+	<version>2.6.0</version>
+	 <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
+</dependency>
+
+
+ 	      
+ 	   
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.3</version>
+		</dependency>
+            
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.owasp.antisamy</groupId>
+			<artifactId>antisamy</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lds.stack.qa</groupId>
+			<artifactId>stack-qa</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lds.stack</groupId>
+			<artifactId>stack-system</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lds.stack.security.web</groupId>
+			<artifactId>stack-security-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lds.stack.security</groupId>
+			<artifactId>stack-lds-account-spring-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lds.stack.security</groupId>
+			<artifactId>stack-lds-account-ldap-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lds.stack.web</groupId>
+			<artifactId>stack-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lds.stack.test</groupId>
+			<artifactId>stack-test-unit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.lds.stack.web</groupId>
+			<artifactId>stack-web-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+		</dependency>
+		 
+		
+	</dependencies>
+	
+		<repositories>
+		<repository>
+<id>New central Maven repo</id>
+<url>http://repo2.maven.org/maven2/</url>
+</repository>
+
+
+		<repository>
+			<id>x</id>
+			<name>x</name>
+			<url>https://mvn.fsglobal.net/content/repositories/approved</url>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>lds-main</id>
+			<name>LDS Main Repo</name>
+			<url>http://code.lds.org/nexus/content/groups/main-repo</url>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>lds-contained</id>
+			<name>Main Contained LDS Repo</name>
+			<url>http://code.lds.org/nexus/content/groups/contained-repo</url>
+		</repository>
+		<repository>
+      <releases>
+        <enabled>false</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+      <id>codehausSnapshots</id>
+      <name>Codehaus Snapshots</name>
+      <url>http://snapshots.maven.codehaus.org/maven2</url>
+      <layout>default</layout>
+    </repository>
+    
+     
+    
+    
+	</repositories>
+	
+</project>

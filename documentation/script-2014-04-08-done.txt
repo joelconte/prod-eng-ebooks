@@ -1,0 +1,16 @@
+dummy-utf8;
+
+sET DEFINE OFF;
+set escape on;
+alter session set CURRENT_SCHEMA = bookscan;
+ 
+--todo Clayton Library update all books, users
+ 
+update Book set Site = 'Houston Metropolitan Research Center- Texas Room' where Site = 'Houston Public Library - Clayton Library';end 
+update Book set owning_institution = 'Houston Metropolitan Research Center- Texas Room' where owning_institution = 'Houston Public Library - Clayton Library';end 
+update Book set Requesting_Location = 'Houston Metropolitan Research Center- Texas Room' where Requesting_Location = 'Houston Public Library - Clayton Library';end 
+update Book set Scanned_by = 'Houston Metropolitan Research Center- Texas Room' where Scanned_by = 'Houston Public Library - Clayton Library';end 
+update site_goal set Site = 'Houston Metropolitan Research Center- Texas Room' where Site = 'Houston Public Library - Clayton Library';end 
+update users set primary_location = 'Houston Metropolitan Research Center- Texas Room' where  primary_location = 'Houston Public Library - Clayton Library';end  
+delete from site where id = 'Houston Public Library - Clayton Library';
+ 

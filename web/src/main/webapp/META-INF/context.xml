@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Context swallowOutput="true">
+	<ResourceLink name="jdbc/default/DataSource" global="jdbc/default/DataSource"/>
+	<ResourceLink name="jdbc/kofax/DataSource" global="jdbc/kofax/DataSource"/>
+	<ResourceLink name="jdbc/myPostgres/DataSource" global="jdbc/myPostgres/DataSource"/>
+</Context>

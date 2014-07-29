@@ -1,0 +1,3 @@
+select count(*) from book where num_of_pages is null and pages_online is not null
+
+update book set num_of_pages = pages_online where num_of_pages is null and pages_online is not null

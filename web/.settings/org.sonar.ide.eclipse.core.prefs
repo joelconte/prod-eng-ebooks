@@ -1,0 +1,6 @@
+analyseLocally=false
+eclipse.preferences.version=1
+extraProperties=sonar.java.source\=1.7\r\nsonar.java.target\=1.7
+projectKey=org.familysearch.prodeng\:BookScan-web
+serverUrl=http\://localhost\:9000
+version=2

@@ -1,0 +1,44 @@
+done run  6/6
+Insert into SITE   (ID, IS_FHC, IS_PARTNER_INSTITUTION, IS_SCAN_SITE, IS_PROCESS_SITE, IS_PHYSICAL_BOOK_SITE) Values ('Joseph F. Smith Library-Brigham Young University-Hawaii', 'F', 'T', 'T', 'F',  'F');end
+Insert into SITE   (ID, PUBLISH_NAME, IS_FHC, IS_PARTNER_INSTITUTION, IS_SCAN_SITE,   IS_PROCESS_SITE, IS_PHYSICAL_BOOK_SITE) Values  ('David O. McKay Library-Brigham Young University-Idaho', 'David O. McKay Library-Brigham Young University-Idaho; http://www.lib.byui.edu/', 'F', 'T', 'T',  'F', 'F');end 
+Insert into SITE   (ID, PUBLISH_NAME, LOCATION, IS_FHC, IS_PARTNER_INSTITUTION,   IS_SCAN_SITE, IS_PROCESS_SITE, IS_PHYSICAL_BOOK_SITE) Values   ('Harold B. Lee Library-Brigham Young University-Provo', 'Harold B. Lee Library-Brigham Young University-Provo; http://www.lib.byu.edu/', 'Provo, Utah', 'F', 'T',    'F', 'F', 'F'); 
+ 
+ 
+
+
+update book set scanned_by = 'Joseph F. Smith Library-Brigham Young University-Hawaii' where scanned_by = 'BYU-Hawaii';end 
+update book set site  = 'Joseph F. Smith Library-Brigham Young University-Hawaii' where site  = 'BYU-Hawaii';end
+update book set owning_institution =  'Joseph F. Smith Library-Brigham Young University-Hawaii' where owning_institution = 'BYU-Hawaii';end
+update book set Requesting_Location =  'Joseph F. Smith Library-Brigham Young University-Hawaii'  where Requesting_Location = 'BYU-Hawaii';end
+update bookMETADATA  set owning_institution = 'Joseph F. Smith Library-Brigham Young University-Hawaii'  where owning_institution = 'BYU-Hawaii';end
+update bookMETADATA  set Requesting_Location = 'Joseph F. Smith Library-Brigham Young University-Hawaii'  where Requesting_Location = 'BYU-Hawaii';end
+update bookMETADATA  set scanning_Location = 'Joseph F. Smith Library-Brigham Young University-Hawaii'  where scanning_Location = 'BYU-Hawaii';end
+update users set primary_location = 'Joseph F. Smith Library-Brigham Young University-Hawaii' where  primary_location = 'BYU-Hawaii'
+
+
+update book set scanned_by = 'David O. McKay Library-Brigham Young University-Idaho' where scanned_by = 'BYU Idaho';end 
+update book set site  = 'David O. McKay Library-Brigham Young University-Idaho' where site  = 'BYU Idaho';end
+update book set owning_institution =  'David O. McKay Library-Brigham Young University-Idaho' where owning_institution = 'BYU Idaho';end
+update book set Requesting_Location =  'David O. McKay Library-Brigham Young University-Idaho'  where Requesting_Location = 'BYU Idaho';end
+update bookMETADATA  set owning_institution = 'David O. McKay Library-Brigham Young University-Idaho'  where owning_institution = 'BYU Idaho';end
+update bookMETADATA  set Requesting_Location = 'David O. McKay Library-Brigham Young University-Idaho'  where Requesting_Location = 'BYU Idaho';end
+update bookMETADATA  set scanning_Location = 'David O. McKay Library-Brigham Young University-Idaho'  where scanning_Location = 'BYU Idaho';end
+update users set primary_location = 'David O. McKay Library-Brigham Young University-Idaho' where  primary_location = 'BYU Idaho';
+
+
+
+update book set scanned_by = 'Harold B. Lee Library-Brigham Young University-Provo' where scanned_by = 'BYU Family History Center';end 
+update book set site  = 'Harold B. Lee Library-Brigham Young University-Provo' where site  = 'BYU Family History Center';end
+update book set owning_institution =  'Harold B. Lee Library-Brigham Young University-Provo' where owning_institution = 'BYU Family History Center';end
+update book set Requesting_Location =  'Harold B. Lee Library-Brigham Young University-Provo'  where Requesting_Location = 'BYU Family History Center';end
+update bookMETADATA  set owning_institution = 'Harold B. Lee Library-Brigham Young University-Provo'  where owning_institution = 'BYU Family History Center';end
+update bookMETADATA  set Requesting_Location = 'Harold B. Lee Library-Brigham Young University-Provo'  where Requesting_Location = 'BYU Family History Center';end
+update bookMETADATA  set scanning_Location = 'Harold B. Lee Library-Brigham Young University-Provo'  where scanning_Location = 'BYU Family History Center';end
+update users set primary_location = 'Harold B. Lee Library-Brigham Young University-Provo' where  primary_location = 'BYU Family History Center'
+
+
+ 
+
+delete from site where id = 'BYU-Hawaii';end 
+delete from site where id = 'BYU Idaho';end 
+delete from site where id = 'BYU Family History Center';

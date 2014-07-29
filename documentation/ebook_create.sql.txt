@@ -1,0 +1,1309 @@
+SET DEFINE OFF;
+ 
+
+
+
+
+DROP TABLE Book CASCADE CONSTRAINTS;
+
+
+PROMPT Creating Table Book ...
+CREATE TABLE Book (
+  TN varchar2(255 CHAR),
+  Secondary_Identifier varchar2(255 CHAR) unique, --used for books with tn from non-olib sources like internet archive
+  OCLC_number varchar2(255 CHAR) unique, --worldcat
+  ISBN_ISSN varchar2(255 CHAR) unique,
+  Title  varchar2(2047 CHAR),
+  Author varchar2(255 CHAR),
+  Property_right varchar2(255 CHAR), 
+  publication_type varchar2(255 CHAR), 
+  Call_# varchar2(255 CHAR),
+  Partner_lib_Call_# varchar2(255 CHAR),
+  Priority_Item CHAR(1) DEFAULT 'F' check (priority_item IN ('T', 'F')),
+  Withdrawn CHAR(1) DEFAULT 'F' check (Withdrawn IN ('T', 'F')),
+  Digital_Copy_Only  CHAR(1) DEFAULT 'F' check (Digital_Copy_Only  IN ('T', 'F')),
+  Media_Type varchar2(255 CHAR),
+  Metadata_Complete TIMESTAMP,
+  Batch_Class varchar2(255 CHAR),
+  Language varchar2(255 CHAR),
+  Remarks_from_Scan_Center varchar2(2047 CHAR),  --COLUMN renamed
+  Remarks_about_book  varchar2(2047 CHAR),
+  Record_Number varchar2(255 CHAR),
+  Requesting_location varchar2(255 CHAR),  --site requesting metadata and probably will do the scan
+  Owning_institution varchar2(255 CHAR),  --book owner
+  Scanned_by varchar2(255 CHAR),  --scan location
+  Scan_Operator varchar2(255 CHAR), --COMMENT NEW COLUMN
+  Scan_Machine_id varchar2(255 CHAR), --COMMENT NEW COLUMN
+  Scan_Metadata_Complete TIMESTAMP, --COMMENT NEW COLUMN
+  Location varchar2(255 CHAR), --tiff folder location
+  Scan_Start_Date TIMESTAMP,       --COMMENT NEW COLUMN
+  Scan_Complete_Date TIMESTAMP,
+  Scan_Image_Auditor varchar2(255 CHAR), --COMMENT NEW COLUMN
+  Scan_IA_Start_Date TIMESTAMP,        --COMMENT NEW COLUMN
+  Scan_IA_Complete_Date TIMESTAMP,    --COMMENT NEW COLUMN
+  Files_Sent_to_Orem TIMESTAMP,       --COMMENT NEW COLUMN
+  Scan_Num_of_Pages NUMBER(11,0),       --COMMENT NEW COLUMN
+  Num_of_pages NUMBER(11,0),
+  Files_Received_by_Orem TIMESTAMP,
+  Image_Audit varchar2(255 CHAR),
+  IA_Start_Date TIMESTAMP,
+  IA_Complete_Date TIMESTAMP,
+  ocr_by varchar2(255 CHAR),
+  ocr_start_Date TIMESTAMP,
+  ocr_complete_Date TIMESTAMP,
+  pdfreview_by varchar2(255 CHAR),
+  pdfreview_start_date TIMESTAMP,
+  PDF_Ready TIMESTAMP,
+  Date_Released TIMESTAMP,
+  Compression_Code varchar2(255 CHAR),
+  Loaded_by varchar2(255 CHAR),
+  Date_Loaded TIMESTAMP,
+  Collection varchar2(255 CHAR),
+  DNP varchar2(255 CHAR),
+  DNP_deleted_off_line varchar2(255 CHAR),         --new column
+  TN_Change_History varchar2(255 CHAR),
+  PDF_Orem_Archived_Date TIMESTAMP,
+  PDF_Orem_Drive_Serial_# varchar2(255 CHAR),
+  PDF_Orem_Drive_Name varchar2(255 CHAR),
+  PDF_Copy2_Archived_Date TIMESTAMP,
+  PDF_Copy2_Drive_Serial_# varchar2(255 CHAR),
+  PDF_Copy2_Drive_Name varchar2(255 CHAR),
+  Tiff_Orem_Archived_Date TIMESTAMP,
+  Tiff_Orem_Drive_Serial_# varchar2(255 CHAR),
+  Tiff_Orem_Drive_Name varchar2(255 CHAR),
+  Tiff_Copy2_Archived_Date TIMESTAMP,
+  Tiff_Copy2_Drive_Serial_# varchar2(255 CHAR),
+  Tiff_Copy2_Drive_Name varchar2(255 CHAR),
+  PDF_Sent_to_Load TIMESTAMP,
+  Site varchar2(255 CHAR),  --kofax site
+  URL varchar2(255 CHAR),
+  PID varchar2(255 CHAR),
+  Pages_Online NUMBER(11,0),
+Subject varchar2(4000 CHAR),
+filmno varchar2(255 CHAR) , 
+Pages_physical_description varchar2(255 CHAR) , 
+Summary varchar2(2047 CHAR) , 
+dgsno varchar2(255 CHAR)  , 
+Date_original timestamp,
+Publisher_original varchar2(255 CHAR),
+FHC_Title  varchar2(2047 CHAR),
+FHC_TN  varchar2(255 CHAR)
+
+
+);
+ 
+PROMPT Creating Primary Key Constraint PK_Book on table Book ... 
+ALTER TABLE Book
+ADD CONSTRAINT PK_Book PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+ 
+
+COMMENT ON COLUMN Book.Batch_Class IS 'Kofax with this classification'
+;
+
+COMMENT ON COLUMN Book.Remarks_from_Scan_Center IS 'Remarks from scan center about book'
+;
+
+COMMENT ON COLUMN Book.Remarks_about_book IS 'Remarks about book, only copy, missing pages, unavailable, Process ASIS, etc.'
+;
+   
+COMMENT ON COLUMN Book.Compression_Code IS 'Compression of PDF going online'
+;
+ 
+
+
+    
+DROP TABLE propertyright CASCADE CONSTRAINTS;
+CREATE TABLE propertyright (
+  ID VARCHAR2(255 CHAR)  primary key
+);
+INSERT INTO propertyright  (ID) values ( 'Public Domain');
+INSERT INTO propertyright  (ID) values ( 'Copyright Protected');
+ALTER TABLE Book add constraint fk_property_book foreign key(property_right ) references propertyright (ID);
+
+
+
+
+    
+DROP TABLE publication_type CASCADE CONSTRAINTS;
+CREATE TABLE publication_type (
+  ID VARCHAR2(255 CHAR)  primary key
+);
+INSERT INTO publication_type (ID) values ( 'Serial');
+INSERT INTO publication_type (ID) values ( 'Book');
+ALTER TABLE book add constraint fk_publication_type foreign key(publication_type) references publication_type (ID);
+
+
+
+
+DROP TABLE Compression_Entry CASCADE CONSTRAINTS;
+
+
+PROMPT Creating Table Compression_Entry ...
+CREATE TABLE Compression_Entry (
+  TN varchar2(255 CHAR),
+  Compression varchar2(255 CHAR),
+  Sent_to_be_Loaded TIMESTAMP
+);
+
+ 
+PROMPT Creating Primary Key Constraint PK_Compression_Entry on table Compression_Entry ... 
+ALTER TABLE Compression_Entry
+ADD CONSTRAINT PK_Compression_Entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE jp_Update_titles CASCADE CONSTRAINTS;
+
+PROMPT Creating Table jp_Update_titles ...
+CREATE TABLE jp_Update_titles (
+  TN varchar2(255 CHAR),
+  Title  varchar2(2047 CHAR),
+  Author varchar2(255 CHAR),
+  Call_# varchar2(255 CHAR)
+);
+
+ 
+
+PROMPT Creating Primary Key Constraint PK_jp_Update_titles on table jp_Update_titles ... 
+ALTER TABLE jp_Update_titles
+ADD CONSTRAINT PK_jp_Update_titles PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE Number_of_Images_Entry CASCADE CONSTRAINTS;
+
+PROMPT Creating Table Number_of_Images_Entry ...
+CREATE TABLE Number_of_Images_Entry (
+  TN varchar2(255 CHAR),
+  Number_of_images NUMBER(11,0)
+);
+
+ 
+PROMPT Creating Primary Key Constraint PK_Number_of_Images_Entry on table Number_of_Images_Entry ... 
+ALTER TABLE Number_of_Images_Entry
+ADD CONSTRAINT PK_Number_of_Images_Entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE PDF_Archiving_Copy1_Entry CASCADE CONSTRAINTS;
+
+PROMPT Creating Table PDF_Archiving_Copy1_Entry ...
+CREATE TABLE PDF_Archiving_Copy1_Entry (
+  TN varchar2(255 CHAR),
+  PDF_Orem_Archived_Date TIMESTAMP,
+  PDF_Orem_Serial_# varchar2(255 CHAR),
+  PDF_Orem_Drive_Name varchar2(255 CHAR)
+);
+
+ 
+
+PROMPT Creating Primary Key Constraint PK_PDF_Archiving_Copy1_Entry on table PDF_Archiving_Copy1_Entry 
+ALTER TABLE PDF_Archiving_Copy1_Entry
+ADD CONSTRAINT PK_PDF_Archiving_Copy1_Entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE PDF_Archiving_Copy2_Entry CASCADE CONSTRAINTS;
+
+PROMPT Creating Table PDF_Archiving_Copy2_Entry ...
+CREATE TABLE PDF_Archiving_Copy2_Entry (
+  TN varchar2(255 CHAR),
+  PDF_Copy2_Archived_Date TIMESTAMP,
+  PDF_Copy2_Serial_# varchar2(255 CHAR),
+  PDF_Copy2_Drive_Name varchar2(255 CHAR)
+);
+
+ 
+PROMPT Creating Primary Key Constraint PK_PDF_Archiving_Copy2_Entry on table PDF_Archiving_Copy2_Entry 
+ALTER TABLE PDF_Archiving_Copy2_Entry
+ADD CONSTRAINT PK_PDF_Archiving_Copy2_Entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE Scan_Date_Entry CASCADE CONSTRAINTS;
+
+
+PROMPT Creating Table Scan_Date_Entry ...
+CREATE TABLE Scan_Date_Entry (
+  TN varchar2(255 CHAR),
+  Scan_Date TIMESTAMP
+);
+ 
+
+PROMPT Creating Primary Key Constraint PK_Scan_Date_Entry on table Scan_Date_Entry ... 
+ALTER TABLE Scan_Date_Entry
+ADD CONSTRAINT PK_Scan_Date_Entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE Scanned_by_TN_Report CASCADE CONSTRAINTS;
+
+PROMPT Creating Scanned_by_TN_Report...
+CREATE TABLE Scanned_by_TN_Report (
+  TN varchar2(255 CHAR),
+  Date_Loaded TIMESTAMP
+);
+
+
+PROMPT Creating Primary Key Constraint PK_Site_TN_Report on table Site_TN_Report ... 
+ALTER TABLE Scanned_by_TN_Report 
+ADD CONSTRAINT PK_Scanned_by_TN_Report PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE Switchboard_Items CASCADE CONSTRAINTS;
+
+PROMPT Creating Table Switchboard_Items ...
+CREATE TABLE Switchboard_Items (
+  SwitchboardID NUMBER(11,0),
+  ItemNumber NUMBER(5,0) DEFAULT 0,
+  ItemText varchar2(255 CHAR),
+  Command NUMBER(5,0) DEFAULT 0,
+  Argument varchar2(255 CHAR)
+);
+
+
+PROMPT Creating Primary Key Constraint PK_Switchboard_Items on table Switchboard_Items ... 
+ALTER TABLE Switchboard_Items
+ADD CONSTRAINT PK_Switchboard_Items PRIMARY KEY
+(
+  SwitchboardID,
+  ItemNumber
+)
+ENABLE
+;
+
+DROP TABLE TF_Loading_entry CASCADE CONSTRAINTS;
+
+PROMPT Creating Table TF_Loading_entry ...
+CREATE TABLE TF_Loading_entry (
+  TN varchar2(255 CHAR),
+  Collection varchar2(255 CHAR),
+  Date_Loaded TIMESTAMP,
+  Loaded_by varchar2(255 CHAR),
+  Pages_Online varchar2(255 CHAR),
+  URL varchar2(255 CHAR),
+  PID varchar2(255 CHAR)
+);
+
+
+
+PROMPT Creating Primary Key Constraint PK_TF_Loading_entry on table TF_Loading_entry ... 
+ALTER TABLE TF_Loading_entry
+ADD CONSTRAINT PK_TF_Loading_entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+PROMPT Creating Index PID on TF_Loading_entry ...
+CREATE INDEX PID ON TF_Loading_entry
+(
+  PID
+) 
+;
+
+DROP TABLE TF_Notes CASCADE CONSTRAINTS;
+
+PROMPT Creating Table TF_Notes ...
+CREATE TABLE TF_Notes (
+  ID NUMBER(11,0) NOT NULL,
+  TN varchar2(255 CHAR) NOT NULL,
+  Status varchar2(255 CHAR),
+  Problem_reason  varchar2(2047 CHAR),
+  Problem_Text  varchar2(2047 CHAR),
+  Problem_Date TIMESTAMP DEFAULT SYSDATE,
+  Problem_Initials varchar2(255 CHAR),
+  Solution_Text  varchar2(2047 CHAR),
+  Solution_Date TIMESTAMP,
+  Solution_initials varchar2(255 CHAR)
+);
+ 
+
+ 
+
+PROMPT Creating Primary Key Constraint PK_TF_Notes on table TF_Notes ... 
+ALTER TABLE TF_Notes
+ADD CONSTRAINT PK_TF_Notes PRIMARY KEY
+(
+  ID, TN
+)
+ENABLE
+;
+PROMPT Creating Index TN on TF_Notes ...
+CREATE INDEX TN ON TF_Notes
+(
+  TN
+) 
+;
+
+ALTER TABLE TF_NOTES add constraint fk_notes_Book foreign key(TN) references Book(TN)  ON DELETE CASCADE;
+ 
+
+DROP TABLE problem_status CASCADE CONSTRAINTS;
+CREATE TABLE problem_status(
+  ID varchar2(255 CHAR)  primary key
+);
+INSERT INTO problem_status (ID) values ('Problem');
+INSERT INTO problem_status (ID) values ('Solution Found');
+INSERT INTO problem_status (ID) values ('Problem Fixed');
+INSERT INTO problem_status (ID) values ('Notes');
+
+ALTER TABLE tf_notes add constraint fk_notes_status2 foreign key(status) references problem_status(ID);
+
+
+
+
+DROP TABLE problemReason CASCADE CONSTRAINTS;
+
+PROMPT Creating Table problemReason ...
+CREATE TABLE problemReason (
+  id varchar2(2047 CHAR),
+  Problem_area  varchar2(255 CHAR)
+);
+ 
+ALTER TABLE problemReason 
+ADD CONSTRAINT PK_problemReason PRIMARY KEY
+(
+  ID 
+)
+ENABLE
+; 
+
+
+ALTER TABLE tf_notes add constraint fk_notes_reason foreign key(problem_reason) references problemReason (ID);
+
+INSERT INTO problemReason  (ID, problem_area) values ('Page is blurred','scan');
+INSERT INTO problemReason  (ID, problem_area) values ('Page is crooked','scan');
+
+INSERT INTO problemReason  (ID, problem_area) values ('Page is blurred after processing','process');
+INSERT INTO problemReason  (ID, problem_area) values ('Metadata is not correct','metadata');
+ 
+
+
+
+DROP TABLE TF_Received_Images_entry CASCADE CONSTRAINTS;
+
+PROMPT Creating Table TF_Received_Images_entry ...
+CREATE TABLE TF_Received_Images_entry (
+  TN varchar2(255 CHAR),
+  Notes_from_Site  varchar2(2047 CHAR)
+);
+
+ 
+
+PROMPT Creating Primary Key Constraint PK_TF_Received_Images_entry on table TF_Received_Images_entry ... 
+ALTER TABLE TF_Received_Images_entry
+ADD CONSTRAINT PK_TF_Received_Images_entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE TF_Released_entry CASCADE CONSTRAINTS;
+
+PROMPT Creating Table TF_Released_entry ...
+CREATE TABLE TF_Released_entry (
+  TN varchar2(255 CHAR),
+  Date_Released TIMESTAMP,
+  Site varchar2(255 CHAR)
+);
+
+ 
+PROMPT Creating Primary Key Constraint PK_TF_Released_entry on table TF_Released_entry ... 
+ALTER TABLE TF_Released_entry
+ADD CONSTRAINT PK_TF_Released_entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE Tiff_Archiving_Copy1_Entry CASCADE CONSTRAINTS;
+
+PROMPT Creating Table Tiff_Archiving_Copy1_Entry ...
+CREATE TABLE Tiff_Archiving_Copy1_Entry (
+  TN varchar2(255 CHAR),
+  Tiff_Orem_Archived_Date TIMESTAMP,
+  Tiff_Orem_Serial_# varchar2(255 CHAR),
+  Tiff_Orem_Drive_Name varchar2(255 CHAR)
+);
+ 
+
+PROMPT Creating Primary Key Constraint PK_Tiff_Archiving_Copy1_Entry on table Tiff_Archiving_Copy1_Entry ... 
+ALTER TABLE Tiff_Archiving_Copy1_Entry
+ADD CONSTRAINT PK_Tiff_Archiving_Copy1_Entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+DROP TABLE Tiff_Archiving_Copy2_Entry CASCADE CONSTRAINTS;
+
+PROMPT Creating Table Tiff_Archiving_Copy2_Entry ...
+CREATE TABLE Tiff_Archiving_Copy2_Entry (
+  TN varchar2(255 CHAR),
+  Tiff_Copy2_Archived_Date TIMESTAMP,
+  Tiff_Copy2_Serial_# varchar2(255 CHAR),
+  Tiff_Copy2_Drive_Name varchar2(255 CHAR)
+);
+
+
+
+PROMPT Creating Primary Key Constraint PK_Tiff_Archiving_Copy2_Entry on table Tiff_Archiving_Copy2_Entry ... 
+ALTER TABLE Tiff_Archiving_Copy2_Entry
+ADD CONSTRAINT PK_Tiff_Archiving_Copy2_Entry PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+
+DROP TABLE Book_Lock CASCADE CONSTRAINTS;
+
+PROMPT Creating Table Book_Lock ...
+CREATE TABLE Book_Lock (
+  TN varchar2(255 CHAR),
+  Lock_Date TIMESTAMP,
+  Operator varchar2(255 CHAR)
+);
+ 
+ALTER TABLE Book_Lock
+ADD CONSTRAINT PK_Book_Lock PRIMARY KEY
+(
+  TN
+)
+ENABLE
+;
+
+ALTER TABLE Book_Lock add constraint fk_Book_lock foreign key(TN) references Book(TN)  ON DELETE CASCADE;
+
+
+--****************************************temp table for daily loading migration after production (same as BOOK tab)
+
+
+DROP TABLE BookTemp CASCADE CONSTRAINTS;
+
+ 
+
+
+--********************user auths
+
+DROP TABLE authority CASCADE CONSTRAINTS;
+
+CREATE TABLE authority 
+(
+  ID varchar2(255 CHAR) NOT NULL, CONSTRAINT ID PRIMARY KEY 
+  (
+    ID
+  )
+  ENABLE 
+);
+
+INSERT INTO AUTHORITY (ID) VALUES ('search');
+INSERT INTO AUTHORITY (ID) VALUES ('scan');
+INSERT INTO AUTHORITY (ID) VALUES ('process');
+INSERT INTO AUTHORITY (ID) VALUES ('metadata');
+INSERT INTO AUTHORITY (ID) VALUES ('admin');
+
+
+DROP TABLE USERS CASCADE CONSTRAINTS;
+
+CREATE TABLE USERS
+(
+  ID varchar2(255 CHAR) NOT NULL, Name varchar2(255 CHAR) ,  PRIMARY_LOCATION varchar2(255 CHAR), Entry_PAGE varchar2(255 CHAR), Last_LOGGED_IN timestamp , DATE_ADDED timestamp ,  DATE_updated timestamp NOT NULL, CONSTRAINT USER_PK PRIMARY 
+KEY 
+  (
+    ID
+  )
+  ENABLE 
+);
+
+
+ 
+DROP TABLE USER_AUTHORITIES CASCADE CONSTRAINTS;
+
+CREATE TABLE USER_AUTHORITIES
+(
+  ID varchar2(255 CHAR) NOT NULL, ROLE varchar2(255 CHAR) NOT NULL, CONSTRAINT USER_AUTH_PK PRIMARY KEY 
+  (
+    ID, ROLE 
+  )
+  ENABLE 
+);
+
+ALTER TABLE USER_AUTHORITIES add constraint fk_user_id foreign key(id) references USERS(ID)  ON DELETE CASCADE;
+ 
+
+
+ delete from users;
+ 
+ 
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('23Joan', 'Joan Blanchard', 'Ogden Regional FHC', 'admin', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('23Joan', 'admin'); 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('pauldev', 'Paul D', null, 'admin', null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('pauldev', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('CaldwellDS', 'Dustin C', null, 'admin', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('CaldwellDS', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('JumpJL', 'Jeri J', null, 'admin', null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('JumpJL', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('StevensonCa', 'Caty C', null, 'admin', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('StevensonCa', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('WoodSS', 'Spence W', null, 'admin', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('WoodSS', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('StemDavidBennett', 'Dave B', null, 'admin', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('StemDavidBennett', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('robertalexandersmith', 'Robert S', null, 'admin', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('robertalexandersmith', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('gribblero', 'Rose of Sharon', null, 'admin', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('gribblero', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('tdegraw', 'Tim D', null, 'admin', null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('tdegraw', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('connellyjl', 'Julie C', null, 'admin', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('connellyjl', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('mildredannpape', 'S. Pape', 'Allen County Public Library (ACPL)', 'scan', null, 
+current_timestamp, current_timestamp);
+
+insert into user_authorities (id, role) values ('mildredannpape', 'scan');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('rhereth', 'E. Hereth', 'Allen County Public Library (ACPL)', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('rhereth', 'scan');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('shereth', 'S. Hereth', 'Allen County Public Library (ACPL)', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('shereth', 'scan');
+ 
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('jabates', 'S Bates', 'Allen County Public Library (ACPL)', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('jabates', 'scan');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('robertshaw', 'Bob Shaw', 'Orange California Family History Center', 'scan', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('robertshaw', 'admin');
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('shawnancy1', 'Nancy Shaw', 'Orange California Family History Center', 'scan', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('shawnancy1', 'admin');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('000-2393-4603', 'Ann Jensen', 'Midwest Genealogy Center', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('000-2393-4603', 'scan');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('Bettymary', 'Sister Rollins', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('Bettymary', 'process');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('Bonnie Bake1', 'Sister Rollins', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('Bonnie Bake1', 'scan');
+insert into user_authorities (id, role) values ('Bonnie Bake1', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('DMEggleston', 'D Eggleston', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('DMEggleston', 'scan');
+insert into user_authorities (id, role) values ('DMEggleston', 'search');
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('squires3', 'Lynne Squires', 'BYU Idaho', 'scan', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('squires3', 'scan');
+insert into user_authorities (id, role) values ('squires3', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('DavidRJackson', 'David Jackson', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('DavidRJackson', 'scan');
+insert into user_authorities (id, role) values ('DavidRJackson', 'search');
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('siberiasam', 'Jerry Sherwood', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('siberiasam', 'scan');
+insert into user_authorities (id, role) values ('siberiasam', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('sintaywf', 'Willis Sintay', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('sintaywf', 'process');
+insert into user_authorities (id, role) values ('sintaywf', 'search');
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('rohderichardwhitney1', 'R Rhode', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('rohderichardwhitney1', 'scan');
+insert into user_authorities (id, role) values ('rohderichardwhitney1', 'search');
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('rohdewhitakergeorgia1', 'G Rhode', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('rohdewhitakergeorgia1', 'scan');
+insert into user_authorities (id, role) values ('rohdewhitakergeorgia1', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('JaNaeCJackson', 'David Jackson', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('JaNaeCJackson', 'scan');
+insert into user_authorities (id, role) values ('JaNaeCJackson', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('JeremeyButtars', 'Jeremy Buttars', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('JeremeyButtars', 'scan');
+insert into user_authorities (id, role) values ('JeremeyButtars', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('LJP0114', 'Lu Jean Peters', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('LJP0114', 'scan');
+insert into user_authorities (id, role) values ('LJP0114', 'search');
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('Leelomamae1', 'Leelomamae', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('Leelomamae1', 'scan');
+insert into user_authorities (id, role) values ('Leelomamae1', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('LorinWard', 'E Ward', 'Family History Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('LorinWard', 'scan');
+insert into user_authorities (id, role) values ('LorinWard', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('NanetteJohnson', 'Nanette Johnson', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('NanetteJohnson', 'scan');
+insert into user_authorities (id, role) values ('NanetteJohnson', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('Nitecita', 'Marquez Nictena', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('Nitecita', 'scan');
+insert into user_authorities (id, role) values ('Nitecita', 'search');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('Nictecita', 'Nictecita', 'Ogden Regional FHC', 'scan', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('Nictecita', 'scan');
+insert into user_authorities (id, role) values ('Nictecita', 'search');
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('Ritarm', 'Rita Christensen', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('Ritarm', 'scan');
+insert into user_authorities (id, role) values ('Ritarm', 'search');
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('TeriGraham', 'Teri Graham', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('TeriGraham', 'scan');
+insert into user_authorities (id, role) values ('TeriGraham', 'search');
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('ajensen02', 'Ann Jensen', 'Midwest Genealogy Center', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('ajensen02', 'scan');
+insert into user_authorities (id, role) values ('ajensen02', 'search');
+
+
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('Coleman2go', 'Coleman', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('Coleman2go', 'process'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('GordManning', 'E Manning', 'Family History Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('GordManning', 'scan'); 
+insert into user_authorities (id, role) values ('GordManning', 'search');
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('JoyceCWard2', 'S Ward', 'Family History Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('JoyceCWard2', 'scan'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('Jpoggio', 'Jpoggio', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('Jpoggio', 'process'); 
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('angier48', 'Angela Reno', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('angier48', 'process'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('birdjusme', 'Susan Bird', 'Pocatello Idaho FamilySearch Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('birdjusme', 'scan'); 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('boesjuliaann1', 'Ann Boes', 'Pocatello Idaho FamilySearch Library', 'scan', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('boesjuliaann1', 'scan'); 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('boesrich', 'Richard Boes', 'Pocatello Idaho FamilySearch Library', 'scan', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('boesrich', 'search'); 
+insert into user_authorities (id, role) values ('boesrich', 'scan'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('cgbellows', 'Connie Bellows', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('cgbellows', 'process'); 
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('coleendesign', 'Sister Carter', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('coleendesign', 'process'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('colemanzgo', 'Sister Coleman', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('colemanzgo', 'process'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('coleman2go', 'Sister Coleman', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('coleman2go', 'process'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('colleenb', 'S Bodell', 'Family History Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('colleenb', 'scan'); 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('davidofthehelmickclan', 'E Helmick', 'Family History Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('davidofthehelmickclan', 'scan'); 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('dbhawley', 'Don Hawley', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('dbhawley', 'search'); 
+insert into user_authorities (id, role) values ('dbhawley', 'process');
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('denicemcchan1213', 'S McChan', 'Allen County Public Library (ACPL)', 'scan', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('denicemcchan1213', 'scan');  
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('dwbellows', 'Dennis Bellows', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('dwbellows', 'search');  
+insert into user_authorities (id, role) values ('dwbellows', 'process');  
+
+ 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('carolyndodds', 'Sister Owens', 'Houston Metropolitan Research Center- Texas Room', 'scan', null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('carolyndodds', 'search');  
+insert into user_authorities (id, role) values ('carolyndodds', 'scan');  
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('caroljeangibson', 'Sister Gibson', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('caroljeangibson', 'search');  
+insert into user_authorities (id, role) values ('caroljeangibson', 'process');  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('ecoleman', 'Eler Coleman', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('ecoleman', 'search');  
+insert into user_authorities (id, role) values ('ecoleman', 'process');  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('ecoleman1', 'Eler Coleman', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('ecoleman1', 'search');  
+insert into user_authorities (id, role) values ('ecoleman1', 'process');  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('evansd12', 'Sister Evans', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('evansd12', 'search');   
+insert into user_authorities (id, role) values ('evansd12', 'process');  
+
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('fergusfamily', 'Karen Hall', 'Pocatello Idaho FamilySearch Library', 'scan', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('fergusfamily', 'scan'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('fernmanning', 'S Manning', 'Family History Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('fernmanning', 'scan'); 
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('gcarlson', 'E Carlson', 'Ogden Regional FHC', 'scan', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('gcarlson', 'scan'); 
+insert into user_authorities (id, role) values ('gcarlson', 'search'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('garncarter', 'Elder Carter', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('garncarter', 'process'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('gentrypr', 'Paul Gentry', null, 'admin', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('gentrypr', 'admin'); 
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('harrisgr', 'Sister Evans', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('harrisgr', 'search');   
+insert into user_authorities (id, role) values ('harrisgr', 'process'); 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('ilenehooper', 'Ilene Hooper', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('ilenehooper', 'search');   
+insert into user_authorities (id, role) values ('ilenehooper', 'process');  
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('jeanjensen77', 'Jean Jensen', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('jeanjensen77', 'scan');   
+
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('jefftowens', 'Elder Owens', 'Houston Metropolitan Research Center- Texas Room', 
+'scan', null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('jefftowens', 'scan');   
+insert into user_authorities (id, role) values ('jefftowens', 'search');   
+
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('irenereeves', 'Sister Reeves', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('irenereeves', 'search');   
+insert into user_authorities (id, role) values ('irenereeves', 'scan');  
+
+  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('jenninde', 'Elder Jennings', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('jenninde', 'search');   
+insert into user_authorities (id, role) values ('jenninde', 'process');  
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('jerrykern', 'Jerry Kern', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('jerrykern', 'search');   
+insert into user_authorities (id, role) values ('jerrykern', 'process');  
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('janicesullivan', 'Sister Sullivan', 'Orem Digital Processing Center', 
+'process', null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('janicesullivan', 'search');   
+insert into user_authorities (id, role) values ('janicesullivan', 'process');  
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('kathleen17', 'Sister McClellan', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('kathleen17', 'search');   
+insert into user_authorities (id, role) values ('kathleen17', 'process');  
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('kaymarsh', 'Sister Marshall', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('kaymarsh', 'process');  
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('kbgurn', 'Elder Gurney', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('kbgurn', 'search');   
+insert into user_authorities (id, role) values ('kbgurn', 'process');  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('leslielinton', 'Sister Linton', 'Clayton Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('leslielinton', 'search');   
+insert into user_authorities (id, role) values ('leslielinton', 'scan'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('rlucibrock', 'Sister Brock', 'Clayton Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('rlucibrock', 'search');   
+insert into user_authorities (id, role) values ('rlucibrock', 'scan'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('lipwoman', 'Sister Ledbetter', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('lipwoman', 'search');   
+insert into user_authorities (id, role) values ('lipwoman', 'process');  
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('marylu22', 'Sister Ledbetter', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('marylu22', 'search');   
+insert into user_authorities (id, role) values ('marylu22', 'process');  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('mendjaso', 'Jason Mendenhall', 'Pocatello Idaho FamilySearch Library', 'scan', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('mendjaso', 'scan'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('joppenheimer', 'Joel Oppenheimer', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('joppenheimer', 'scan'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('josephmorrislaw', 'Joseph Law', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('josephmorrislaw', 'scan'); 
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('mgreen', 'Sister Green', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('mgreen', 'search');   
+insert into user_authorities (id, role) values ('mgreen', 'process');  
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('mhdailey', 'Sister Dailey', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('mhdailey', 'search');   
+insert into user_authorities (id, role) values ('mhdailey', 'process');  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('margaretmhall', 'Sister Hall', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('margaretmhall', 'search');   
+insert into user_authorities (id, role) values ('margaretmhall', 'process');  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('mmsabey', 'E Sabey', 'Family History Library', 'scan', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('mmsabey', 'scan');   
+ 
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('momfiddler', 'Linda Isom', 'Las Vegas Nevada FamilySearch Library', 'scan', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('momfiddler', 'scan');   
+insert into user_authorities (id, role) values ('momfiddler', 'search');   
+ 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('mosiL508', 'Linda Isom', 'Las Vegas Nevada FamilySearch Library', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('mosiL508', 'scan');   
+insert into user_authorities (id, role) values ('mosiL508', 'search');   
+
+ 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('naja44', 'Nellie Beenfield', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('naja44', 'scan');   
+insert into user_authorities (id, role) values ('naja44', 'search');   
+ 
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('neildejong', 'Neil De Jong', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('neildejong', 'scan');   
+insert into user_authorities (id, role) values ('neildejong', 'search');   
+insert into user_authorities (id, role) values ('neildejong', 'admin');   
+ 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('ngalloway', 'Nick Galloway', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('ngalloway', 'search');   
+insert into user_authorities (id, role) values ('ngalloway', 'process');  
+
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('philliplen', 'Elder Harris', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('philliplen', 'search');   
+insert into user_authorities (id, role) values ('philliplen', 'process');  
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('marvamaeglover', 'Sister Glover', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('marvamaeglover', 'search');   
+insert into user_authorities (id, role) values ('marvamaeglover', 'process');  
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('quacotege', 'Elder Quacote', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('quacotege', 'search');   
+insert into user_authorities (id, role) values ('quacotege', 'process');  
+ 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('ragoodwin1', 'Elder Goodwin', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('ragoodwin1', 'search');   
+insert into user_authorities (id, role) values ('ragoodwin1', 'process');  
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('rccrabb', 'Elder Crabb', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('rccrabb', 'search');   
+insert into user_authorities (id, role) values ('rccrabb', 'process');  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('rdseidel', 'Ron Seidel', 'Midwest Genealogy Center', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('rdseidel', 'scan'); 
+ 
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('rossandpeggy', 'Ross Christensen', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('rossandpeggy', 'search');   
+insert into user_authorities (id, role) values ('rossandpeggy', 'process');  
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('waynehenryglover', 'Elder Glover', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('waynehenryglover', 'search');   
+insert into user_authorities (id, role) values ('waynehenryglover', 'process');  
+
+ 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('mecham1944', 'Sister Mecham', 'Orem Digital Processing Center', 'process', 
+null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('mecham1944', 'search');   
+insert into user_authorities (id, role) values ('mecham1944', 'process');  
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('melaniejones2', 'Melanie Jones', 'Ogden Regional FHC', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('melaniejones2', 'search');   
+insert into user_authorities (id, role) values ('melaniejones2', 'scan');  
+
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('rrdailey', 'Elder Dailey', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('rrdailey', 'search');   
+insert into user_authorities (id, role) values ('rrdailey', 'process');  
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('seidel1', 'Judy Seidel', 'Midwest Genealogy Center', 'scan', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('seidel1', 'scan'); 
+
+
+ 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('taysomd', 'Dan Taysom', 'Sacramento California Regional Family History Center', 
+'scan', null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('taysomd', 'scan'); 
+
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('vcrabb', 'Sister Crabb', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('vcrabb', 'search');   
+insert into user_authorities (id, role) values ('vcrabb', 'process'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('verasintay', 'Vera Sintay', null, 'process', null, current_timestamp, 
+current_timestamp);
+insert into user_authorities (id, role) values ('verasintay', 'search');   
+insert into user_authorities (id, role) values ('verasintay', 'process'); 
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('vlines', 'Vardell Lines', 'Orem Digital Processing Center', 'process', null, 
+current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('vlines', 'search');   
+insert into user_authorities (id, role) values ('vlines', 'process');
+
+
+insert into users (id, name, primary_location, entry_page, last_logged_in, date_added, date_updated) values ('williamkrogerson', 'Elder Rogerson', 'Orem Digital Processing Center', 
+'process', null, current_timestamp, current_timestamp);
+insert into user_authorities (id, role) values ('williamkrogerson', 'search');   
+insert into user_authorities (id, role) values ('williamkrogerson', 'process');
+ 
+
+
+
+--********************search
+ 
+
+DROP TABLE search CASCADE CONSTRAINTS;
+
+CREATE TABLE search 
+(
+  ID varchar2(255 CHAR) NOT NULL, description varchar2(2047 CHAR) ,  query_text varchar2(2047 CHAR), owner varchar2(255 CHAR),  DATE_updated timestamp NOT NULL, CONSTRAINT search_PK PRIMARY 
+KEY 
+  (
+    ID
+  )
+  ENABLE 
+);
+
+   
+  
+INSERT INTO search (ID, description, query_text, owner, date_updated) values ('all problems', 'select all problems', 'SELECT * from TF_AllProblems', '', current_timestamp ); 
+
+INSERT INTO search (ID, description, query_text, owner, date_updated) values ('all books being scanned', 'Show all books being scanned in all sites', '(select tn, scanned_by from s_01_ready_scan
+union select tn, scanned_by from S_01B_scan_in_prog 
+union select tn, scanned_by from S_02_Ready_image_audit
+union select tn, scanned_by from S_02_Ready_image_audit
+union select tn, scanned_by from S_03_image_auditing_in_prog
+union select tn, scanned_by from S_04_processed_ready_orem) order by scanned_by;', '', 
+current_timestamp ); 
+
+  
+INSERT INTO search (ID, description, query_text, owner, date_updated) values ('all closed problems', 'select all problems closed', 'SELECT * from TF_notes where status = ''Problem Closed''', '', current_timestamp ); 
+
+INSERT INTO search (ID, description, query_text, owner, date_updated) values ('select all metadata', 'select all metadata', 'select * from bookmetadata', '', current_timestamp );
+INSERT INTO search (ID, description, query_text, owner, date_updated) values ('ODPC Daily Stats', 'show pdf_ready daily totals', '
+SELECT to_char(PDF_Ready, ''YYYY/MM/DD'') as PDF_ready,  Count(TN) AS CountOfTN, Sum(num_of_pages) AS  SumOf_Num_of_pages 
+FROM Book  
+GROUP BY  to_char(PDF_Ready, ''YYYY/MM/DD'') 
+HAVING to_char(PDF_Ready, ''YYYY/MM/DD'') Between ''2013/05/31'' and ''2013/06/09''
+', 'Rose of Sharon', current_timestamp );
+
+INSERT INTO search (ID, description, query_text, owner, date_updated) values ('select books by title', 'select books by title', 'select * from book where title like ''%Jo%Smith%''', 'pauldev', current_timestamp );
+
+ 
+--********************metadata tables**********************
+
+DROP TABLE bookmetadata CASCADE CONSTRAINTS;
+
+CREATE TABLE bookmetadata 
+(
+Title varchar2(2047 CHAR) NOT NULL, 
+Author varchar2(255 CHAR) , 
+Subject varchar2(4000 CHAR)  , 
+titleno varchar2(255 CHAR) NOT NULL,
+ OCLC_number varchar2(255 CHAR) unique, --worldcat
+ ISBN_ISSN varchar2(255 CHAR) unique, 
+callno varchar2(255 CHAR)  , 
+Partner_lib_Callno varchar2(255 CHAR),
+filmno varchar2(255 CHAR) , 
+Pages varchar2(255 CHAR) , 
+Summary varchar2(2047 CHAR) , 
+dgsno varchar2(255 CHAR)  , 
+language varchar2(255 CHAR)  , 
+Requesting_Location varchar2(255 CHAR),  --site requesting book to be scanned and probably will do the scan
+Scanning_Location varchar2(255 CHAR), 
+Record_Number varchar2(255 CHAR),
+Date_original timestamp,
+Publisher_original varchar2(255 CHAR),
+
+date_added timestamp,
+metadata_adder  varchar2(255 CHAR), 
+check_complete timestamp,
+checker  varchar2(255 CHAR),  
+sent_to_scan timestamp, 
+sender  varchar2(255 CHAR),  
+
+ CONSTRAINT titleno_Key PRIMARY KEY 
+  (
+    titleno
+  )
+  ENABLE 
+); 
+ 
+
+DROP TABLE batchclass CASCADE CONSTRAINTS;
+
+CREATE TABLE batchclass 
+(
+id varchar2(255  CHAR) NOT NULL, 
+propertyright varchar2(255 CHAR), 
+start_char varchar2(1 CHAR), 
+end_char varchar2(1 CHAR),  
+
+ CONSTRAINT id_Key PRIMARY KEY 
+  (
+    id
+  )
+  ENABLE 
+); 
+
+
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_CP_Cyrillic', 'Copy Protected', NULL, NULL);
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_CP_Latin1 A-E', 'Copy Protected', 'A', 'E');
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_CP_Latin1 F-J', 'Copy Protected', 'F', 'J');
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_CP_Latin1 K-O', 'Copy Protected', 'K', 'O');
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_CP_Latin1 P-Z', 'Copy Protected', 'P', 'Z');
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_CP_Latin2', 'Copy Protected', NULL, NULL);
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_CP_NO-OCR', 'Copy Protected', NULL, NULL);
+
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_PD_Chinese', 'Public Domain', NULL, NULL);
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_PD_Cyrillic', 'Public Domain', NULL, NULL);
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_PD_Latin1 A-E', 'Public Domain', 'A', 'E');
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_PD_Latin1 F-J', 'Public Domain', 'F', 'J');
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_PD_Latin1 K-O', 'Public Domain', 'K', 'O');
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_PD_Latin1 P-Z', 'Public Domain', 'P', 'Z');
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_PD_Latin2', 'Public Domain', NULL, NULL);
+INSERT INTO batchclass (ID, propertyright, start_char, end_char) VALUES ('XML_PD_NO-OCR', 'Public Domain', NULL, NULL);
+
+
+--stat goals
+
+
+DROP TABLE goals CASCADE CONSTRAINTS;
+CREATE TABLE goals (
+  id VARCHAR2(255 CHAR) primary key,
+  description VARCHAR2(255 CHAR),
+  goal_number VARCHAR2(255 CHAR)  --int, or int with unit that code will understand
+);
+INSERT INTO goals (ID, description, goal_number) VALUES ('year 2013 images per year', 'Number of images to process in year 2013 for whole year', '12000000');
+INSERT INTO goals (ID, description, goal_number) VALUES ('year 2013 images per month', 'Number of images to process in year 2013 per month', '1000000');
+INSERT INTO goals (ID, description, goal_number) VALUES ('year 2013 images per week', 'Number of images to process in year 2013 per week', '230769');
+INSERT INTO goals (ID, description, goal_number) VALUES ('year 2013 books per year', 'Number of books to process in year 2013 per week', '30000');
+
+--locking
+
+DROP TABLE book_lock CASCADE CONSTRAINTS;
+CREATE TABLE book_lock (
+  tn VARCHAR2(255 CHAR) primary key,
+  operator VARCHAR2(255 CHAR),
+  time_locked TIMESTAMP 
+);
+
+
+--Elder Kern MetaData
+

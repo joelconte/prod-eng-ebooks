@@ -1,0 +1,1774 @@
+DROP VIEW A_LOADED_BY_YEAR_MONTH;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW A_LOADED_BY_YEAR_MONTH
+(
+   TN,
+   DATE_LOADED_BY_YEARMONTH,
+   SITE,
+   PAGES_ONLINE,
+   COUNT_OF_BOOKS
+)
+AS
+     SELECT TN,
+            TO_CHAR (Date_Loaded, 'yyyymm') Date_Loaded_By_YearMonth,
+            Site,
+            Pages_Online,
+            COUNT (*) Count_Of_Books
+       FROM Book
+   GROUP BY TN,
+            TO_CHAR (Date_Loaded, 'yyyymm'),
+            Site,
+            Pages_Online
+     HAVING ( ( (TO_CHAR (Date_Loaded, 'yyyymm')) IS NOT NULL))
+   ORDER BY TO_CHAR (Book.Date_Loaded, 'yyyymm') DESC, Book.Site;
+
+
+DROP VIEW A_RELEASED_BY_YEAR_MONTH;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW A_RELEASED_BY_YEAR_MONTH
+(
+   TN,
+   DATE_RELEASED_BY_YEARMONTH,
+   SITE,
+   NUM_OF_PAGES,
+   COUNT_OF_BOOKS
+)
+AS
+     SELECT TN,
+            TO_CHAR (Date_Released, 'yyyymm') Date_Released_By_YearMonth,
+            Site,
+            num_of_pages,
+            COUNT (*) Count_Of_Books
+       FROM Book
+   GROUP BY TN,
+            TO_CHAR (Date_Released, 'yyyymm'),
+            Site,
+            num_of_pages
+     HAVING ( ( (TO_CHAR (Date_Released, 'yyyymm')) IS NOT NULL))
+   ORDER BY TO_CHAR (Book.Date_Released, 'yyyymm') DESC, Book.Site;
+
+
+DROP VIEW A_SCANNED_BY_YEAR_MONTH;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW A_SCANNED_BY_YEAR_MONTH
+(
+   TN,
+   DATE_SCANNED_BY_YEARMONTH,
+   SITE,
+   NUM_OF_PAGES,
+   COUNT_OF_BOOKS
+)
+AS
+     SELECT TN,
+            TO_CHAR (Files_Received_by_Orem, 'yyyymm')
+               Date_Scanned_By_YearMonth,
+            Site,
+            num_of_pages,
+            COUNT (*) Count_Of_Books
+       FROM Book
+   GROUP BY TN,
+            TO_CHAR (Files_Received_by_Orem, 'yyyymm'),
+            Site,
+            num_of_pages
+     HAVING (    ( (TO_CHAR (Files_Received_by_Orem, 'yyyymm')) IS NOT NULL)
+             AND (NOT (Site) = 'DNP')
+             AND ( (num_of_pages) IS NOT NULL))
+   ORDER BY TO_CHAR (Book.Files_Received_by_Orem, 'yyyymm') DESC, Book.Site;
+
+
+DROP VIEW BOOKS_ONLINE_SLC_PDF_NOT_ARCH;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW BOOKS_ONLINE_SLC_PDF_NOT_ARCH
+(
+   TN,
+   DATE_LOADED,
+   COLLECTION,
+   PDF_COPY2_DRIVE_NAME,
+   PDF_COPY2_DRIVE_SERIAL_num
+)
+AS
+     SELECT TN,
+            Date_Loaded,
+            Collection,
+            PDF_Copy2_Drive_Name,
+            PDF_Copy2_Drive_Serial_num
+       FROM Book
+      WHERE (    ( (Date_Loaded) IS NOT NULL)
+             AND ( (PDF_Copy2_Archived_Date) IS NULL))
+   ORDER BY Book.Collection;
+
+
+DROP VIEW COMPRESSION_WITHOUT_MATCH_BKS;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW COMPRESSION_WITHOUT_MATCH_BKS
+(
+   TN,
+   COMPRESSION_CODE,
+   PDF_SENT_TO_LOAD,
+   SITE,
+   DATE_RELEASED,
+   DATE_LOADED,
+   BATCH_CLASS,
+   PID,
+   TN_8
+)
+AS
+   SELECT Compression_Entry.TN,
+          Book.Compression_Code,
+          Book.PDF_Sent_to_Load,
+          Book.Site,
+          Book.Date_Released,
+          Book.Date_Loaded,
+          Book.Batch_Class,
+          Book.PID,
+          Book.TN TN_8
+     FROM Compression_Entry LEFT JOIN Book ON Compression_Entry.TN = Book.TN;
+
+
+DROP VIEW COUNT_PER_LOC_PER_SPEC_DATE;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW COUNT_PER_LOC_PER_SPEC_DATE
+(
+   COUNTOFTN,
+   SUMOFPAGES_ONLINE
+)
+AS
+   SELECT COUNT (TN) CountOfTN, SUM (Pages_Online) SumOfPages_Online
+     FROM Book
+    WHERE ( (    (Date_Loaded) >= TO_DATE ('7/9/2009', 'dd/mm/yyyy')
+             AND (Date_Loaded) <= TO_DATE ('7/30/2009', 'dd/mm/yyyy')));
+
+
+DROP VIEW DAWN_S_SITE_BY_YEAR_PAGES_BOOK;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW DAWN_S_SITE_BY_YEAR_PAGES_BOOK
+(
+   TN,
+   COLLECTION,
+   DATE_LOADED_BY_YEAR,
+   SITE,
+   PAGES_ONLINE,
+   COUNT_OF_BOOKS
+)
+AS
+     SELECT TN,
+            Collection,
+            TO_CHAR (Date_Loaded, 'yyyy') Date_Loaded_By_Year,
+            Site,
+            Pages_Online,
+            COUNT (*) Count_Of_Books
+       FROM Book
+   GROUP BY TN,
+            Collection,
+            TO_CHAR (Date_Loaded, 'yyyy'),
+            Site,
+            Pages_Online,
+            Date_Loaded
+     HAVING (    ( (TO_CHAR (Date_Loaded, 'yyyy')) IS NOT NULL)
+             AND ( (TO_CHAR (Date_Loaded, 'yyyy')) IS NOT NULL))
+   ORDER BY TO_CHAR (Book.Date_Loaded, 'yyyy') DESC, Book.Site;
+
+
+DROP VIEW LIST_OF_BOOKS_LOADED_ONLINE;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW LIST_OF_BOOKS_LOADED_ONLINE
+(
+   TN,
+   SECONDARY_IDENTIFIER,
+   OCLC_NUMBER,
+   ISBN_ISSN,
+   TITLE,
+   AUTHOR,
+   PROPERTY_RIGHT,
+   PUBLICATION_TYPE,
+   CALL_num,
+   PARTNER_LIB_CALL_num,
+   PRIORITY_ITEM,
+   WITHDRAWN,
+   DIGITAL_COPY_ONLY,
+   MEDIA_TYPE,
+   METADATA_COMPLETE,
+   BATCH_CLASS,
+   LANGUAGE,
+   REMARKS_FROM_SCAN_CENTER,
+   REMARKS_ABOUT_BOOK,
+   RECORD_NUMBER,
+   REQUESTING_LOCATION,
+   OWNING_INSTITUTION,
+   SCANNED_BY,
+   SCAN_OPERATOR,
+   SCAN_MACHINE_ID,
+   SCAN_METADATA_COMPLETE,
+   LOCATION,
+   SCAN_START_DATE,
+   SCAN_COMPLETE_DATE,
+   SCAN_IMAGE_AUDITOR,
+   SCAN_IA_START_DATE,
+   SCAN_IA_COMPLETE_DATE,
+   FILES_SENT_TO_OREM,
+   SCAN_NUM_OF_PAGES,
+   NUM_OF_PAGES,
+   FILES_RECEIVED_BY_OREM,
+   IMAGE_AUDIT,
+   IA_START_DATE,
+   IA_COMPLETE_DATE,
+   OCR_by,
+   OCR_complete_date,
+   PDFREVIEW_BY,
+   pdfreview_start_date,
+   PDF_READY,
+   DATE_RELEASED,
+   COMPRESSION_CODE,
+   LOADED_BY,
+   DATE_LOADED,
+   COLLECTION,
+   DNP,
+   DNP_DELETED_OFF_LINE,
+   TN_CHANGE_HISTORY,
+   PDF_OREM_ARCHIVED_DATE,
+   PDF_OREM_DRIVE_SERIAL_num,
+   PDF_OREM_DRIVE_NAME,
+   PDF_COPY2_ARCHIVED_DATE,
+   PDF_COPY2_DRIVE_SERIAL_num,
+   PDF_COPY2_DRIVE_NAME,
+   TIFF_OREM_ARCHIVED_DATE,
+   TIFF_OREM_DRIVE_SERIAL_num,
+   TIFF_OREM_DRIVE_NAME,
+   TIFF_COPY2_ARCHIVED_DATE,
+   TIFF_COPY2_DRIVE_SERIAL_num,
+   TIFF_COPY2_DRIVE_NAME,
+   PDF_SENT_TO_LOAD,
+   SITE,
+   URL,
+   PID,
+   PAGES_ONLINE,
+   SUBJECT,
+   FILMNO,
+   PAGES_PHYSICAL_DESCRIPTION,
+   SUMMARY,
+   DGSNO,
+   DATE_ORIGINAL,
+   PUBLISHER_ORIGINAL
+)
+AS
+   SELECT TN,
+          SECONDARY_IDENTIFIER,
+          OCLC_NUMBER,
+          ISBN_ISSN,
+          TITLE,
+          AUTHOR,
+          PROPERTY_RIGHT,
+          PUBLICATION_TYPE,
+          CALL_num,
+          PARTNER_LIB_CALL_num,
+          PRIORITY_ITEM,
+          WITHDRAWN,
+          DIGITAL_COPY_ONLY,
+          MEDIA_TYPE,
+          METADATA_COMPLETE,
+          BATCH_CLASS,
+          LANGUAGE,
+          REMARKS_FROM_SCAN_CENTER,
+          REMARKS_ABOUT_BOOK,
+          RECORD_NUMBER,
+          REQUESTING_LOCATION,
+          OWNING_INSTITUTION,
+          SCANNED_BY,
+          SCAN_OPERATOR,
+          SCAN_MACHINE_ID,
+          SCAN_METADATA_COMPLETE,
+          LOCATION,
+          SCAN_START_DATE,
+          SCAN_COMPLETE_DATE,
+          SCAN_IMAGE_AUDITOR,
+          SCAN_IA_START_DATE,
+          SCAN_IA_COMPLETE_DATE,
+          FILES_SENT_TO_OREM,
+          SCAN_NUM_OF_PAGES,
+          NUM_OF_PAGES,
+          FILES_RECEIVED_BY_OREM,
+          IMAGE_AUDIT,
+          IA_START_DATE,
+          IA_COMPLETE_DATE,
+          OCR_by,
+	  OCR_complete_date,
+          PDFREVIEW_BY,
+          pdfreview_start_date,
+          PDF_READY,
+          DATE_RELEASED,
+          COMPRESSION_CODE,
+          LOADED_BY,
+          DATE_LOADED,
+          COLLECTION,
+          DNP,
+          DNP_DELETED_OFF_LINE,
+          TN_CHANGE_HISTORY,
+          PDF_OREM_ARCHIVED_DATE,
+          PDF_OREM_DRIVE_SERIAL_num,
+          PDF_OREM_DRIVE_NAME,
+          PDF_COPY2_ARCHIVED_DATE,
+          PDF_COPY2_DRIVE_SERIAL_num,
+          PDF_COPY2_DRIVE_NAME,
+          TIFF_OREM_ARCHIVED_DATE,
+          TIFF_OREM_DRIVE_SERIAL_num,
+          TIFF_OREM_DRIVE_NAME,
+          TIFF_COPY2_ARCHIVED_DATE,
+          TIFF_COPY2_DRIVE_SERIAL_num,
+          TIFF_COPY2_DRIVE_NAME,
+          PDF_SENT_TO_LOAD,
+          SITE,
+          URL,
+          PID,
+          PAGES_ONLINE,
+          SUBJECT,
+          FILMNO,
+          PAGES_PHYSICAL_DESCRIPTION,
+          SUMMARY,
+          DGSNO,
+          DATE_ORIGINAL,
+          PUBLISHER_ORIGINAL
+     FROM Book
+    WHERE ( ( (Date_Loaded) IS NOT NULL));
+
+
+DROP VIEW NUMBER_OF_IMAGES_WITHOUT_MATCH;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW NUMBER_OF_IMAGES_WITHOUT_MATCH
+(
+   TN,
+   NUM_OF_PAGES,
+   DATE_RELEASED
+)
+AS
+   SELECT Number_of_Images_Entry.TN, Book.num_of_pages, Book.Date_Released
+     FROM    Number_of_Images_Entry
+          LEFT JOIN
+             Book
+          ON Number_of_Images_Entry.TN = Book.TN;
+
+
+DROP VIEW OREM_SCAN;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW OREM_SCAN
+(
+   COUNTOFTN,
+   SCAN_COMPLETE_DATE,
+   SUMOFnum_OF_PAGES,
+   COUNTOFTITLE,
+   SCANNED_BY
+)
+AS
+     SELECT COUNT (TN) CountOfTN,
+            Scan_Complete_Date,
+            SUM (num_of_pages) SumOfnum_of_pages,
+            COUNT (Title) CountOfTitle,
+            Scanned_by
+       FROM Book
+   GROUP BY Scan_Complete_Date, Scanned_by
+     HAVING ( ( (Scan_Complete_Date) = TO_DATE ('3/2/2011', 'dd/mm/yyyy')));
+
+
+DROP VIEW QRYREPROCESS;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW QRYREPROCESS
+(
+   TN,
+   EHDFOLDER,
+   PARENTFOLDER,
+   DRIVE_NAME,
+   FILES,
+   W_O_PREFIX
+)
+AS
+     SELECT tblSearchBackups.TN,
+            tblSearchBackups.EHDFolder,
+            tblSearchBackups.ParentFolder,
+            tblSearchBackups.Drive_Name,
+            tblSearchBackups.Files,
+            tblNTF_Blank.w_o_prefix
+       FROM    tblNTF_Blank
+            INNER JOIN
+               tblSearchBackups
+            ON tblNTF_Blank.w_o_prefix = tblSearchBackups.TN
+      WHERE (tblSearchBackups.TN IS NOT NULL)
+   ORDER BY tblSearchBackups.TN;
+
+
+DROP VIEW SCAN_DATE_WITHOUT_MATCHING_BKS;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW SCAN_DATE_WITHOUT_MATCHING_BKS
+(
+   TN,
+   SCAN_COMPLETE_DATE,
+   NUM_OF_PAGES,
+   FILES_RECEIVED_BY_OREM,
+   SITE,
+   DATE_RELEASED,
+   TN_6
+)
+AS
+   SELECT Scan_Date_Entry.TN,
+          Book.Scan_Complete_Date,
+          Book.Num_of_pages,
+          Book.Files_Received_by_Orem,
+          Book.Site,
+          Book.Date_Released,
+          Book.TN TN_6
+     FROM Scan_Date_Entry LEFT JOIN Book ON Scan_Date_Entry.TN = Book.TN;
+
+
+DROP VIEW SITE_AND_ARCHIVE_NOT_ONLINE;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW SITE_AND_ARCHIVE_NOT_ONLINE
+(
+   TN,
+   DATE_RELEASED,
+   PDF_OREM_ARCHIVED_DATE,
+   PDF_OREM_DRIVE_NAME,
+   SITE,
+   PDF_SENT_TO_LOAD
+)
+AS
+     SELECT TN,
+            Date_Released,
+            PDF_Orem_Archived_Date,
+            PDF_Orem_Drive_Name,
+            Site,
+            PDF_Sent_to_Load
+       FROM Book
+      WHERE (    ( (PDF_Orem_Archived_Date) IS NOT NULL)
+             AND (NOT (Site) = 'DNP')
+             AND ( (PID) IS NULL))
+   ORDER BY Book.Date_Released;
+
+
+DROP VIEW STATS_KOFAXED cascade;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW STATS_KOFAXED
+(
+   COUNTOFTN,
+   NUM_OF_PAGES,
+   MONTH,
+   YEAR,
+   SCANNED_BY,
+   SCANNEDBYANDDATE
+)
+AS
+     SELECT COUNT (Book.TN) AS CountOfTN,
+            SUM (Book.num_of_pages) AS Num_of_Pages,
+            TO_CHAR (Date_Released, 'Month') AS Month,
+            TO_CHAR (Date_Released, 'yyyy') AS Year,
+            Book.scanned_by AS scanned_by,
+            (   TRIM (TO_CHAR (Date_Released, 'Month'))
+             || TO_CHAR (Date_Released, 'yyyy')
+             || scanned_by)
+               AS ScannedByAndDate
+       FROM Book
+      WHERE (Book.Date_Released IS NOT NULL)
+   GROUP BY TO_CHAR (Date_Released, 'Month'),
+            TO_CHAR (Date_Released, 'yyyy'),
+            Book.scanned_by
+   ORDER BY ScannedByAndDate;
+
+
+DROP VIEW STATS_LOADED;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW STATS_LOADED
+(
+   COUNTOFTN,
+   NUM_OF_PAGES,
+   YEAR,
+   MONTH,
+   SCANNED_BY,
+   SCANNEDBYANDDATE
+)
+AS
+     SELECT COUNT (Book.TN) AS CountOfTN,
+            SUM (Book.num_of_pages) AS num_of_pages,
+            TO_CHAR (Date_Loaded, 'yyyy') AS Year,
+            TO_CHAR (Date_Loaded, 'Month') AS Month,
+            Book.scanned_by,
+            (   TRIM (TO_CHAR (Date_Loaded, 'Month'))
+             || TO_CHAR (Date_Loaded, 'yyyy')
+             || scanned_by)
+               AS ScannedByAndDate
+       FROM Book
+      WHERE (Book.Date_Loaded IS NOT NULL)
+   GROUP BY TO_CHAR (Date_Loaded, 'yyyy'),
+            TO_CHAR (Date_Loaded, 'Month'),
+            Book.scanned_by,
+            TO_CHAR (Date_Loaded, 'Month')
+   ORDER BY TO_CHAR (Date_Loaded, 'yyyy'), TO_CHAR (Date_Loaded, 'Month');
+
+
+DROP VIEW STATS_MONTHS cascade;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW STATS_MONTHS (MONTH)
+AS
+     SELECT TO_CHAR (Date_Loaded, 'Month') AS Month
+       FROM Book
+      WHERE TO_CHAR (Date_Loaded, 'mm') IS NOT NULL
+   GROUP BY TO_CHAR (Date_Loaded, 'Month'), TO_CHAR (Date_Loaded, 'mm')
+   ORDER BY TO_CHAR (Date_Loaded, 'mm');
+
+
+DROP VIEW STATS_SCANNED;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW STATS_SCANNED
+(
+   COUNTOFTN,
+   NUM_OF_PAGES,
+   MONTH,
+   YEAR,
+   SCANNED_BY,
+   SCANNEDBYANDDATE
+)
+AS
+     SELECT COUNT (Book.TN) AS CountOfTN,
+            SUM (Book.scan_num_of_pages) AS num_of_pages,
+            TO_CHAR (Scan_ia_Complete_Date, 'Month') AS Month,
+            TO_CHAR (Scan_ia_Complete_Date, 'yyyy') AS Year,
+            Book.scanned_by AS scanned_by,
+            (   TRIM (TO_CHAR (Scan_ia_Complete_Date, 'Month'))
+             || TO_CHAR (Scan_ia_Complete_Date, 'yyyy')
+             || scanned_by)
+               AS ScannedByAndDate
+       FROM Book
+      WHERE ( ( (Book.Scan_ia_Complete_Date) IS NOT NULL))
+   GROUP BY TO_CHAR (Scan_ia_Complete_Date, 'Month'),
+            TO_CHAR (Scan_ia_Complete_Date, 'yyyy'),
+            Book.scanned_by
+   ORDER BY TO_CHAR (Scan_ia_Complete_Date, 'Month'),
+            TO_CHAR (Scan_ia_Complete_Date, 'yyyy'),
+            Book.scanned_by;
+
+
+DROP VIEW STATS_SCANNED_BY;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW STATS_SCANNED_BY (SCANNED_BY)
+AS
+     SELECT Book.scanned_by
+       FROM Book
+   GROUP BY Book.scanned_by;
+
+
+DROP VIEW STATS_YEARS cascade;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW STATS_YEARS (YEAR)
+AS
+     SELECT TO_CHAR (scan_start_date, 'yyyy') AS Year
+       FROM Book
+   GROUP BY TO_CHAR (scan_start_date, 'yyyy')
+     HAVING TO_CHAR (scan_start_date, 'yyyy') IS NOT NULL
+   UNION
+     SELECT TO_CHAR (Date_Loaded, 'yyyy') AS Year
+       FROM Book
+   GROUP BY TO_CHAR (Date_Loaded, 'yyyy')
+     HAVING TO_CHAR (Date_Loaded, 'yyyy') IS NOT NULL;
+
+
+DROP VIEW S_01B_SCAN_IN_PROG cascade;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW S_01B_SCAN_IN_PROG
+(
+   TN,
+   PARTNER_LIB_CALL_num,
+   RECORD_NUMBER,
+   TITLE,
+   SCAN_NUM_OF_PAGES,
+   SCAN_MACHINE_ID,
+   SCAN_START_DATE,
+   SCAN_IMAGE_AUDITOR,
+   SCAN_IA_START_DATE,
+   FILES_SENT_TO_OREM,
+   REQUESTING_LOCATION,
+   SCANNED_BY
+)
+AS
+     SELECT Book.TN,
+            Book.partner_Lib_Call_num,
+            Book.record_number,
+            Book.title,
+            Book.scan_num_of_pages,
+            Book.scan_machine_id,
+            Book.Scan_start_Date,
+            Book.scan_Image_Auditor,
+            Book.scan_IA_start_Date,
+            Book.Files_Sent_to_Orem,
+            Book.requesting_location,
+            Book.scanned_by
+       FROM Book
+      WHERE     Book.Scan_start_Date IS NOT NULL
+            AND Book.Scan_complete_Date IS NULL
+            AND Book.Date_Released IS NULL
+            AND Book.Files_Sent_to_Orem IS NULL
+            AND files_received_by_orem IS NULL
+            AND Book.Date_loaded IS NULL
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+   ORDER BY Book.Scan_start_Date;
+
+
+DROP VIEW S_01_READY_SCAN cascade;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW S_01_READY_SCAN
+(
+   TN,
+   PARTNER_LIB_CALL_num,
+   RECORD_NUMBER,
+   TITLE,
+   SCAN_NUM_OF_PAGES,
+   SCAN_MACHINE_ID,
+   SCAN_START_DATE,
+   SCAN_IMAGE_AUDITOR,
+   SCAN_IA_START_DATE,
+   FILES_SENT_TO_OREM,
+   REQUESTING_LOCATION,
+   SCANNED_BY
+)
+AS
+     SELECT Book.TN,
+            Book.partner_Lib_Call_num,
+            Book.record_number,
+            Book.title,
+            Book.scan_num_of_pages,
+            Book.scan_machine_id,
+            Book.Scan_start_Date,
+            Book.scan_Image_Auditor,
+            Book.scan_IA_start_Date,
+            Book.Files_Sent_to_Orem,
+            Book.requesting_location,
+            Book.scanned_by
+       FROM Book
+      WHERE     Book.Scan_start_Date IS NULL
+            AND Book.Date_Released IS NULL
+            AND Book.Files_Sent_to_Orem IS NULL
+            AND book.files_received_by_orem IS NULL
+            AND Book.Date_loaded IS NULL
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+   ORDER BY Book.Scan_start_Date;
+
+
+DROP VIEW S_02_READY_IMAGE_AUDIT;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW S_02_READY_IMAGE_AUDIT
+(
+   TN,
+   PARTNER_LIB_CALL_num,
+   RECORD_NUMBER,
+   TITLE,
+   SCAN_NUM_OF_PAGES,
+   SCAN_MACHINE_ID,
+   SCAN_START_DATE,
+   SCAN_IMAGE_AUDITOR,
+   SCAN_IA_START_DATE,
+   FILES_SENT_TO_OREM,
+   REQUESTING_LOCATION,
+   SCANNED_BY
+)
+AS
+     SELECT Book.TN,
+            Book.partner_Lib_Call_num,
+            Book.record_number,
+            Book.title,
+            Book.scan_num_of_pages,
+            Book.scan_machine_id,
+            Book.Scan_start_Date,
+            Book.scan_Image_Auditor,
+            Book.scan_IA_start_Date,
+            Book.Files_Sent_to_Orem,
+            Book.requesting_location,
+            Book.scanned_by
+       FROM Book
+      WHERE     Book.Scan_complete_Date IS NOT NULL
+            AND Book.Scan_IA_Start_Date IS NULL
+            AND Book.Files_Sent_to_Orem IS NULL
+            AND files_received_by_orem IS NULL
+            AND Book.Date_Released IS NULL
+            AND Book.Date_loaded IS NULL
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+   ORDER BY Book.Scan_start_Date;
+
+
+DROP VIEW S_03_IMAGE_AUDITING_IN_PROG;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW S_03_IMAGE_AUDITING_IN_PROG
+(
+   TN,
+   PARTNER_LIB_CALL_num,
+   RECORD_NUMBER,
+   TITLE,
+   SCAN_IMAGE_AUDITOR,
+   SCAN_NUM_OF_PAGES,
+   SCAN_IA_START_DATE,
+   SITE,
+   SCAN_MACHINE_ID,
+   REQUESTING_LOCATION,
+   SCANNED_BY
+)
+AS
+   SELECT Book.TN,
+          Book.partner_Lib_Call_num,
+          Book.record_number,
+          Book.title,
+          Book.scan_Image_Auditor,
+          Book.scan_num_of_pages,
+          Book.scan_IA_start_Date,
+          Book.Site,
+          Book.scan_Machine_id,
+          Book.requesting_location,
+          Book.scanned_by
+     FROM Book
+    WHERE     Book.scan_Ia_start_date IS NOT NULL
+          AND Book.scan_Ia_complete_date IS NULL
+          AND Book.Files_Sent_to_Orem IS NULL
+          AND files_received_by_orem IS NULL
+          AND Book.Date_Released IS NULL
+          AND Book.Date_loaded IS NULL
+          AND Book.DNP IS NULL
+          AND book.property_right != 'Denied';
+
+
+DROP VIEW S_04_PROCESSED_READY_OREM;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW S_04_PROCESSED_READY_OREM
+(
+   TN,
+   PARTNER_LIB_CALL_num,
+   RECORD_NUMBER,
+   TITLE,
+   SCAN_NUM_OF_PAGES,
+   SCAN_IA_START_DATE,
+   REMARKS_FROM_SCAN_CENTER,
+   FILES_SENT_TO_OREM,
+   REQUESTING_LOCATION,
+   SCANNED_BY
+)
+AS
+     SELECT Book.TN,
+            Book.partner_Lib_Call_num,
+            Book.record_number,
+            Book.title,
+            Book.scan_num_of_pages,
+            Book.Scan_IA_Start_Date,
+            Book.Remarks_from_Scan_Center,
+            Book.Files_Sent_to_Orem,
+            Book.requesting_location,
+            Book.scanned_by
+       FROM Book
+      WHERE     Book.Scan_IA_complete_Date IS NOT NULL
+            AND Book.Files_Sent_to_Orem IS NULL
+            AND files_received_by_orem IS NULL
+            AND Book.Date_Released IS NULL
+            AND Book.Date_loaded IS NULL
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+   ORDER BY Book.Scan_IA_Start_Date, Book.Site DESC;
+
+
+DROP VIEW S_0X_ALL_QUEUES;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW S_0X_ALL_QUEUES
+(
+   TN,
+   STEP
+)
+AS
+   (SELECT tn, 'A- Ready to Scan' AS Step FROM S_01_Ready_scan
+    UNION
+    SELECT tn, 'B- Scan in Process' AS Step FROM S_01B_scan_in_prog
+    UNION
+    SELECT tn, 'C- Ready to Image Audit' AS Step FROM S_02_Ready_image_audit
+    UNION
+    SELECT tn, 'D- Image Auditing in Process' AS Step
+      FROM S_03_image_auditing_in_prog
+    UNION
+    SELECT tn, 'E- Processed Ready for Orem' AS Step
+      FROM S_04_processed_ready_orem);
+
+
+DROP VIEW S_TF_PROBLEMS;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW S_TF_PROBLEMS
+(
+   TN,
+   CALL_num,
+   PROBLEM_REASON,
+   PROBLEM_TEXT,
+   PROBLEM_DATE,
+   PROBLEM_INITIALS,
+   STATUS,
+   DNP,
+   REQUESTING_LOCATION,
+   SCANNED_BY
+)
+AS
+   SELECT TF_Notes.TN,
+          Book.Call_num,
+          TF_Notes.Problem_reason,
+          TF_Notes.Problem_Text,
+          TF_Notes.Problem_Date,
+          TF_Notes.Problem_Initials,
+          TF_Notes.Status,
+          Book.DNP,
+          Book.requesting_location,
+          Book.Scanned_by
+     FROM TF_Notes INNER JOIN Book ON TF_Notes.TN = Book.TN
+    WHERE     (    (    status NOT IN ('Notes', 'Problem Fixed')
+                    AND status IS NOT NULL)
+               AND ( (Book.DNP) IS NULL)
+               AND book.property_right != 'Denied'
+               AND ( (Book.DNP_deleted_off_line) IS NULL))
+          AND Book.Files_Sent_to_Orem IS NULL
+          AND files_received_by_orem IS NULL
+          AND Book.Date_Released IS NULL
+          AND Book.Date_loaded IS NULL;
+
+
+DROP VIEW S_TF_SOLUTION_FOUND;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW S_TF_SOLUTION_FOUND
+(
+   TN,
+   CALL_num,
+   SOLUTION_TEXT,
+   SOLUTION_DATE,
+   SOLUTION_INITIALS,
+   STATUS,
+   PROBLEM_REASON,
+   PROBLEM_TEXT,
+   REQUESTING_LOCATION,
+   SCANNED_BY
+)
+AS
+   SELECT TF_Notes.TN,
+          Book.Call_num,
+          TF_Notes.Solution_Text,
+          TF_Notes.Solution_Date,
+          TF_Notes.Solution_initials,
+          TF_Notes.Status,
+          TF_Notes.Problem_reason,
+          TF_Notes.Problem_Text,
+          Book.requesting_location,
+          Book.Scanned_by
+     FROM TF_Notes INNER JOIN Book ON TF_Notes.TN = Book.TN
+    WHERE (    (TF_Notes.Status = 'Solution Found')
+           AND ( (Book.DNP_Deleted_off_line) IS NULL)
+           AND ( (Book.DNP) IS NULL)
+           AND book.property_right != 'Denied');
+
+
+DROP VIEW TF_1_WAITING_FOR_FILES;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_1_WAITING_FOR_FILES
+(
+   TN,
+   NUM_OF_PAGES,
+   TIFF_OREM_DRIVE_NAME,
+   TIFF_COPY2_DRIVE_NAME,
+   PRIORITY_ITEM,
+   SCANNED_BY,
+   SITE,
+   LOCATION,
+   DNP,
+   FILES_RECEIVED_BY_OREM
+)
+AS
+     SELECT Book.TN,
+            Book.Num_of_pages,
+            Book.Tiff_Orem_Drive_Name,
+            Book.Tiff_Copy2_Drive_Name,
+            Book.Priority_Item,
+            book.scanned_by,
+            Book.Site,
+            Book.Location,
+            Book.DNP,
+            Book.Files_Received_by_Orem
+       FROM Book
+      WHERE     Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+            AND Book.Files_Received_by_Orem IS NULL
+            AND Book.Files_sent_to_orem IS NOT NULL
+            AND Book.IA_Start_Date IS NULL
+            AND Book.Date_Released IS NULL
+            AND site = 'Orem Digital Processing Center'
+   ORDER BY book.scanned_by;
+
+
+DROP VIEW TF_2_READY_TO_TITLE_CHECK;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_2_READY_TO_TITLE_CHECK
+(
+   TN,
+   NUM_OF_PAGES,
+   TIFF_OREM_DRIVE_NAME,
+   TIFF_COPY2_DRIVE_NAME,
+   PRIORITY_ITEM,
+   SITE,
+   LOCATION,
+   DNP,
+   FILES_RECEIVED_BY_OREM,
+   SCANNED_BY
+)
+AS
+     SELECT Book.TN,
+            Book.Num_of_pages,
+            Book.Tiff_Orem_Drive_Name,
+            Book.Tiff_Copy2_Drive_Name,
+            Book.Priority_Item,
+            Book.Site,
+            Book.Location,
+            Book.DNP,
+            Book.Files_Received_by_Orem,
+            Book.scanned_by
+       FROM Book
+      WHERE     Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+            AND Book.Files_Received_by_Orem IS NOT NULL
+            AND Book.IA_Start_Date IS NULL
+            AND Book.Date_Released IS NULL
+            AND site = 'Orem Digital Processing Center'
+   ORDER BY Book.Files_Received_by_Orem;
+
+
+DROP VIEW TF_3_TITLE_CHECK_IN_PROCESS;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_3_TITLE_CHECK_IN_PROCESS
+(
+   TN,
+   PRIORITY_ITEM,
+   IMAGE_AUDIT,
+   NUM_OF_PAGES,
+   IA_START_DATE,
+   IA_COMPLETE_DATE,
+   SITE,
+   SCANNED_BY
+)
+AS
+     SELECT BOOK.TN,
+            BOOK.Priority_Item,
+            BOOK.Image_Audit,
+            BOOK.Num_of_pages,
+            BOOK.IA_Start_Date,
+            BOOK.IA_Complete_Date,
+            BOOK.Site,
+            Book.scanned_by
+       FROM Book
+      WHERE     IA_Start_Date IS NOT NULL
+            AND IA_Complete_Date IS NULL
+            AND site = 'Orem Digital Processing Center'
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+            AND Book.Date_Released IS NULL
+   ORDER BY Book.Priority_Item, Book.Image_Audit;
+
+
+DROP VIEW TF_4A_OCR;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_4A_OCR
+(
+   TN,
+   TIFF_OREM_DRIVE_NAME,
+   NUM_OF_PAGES,
+   FILENAME,
+   LOCATION,
+   PRIORITY_ITEM,
+   SITE,
+   IMAGE_AUDIT,
+   IA_COMPLETE_DATE,
+   OCR_BY,
+   OCR_COMPLETE_DATE,
+   METADATA_COMPLETE,
+   DNP,
+   SCANNED_BY
+)
+AS
+     SELECT Book.TN,
+            Book.Tiff_Orem_Drive_Name,
+            Book.Num_of_pages,
+            Book.filename,
+            Book.Location,
+            Book.Priority_Item,
+            Book.Site,
+            Book.Image_Audit,
+            Book.IA_Complete_Date,
+            Book.OCR_by,
+            Book.OCR_complete_Date,
+            Book.Metadata_Complete,
+            Book.DNP,
+            Book.scanned_by
+       FROM Book
+      WHERE     Book.ocr_start_Date IS NOT NULL
+            AND book.ocr_complete_date IS NULL
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+            AND Book.Date_Released IS NULL
+            AND site = 'Orem Digital Processing Center'
+   ORDER BY Book.IA_Complete_Date;
+
+
+DROP VIEW TF_4B_PDF_DOWNLOAD;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_4B_PDF_DOWNLOAD
+(
+   TN,
+   TIFF_OREM_DRIVE_NAME,
+   NUM_OF_PAGES,
+   FILENAME,
+   LOCATION,
+   PRIORITY_ITEM,
+   SITE,
+   IMAGE_AUDIT,
+   IA_COMPLETE_DATE,
+   OCR_BY,
+   OCR_COMPLETE_DATE,
+   METADATA_COMPLETE,
+   DNP,
+   SCANNED_BY
+)
+AS
+     SELECT Book.TN,
+            Book.Tiff_Orem_Drive_Name,
+            Book.Num_of_pages,
+            Book.filename,
+            Book.Location,
+            Book.Priority_Item,
+            Book.Site,
+            Book.Image_Audit,
+            Book.IA_Complete_Date,
+            Book.OCR_by,
+            Book.OCR_complete_Date,
+            Book.Metadata_Complete,
+            Book.DNP,
+            Book.scanned_by
+       FROM Book
+      WHERE     Book.ocr_complete_Date IS NOT NULL
+            AND Book.pdf_download_Date IS NULL
+            AND Book.pdfreview_Start_date IS NULL
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+            AND Book.Date_Released IS NULL
+            AND site = 'Orem Digital Processing Center'
+   ORDER BY Book.IA_Complete_Date;
+
+
+DROP VIEW TF_4_READY_TO_OCR;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_4_READY_TO_OCR
+(
+   TN,
+   TIFF_OREM_DRIVE_NAME,
+   NUM_OF_PAGES,
+   FILENAME,
+   LOCATION,
+   PRIORITY_ITEM,
+   SITE,
+   IMAGE_AUDIT,
+   IA_COMPLETE_DATE,
+   OCR_BY,
+   OCR_COMPLETE_DATE,
+   METADATA_COMPLETE,
+   DNP,
+   SCANNED_BY
+)
+AS
+     SELECT Book.TN,
+            Book.Tiff_Orem_Drive_Name,
+            Book.Num_of_pages,
+            Book.filename,
+            Book.Location,
+            Book.Priority_Item,
+            Book.Site,
+            Book.Image_Audit,
+            Book.IA_Complete_Date,
+            Book.OCR_by,
+            Book.OCR_complete_Date,
+            Book.Metadata_Complete,
+            Book.DNP,
+            Book.scanned_by
+       FROM Book
+      WHERE     Book.IA_Complete_Date IS NOT NULL
+            AND Book.ocr_start_Date IS NULL
+            AND book.ocr_complete_date IS NULL
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+            AND Book.Date_Released IS NULL
+            AND site = 'Orem Digital Processing Center'
+   ORDER BY Book.IA_Complete_Date;
+
+
+DROP VIEW TF_5_READY_TO_PDFREVIEW;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_5_READY_TO_PDFREVIEW
+(
+   PRIORITY_ITEM,
+   SITE,
+   TN,
+   NUM_OF_PAGES,
+   IMAGE_AUDIT,
+   FILENAME,
+   OCR_COMPLETE_DATE,
+   SCANNED_BY
+)
+AS
+     SELECT Book.Priority_Item,
+            Book.Site,
+            Book.TN,
+            Book.Num_of_pages,
+            Book.Image_Audit,
+            Book.filename,
+            Book.OCR_complete_Date,
+            Book.scanned_by
+       FROM Book
+      WHERE     Book.pdf_download_date IS NOT NULL
+            AND Book.pdfreview_Start_date IS NULL
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+            AND site = 'Orem Digital Processing Center'
+            AND Book.Date_Released IS NULL
+   ORDER BY Book.OCR_complete_Date;
+
+
+DROP VIEW TF_6_PDFREVIEW_IN_PROCESS;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_6_PDFREVIEW_IN_PROCESS
+(
+   TN,
+   NUM_OF_PAGES,
+   SITE,
+   PDFREVIEW_BY,
+   PDFREVIEW_START_DATE,
+   SCANNED_BY
+)
+AS
+     SELECT BOOK.TN,
+            BOOK.Num_of_pages,
+            BOOK.Site,
+            BOOK.pdfreview_by,
+            BOOK.pdfreview_Start_date,
+            Book.scanned_by
+       FROM Book
+      WHERE     pdfreview_Start_date IS NOT NULL
+            AND PDF_Ready IS NULL
+            AND Book.DNP IS NULL
+            AND book.property_right != 'Denied'
+            AND Book.Date_Released IS NULL
+            AND site = 'Orem Digital Processing Center'
+   ORDER BY Book.pdfreview_by;
+
+
+DROP VIEW TF_ALLPROBLEMS;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_ALLPROBLEMS
+(
+   TN,
+   SCANNED_BY,
+   SCAN_COMPLETE_DATE,
+   PROBLEM_REASON,
+   PROBLEM_TEXT,
+   PROBLEM_DATE,
+   PROBLEM_INITIALS,
+   STATUS,
+   TITLE,
+   CALL_num,
+   DNP,
+   PROBLEM_LOCATION
+)
+AS
+   SELECT TF_Notes.TN,
+          Book.Scanned_by,
+          Book.Scan_Complete_Date,
+          TF_Notes.Problem_reason,
+          TF_Notes.Problem_Text,
+          TF_Notes.Problem_Date,
+          TF_Notes.Problem_Initials,
+          TF_Notes.Status,
+          Book.Title,
+          Book.Call_num,
+          Book.DNP,
+          CASE
+             WHEN    
+		Book.files_sent_to_orem IS NULL
+             THEN
+                Book.requesting_location
+             ELSE
+                Book.Site
+          END
+             AS Problem_Location
+     FROM TF_Notes JOIN Book ON TF_Notes.TN = Book.TN
+    WHERE (    (    status NOT IN ('Notes', 'Problem Fixed')
+                AND status IS NOT NULL)
+           AND ( (Book.DNP) IS NULL)
+           AND book.property_right != 'Denied');
+
+
+DROP VIEW TF_IN_PROC_PDF_DATE_NO_REL_DAT;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_IN_PROC_PDF_DATE_NO_REL_DAT
+(
+   TN,
+   NUM_OF_PAGES,
+   FILENAME,
+   SCANNED_BY,
+   PDF_READY,
+   DATE_RELEASED,
+   OWNING_INSTITUTION
+)
+AS
+     SELECT TN,
+            Num_of_pages,
+            filename,
+            scanned_by,
+            PDF_Ready,
+            Date_Released,
+            owning_institution
+       FROM Book
+      WHERE ( ( (PDF_Ready) IS NOT NULL) AND ( (Date_Released) IS NULL))
+   ORDER BY Book.Site, Book.PDF_Ready;
+
+
+DROP VIEW TF_LOADING_ENTRY_WITHOUT_MATCH;
+
+/* Formatted on 6/16/2014 9:43:05 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_LOADING_ENTRY_WITHOUT_MATCH
+(
+   TN,
+   PID
+)
+AS
+   SELECT TF_Loading_entry.TN, TF_Loading_entry.PID
+     FROM TF_Loading_entry LEFT JOIN Book ON TF_Loading_entry.TN = Book.TN
+    WHERE ( ( (Book.TN) IS NULL));
+
+
+DROP VIEW TF_LOADING_ENTRY_WITH_DATE_ALR;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_LOADING_ENTRY_WITH_DATE_ALR
+(
+   TN,
+   DATE_LOADED,
+   PID,
+   LOADING_ENTRY_PID,
+   PID_MATCH
+)
+AS
+   SELECT TF_Loading_entry.TN,
+          Book.Date_Loaded,
+          Book.PID,
+          TF_Loading_entry.PID Loading_Entry_PID,
+          CASE
+             WHEN Book.PID = TF_Loading_entry.PID OR Book.PID IS NULL
+             THEN
+                'Update OK'
+             ELSE
+                'FALSE!!!!!'
+          END
+             AS PID_Match
+     FROM TF_Loading_entry LEFT JOIN Book ON TF_Loading_entry.TN = Book.TN;
+
+
+DROP VIEW TF_PDF_ARCHIVING_COPY1_WO_M_B;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_PDF_ARCHIVING_COPY1_WO_M_B (TN)
+AS
+   SELECT PDF_Archiving_Copy1_Entry.TN
+     FROM    PDF_Archiving_Copy1_Entry
+          LEFT JOIN
+             Book
+          ON PDF_Archiving_Copy1_Entry.TN = Book.TN
+    WHERE ( ( (Book.TN) IS NULL));
+
+
+DROP VIEW TF_PDF_ARCHIVING_COPY1_W_DATE;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_PDF_ARCHIVING_COPY1_W_DATE
+(
+   TN,
+   SITE,
+   PDF_OREM_ARCHIVED_DATE,
+   PDF_OREM_DRIVE_SERIAL_num,
+   PDF_OREM_DRIVE_NAME,
+   PDF_COPY2_DRIVE_NAME,
+   PDF_COPY2_ARCHIVED_DATE
+)
+AS
+   SELECT PDF_Archiving_Copy1_Entry.TN,
+          Book.Site,
+          Book.PDF_Orem_Archived_Date,
+          Book.PDF_Orem_Drive_Serial_num,
+          Book.PDF_Orem_Drive_Name,
+          Book.PDF_Copy2_Drive_Name,
+          Book.PDF_Copy2_Archived_Date
+     FROM    PDF_Archiving_Copy1_Entry
+          LEFT JOIN
+             Book
+          ON PDF_Archiving_Copy1_Entry.TN = Book.TN;
+
+
+DROP VIEW TF_PDF_ARCHIVING_COPY2_WO_M_B;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_PDF_ARCHIVING_COPY2_WO_M_B (TN)
+AS
+   SELECT PDF_Archiving_Copy2_Entry.TN
+     FROM    PDF_Archiving_Copy2_Entry
+          LEFT JOIN
+             Book
+          ON PDF_Archiving_Copy2_Entry.TN = Book.TN
+    WHERE ( ( (Book.TN) IS NULL));
+
+
+DROP VIEW TF_PDF_ARCHIVING_COPY2_W_DATE;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_PDF_ARCHIVING_COPY2_W_DATE
+(
+   TN,
+   PDF_COPY2_DRIVE_SERIAL_num,
+   PDF_COPY2_DRIVE_NAME,
+   PDF_COPY2_ARCHIVED_DATE,
+   PDF_OREM_DRIVE_NAME,
+   PDF_OREM_ARCHIVED_DATE
+)
+AS
+   SELECT PDF_Archiving_Copy2_Entry.TN,
+          Book.PDF_Copy2_Drive_Serial_num,
+          Book.PDF_Copy2_Drive_Name,
+          Book.PDF_Copy2_Archived_Date,
+          Book.PDF_Orem_Drive_Name,
+          Book.PDF_Orem_Archived_Date
+     FROM    PDF_Archiving_Copy2_Entry
+          LEFT JOIN
+             Book
+          ON PDF_Archiving_Copy2_Entry.TN = Book.TN
+    WHERE ( ( (Book.PDF_Copy2_Archived_Date) IS NOT NULL));
+
+
+DROP VIEW TF_PROBLEMS;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_PROBLEMS
+(
+   TN,
+   SCANNED_BY,
+   SCAN_COMPLETE_DATE,
+   PROBLEM_REASON,
+   PROBLEM_TEXT,
+   PROBLEM_DATE,
+   PROBLEM_INITIALS,
+   STATUS,
+   TITLE,
+   CALL_num,
+   DNP
+)
+AS
+   SELECT TF_Notes.TN,
+          Book.Scanned_by,
+          Book.Scan_Complete_Date,
+          TF_Notes.problem_reason,
+          TF_Notes.Problem_Text,
+          TF_Notes.Problem_Date,
+          TF_Notes.Problem_Initials,
+          TF_Notes.Status,
+          Book.Title,
+          Book.Call_num,
+          Book.DNP
+     FROM TF_Notes JOIN Book ON TF_Notes.TN = Book.TN
+    WHERE     (    (    status NOT IN ('Notes', 'Problem Fixed')
+                    AND status IS NOT NULL)
+               AND ( (Book.DNP) IS NULL))
+          AND (   Book.Files_Sent_to_Orem IS NOT NULL
+               OR files_received_by_orem IS NOT NULL)
+          AND book.property_right != 'Denied';
+
+
+DROP VIEW TF_RECEIVED_IMAGES_WITH_DATE;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_RECEIVED_IMAGES_WITH_DATE
+(
+   TN,
+   NOTES_FROM_SITE,
+   PROBLEM_TEXT,
+   PROBLEM_DATE,
+   REMARKS_FROM_SCAN_CENTER,
+   FILES_RECEIVED_BY_OREM
+)
+AS
+   SELECT TF_Received_Images_entry.TN,
+          TF_Received_Images_entry.Notes_from_Site,
+          TF_Notes.Problem_Text,
+          TF_Notes.Problem_Date,
+          Book.Remarks_from_Scan_Center,
+          Book.Files_Received_by_Orem
+     FROM    (   TF_Received_Images_entry
+              LEFT JOIN
+                 Book
+              ON TF_Received_Images_entry.TN = Book.TN)
+          JOIN
+             TF_Notes
+          ON TF_Received_Images_entry.TN = TF_Notes.TN;
+
+
+DROP VIEW TF_RECEIVED_IMAGES_WO_MCH_BKS;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_RECEIVED_IMAGES_WO_MCH_BKS (TN)
+AS
+   SELECT TF_Received_Images_entry.TN
+     FROM    TF_Received_Images_entry
+          LEFT JOIN
+             Book
+          ON TF_Received_Images_entry.TN = Book.TN
+    WHERE ( ( (Book.TN) IS NULL));
+
+
+DROP VIEW TF_RELEASE_ENTRY_BATCH_CLASS;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_RELEASE_ENTRY_BATCH_CLASS
+(
+   TN,
+   BATCH_CLASS,
+   SCANNED_BY,
+   NUM_OF_PAGES
+)
+AS
+   SELECT TF_Released_entry.TN,
+          Book.Batch_Class,
+          Book.Scanned_by,
+          Book.Num_of_pages
+     FROM TF_Released_entry LEFT JOIN Book ON TF_Released_entry.TN = Book.TN;
+
+
+DROP VIEW TF_RELEASE_ENTRY_WITHOUT_MATCH;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_RELEASE_ENTRY_WITHOUT_MATCH (TN)
+AS
+   SELECT TF_Released_entry.TN
+     FROM TF_Released_entry LEFT JOIN Book ON TF_Released_entry.TN = Book.TN
+    WHERE ( ( (Book.TN) IS NULL));
+
+
+DROP VIEW TF_RELEASE_ENTRY_WITH_DATE_ALR;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_RELEASE_ENTRY_WITH_DATE_ALR
+(
+   TN,
+   DATE_RELEASED,
+   SITE,
+   NUM_OF_PAGES,
+   SCANNED_BY,
+   SCAN_COMPLETE_DATE,
+   FILES_RECEIVED_BY_OREM,
+   IMAGE_AUDIT,
+   IA_START_DATE,
+   IA_COMPLETE_DATE,
+   OCR_BY,
+   OCR_COMPLETE_DATE,
+   PDFREVIEW_BY,
+   PDFREVIEW_START_DATE,
+   PDF_READY,
+   PDF_SENT_TO_LOAD
+)
+AS
+   SELECT TF_Released_entry.TN,
+          Book.Date_Released,
+          Book.Site,
+          Book.Num_of_pages,
+          Book.Scanned_by,
+          Book.Scan_Complete_Date,
+          Book.Files_Received_by_Orem,
+          Book.Image_Audit,
+          Book.IA_Start_Date,
+          Book.IA_Complete_Date,
+          Book.ocr_by,
+          Book.ocr_complete_Date,
+          Book.pdfreview_by,
+          Book.pdfreview_Start_date,
+          Book.PDF_Ready,
+          Book.PDF_Sent_to_Load
+     FROM TF_Released_entry LEFT JOIN Book ON TF_Released_entry.TN = Book.TN;
+
+
+DROP VIEW TF_TIFF_ARCHIVING_COPY1_WO_M_B;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_TIFF_ARCHIVING_COPY1_WO_M_B (TN)
+AS
+   SELECT Tiff_Archiving_Copy1_Entry.TN
+     FROM    Tiff_Archiving_Copy1_Entry
+          LEFT JOIN
+             Book
+          ON Tiff_Archiving_Copy1_Entry.TN = Book.TN
+    WHERE ( ( (Book.TN) IS NULL));
+
+
+DROP VIEW TF_TIFF_ARCHIVING_COPY1_W_DATE;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_TIFF_ARCHIVING_COPY1_W_DATE
+(
+   TN,
+   TIFF_OREM_ARCHIVED_DATE,
+   TIFF_OREM_DRIVE_SERIAL_num,
+   TIFF_OREM_DRIVE_NAME,
+   TIFF_COPY2_DRIVE_NAME,
+   DATE_RELEASED
+)
+AS
+   SELECT Tiff_Archiving_Copy1_Entry.TN,
+          Book.Tiff_Orem_Archived_Date,
+          Book.Tiff_Orem_Drive_Serial_num,
+          Book.Tiff_Orem_Drive_Name,
+          Book.Tiff_Copy2_Drive_Name,
+          Book.Date_Released
+     FROM    Tiff_Archiving_Copy1_Entry
+          LEFT JOIN
+             Book
+          ON Tiff_Archiving_Copy1_Entry.TN = Book.TN;
+
+
+DROP VIEW TF_TIFF_ARCHIVING_COPY2_WO_M_B;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_TIFF_ARCHIVING_COPY2_WO_M_B (TN)
+AS
+   SELECT Tiff_Archiving_Copy2_Entry.TN
+     FROM    Tiff_Archiving_Copy2_Entry
+          LEFT JOIN
+             Book
+          ON Tiff_Archiving_Copy2_Entry.TN = Book.TN
+    WHERE ( ( (Book.TN) IS NULL));
+
+
+DROP VIEW TF_TIFF_ARCHIVING_COPY2_W_DATE;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_TIFF_ARCHIVING_COPY2_W_DATE
+(
+   TN,
+   TIFF_COPY2_DRIVE_SERIAL_num,
+   TIFF_COPY2_ARCHIVED_DATE,
+   TIFF_COPY2_DRIVE_NAME,
+   TIFF_OREM_DRIVE_NAME
+)
+AS
+   SELECT Tiff_Archiving_Copy2_Entry.TN,
+          Book.Tiff_Copy2_Drive_Serial_num,
+          Book.Tiff_Copy2_Archived_Date,
+          Book.Tiff_Copy2_Drive_Name,
+          Book.Tiff_Orem_Drive_Name
+     FROM    Tiff_Archiving_Copy2_Entry
+          LEFT JOIN
+             Book
+          ON Tiff_Archiving_Copy2_Entry.TN = Book.TN;
+
+
+DROP VIEW STATS_MONTHYEARSCANNEDBY;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW STATS_MONTHYEARSCANNEDBY
+(
+   YEAR,
+   MONTH,
+   SCANNED_BY,
+   SCANNEDBYANDDATE
+)
+AS
+     SELECT Stats_Years.Year,
+            TRIM (Stats_Months.Month) AS Month,
+            Stats_scanned_by.scanned_by,
+            (TRIM (Month) || Year || scanned_by) AS ScannedByAndDate
+       FROM Stats_Years, Stats_Months, Stats_scanned_by
+   ORDER BY scanned_by, month;
+
+
+DROP VIEW TFALL_0X_ALL_QUEUES;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TFALL_0X_ALL_QUEUES
+(
+   TN,
+   STEP
+)
+AS
+   (SELECT tn, 'A- Ready to Scan' AS Step FROM S_01_Ready_scan
+    UNION
+    SELECT tn, 'B- Scan in Process' AS Step FROM S_01B_scan_in_prog
+    UNION
+    SELECT tn, 'C- Ready to Image Audit' AS Step FROM S_02_Ready_image_audit
+    UNION
+    SELECT tn, 'D- Image Auditing in Process' AS Step
+      FROM S_03_image_auditing_in_prog
+    UNION
+    SELECT tn, 'E- Processed Ready for Orem' AS Step
+      FROM S_04_processed_ready_orem
+    UNION
+    SELECT tn, 'A- Files waiting to be received' AS Step
+      FROM TF_1_waiting_for_files
+    UNION
+    SELECT tn, 'B- Title Check' AS Step FROM TF_2_Ready_to_Title_Check
+    UNION
+    SELECT tn, 'C- Title Check in Process' AS Step
+      FROM TF_3_Title_Check_In_Process
+    UNION
+    SELECT tn, 'D- OCR Transfer Ready' AS Step FROM TF_4_Ready_to_OCR
+    UNION
+    SELECT tn, 'E- OCR Transfer in Process' AS Step FROM TF_4a_OCR
+    UNION
+    SELECT tn, 'F- PDF Download' AS Step FROM tf_4b_pdf_download
+    UNION
+    SELECT tn, 'G- PDF Review' AS Step FROM TF_5_Ready_to_pdfreview
+    UNION
+    SELECT tn, 'H- PDF Review in Process' AS Step
+      FROM TF_6_pdfreview_In_Process);
+
+
+DROP VIEW TF_0X_ALL_QUEUES;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW TF_0X_ALL_QUEUES
+(
+   TN,
+   STEP
+)
+AS
+   (SELECT tn, 'A- Files waiting to be received' AS Step
+      FROM TF_1_waiting_for_files
+    UNION
+    SELECT tn, 'B- Title Check' AS Step FROM TF_2_Ready_to_Title_Check
+    UNION
+    SELECT tn, 'C- Title Check in Process' AS Step
+      FROM TF_3_Title_Check_In_Process
+    UNION
+    SELECT tn, 'D- OCR Transfer Ready' AS Step FROM TF_4_Ready_to_OCR
+    UNION
+    SELECT tn, 'E- OCR Transfer in Process' AS Step FROM TF_4a_OCR
+    UNION
+    SELECT tn, 'F- PDF Download' AS Step FROM tf_4b_pdf_download
+    UNION
+    SELECT tn, 'G- PDF Review' AS Step FROM TF_5_Ready_to_pdfreview
+    UNION
+    SELECT tn, 'H- PDF Review in Process' AS Step
+      FROM TF_6_pdfreview_In_Process);
+
+
+DROP VIEW STATS_FINAL;
+
+/* Formatted on 6/16/2014 9:43:06 AM (QP5 v5.185.11230.41888) */
+CREATE OR REPLACE VIEW STATS_FINAL
+(
+   YEAR,
+   MONTH,
+   SCANNED_BY,
+   TITLES_SCANNED,
+   PAGES_SCANNED,
+   TITLES_KOFAXED,
+   PAGES_KOFAXED,
+   PAGES_LOADED,
+   TITLES_LOADED,
+   SCANNEDBYANDDATE
+)
+AS
+     SELECT Stats_MonthYearScannedBy.Year,
+            Stats_MonthYearScannedBy.Month,
+            Stats_MonthYearScannedBy.scanned_by,
+            CASE
+               WHEN Stats_Scanned.CountOfTN > 0 THEN Stats_Scanned.CountOfTN
+               ELSE 0
+            END
+               AS Titles_Scanned,
+            CASE
+               WHEN Stats_Scanned.Num_of_Pages > 0
+               THEN
+                  Stats_Scanned.Num_of_Pages
+               ELSE
+                  0
+            END
+               AS Pages_Scanned,
+            CASE
+               WHEN Stats_Kofaxed.CountOfTN > 0 THEN Stats_Kofaxed.CountOfTN
+               ELSE 0
+            END
+               AS Titles_Kofaxed,
+            CASE
+               WHEN Stats_Kofaxed.Num_of_pages > 0
+               THEN
+                  Stats_Kofaxed.Num_of_pages
+               ELSE
+                  0
+            END
+               AS Pages_Kofaxed,
+            CASE
+               WHEN Stats_Loaded.Num_of_pages > 0
+               THEN
+                  Stats_Loaded.Num_of_pages
+               ELSE
+                  0
+            END
+               AS Pages_Loaded,
+            CASE
+               WHEN Stats_Loaded.CountOfTN > 0 THEN Stats_Loaded.CountOfTN
+               ELSE 0
+            END
+               AS Titles_Loaded,
+            Stats_MonthYearScannedBy.ScannedByAndDate
+       FROM    (   (   Stats_MonthYearScannedBy
+                    LEFT JOIN
+                       Stats_Kofaxed
+                    ON Stats_MonthYearScannedBy.ScannedByAndDate =
+                          Stats_Kofaxed.ScannedByAndDate)
+                LEFT JOIN
+                   Stats_Loaded
+                ON Stats_MonthYearScannedBy.ScannedByAndDate =
+                      Stats_Loaded.ScannedByAndDate)
+            LEFT JOIN
+               Stats_Scanned
+            ON Stats_MonthYearScannedBy.ScannedByAndDate =
+                  Stats_Scanned.ScannedByAndDate
+   ORDER BY Stats_MonthYearScannedBy.Year DESC;

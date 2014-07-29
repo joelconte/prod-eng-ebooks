@@ -1,0 +1,14 @@
+update book set property_right = 'Copyright Protected' where property_right = 'Copy Protected';
+delete from propertyright where id =  'Copy Protected';
+
+update book set publication_type = 'Book' where publication_type is null and media_type != 'Serial';
+
+--todo orange county update all books, users
+insert into site col(id, is_fhc, is_scan_site) values('Orange County California FamilySearch Library', 'T', 'T');
+update Book set Site = 'Orange County California FamilySearch Library' where Site = 'Orange California Family History Center';
+update Book set owning_institution = 'Orange County California FamilySearch Library' where owning_institution = 'Orange California Family History Center';
+update Book set Requesting_Location = 'Orange County California FamilySearch Library' where Requesting_Location = 'Orange California Family History Center';
+update Book set Scanned_by = 'Orange County California FamilySearch Library' where Scanned_by = 'Orange California Family History Center';
+update users set primary_location = 'Orange County California FamilySearch Library' where  primary_location = 'Orange California Family History Center';
+
+delete from site where id = 'Orange California Family History Center';

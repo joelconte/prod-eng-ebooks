@@ -1,0 +1,15 @@
+ 
+
+
+update book set scanned_by = 'Larsen-Sant Public Library' where scanned_by = 'Larseon-Sant Public Library';end 
+update book set site  = 'Larsen-Sant Public Library' where site  = 'Larseon-Sant Public Library';end
+update book set owning_institution =  'Larsen-Sant Public Library' where owning_institution = 'Larseon-Sant Public Library';end
+update book set Requesting_Location =  'Larsen-Sant Public Library'  where Requesting_Location = 'Larseon-Sant Public Library';end
+update bookMETADATA  set owning_institution = 'Larsen-Sant Public Library'  where owning_institution = 'Larseon-Sant Public Library';end
+update bookMETADATA  set Requesting_Location = 'Larsen-Sant Public Library'  where Requesting_Location = 'Larseon-Sant Public Library';end
+update bookMETADATA  set scanning_Location = 'Larsen-Sant Public Library'  where scanning_Location = 'Larseon-Sant Public Library';end
+update users set primary_location = 'Larsen-Sant Public Library' where  primary_location = 'Larseon-Sant Public Library'
+
+ 
+delete from site where id = 'Larseon-Sant Public Library';end 
+ 

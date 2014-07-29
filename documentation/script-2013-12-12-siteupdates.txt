@@ -1,0 +1,42 @@
+insert into site col(id, publish_name, is_fhc, is_scan_site) values('Ogden Utah FamilySearch Library', 'Ogden Utah FamilySearch Library, FamilySearch International;  http://www.familysearch.org/', 'T', 'T');
+insert into site col(id, publish_name, is_fhc, is_scan_site) values('Mesa Arizona FamilySearch Library', 'Mesa Arizona FamilySearch Library, FamilySearch International;  http://www.familysearch.org/' ,'T', 'T');
+insert into site col(id, publish_name, is_fhc, is_scan_site) values('Sacramento California FamilySearch Library', 'Sacramento California FamilySearch Library; http://www.familyhistorycenter.info/index.html', 'T', 'T');
+ 
+ 
+
+update book set scanned_by = 'Ogden Utah FamilySearch Library' where scanned_by = 'Ogden Regional FHC';end
+update book set site  = 'Ogden Utah FamilySearch Library' where site  = 'Ogden Regional FHC';end
+update book set owning_institution =  'Ogden Utah FamilySearch Library' where owning_institution = 'Ogden Regional FHC';end
+update book set Requesting_Location =  'Ogden Utah FamilySearch Library'  where Requesting_Location = 'Ogden Regional FHC';end
+update bookMETADATA  set owning_institution = 'Ogden Utah FamilySearch Library'  where owning_institution = 'Ogden Regional FHC';end
+update bookMETADATA  set Requesting_Location = 'Ogden Utah FamilySearch Library'  where Requesting_Location = 'Ogden Regional FHC';end
+update bookMETADATA  set scanning_Location = 'Ogden Utah FamilySearch Library'  where scanning_Location = 'Ogden Regional FHC';end
+update users set primary_location = 'Ogden Utah FamilySearch Library' where  primary_location = 'Ogden Regional FHC'
+
+
+update book set scanned_by = 'Mesa Arizona FamilySearch Library' where scanned_by = 'Mesa Region FHC';end 
+update book set site  = 'Mesa Arizona FamilySearch Library' where site  = 'Mesa Region FHC';end
+update book set owning_institution =  'Mesa Arizona FamilySearch Library' where owning_institution = 'Mesa Region FHC';end
+update book set Requesting_Location =  'Mesa Arizona FamilySearch Library'  where Requesting_Location = 'Mesa Region FHC';end
+update bookMETADATA  set owning_institution = 'Mesa Arizona FamilySearch Library'  where owning_institution = 'Mesa Region FHC';end
+update bookMETADATA  set Requesting_Location = 'Mesa Arizona FamilySearch Library'  where Requesting_Location = 'Mesa Region FHC';end
+update bookMETADATA  set scanning_Location = 'Mesa Arizona FamilySearch Library'  where scanning_Location = 'Mesa Region FHC';end
+update users set primary_location = 'Mesa Arizona FamilySearch Library' where  primary_location = 'Mesa Region FHC'
+
+
+
+ 
+ 
+update book set scanned_by = 'Sacramento California FamilySearch Library' where scanned_by = 'Sacramento California Regional Family History Center';end
+update book set site  = 'Sacramento California FamilySearch Library' where site  = 'Sacramento California Regional Family History Center';end
+update book set owning_institution =  'Sacramento California FamilySearch Library' where owning_institution = 'Sacramento California Regional Family History Center';end
+update book set Requesting_Location =  'Sacramento California FamilySearch Library'  where Requesting_Location = 'Sacramento California Regional Family History Center';end
+update bookMETADATA  set owning_institution = 'Sacramento California FamilySearch Library'  where owning_institution = 'Sacramento California Regional Family History Center';end
+update bookMETADATA  set Requesting_Location = 'Sacramento California FamilySearch Library'  where Requesting_Location = 'Sacramento California Regional Family History Center';end 
+update bookMETADATA  set scanning_Location = 'Sacramento California FamilySearch Library'  where scanning_Location = 'Sacramento California Regional Family History Center';end 
+update users set primary_location = 'Sacramento California FamilySearch Library' where  primary_location = 'Sacramento California Regional Family History Center'
+
+delete from site where id = 'Ogden Regional FHC'
+delete from site where id = 'Mesa Region FHC'
+delete from site where id = 'Sacramento California Regional Family History Center'
+
