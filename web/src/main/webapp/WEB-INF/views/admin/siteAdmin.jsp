@@ -155,6 +155,7 @@
 					<c:when test="${mode=='read' && site.siteId != ''}">
 					<td><button id="update" name="update" value="update" onclick="updateUrl2('f1', 'siteAdmin', 'update' );">${messages['update']}</button></td>
 					<td><button id="create" name="create" value="create" onclick="updateUrl2('f1', 'siteAdmin', 'update&doCreate' );">${messages['createSite']}</button></td>
+					<td><button id="delete" name="delete" value="delete" onclick="updateUrl2('f1', 'siteAdmin', 'delete' );">${messages['deleteSite']}</button></td>
 					</c:when>
 					<c:when test="${mode=='read'}">
 					<td><button id="create" name="create" value="create" onclick="updateUrl2('f1', 'siteAdmin', 'update&doCreate' );">${messages['createSite']}</button></td>

@@ -81,6 +81,29 @@ public class SiteAdminController implements MessageSourceAware{
 		return "redirect:siteAdmin?read&siteId=" + siteIdNew; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
 	
+	//do delete
+	@RequestMapping(value="admin/siteAdmin", params="delete", method=RequestMethod.POST)
+	public String doSiteDelete(Site site, Model model, Locale locale) {
+
+		String tnList = bookService.getListTNsUsingSite(site.getSiteId());
+		String tnMetadataList = bookService.getListMetadataUsingSite(site.getSiteId());
+		String userList = bookService.getListUsersUsingSite(site.getSiteId());
+		if(tnList == null && tnMetadataList == null && userList == null) {
+			bookService.deleteSiteGoals(site.getSiteId());
+			bookService.deleteSite(site.getSiteId());
+		}else {
+			String failMsg =  messageSource.getMessage("site.deleteFailed0", null, locale)
+					+  messageSource.getMessage("site.deleteFailed1", null, locale) + tnList
+					+  messageSource.getMessage("site.deleteFailed2", null, locale) + tnMetadataList
+					+  messageSource.getMessage("site.deleteFailed3", null, locale) + userList;
+			model.addAttribute("bookErrorMessage", failMsg);
+			return "errors/generalError";
+		
+		}
+		
+		return "redirect:siteAdmin?read&siteId=" ; //redirect - guard against refresh-multi-updates and also update displayed url
+	} 
+	
 	//do cancel
 	@RequestMapping(value="admin/siteAdmin", params="cancel", method=RequestMethod.POST)
 	public String doSiteCancel( String siteIdNew, Model model) {

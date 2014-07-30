@@ -158,6 +158,9 @@ public interface BookService {
 
 	public void deleteSite(String id);
 	public Site getSite(String id);
+	public String getListTNsUsingSite(String id);
+	public String getListMetadataUsingSite(String id);
+	public String getListUsersUsingSite(String id);
 	
 	public List<List> getSiteGoals(String site); //all if null
 	public void deleteSiteGoals(String id);

@@ -2063,7 +2063,41 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 	}
 
+	@Override 
+	public String getListTNsUsingSite(String id) {
+		/*
+		update book set scanned_by = 'Larsen-Sant Public Library' where scanned_by = 'Larseon-Sant Public Library';end 
+		update book set site  = 'Larsen-Sant Public Library' where site  = 'Larseon-Sant Public Library';end
+		update book set owning_institution =  'Larsen-Sant Public Library' where owning_institution = 'Larseon-Sant Public Library';end
+		update book set Requesting_Location =  'Larsen-Sant Public Library'  where Requesting_Location = 'Larseon-Sant Public Library';end
+		update bookMETADATA  set owning_institution = 'Larsen-Sant Public Library'  where owning_institution = 'Larseon-Sant Public Library';end
+		update bookMETADATA  set Requesting_Location = 'Larsen-Sant Public Library'  where Requesting_Location = 'Larseon-Sant Public Library';end
+		update bookMETADATA  set scanning_Location = 'Larsen-Sant Public Library'  where scanning_Location = 'Larseon-Sant Public Library';end
+		update users set primary_location = 'Larsen-Sant Public Library' where  primary_location = 'Larseon-Sant Public Library'
+		*/
+		List<String> tnList= getJdbcTemplate().query("select tn from book a where site = ? or  owning_institution = ? or requesting_location = ? or scanned_by = ? ", new StringRowMapper(), id, id, id, id);
+	 
+		String tnListStr = generateQuotedListString(tnList);
+		return tnListStr;
+	}
 
+	@Override
+	public String getListMetadataUsingSite(String id) {
+		
+		List<String> tnMetadataList= getJdbcTemplate().query("select tn from bookMETADATA  where   owning_institution = ? or requesting_location = ? or scanning_location = ? ", new StringRowMapper(),  id, id, id);
+		String tnMetadataListStr = generateQuotedListString(tnMetadataList);
+		return tnMetadataListStr;
+	}
+
+	@Override
+	public String getListUsersUsingSite(String id) {
+		
+		List<String> userList= getJdbcTemplate().query("select id from users where primary_location = ? ", new StringRowMapper(), id);
+		String userListStr = generateQuotedListString(userList);
+		return userListStr;
+	}
+
+	
 	private static class SiteRowMapper implements RowMapper<Site> {
 		@Override
 		public Site mapRow(ResultSet rs, int rowNum) throws SQLException {
