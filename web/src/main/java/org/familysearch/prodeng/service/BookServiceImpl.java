@@ -2130,7 +2130,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override
 	public void deleteSiteGoals(String id) {
-		String sql = "DELETE FROM site_goal where lower(id) = '" + id.toLowerCase() + "' ";
+		String sql = "DELETE FROM site_goal where lower(site) = '" + id.toLowerCase() + "' ";
 	    getJdbcTemplate().update(sql);
 	}
 	

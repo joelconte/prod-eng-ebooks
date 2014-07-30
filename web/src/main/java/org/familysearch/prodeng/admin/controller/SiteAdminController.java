@@ -88,10 +88,10 @@ public class SiteAdminController implements MessageSourceAware{
 		String tnList = bookService.getListTNsUsingSite(site.getSiteId());
 		String tnMetadataList = bookService.getListMetadataUsingSite(site.getSiteId());
 		String userList = bookService.getListUsersUsingSite(site.getSiteId());
-		if(tnList.equals("") || tnMetadataList.equals("") ||  userList.equals("") ) {
+		if(!tnList.equals("") || !tnMetadataList.equals("") ||  !userList.equals("") ) {
 			String failMsg =  messageSource.getMessage("site.deleteFailed0", null, locale)
-					+  messageSource.getMessage("site.deleteFailed1", null, locale) + tnList
-					+  messageSource.getMessage("site.deleteFailed2", null, locale) + tnMetadataList
+					+  messageSource.getMessage("site.deleteFailed1", null, locale) + tnList + "<br>"
+					+  messageSource.getMessage("site.deleteFailed2", null, locale) + tnMetadataList + "<br>"
 					+  messageSource.getMessage("site.deleteFailed3", null, locale) + userList;
 			model.addAttribute("bookErrorMessage", failMsg);
 			return "errors/generalError";

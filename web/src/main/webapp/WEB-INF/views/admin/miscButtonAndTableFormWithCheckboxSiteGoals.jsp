@@ -41,7 +41,7 @@ window.onload=function(){
   <div class="row-fluid">
     <div class="span"> 
      
-	  	<%@include file="/WEB-INF/views/includes/processMenu.html"%>
+	  	<%@include file="/WEB-INF/views/includes/adminMenu.html"%>
 		<h1 class="serif">${pageTitle}</h1>
 	   
 		<sf:form id="f1" class="" name="f1" method="post" action="${buttonsAction}" modelAttribute="book">
