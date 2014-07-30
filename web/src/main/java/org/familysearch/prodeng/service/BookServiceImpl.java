@@ -2084,7 +2084,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public String getListMetadataUsingSite(String id) {
 		
-		List<String> tnMetadataList= getJdbcTemplate().query("select tn from bookMETADATA  where   owning_institution = ? or requesting_location = ? or scanning_location = ? ", new StringRowMapper(),  id, id, id);
+		List<String> tnMetadataList= getJdbcTemplate().query("select titleno from bookMETADATA  where   owning_institution = ? or requesting_location = ? or scanning_location = ? ", new StringRowMapper(),  id, id, id);
 		String tnMetadataListStr = generateQuotedListString(tnMetadataList);
 		return tnMetadataListStr;
 	}
