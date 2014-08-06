@@ -194,6 +194,7 @@ public interface BookService {
 	public Problem getProblem(String tn, String pn);
 	public Problem getNewProblem(String tn);
 	public void updateProblem(Problem problem);
+	public String getProblemReasonInUseList(String problemReasonList);
 
  
 	public List<String> getAllStatuses();

@@ -88,8 +88,15 @@ public class ProblemReasonAdminController implements MessageSourceAware{
 			if(problemReasonList.length()>1)
 				problemReasonList = problemReasonList.substring(1);//remove starting comma
 			
+			String tnList = bookService.getProblemReasonInUseList(problemReasonList);
+			if(!tnList.equals("")) {
+				String failMsg =  messageSource.getMessage("problemReason.deleteFailed0", null, locale)
+						+  messageSource.getMessage("problemReason.deleteFailed1", null, locale) + tnList + "<br>";
+				model.addAttribute("bookErrorMessage", failMsg);
+				return "errors/generalError";
+			}
+			
 			bookService.deleteProblemReasons(problemReasonList);
-		
 			return "redirect:problemReasonAdmin";
 		} 
 		

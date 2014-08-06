@@ -2615,6 +2615,18 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		 
 	}
 	
+
+	@Override 
+	public String getProblemReasonInUseList(String problemReasonList) {
+		 
+		List<String> tnList= getJdbcTemplate().query("select tn from tf_notes where problem_reason in ( "+ problemReasonList + " ) ", new StringRowMapper());
+	 
+		String tnListStr = generateQuotedListString(tnList);
+		return tnListStr;
+	}
+
+	
+	
 	private static class ProblemRowMapper implements RowMapper<Problem> {
 		@Override
 		public Problem mapRow(ResultSet rs, int rowNum) throws SQLException {
