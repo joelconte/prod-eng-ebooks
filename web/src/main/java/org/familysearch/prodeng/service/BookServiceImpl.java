@@ -165,10 +165,10 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public List<List> getScanProblemTnsInfo(String location){	
 		List tnList;
-		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select a.tn, q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, scanned_by from s_tf_problems a, s_0x_all_queues q where a.tn = q.tn ", new StringX9RowMapper());
+		if(location == null || location.equals("") || location.equals("All Problems"))
+			tnList = getJdbcTemplate().query("select a.tn, q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, scanned_by, a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX10RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select a.tn, q.step, status, problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, scanned_by from s_tf_problems  a , s_0x_all_queues q  where scanned_by  = ? and a.tn = q.tn", new Object[]{location},  new StringX9RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, q.step, status, problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, scanned_by  , a.solution_owner from TF_AllProblems  a , TFALL_0x_All_queues q  where a.solution_owner = ? and a.tn = q.tn", new Object[]{location},  new StringX10RowMapper());
 		return tnList;
 	}
 	
@@ -267,20 +267,19 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public List<List> getProcessProblemTnsInfo(String location){
 		List tnList;
-		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_# from tf_problems a , tf_0x_all_queues q where a.tn = q.tn ", new StringX9RowMapper());
+		if(location == null || location.equals("") || location.equals("All Sites"))
+			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_# , a.solution_owner from TF_AllProblems a , TFALL_0x_All_queues q where a.tn = q.tn ", new StringX10RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_# from tf_problems a, tf_0x_all_queues q where a.tn = q.tn and scanned_by  = ?", new Object[]{location},  new StringX9RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_# ,  a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn and a.solution_owner = ?", new Object[]{location},  new StringX10RowMapper());
 		
 		return tnList;
 	}
 	
 	
 	
-	
 	@Override
 	public List<List> getAdminProblemTnsInfo(){
-		List tnList = getJdbcTemplate().query("select a.tn,   q.step, status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, problem_Location from tf_allproblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX9RowMapper());
+		List tnList = getJdbcTemplate().query("select a.tn,   q.step, scan/process, status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, problem_Location from tf_allproblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX9RowMapper());
 		return tnList;
 	}
 	
@@ -2504,9 +2503,15 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		} 
 		
 		if (problem.isSolutionInitialsSet()) {
-			colList += "solution_Initials ";
-			valList += ":solutionInitials ";
+			colList += "solution_Initials, ";
+			valList += ":solutionInitials, ";
 			params.put("solutionInitials", problem.getSolutionInitials());
+		} 
+
+		if (problem.isSolutionOwnerSet()) {
+			colList += "solution_Owner ";
+			valList += ":solutionOwner ";
+			params.put("solutionOwner", problem.getSolutionOwner());
 		} 
 		 
 		sql += " (" + colList + ") values (" + valList + ")";
@@ -2600,8 +2605,13 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 
 		if (problem.isSolutionInitialsSet()) {
-			valList += "solution_Initials = :solutionInitials ";
+			valList += "solution_Initials = :solutionInitials, ";
 			params.put("solutionInitials", problem.getSolutionInitials()); 
+		}
+		
+		if (problem.isSolutionOwnerSet()) {
+			valList += "solution_owner = :solutionOwner ";
+			params.put("solutionOwner", problem.getSolutionOwner()); 
 		}
 		 
  
@@ -2642,7 +2652,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			problem.setSolutionText(rs.getString("solution_text"));
 			problem.setSolutionDate(rs.getTimestamp("solution_date"));
 			problem.setSolutionInitials(rs.getString("solution_initials"));
-		 
+			problem.setSolutionOwner(rs.getString("solution_owner"));
 			return problem;
 		}
 	}

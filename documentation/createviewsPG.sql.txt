@@ -1232,7 +1232,8 @@ AS
              ELSE
                 Book.Site
           END
-             AS Problem_Location
+             AS Problem_Location,
+	  tf_notes.solution_owner
      FROM TF_Notes JOIN Book ON TF_Notes.TN = Book.TN
     WHERE (    (    status NOT IN ('Notes', 'Problem Fixed')
                 AND status IS NOT NULL)

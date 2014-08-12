@@ -355,9 +355,7 @@ LEFT JOIN Stats_Scanned ON Stats_MonthYearScannedBy.ScannedByAndDate=Stats_Scann
 ORDER BY Stats_MonthYearScannedBy.Year DESC;
 
 
-
-
-
+ 
 DROP VIEW TF_AllProblems;
 CREATE OR REPLACE VIEW TF_AllProblems
 AS
@@ -375,14 +373,17 @@ SELECT TF_Notes.TN ,
        Case WHEN Book.files_sent_to_orem = '' OR Book.files_sent_to_orem IS NULL 
      		THEN Book.requesting_location 
      		ELSE Book.Site 
-	END as Problem_Location
+	END as Problem_Location,
+	tf_notes.solution_owner
   FROM TF_Notes 
          JOIN Book 
           ON TF_Notes.TN = Book.TN
   WHERE ( (status not in ('Notes', 'Problem Fixed') and status is not null) 
           AND ( (Book.DNP) IS NULL ) 
 and book.property_right != 'Denied' );
+
  
+
 
  
 DROP VIEW TF_Problems;

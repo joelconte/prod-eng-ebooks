@@ -343,7 +343,8 @@ CREATE TABLE TF_Notes (
   Problem_Initials varchar2(255 CHAR),
   Solution_Text  varchar2(2047 CHAR),
   Solution_Date TIMESTAMP,
-  Solution_initials varchar2(255 CHAR)
+  Solution_initials varchar2(255 CHAR),
+  solution_owner varchar2(255 char)
 );
  
 

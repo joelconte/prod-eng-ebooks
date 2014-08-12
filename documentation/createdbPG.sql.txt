@@ -774,7 +774,8 @@ CREATE TABLE TF_NOTES
   PROBLEM_INITIALS   varchar(255   ),
   SOLUTION_TEXT      varchar(2047   ),
   SOLUTION_DATE      TIMESTAMP(6),
-  SOLUTION_INITIALS  varchar(255   )
+  SOLUTION_INITIALS  varchar(255   ),
+SOLUTION_owner varchar(255)
 );
 
 
@@ -1163,3 +1164,8 @@ ALTER TABLE TF_NOTES ADD
   FOREIGN KEY (STATUS) 
   REFERENCES PROBLEM_STATUS (ID)
    ;
+
+
+
+ALTER TABLE tf_notes add constraint 
+	owner foreign key (solution_owner) references site(ID) ;

@@ -22,6 +22,7 @@ public class Problem implements Serializable {
     private String solutionText = "";
     private Timestamp solutionDate = null;
     private String solutionInitials = ""; 
+    private String solutionOwner = ""; 
     
     //since html form will only set values that are on a particular form, need to keep track of changed data
     private boolean pnSet = false; 
@@ -34,6 +35,7 @@ public class Problem implements Serializable {
     private boolean solutionTextSet = false;
     private boolean solutionDateSet = false;
     private boolean solutionInitialsSet = false;
+    private boolean solutionOwnerSet = false;
    
     
  
@@ -67,6 +69,9 @@ public class Problem implements Serializable {
 	}
 	public String getSolutionInitials() {
 		return solutionInitials;
+	} 
+	public String getSolutionOwner() {
+		return solutionOwner;
 	} 
 	
 	
@@ -119,6 +124,11 @@ public class Problem implements Serializable {
 		this.solutionInitials = initials;
 		this.solutionInitialsSet = true;
 	} 
+
+	public void setSolutionOwner(String owner) {
+		this.solutionOwner = owner;
+		this.solutionOwnerSet = true;
+	} 
 	
 	
 	/////////////methods to check if update/set //////////////
@@ -153,6 +163,9 @@ public class Problem implements Serializable {
 	}
 	public boolean isSolutionInitialsSet() {
 		return solutionInitialsSet;
+	} 
+	public boolean isSolutionOwnerSet() {
+		return solutionOwnerSet;
 	} 
 
 

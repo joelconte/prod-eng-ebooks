@@ -38,6 +38,7 @@ public class ProblemsFormController {
 		model.addAttribute("problem", bookService.getProblem(tn, pn)); //autoselect
 		model.addAttribute("allProblems", bookService.getBookProblemPns(tn)); 
 		model.addAttribute("allStatuses", bookService.getAllStatuses()); 
+		model.addAttribute("allSites", bookService.getAllSites()); 
 		return "problems/problemsForm";
 	}
 
@@ -61,7 +62,7 @@ public class ProblemsFormController {
 			model.addAttribute("problem", bookService.getProblem(tn, pn));  
 		model.addAttribute("allStatuses", bookService.getAllStatuses()); 
 		model.addAttribute("allProblemReasons", bookService.getAllProblemReasons()); 
-		
+		model.addAttribute("allSites", bookService.getAllSites()); 
 		return "problems/problemsForm";
 	} 
 	 

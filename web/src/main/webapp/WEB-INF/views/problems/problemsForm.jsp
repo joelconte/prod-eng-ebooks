@@ -112,8 +112,8 @@
 				
 				<td id="col2" class="colPadding" style="vertical-align: top;">
 					<table>
-					 
-						 
+	
+								 
 					<tr>
 					<td class="labelColSize">${messages['problems.solutionText']}</td>
 					<td>
@@ -132,6 +132,20 @@
 					<sf:input  path="solutionInitials" readonly="${isReadOnly}"/> 
 					</td>
 					</tr>
+					
+					<tr>
+					<td class="labelColSize">${messages['problems.solutionOwner']}</td>
+					<td>
+					<c:if test="${isReadOnly == true}"><sf:input  path="solutionOwner"  readonly="${isReadOnly}"   /></c:if>
+					<c:if test="${isReadOnly == false}">
+					<sf:select path="solutionOwner" >
+								<sf:option value=""/>
+								<sf:options items="${allSites}" />
+					</sf:select>
+					</c:if>
+					</td>
+					</tr>
+					
 					</table>
 				</td>
 			

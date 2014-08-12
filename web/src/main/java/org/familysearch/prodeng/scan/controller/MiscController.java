@@ -347,6 +347,7 @@ public class MiscController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("problemInitials", null, locale));		
 		labels.add(messageSource.getMessage("callNumber", null, locale));
 		labels.add(messageSource.getMessage("scanningLocation", null, locale));
+		labels.add(messageSource.getMessage("solutionOwner", null, locale));
 		model.addAttribute("pageTitle", messageSource.getMessage("scan.pageTitle.problems", null, locale) + " (" + ((location==null||location=="")?"All Locations":location) + ")");
 		model.addAttribute("colLabels", labels);
 		model.addAttribute("allTnsInfo", bookService.getScanProblemTnsInfo(location)); 
