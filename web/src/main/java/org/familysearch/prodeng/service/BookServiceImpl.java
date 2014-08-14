@@ -279,7 +279,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override
 	public List<List> getAdminProblemTnsInfo(){
-		List tnList = getJdbcTemplate().query("select a.tn,   q.step, scan/process, status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, problem_Location from tf_allproblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX9RowMapper());
+		List tnList = getJdbcTemplate().query("select a.tn,   q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#,  a.solution_owner from tf_allproblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX9RowMapper());
 		return tnList;
 	}
 	

@@ -49,6 +49,7 @@ public class MiscController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("problemDate", null, locale));
 		labels.add(messageSource.getMessage("problemInitials", null, locale));		
 		labels.add(messageSource.getMessage("callNumber", null, locale));
+		labels.add(messageSource.getMessage("solutionOwner", null, locale));
  
 		model.addAttribute("pageTitle", messageSource.getMessage("admin.pageTitle.problems", null, locale));
 		model.addAttribute("colLabels", labels);
