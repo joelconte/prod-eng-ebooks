@@ -73,3 +73,12 @@ username="${ds.username}"  />
 
  
   </GlobalNamingResources>
+
+
+**********************
+
+If you want to run on a non lds-tech ide, just export project (I did not even select the bookscan-web, just the parent) to a file.
+Copy BookScan dir to your eclipse workspace.
+Do Maven import and search for maven projects.  It should create both parent and web project
+Update web project properties and go to Deployment Assembly.  Click Add and select java build path entries and then Maven.
+Create apache server and make two file updates and then run.
