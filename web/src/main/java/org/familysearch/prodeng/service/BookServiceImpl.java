@@ -426,10 +426,21 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		return tnList;
 	}
 	@Override
-	public List<String> getAllSites() {
-		List<String> sList = getJdbcTemplate().query("select id from SITE", new StringRowMapper());
+	public List<String> getAllSitesIncludingInactive() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE order by id", new StringRowMapper());
 		return sList;
 	}
+	@Override
+	public List<String> getAllSites() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE  where  ( is_inactive_site !='T' or is_inactive_site is null) order by id", new StringRowMapper());
+		return sList;
+	}
+	@Override
+	public List<String> getAllScanSites() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE where is_scan_site = 'T' and  ( is_inactive_site !='T' or is_inactive_site is null)  order by id", new StringRowMapper());
+		return sList;
+	}
+	
 	
 	@Override
 	public List<String> getAllPropertyRights() {
@@ -1790,9 +1801,15 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	////site admin start////
 	@Override 
+	public List<List>  getAllSiteIdsIncludingInactive() {
+		//method returns list of lists for common miscButtonAndTableFormWithCheckBox
+		List sList = getJdbcTemplate().query("select id from SITE order by id", new StringRowMapper());
+		return sList;
+	}
+	@Override 
 	public List<List>  getAllSiteIds() {
 		//method returns list of lists for common miscButtonAndTableFormWithCheckBox
-		List sList = getJdbcTemplate().query("select id from SITE", new StringRowMapper());
+		List sList = getJdbcTemplate().query("select id from SITE  where  ( is_inactive_site !='T' or is_inactive_site is null)  order by id", new StringRowMapper());
 		return sList;
 	}
 	
@@ -1959,6 +1976,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			
 			sql = "update users set  users.primary_Location = '"+newId+"' where primary_Location = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
+			
+			sql = "update tf_notes set solution_owner = '"+newId+"' where solution_owner = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
 		
 			deleteSite(oldId);
 		}else {
@@ -2007,13 +2027,17 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				params.put("isScanSite", site.getIsScanSite());
 			}
 			 
-	
+			
 			if (site.isIsProcessSiteSet()) {
 				valList += "is_Process_Site = :isProcessSite, ";
 				params.put("isProcessSite", site.getIsProcessSite());
 			}
 			 
-			
+			if (site.isIsInactiveSiteSet()) {
+				valList += "is_inactive_Site = :isInactiveSite, ";
+				params.put("isInactiveSite", site.getIsInactiveSite());
+			}
+			 		
 			if (site.isIsPhysicalBookSiteSet()) {
 				valList += "is_Physical_Book_Site = :is_Physical_Book_Site, ";
 				params.put("isPhysicalBookSite", site.getIsPhysicalBookSite());
@@ -2079,7 +2103,17 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		String tnListStr = generateQuotedListString(tnList);
 		return tnListStr;
 	}
-
+	 
+	@Override 
+	public String getListProblemsUsingSite(String id) {
+		
+		List<String> tnList= getJdbcTemplate().query("select tn from tf_notes a where solution_owner = ? ", new StringRowMapper(), id);
+	 
+		String tnListStr = generateQuotedListString(tnList);
+		return tnListStr;
+	}
+	
+	
 	@Override
 	public String getListMetadataUsingSite(String id) {
 		
@@ -2110,6 +2144,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			site.setIsPartnerInstitution(rs.getString("is_partner_institution"));
 			site.setIsScanSite(rs.getString("is_scan_site"));
 			site.setIsProcessSite(rs.getString("is_process_site"));
+			site.setIsInactiveSite(rs.getString("is_inactive_site"));
 			site.setIsPhysicalBookSite(rs.getString("is_physical_book_site"));
 			return site;
 		}

@@ -76,8 +76,9 @@ public interface BookService {
 	public List<List> getSearchUrlsList(String tnList);
 	public List<List> getSearchPidsList(String tnList);
 
-	
+	public List<String> getAllSitesIncludingInactive();
 	public List<String> getAllSites();
+	public List<String> getAllScanSites();
 	public List<String> getAllPropertyRights();
 	public List<String> getAllPublicationTypes();
 	public List<List> getAllBatchClasses();
@@ -152,13 +153,15 @@ public interface BookService {
 	////lang admin end////
 	
 	////site admin start////
-	public List<List>  getAllSiteIds(); //for showing in a table of rows even though 1 column
+	public List<List>  getAllSiteIds(); //for showing in a table of rows even though 1 column'
+	public List<List>  getAllSiteIdsIncludingInactive();
 	public void createSite(Site site);
 	public String updateSite(Site site, String oldId);
 
 	public void deleteSite(String id);
 	public Site getSite(String id);
 	public String getListTNsUsingSite(String id);
+	public String getListProblemsUsingSite(String id);
 	public String getListMetadataUsingSite(String id);
 	public String getListUsersUsingSite(String id);
 	

@@ -121,6 +121,17 @@
 					</c:if>
 					</td>
 					</tr>
+					<tr>
+					<td class="labelColSize">${messages['siteAdmin.isNotActive']}</td>
+					<td>
+					<c:if test="${isReadOnly=='true'}">
+						<sf:checkbox  value="T" path="isInactiveSite" readonly="${isReadOnly}"/> 
+					</c:if>
+					<c:if test="${isReadOnly=='false'}">
+						<sf:checkbox  value="T" path="isInactiveSite"/> 
+					</c:if>
+					</td>
+					</tr>
 					
 					</table>
 				</td>

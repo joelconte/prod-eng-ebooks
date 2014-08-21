@@ -301,7 +301,8 @@ CREATE TABLE SITE
   IS_PARTNER_INSTITUTION  CHAR(1 ) DEFAULT 'F',
   IS_SCAN_SITE            CHAR(1 ) DEFAULT 'F',
   IS_PROCESS_SITE         CHAR(1 )          DEFAULT 'F',
-  IS_PHYSICAL_BOOK_SITE   CHAR(1 )          DEFAULT 'F'
+  IS_PHYSICAL_BOOK_SITE   CHAR(1 )          DEFAULT 'F',
+   IS_inactive_site       char(1) DEFAULT 'F'
 );
  
 

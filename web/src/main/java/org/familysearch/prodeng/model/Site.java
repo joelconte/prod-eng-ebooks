@@ -24,6 +24,7 @@ public class Site implements Serializable {
     private String isScanSite = "F";
     private String isProcessSite = "F";
     private String isPhysicalBookSite = "F"; 
+    private String isInactiveSite = "F"; 
     private List<List<String>> goals = null;
       
     private boolean siteIdSet = false;
@@ -36,6 +37,7 @@ public class Site implements Serializable {
     private boolean isScanSiteSet = false;
     private boolean isProcessSiteSet = false;
     private boolean isPhysicalBookSiteSet = false; 
+    private boolean isInactiveSiteSet = false; 
     private boolean isGoalsSet = false;
      
  
@@ -71,6 +73,9 @@ public class Site implements Serializable {
 	} 
 	public String getIsProcessSite() {
 		return isProcessSite;
+	}
+	public String getIsInactiveSite() {
+		return isInactiveSite;
 	}
 	public List<List<String>> getGoals() {
 		return goals;
@@ -128,6 +133,11 @@ public class Site implements Serializable {
 		this.isProcessSite = isProcessSite;
 		this.isProcessSiteSet = true;
 	}
+	
+	public void setIsInactiveSite(String isInactiveSite) {
+		this.isInactiveSite = isInactiveSite;
+		this.isInactiveSiteSet = true;
+	}
 
 	public void setGoals( List<List<String>> goals) {
 		this.goals = goals;
@@ -166,6 +176,9 @@ public class Site implements Serializable {
 	} 
 	public boolean isIsProcessSiteSet() {
 		return isProcessSiteSet;
+	}
+	public boolean isIsInactiveSiteSet() {
+		return isInactiveSiteSet;
 	}
 	public boolean isIsGoalsSet() {
 		return isGoalsSet;

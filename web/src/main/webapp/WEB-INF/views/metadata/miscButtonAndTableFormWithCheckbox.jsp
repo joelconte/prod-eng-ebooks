@@ -102,7 +102,7 @@ function showDupeMsgAfterPasteNewDataPost(){
     ${messages['requestingLocation']}
     <select id="site" name="site">
     	<option></option>
-    	<c:forEach var="i" items="${allSites}">
+    	<c:forEach var="i" items="${allScanSites}">
     	<c:if test="${i==site}"><option selected>${i}</option> </c:if>
 		<c:if test="${i!=site}"><option>${i}</option> </c:if>
 		</c:forEach>

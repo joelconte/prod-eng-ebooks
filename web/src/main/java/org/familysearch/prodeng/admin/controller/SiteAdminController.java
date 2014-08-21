@@ -43,7 +43,7 @@ public class SiteAdminController implements MessageSourceAware{
 	    model.addAttribute("pageTitle", messageSource.getMessage("admin.pageTitle.siteAdmin", null, locale));
 		model.addAttribute("mode", "read"); 
 	
-		model.addAttribute("allSiteIds", bookService.getAllSiteIds()); 
+		model.addAttribute("allSiteIds", bookService.getAllSiteIdsIncludingInactive()); 
 		 
 		model.addAttribute("site", bookService.getSite(siteId)); 
 		return "admin/siteAdmin";
@@ -56,7 +56,7 @@ public class SiteAdminController implements MessageSourceAware{
 		model.addAttribute("mode", "update");  
 		model.addAttribute("doCreate", doCreate); //if just update then null
 		model.addAttribute("allAuthorities", bookService.getAllAuthorities());
-		model.addAttribute("allLocations", bookService.getAllSites());
+		model.addAttribute("allLocations", bookService.getAllSitesIncludingInactive());
 		model.addAttribute("site", bookService.getSite(siteId)); 
 	 
 		return "admin/siteAdmin";
@@ -88,11 +88,14 @@ public class SiteAdminController implements MessageSourceAware{
 		String tnList = bookService.getListTNsUsingSite(site.getSiteId());
 		String tnMetadataList = bookService.getListMetadataUsingSite(site.getSiteId());
 		String userList = bookService.getListUsersUsingSite(site.getSiteId());
-		if(!tnList.equals("") || !tnMetadataList.equals("") ||  !userList.equals("") ) {
+		String problemList = bookService.getListProblemsUsingSite(site.getSiteId());
+	 
+		if(!tnList.equals("") || !tnMetadataList.equals("") ||  !userList.equals("") ||  !problemList.equals("") ) {
 			String failMsg =  messageSource.getMessage("site.deleteFailed0", null, locale)
 					+  messageSource.getMessage("site.deleteFailed1", null, locale) + tnList + "<br>"
 					+  messageSource.getMessage("site.deleteFailed2", null, locale) + tnMetadataList + "<br>"
-					+  messageSource.getMessage("site.deleteFailed3", null, locale) + userList;
+					+  messageSource.getMessage("site.deleteFailed3", null, locale) + userList  + "<br>"
+					+  messageSource.getMessage("site.deleteFailed4", null, locale) + problemList ;
 			model.addAttribute("bookErrorMessage", failMsg);
 			return "errors/generalError";
 			

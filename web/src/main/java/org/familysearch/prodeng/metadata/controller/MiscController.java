@@ -105,6 +105,7 @@ public class MiscController implements MessageSourceAware{
 		model.addAttribute("colLabels", labels);
 		model.addAttribute("allTnsInfo", md);  
 		model.addAttribute("allSites", bookService.getAllSites()); 
+		model.addAttribute("allScanSites", bookService.getAllScanSites()); 
 		model.addAttribute("tnColumnNumber", "3");//column where tn is located for creating url
 	 
 		 
