@@ -6,3 +6,4 @@ alter session set CURRENT_SCHEMA = bookscan;
  
 alter TABLE site add is_inactive_site char(1);
  
+insert into problem_status values ('Propose to Close');

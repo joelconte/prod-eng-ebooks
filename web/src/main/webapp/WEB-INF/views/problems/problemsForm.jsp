@@ -9,7 +9,25 @@
 <script src="//code.jquery.com/jquery-1.9.1.js"></script>
 <script src="//code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
  
-
+<script>
+function checkAuthority(){
+	var sel= document.getElementById("problemStatus");
+	var statusNew = sel.options[sel.selectedIndex].text;
+	
+	var auth= document.getElementById("authority").value;
+	var statusOrig = document.getElementById("statusOrig").value;
+	
+	if(auth != "true" && (statusOrig == "Problem" || statusOrig == "Solution Found" || statusOrig == "Propose to Close" )
+			&& (statusNew != "Problem" && statusNew != "Solution Found" && statusNew != "Propose to Close" ))
+	{
+		//only allow user to change back to problem, solution found, or propose to close
+		
+		alert("You must be a supervisor to change to this problem status.");
+		sel= document.getElementById("problemStatus");
+		sel.value = statusOrig;
+	} 
+}
+</script>
 <div class="container-fluid" id="main">
  
   <div class="row-fluid">
@@ -17,7 +35,12 @@
 
 	   
       <h1 class="serif">${messages['problems.pageTitle.problems']} - ${problem.tn} </h1>
-	  
+      
+	  <c:set var="hasAdmin" value="false"/>
+	  <security:authorize access="hasAnyRole('admin', 'supervisor')">    
+			<c:set var="hasAdmin" value="true"/>
+	  </security:authorize>
+					
 	    <c:if test="${mode=='read'}"><c:set var="isReadOnly" value="true"/></c:if>
 	    <c:if test="${mode!='read'}"><c:set var="isReadOnly" value="false"/></c:if>
 		<sf:form id="f1" style="margin: 0 0 60px 0;" class="" name="" method="post" action="" modelAttribute="problem">
@@ -65,7 +88,9 @@
 					<td>
 						<c:if test="${isReadOnly == true}"><sf:input path="status" readonly="${isReadOnly}"   /></c:if>
 						<c:if test="${isReadOnly == false}">
-							<sf:select path="status" >
+							<input type="hidden" id="authority" value="${hasAdmin}">
+							<input type="hidden" id="statusOrig" value="${problem.getStatus()}" }   />
+							<sf:select path="status" id="problemStatus" onchange="checkAuthority()">
 								<sf:option value=""/>
 								<sf:options items="${allStatuses}" />
 							</sf:select>
