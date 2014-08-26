@@ -12,7 +12,7 @@
  
  
       <h4 class="serif"><c:out value="${queryText}"/> </h4>
-	  
+	   <button id="exportButton" name="exportButton" value="exportButton" onclick="tableToExcel('tnTable', 'booklist'); return false;">${messages['createExcelFile']}</button> 
 		<table id="tnTable" class="sortable colSpace">
 			<!--<tr>
 			 		<c:forEach var="colLabel" items="${colLabels}">
