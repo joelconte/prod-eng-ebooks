@@ -9,7 +9,7 @@
 <script src="//code.jquery.com/jquery-1.9.1.js"></script>
 <script src="//code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
  
-<script>
+<script> 
 function checkAuthority(){
 	var sel= document.getElementById("problemStatus");
 	var statusNew = sel.options[sel.selectedIndex].text;
@@ -73,7 +73,7 @@ function checkAuthority(){
 			</div>
 		 
 			<table id="table-2cols">
-
+				<tr>
 				<td id="col1">
 					<table>
 				 	<tr>
@@ -89,7 +89,7 @@ function checkAuthority(){
 						<c:if test="${isReadOnly == true}"><sf:input path="status" readonly="${isReadOnly}"   /></c:if>
 						<c:if test="${isReadOnly == false}">
 							<input type="hidden" id="authority" value="${hasAdmin}">
-							<input type="hidden" id="statusOrig" value="${problem.getStatus()}" }   />
+							<input type="hidden" id="statusOrig" value="${problem.getStatus()}" />
 							<sf:select path="status" id="problemStatus" onchange="checkAuthority()">
 								<sf:option value=""/>
 								<sf:options items="${allStatuses}" />
@@ -97,16 +97,30 @@ function checkAuthority(){
 						</c:if>
 					</td>
 					</tr>
+					
 					 
-					 <tr>
+					
+					<tr>
 					<td class="labelColSize">${messages['problems.reason']}</td>
 					<td>
 						<c:if test="${isReadOnly == true}"><sf:input path="problemReason" readonly="${isReadOnly}"   /></c:if>
 						<c:if test="${isReadOnly == false}">
-							<sf:select path="problemReason" >
+							<sf:select id="problemReason"  path="problemReason" >
 								<sf:option value=""/>
-								<sf:options items="${allProblemReasons}" />
+								<sf:options items="${allProblemReasons2}" />
 							</sf:select>
+							<!--fixed by retuning List<Sting> from queyr
+							<sf:select id="problemReason"  path="problemReason"  >
+								<sf:option value=""/>
+								<c:forEach var="item" items="${allProblemReasons2}">
+									<c:if test="${item==problem.problemReason}">
+										<sf:option value="${item}" selected="true"/>
+									</c:if>
+									<c:if test="${item!=siteId}">
+										<sf:option value="${item}"/>
+									</c:if>
+								</c:forEach>
+							</sf:select>-->
 						</c:if>
 					</td>
 					</tr>
@@ -199,11 +213,11 @@ function checkAuthority(){
 					<c:when test="${mode=='read' && problem.pn != ''}">
 					<td><button id="update" name="update" value="update" onclick="updateUrl2('f1', 'problemsForm', 'update' );">${messages['update']}</button></td>
 					<td><button id="create" name="create" value="create" onclick="updateUrl2('f1', 'problemsForm', 'update&doCreate' );">${messages['createProblem']}</button></td>
-					<td><button id="cancel" name="cancel" value="cancel" onclick="JavaScript:window.close(); return false;">${messages['close']}</button></td></td>
+					<td><button id="cancel" name="cancel" value="cancel" onclick="JavaScript:window.close(); return false;">${messages['close']}</button></td>
 					</c:when>
 					<c:when test="${mode=='read'}">
 					<td><button id="create" name="create" value="create" onclick="updateUrl2('f1', 'problemsForm', 'update&doCreate' );">${messages['createProblem']}</button></td>
-					<td><button id="cancel" name="cancel" value="cancel" onclick="JavaScript:window.close(); return false;">${messages['close']}</button></td></td>
+					<td><button id="cancel" name="cancel" value="cancel" onclick="JavaScript:window.close(); return false;">${messages['close']}</button></td>
 					</c:when>
 					</c:choose>
 					

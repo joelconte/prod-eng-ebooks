@@ -202,6 +202,7 @@ public interface BookService {
  
 	public List<String> getAllStatuses();
 	public List<List> getAllProblemReasons();
+	public List<String> getAllProblemReasons2();
 	public void deleteProblemReasons(String list);
 	////problems end////
 	

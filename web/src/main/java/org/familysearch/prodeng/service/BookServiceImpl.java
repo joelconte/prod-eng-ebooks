@@ -2442,7 +2442,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		List sList = getJdbcTemplate().query("select id from problemreason ", new StringX1RowMapper());
 		return sList;
 	}	
-	
+	@Override 
+	public List<String> getAllProblemReasons2(){
+		List sList = getJdbcTemplate().query("select id from problemreason ", new StringRowMapper());
+		return sList;
+	}	
 	
 	@Override 
 	public void deleteProblemReasons(String list) {

@@ -62,6 +62,7 @@ public class ProblemsFormController {
 			model.addAttribute("problem", bookService.getProblem(tn, pn));  
 		model.addAttribute("allStatuses", bookService.getAllStatuses()); 
 		model.addAttribute("allProblemReasons", bookService.getAllProblemReasons()); 
+		model.addAttribute("allProblemReasons2", bookService.getAllProblemReasons2()); 
 		model.addAttribute("allSites", bookService.getAllSites()); 
 		return "problems/problemsForm";
 	} 
