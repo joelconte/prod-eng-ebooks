@@ -137,7 +137,7 @@ public class PostMiscController implements MessageSourceAware{
 	public String doInsertTnsReleasedBooksPost(String button, String tnData, Model model) {
 		if(button.equals("save")) {
 			 
-			List<List<String>> rows = bookService.parseExcelData(tnData, -1);
+			List<List<String>> rows = bookService.parseExcelData(tnData, 2);
 			bookService.insertBatch("TF_Released_ENTRY", new String[]{"TN", "DATE_RELEASED"}, new int[] {Types.VARCHAR, Types.TIMESTAMP}, rows); 
 		}
 		return "redirect:releasedBooks"; //redirect - guard against refresh-multi-updates and also update displayed url

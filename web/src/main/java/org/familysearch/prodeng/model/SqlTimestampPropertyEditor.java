@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 public class SqlTimestampPropertyEditor extends PropertyEditorSupport {
 
 	public static final String DEFAULT_BATCH_PATTERN = "yyyy-MM-dd"; 
-	public static final String BATCH_PATTERN_24HR = "mm/dd/yyyy HH:mm";
+	public static final String BATCH_PATTERN_24HR = "MM/dd/yyyy HH:mm";
 	public static final String BATCH_PATTERN2 = "yyyy-MM-dd HH:mm"; 
 	
 	private final SimpleDateFormat sdf, sdf24, sdf2;
@@ -80,7 +80,7 @@ public class SqlTimestampPropertyEditor extends PropertyEditorSupport {
 		String ampm = "";
 		if(text != null && text.length()>2)
 			ampm = text.substring(text.length()-2, text.length());
-		
+
 		try {
 			if(text.equals(""))
 				return null;
@@ -99,8 +99,8 @@ public class SqlTimestampPropertyEditor extends PropertyEditorSupport {
 				if (text.substring(4, 5).equals("-")) {
 					useThisSDF = sdf2;
 				}  
-
-		
+				 
+	  
 				return new Timestamp(useThisSDF.parse(text).getTime());
 			}
 		} catch (ParseException ex) {
