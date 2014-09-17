@@ -1776,7 +1776,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		return sList;
 	}
 	@Override 
-	public List<List>  getAllLanguageIds() {
+	public List<String>  getAllLanguageIds() {
 		//method returns list of lists for common miscButtonAndTableFormWithCheckBox
 		List sList = getJdbcTemplate().query("select id from languages", new StringRowMapper());
 		return sList;
@@ -1801,13 +1801,13 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	////site admin start////
 	@Override 
-	public List<List>  getAllSiteIdsIncludingInactive() {
+	public List<String>  getAllSiteIdsIncludingInactive() {
 		//method returns list of lists for common miscButtonAndTableFormWithCheckBox
 		List sList = getJdbcTemplate().query("select id from SITE order by id", new StringRowMapper());
 		return sList;
 	}
 	@Override 
-	public List<List>  getAllSiteIds() {
+	public List<String>  getAllSiteIds() {
 		//method returns list of lists for common miscButtonAndTableFormWithCheckBox
 		List sList = getJdbcTemplate().query("select id from SITE  where  ( is_inactive_site !='T' or is_inactive_site is null)  order by id", new StringRowMapper());
 		return sList;

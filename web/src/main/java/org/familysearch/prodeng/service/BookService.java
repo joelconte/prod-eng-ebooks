@@ -146,15 +146,15 @@ public interface BookService {
 	////search end////
 
 	////lang admin start////
-	public List<List> getAllLanguageIds();
+	public List<String> getAllLanguageIds();
 	public List<List>  getAllLanguageIdsAsRows();
 	public void createLanguage(String id);
 	public void deleteLanguages(String idList);
 	////lang admin end////
 	
 	////site admin start////
-	public List<List>  getAllSiteIds(); //for showing in a table of rows even though 1 column'
-	public List<List>  getAllSiteIdsIncludingInactive();
+	public List<String>  getAllSiteIds(); //for showing in a table of rows even though 1 column'
+	public List<String>  getAllSiteIdsIncludingInactive();
 	public void createSite(Site site);
 	public String updateSite(Site site, String oldId);
 

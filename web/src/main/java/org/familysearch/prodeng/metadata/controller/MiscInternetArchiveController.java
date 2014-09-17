@@ -263,16 +263,54 @@ public class MiscInternetArchiveController implements MessageSourceAware{
 		return "redirect:metadataInternetArchiveNewBooks"; //redirect get - guard against refresh-multi-updates and also update displayed url
 
 	}
+	boolean validateValueToList(List<String> valueList, String value){
+		if(value == null)
+			return true;
+		for(String l: valueList){
+			if(value.equals(l)){
+				//match
+				return true;
+			}
+		}
+		return false;
+	}
 	 
 	//do insert of pasted tn data for use in this page
 	@RequestMapping(value="metadata/doMetadataInternetArchiveNewBooksInsertTns", method=RequestMethod.POST)
 	public String doInsertTnsMetadataInternetArchiveNewBooksPost(HttpServletRequest req, String doUpdates, String button, String tnData, Principal principal,  Model model, Locale locale) {
 		if(button.equals("save")) {
-			 
+			List<String> langList = bookService.getAllLanguageIds();
+			List<String> siteList = bookService.getAllSiteIds();
+			
 			List<List<String>> rows = bookService.parseExcelData(tnData, 56);//!!need to update count when add new columnds
 			String tnList = "";
 			for(List<String> r : rows) {
 				tnList += ", '" + r.get(0) + "'";
+				
+				//validate some data
+				//sites
+				//scanned_by colN
+				//language is colK
+				//site is col AU
+				//owning_inst  col BC
+				boolean v1 = validateValueToList(siteList, r.get(13));//N
+				boolean v2 = validateValueToList(siteList, r.get(46));//AU
+				boolean v3 = validateValueToList(siteList, r.get(54));//BC
+				boolean v4 = validateValueToList(langList, r.get(10));
+				
+				if(v1 == false) {
+					model.addAttribute("bookErrorMessage", messageSource.getMessage("validationError1" , null, locale) +  "  " +  r.get(13));
+					return "errors/generalError";
+				}else if(v2 == false) {
+					model.addAttribute("bookErrorMessage", messageSource.getMessage("validationError1" , null, locale)+  "  " +  r.get(46));
+					return "errors/generalError";
+				}else if(v3 == false) {
+					model.addAttribute("bookErrorMessage", messageSource.getMessage("validationError1", null, locale) +  "  " +  r.get(54));
+					return "errors/generalError";
+				}else if(v4 == false) {
+					model.addAttribute("bookErrorMessage", messageSource.getMessage("validationError2" , null, locale)+  "  " +  r.get(10));
+					return "errors/generalError";
+				}
 			}
 			tnList = tnList.substring(2);
 			
