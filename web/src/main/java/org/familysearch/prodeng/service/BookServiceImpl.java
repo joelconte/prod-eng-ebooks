@@ -4647,7 +4647,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			//1/////////////////////////////////////////////////
 			//between bookmetadata start and bookmetadata end
 			runQueryForAgedDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata", "date_added", "sent_to_scan", "all",   extraDays, reduction, ret, 0);
-			ret[0][0] = "Phase 1 (metadata)";//catalog metadata
+			ret[0][0] = "Phase 1 (book pull/metadata)";//catalog metadata
 	
 			runQueryForAgedDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "book", "scan_start_date", "scan_ia_complete_date", "all", extraDays, reduction, ret, 1);
 			ret[1][0] = "Phase 2 (scan)"; //scan
@@ -4678,7 +4678,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			//1/////////////////////////////////////////////////
 			//between bookmetadata start and bookmetadata end
 			runQueryForAgedDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata", "date_added", "sent_to_scan", site,   extraDays, reduction, ret, 0);
-			ret[0][0] = "Phase 1 (metadata)";//catalog metadata
+			ret[0][0] = "Phase 1 (book pull/metadata)";//catalog metadata
 	
 			runQueryForAgedDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "book", "scan_start_date", "scan_ia_complete_date", site, extraDays, reduction, ret, 1);
 			ret[1][0] = "Phase 2 (scan)"; //scan
@@ -4761,7 +4761,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		double reduction = 1.0 - x;
 		//next get date slices (10 for now) make sure even number for start/end matching
 		List<String> dates = getDateSlicesByMonthly(yS, mS, dS, yE, mE, dE); //daysBetween is inclusive, but returned dates will contain ending date exclusive (bumped up to the next month)
-		String[][] ret = new String[1][3];//labels, goals, actuals
+		String[][] ret = new String[1][3];//labels, goals, actuals (monthly)
 		
 		//allFhc allPartnerLibs
 		if(site == null || site.equals("All Sites"))
@@ -4775,7 +4775,32 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			runQueryForGoals(dates, startDateYearFirst, endDateYearFirst, site, ret, 0);
 		}
 		
+		//in meeting decided to make chart a comulative graph.  (ie goal is a diagonal line from 0 to x and results will "s" around the diagonal line)
+		ret[0][1] =  makeComulitive(ret[0][1]);
+		ret[0][2] =  makeComulitive(ret[0][2]);
+		 
 		return ret;
+	}
+	
+	public String makeComulitive(String arrayOfNumbers) {
+		arrayOfNumbers = arrayOfNumbers.substring(1 );//trim off []
+		arrayOfNumbers = arrayOfNumbers.substring(0, arrayOfNumbers.length()-1);//trim off []
+		StringTokenizer st = new StringTokenizer(arrayOfNumbers, ",");
+		
+		String newArray = "[";
+		int total = 0;
+		while(st.hasMoreTokens()) {
+			String val = st.nextToken();
+			val = val.trim();
+			if(val.equals(""))
+				break;
+			int iVal = Integer.parseInt(val);
+			iVal += total;
+			total = iVal;
+			newArray = newArray + String.valueOf(iVal) + ",";
+		}
+		newArray = newArray.substring(0, newArray.length() - 1) + "]";
+		return newArray;
 	}
 	
 	public String addStringArrays(String a0, String a1, String a2, String a3) {
@@ -5954,6 +5979,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		 double avg = 0;
 		 if(tnCountTotalAll != 0)
 			 avg = ((double)daysBetween)/((double)tnCountTotalAll);
+		 	 avg = avg*24*60;//get minutes
 		 ret[arrayIndex][1] = (String) String.format("%.3f", avg);//avg
 		 ret[arrayIndex][2] = arrayStrTns;
 		 ret[arrayIndex][3] = calculateSlope(firstPeriodTNCount, lastPeriodTNCount);
@@ -6081,8 +6107,9 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	}
 	
 
-	public void runQueryForGoals(List<String> dates, String startDateYearFirst, String endDateYearFirst, String site, String[][] ret, int arrayIndex) {
+	public void runQueryForGoals(List<String> dates, String startDateYearFirst, String endDateYearFirst, String site, String[][] ret,  int arrayIndex) {
 		
+ 
 
 		List<List> vals = null;
 		String arrayStrLabels = "[";

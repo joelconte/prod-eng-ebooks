@@ -654,7 +654,7 @@ $(function() {
 			<table>
 			<tr class="secondaryRowHeader">
 				<td></td>
-				<td align="center" class="secondaryTd">Avg Days per Book</td>
+				<td align="center" class="secondaryTd">Avg minutes per Book</td>
 				<td align="center" class="secondaryTd">Trend</td>
 				<td align="center" class="arrowTdHeader"><span class="gArrow">&#65514;</span><span class="rArrow">&#65516; &nbsp;</span></td>
 			</tr>
