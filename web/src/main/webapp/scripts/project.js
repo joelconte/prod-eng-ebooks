@@ -294,6 +294,8 @@ function processBookState(){
 			//setValueInDom("scan_start_date", getCurrentTimestamp());
 			setValueInDom("scan_start_date", "");
 			setValueInDom("scanned_by", scannedBy);//Cathy req
+			setValueInDom("pull_date", "");//102014
+		
 			break;
 		case "/scan/scanInProgress":
 	 

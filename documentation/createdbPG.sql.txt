@@ -1,6 +1,6 @@
 ﻿ 
 
-DROP TABLE AUTHORITY ;
+DROP TABLE AUTHORITY  cascade;
 
 CREATE TABLE AUTHORITY
 (
@@ -10,7 +10,7 @@ CREATE TABLE AUTHORITY
 
  
 
-DROP TABLE BATCHCLASS ;
+DROP TABLE BATCHCLASS  cascade;
 
 CREATE TABLE BATCHCLASS
 (
@@ -54,90 +54,7 @@ CREATE TABLE BOOKMETADATAUPDATE
   OWNING_INSTITUTION   varchar(255   )
 );
 
-
-DROP TABLE BOOKTEMP  cascade;
-
-
-CREATE TABLE BOOKTEMP
-(
-  TN                          varchar(255   ),
-  SECONDARY_IDENTIFIER        varchar(255   ),
-  OCLC_NUMBER                 varchar(255   ),
-  ISBN_ISSN                   varchar(255   ),
-  TITLE                       varchar(2047   ),
-  AUTHOR                      varchar(255   ),
-  PROPERTY_RIGHT              varchar(255   ),
-  PUBLICATION_TYPE            varchar(255   ),
-  CALL_NUM                      varchar(255   ),
-  PARTNER_LIB_CALL_NUM          varchar(255   ),
-  PRIORITY_ITEM               CHAR(1 )      DEFAULT 'F',
-  WITHDRAWN                   CHAR(1 ) DEFAULT 'F',
-  DIGITAL_COPY_ONLY           CHAR(1 ) DEFAULT 'F',
-  MEDIA_TYPE                  varchar(255   ),
-  METADATA_COMPLETE           TIMESTAMP(6),
-  BATCH_CLASS                 varchar(255   ),
-  LANGUAGE                    varchar(255   ),
-  REMARKS_FROM_SCAN_CENTER    varchar(2047   ),
-  REMARKS_ABOUT_BOOK          varchar(2047   ),
-  RECORD_NUMBER               varchar(255   ),
-  REQUESTING_LOCATION         varchar(255   ),
-  OWNING_INSTITUTION          varchar(255   ),
-  SCANNED_BY                  varchar(255   ),
-  SCAN_OPERATOR               varchar(255   ),
-  SCAN_MACHINE_ID             varchar(255   ),
-  SCAN_METADATA_COMPLETE      TIMESTAMP(6),
-  LOCATION                    varchar(255   ),
-  SCAN_START_DATE             TIMESTAMP(6),
-  SCAN_COMPLETE_DATE          TIMESTAMP(6),
-  SCAN_IMAGE_AUDITOR          varchar(255   ),
-  SCAN_IA_START_DATE          TIMESTAMP(6),
-  SCAN_IA_COMPLETE_DATE       TIMESTAMP(6),
-  FILES_SENT_TO_OREM          TIMESTAMP(6),
-  SCAN_NUM_OF_PAGES           integer,
-  NUM_OF_PAGES                integer,
-  FILES_RECEIVED_BY_OREM      TIMESTAMP(6),
-  IMAGE_AUDIT                 varchar(255   ),
-  IA_START_DATE               TIMESTAMP(6),
-  IA_COMPLETE_DATE            TIMESTAMP(6),
-  OCR_BY                      varchar(255   ),
-  OCR_START_DATE              TIMESTAMP(6),
-  OCR_COMPLETE_DATE           TIMESTAMP(6),
-  KOFAXED_BY                  varchar(255   ),
-  KOFAX_START_DATE            TIMESTAMP(6),
-  PDF_READY                   TIMESTAMP(6),
-  DATE_RELEASED               TIMESTAMP(6),
-  COMPRESSION_CODE            varchar(255   ),
-  LOADED_BY                   varchar(255   ),
-  DATE_LOADED                 TIMESTAMP(6),
-  COLLECTION                  varchar(255   ),
-  DNP                         varchar(255   ),
-  DNP_DELETED_OFF_LINE        varchar(255   ),
-  TN_CHANGE_HISTORY           varchar(255   ),
-  PDF_OREM_ARCHIVED_DATE      TIMESTAMP(6),
-  PDF_OREM_DRIVE_SERIAL_NUM     varchar(255   ),
-  PDF_OREM_DRIVE_NAME         varchar(255   ),
-  PDF_COPY2_ARCHIVED_DATE     TIMESTAMP(6),
-  PDF_COPY2_DRIVE_SERIAL_NUM    varchar(255   ),
-  PDF_COPY2_DRIVE_NAME        varchar(255   ),
-  TIFF_OREM_ARCHIVED_DATE     TIMESTAMP(6),
-  TIFF_OREM_DRIVE_SERIAL_NUM    varchar(255   ),
-  TIFF_OREM_DRIVE_NAME        varchar(255   ),
-  TIFF_COPY2_ARCHIVED_DATE    TIMESTAMP(6),
-  TIFF_COPY2_DRIVE_SERIAL_NUM   varchar(255   ),
-  TIFF_COPY2_DRIVE_NAME       varchar(255   ),
-  PDF_SENT_TO_LOAD            TIMESTAMP(6),
-  SITE                        varchar(255   ),
-  URL                         varchar(255   ),
-  PID                         varchar(255   ),
-  PAGES_ONLINE                integer,
-  SUBJECT                     varchar(4000   ),
-  FILMNO                      varchar(255   ),
-  PAGES_PHYSICAL_DESCRIPTION  varchar(255   ),
-  SUMMARY                     varchar(2047   ),
-  DGSNO                       varchar(255   ),
-  DATE_ORIGINAL               TIMESTAMP(6),
-  PUBLISHER_ORIGINAL          varchar(255   )
-);
+ 
  
 DROP TABLE BOOK_LOCK  cascade;
 
@@ -150,7 +67,7 @@ CREATE TABLE BOOK_LOCK
 );
 
  
-DROP TABLE COMPRESSION_ENTRY ;
+DROP TABLE COMPRESSION_ENTRY cascade ;
 
 CREATE TABLE COMPRESSION_ENTRY
 (
@@ -160,7 +77,7 @@ CREATE TABLE COMPRESSION_ENTRY
 );
  
 
-DROP TABLE JP_UPDATE_TITLES ;
+DROP TABLE JP_UPDATE_TITLES cascade ;
 
 CREATE TABLE JP_UPDATE_TITLES
 (
@@ -187,7 +104,7 @@ CREATE TABLE MEDIA
   ID  varchar(255   )
 );
  
-DROP TABLE NUMBER_OF_IMAGES_ENTRY ;
+DROP TABLE NUMBER_OF_IMAGES_ENTRY cascade ;
 
 CREATE TABLE NUMBER_OF_IMAGES_ENTRY
 (
@@ -197,7 +114,7 @@ CREATE TABLE NUMBER_OF_IMAGES_ENTRY
 
  
 
-DROP TABLE PDF_ARCHIVING_COPY1_ENTRY ;
+DROP TABLE PDF_ARCHIVING_COPY1_ENTRY cascade ;
 
 CREATE TABLE PDF_ARCHIVING_COPY1_ENTRY
 (
@@ -208,7 +125,7 @@ CREATE TABLE PDF_ARCHIVING_COPY1_ENTRY
 );
 
  
-DROP TABLE PDF_ARCHIVING_COPY2_ENTRY ;
+DROP TABLE PDF_ARCHIVING_COPY2_ENTRY cascade ;
 
 CREATE TABLE PDF_ARCHIVING_COPY2_ENTRY
 (
@@ -275,7 +192,7 @@ CREATE TABLE SCAN_DATE_ENTRY
 );
 
  
-DROP TABLE SEARCH ;
+DROP TABLE SEARCH cascade ;
 
 CREATE TABLE SEARCH
 (
@@ -306,7 +223,7 @@ CREATE TABLE SITE
 );
  
 
-DROP TABLE SITE_GOAL ;
+DROP TABLE SITE_GOAL cascade ;
 
 CREATE TABLE SITE_GOAL
 (
@@ -316,7 +233,7 @@ CREATE TABLE SITE_GOAL
 );
 
  
-DROP TABLE STATUS ;
+DROP TABLE STATUS cascade  ;
 
 CREATE TABLE STATUS
 (
@@ -325,7 +242,7 @@ CREATE TABLE STATUS
 
  
 
-DROP TABLE SWITCHBOARD_ITEMS ;
+DROP TABLE SWITCHBOARD_ITEMS cascade ;
 
 CREATE TABLE SWITCHBOARD_ITEMS
 (
@@ -338,7 +255,7 @@ CREATE TABLE SWITCHBOARD_ITEMS
 
  
 
-DROP TABLE TBLNTF_BLANK ;
+DROP TABLE TBLNTF_BLANK  cascade;
 
 CREATE TABLE TBLNTF_BLANK
 (
@@ -355,7 +272,7 @@ CREATE TABLE TBLNTF_BLANK
 );
  
 
-DROP TABLE TBLROS_02TIF ;
+DROP TABLE TBLROS_02TIF cascade ;
 
 CREATE TABLE TBLROS_02TIF
 (
@@ -365,7 +282,7 @@ CREATE TABLE TBLROS_02TIF
 );
 
 
-DROP TABLE TBLSEARCHBACKUPS ;
+DROP TABLE TBLSEARCHBACKUPS  cascade;
 
 CREATE TABLE TBLSEARCHBACKUPS
 (
@@ -378,7 +295,7 @@ CREATE TABLE TBLSEARCHBACKUPS
 
  
 
-DROP TABLE TF_LOADING_ENTRY ;
+DROP TABLE TF_LOADING_ENTRY cascade ;
 
 CREATE TABLE TF_LOADING_ENTRY
 (
@@ -392,7 +309,7 @@ CREATE TABLE TF_LOADING_ENTRY
 );
  
 
-DROP TABLE TF_RECEIVED_IMAGES_ENTRY ;
+DROP TABLE TF_RECEIVED_IMAGES_ENTRY cascade ;
 
 CREATE TABLE TF_RECEIVED_IMAGES_ENTRY
 (
@@ -402,7 +319,7 @@ CREATE TABLE TF_RECEIVED_IMAGES_ENTRY
 
  
 
-DROP TABLE TF_RELEASED_ENTRY ;
+DROP TABLE TF_RELEASED_ENTRY cascade ;
 
 CREATE TABLE TF_RELEASED_ENTRY
 (
@@ -412,7 +329,7 @@ CREATE TABLE TF_RELEASED_ENTRY
 );
 
  
-DROP TABLE TIFF_ARCHIVING_COPY1_ENTRY ;
+DROP TABLE TIFF_ARCHIVING_COPY1_ENTRY cascade ;
 
 CREATE TABLE TIFF_ARCHIVING_COPY1_ENTRY
 (
@@ -423,7 +340,7 @@ CREATE TABLE TIFF_ARCHIVING_COPY1_ENTRY
 );
  
 
-DROP TABLE TIFF_ARCHIVING_COPY2_ENTRY ;
+DROP TABLE TIFF_ARCHIVING_COPY2_ENTRY cascade ;
 
 CREATE TABLE TIFF_ARCHIVING_COPY2_ENTRY
 (
@@ -452,7 +369,7 @@ CREATE TABLE USERS
 
  
 
-DROP TABLE USER_AUTHORITIES ;
+DROP TABLE USER_AUTHORITIES cascade ;
 
 CREATE TABLE USER_AUTHORITIES
 (
@@ -581,6 +498,7 @@ CREATE TABLE BOOK
   RECORD_NUMBER               varchar(255   ),
   REQUESTING_LOCATION         varchar(255   ),
   OWNING_INSTITUTION          varchar(255   ),
+  PULL_DATE                   TIMESTAMP(6),
   SCANNED_BY                  varchar(255   ),
   SCAN_OPERATOR               varchar(255   ),
   SCAN_MACHINE_ID             varchar(255   ),
@@ -677,7 +595,7 @@ CREATE TABLE BOOKMETADATA
 );
  
 
-DROP TABLE IABOOKMETADATA ;
+DROP TABLE IABOOKMETADATA cascade ;
 
 CREATE TABLE IABOOKMETADATA
 (
@@ -762,7 +680,7 @@ CREATE TABLE IABOOKMETADATA
   FHC_TN                      varchar(255   )
 );
  
-DROP TABLE TF_NOTES ;
+DROP TABLE TF_NOTES cascade ;
 
 CREATE TABLE TF_NOTES
 (
@@ -818,20 +736,8 @@ ALTER TABLE BOOKMETADATAUPDATE ADD
   UNIQUE (OCLC_NUMBER);
 ALTER TABLE BOOKMETADATAUPDATE ADD 
   UNIQUE (ISBN_ISSN);
+ 
 
-ALTER TABLE BOOKTEMP ADD 
-  CHECK (priority_item IN ('T', 'F'));
-ALTER TABLE BOOKTEMP ADD 
-  CHECK (Withdrawn IN ('T', 'F'));
-ALTER TABLE BOOKTEMP ADD 
-  CHECK (Digital_Copy_Only  IN ('T', 'F'));
-ALTER TABLE BOOKTEMP ADD 
-  UNIQUE (SECONDARY_IDENTIFIER);
-ALTER TABLE BOOKTEMP ADD 
-  UNIQUE (OCLC_NUMBER);
-ALTER TABLE BOOKTEMP ADD 
-  UNIQUE (ISBN_ISSN)
-   ;
 
 ALTER TABLE BOOK_LOCK ADD 
   PRIMARY KEY
@@ -1170,3 +1076,27 @@ ALTER TABLE TF_NOTES ADD
 
 ALTER TABLE tf_notes add constraint 
 	owner foreign key (solution_owner) references site(ID) ;
+
+
+
+
+
+DROP TABLE bookviewingstats CASCADE;
+
+CREATE TABLE bookviewingstats
+(
+PID varchar(255) NOT NULL, 
+num_of_views integer, 
+title varchar(2047 )  , 
+access_rights varchar(255), 
+collection varchar(2047 ),
+tn varchar(255) NOT NULL,
+Publisher varchar(255 ),
+owning_institution varchar(255),  
+ie_url varchar(255),
+report_date date
+); 
+
+ALTER TABLE bookviewingstats ADD 
+  PRIMARY KEY
+  (pid, report_date);

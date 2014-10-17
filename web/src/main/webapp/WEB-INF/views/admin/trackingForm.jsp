@@ -67,6 +67,7 @@ $( "#tiff_orem_archived_date" ).datepicker();
 $( "#tiff_copy2_archived_date" ).datepicker();
 $( "#date_original" ).datepicker();
 $( "#date_republished" ).datepicker();
+$( "#pull_date" ).datepicker();
 });
 </script>
 
@@ -405,6 +406,12 @@ $( "#date_republished" ).datepicker();
 				<td id="col2" class="colPadding" style="vertical-align: top;">
 					<table>
 					<tr>
+					<td>${messages['trackingForm.pullDate']}</td>
+					<td><sf:input id="pull_date" path="pullDate" readonly="${isReadOnly}" />
+						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('pull_date'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
+					</td>
+					</tr>
+					<tr>
 					<td>${messages['trackingForm.requestingLocation']}</td>
 					<td>
 						<c:if test="${isReadOnly == true}"><sf:input  path="requestingLocation"  readonly="${isReadOnly}"   /></c:if>
@@ -416,6 +423,7 @@ $( "#date_republished" ).datepicker();
 						</c:if>
 					</td>
 					</tr>
+					
 				    <tr>
 					<td>${messages['trackingForm.scannedBy']}</td>
 					<td>

@@ -51,6 +51,7 @@ $( "#scan_ia_start_date" ).datepicker();
 $( "#scan_ia_complete_date" ).datepicker();
 $( "#metadata_complete" ).datepicker();
 $( "#files_sent_to_orem" ).datepicker();
+$( "#pull_date" ).datepicker();
 setTimeout(processBookState, 100);
 displayBookNotFoundMsg();
 });
@@ -276,6 +277,12 @@ displayBookNotFoundMsg();
 				
 				<td id="col2" class="colPadding" style="vertical-align: top;">
 					<table>
+					<tr>
+					<td>${messages['trackingForm.pullDate']}</td>
+					<td><sf:input id="pull_date" path="pullDate" readonly="${isReadOnly}" />
+						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('pull_date'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
+					</td>
+					</tr>
 					<tr>
 					<td>${messages['trackingForm.requestingLocation']}</td>
 					<td>
