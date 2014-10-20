@@ -21,12 +21,12 @@ tn varchar2(255 CHAR) NOT NULL,
 Publisher varchar2(255 CHAR),
 owning_institution varchar2(255 CHAR),  
 ie_url varchar2(255 CHAR),
-report_date date,
+report_date date);
 
 
- CONSTRAINT pk1 PRIMARY KEY 
+alter table bookviewingstats 
+ add CONSTRAINT pk1 PRIMARY KEY 
   (
-    tn, report_date
+    pid, report_date
   )
-  ENABLE 
-); 
+  ENABLE ; 
