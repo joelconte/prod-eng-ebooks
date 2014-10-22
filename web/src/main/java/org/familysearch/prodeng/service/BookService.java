@@ -100,7 +100,7 @@ public interface BookService {
 	public void updatePdfArchivingCopy1();
 	public void deletePdfArchivingCopy2Entry();
 	public void updatePdfArchivingCopy2();
-	public void updateLoadingEntry();
+	public String updateLoadingEntry();
 	public void deleteLoadingEntry();
 	public void updateReleaseEntry();
 	public void deleteReleaseEntry();

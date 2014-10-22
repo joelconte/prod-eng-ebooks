@@ -821,12 +821,22 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 	
 	@Override
-	public void updateLoadingEntry() {
+	public String updateLoadingEntry() {
 		//this moves notes from x table to Book table
-		String sql = "UPDATE (select a.Collection old1, a.date_loaded old2, a.loaded_by old3, a.pages_online old4, a.url old5, a.pid old6,  b.collection new1, b.date_loaded new2, b.Loaded_by new3, b.pages_online new4, b.url new5, b.pid new6 from book a, TF_Loading_entry b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3,  old4 = new4,  old5 = new5,  old6 = new6  ";
+
+		String sql = "SELECT tn FROM TF_Loading_entry where date_loaded is null"; 
+		List<String> tns = getJdbcTemplate().query(sql, new StringRowMapper());
+		if(tns != null && tns.size()>0) {
+			return getMessageString("loadingError");
+		}
+		//validate date exists
+		
+	    sql = "UPDATE (select a.Collection old1, a.date_loaded old2, a.loaded_by old3, a.pages_online old4, a.url old5, a.pid old6,  b.collection new1, b.date_loaded new2, b.Loaded_by new3, b.pages_online new4, b.url new5, b.pid new6 from book a, TF_Loading_entry b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3,  old4 = new4,  old5 = new5,  old6 = new6  ";
 				
 	    getJdbcTemplate().update(sql);
+	    return null;
 	}
+	
 	@Override
 	public void deleteLoadingEntry() {
 		String sql = "DELETE FROM TF_Loading_entry";

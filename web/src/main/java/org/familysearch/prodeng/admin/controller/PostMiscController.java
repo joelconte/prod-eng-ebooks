@@ -220,7 +220,11 @@ public class PostMiscController implements MessageSourceAware{
 			model.addAttribute("allTnsInfo", bookService.getAdminLoadingEntryWithMatchingDateTnsInfo()); 
 			return "admin/miscBookList";
 		}else if("update".equals(button)) {
-			bookService.updateLoadingEntry();
+			String msg = bookService.updateLoadingEntry();
+			if(msg != null) {
+				model.addAttribute("bookErrorMessage", msg);
+				return "errors/generalError";
+			}
 			bookService.deleteLoadingEntry(); 
 			return "redirect:booksLoadedOnline";  //redirect get - guard against refresh-multi-updates and also update displayed url
 		}else if("clearQueryForm".equals(button)) {
