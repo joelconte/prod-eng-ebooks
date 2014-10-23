@@ -1617,7 +1617,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	////search start////
 	@Override
 	public List<String> getAllSearchIds() {
-		List<String> idList = getJdbcTemplate().query("select id from search", new StringRowMapper());	
+		List<String> idList = getJdbcTemplate().query("select id from search order by id", new StringRowMapper());	
 		return idList;
 	}
 	
