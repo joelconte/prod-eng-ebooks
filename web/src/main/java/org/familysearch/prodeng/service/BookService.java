@@ -258,6 +258,12 @@ public interface BookService {
 	public void deleteAllInternetArchiveNewMetadata();
 	///metadata end///
 	
+	////viewingreport////
+	public String getDuplicatesInViewingReport(List<String> pidList, List<String> dateList);
+	public List<List> getViewingReports();
+	public void deleteSelectedViewingReports(List<String> pidList, List<String> dateList);
+	////viewingreport end////
+		
 	///reports///
 	public List<List> getStatsFinal(String year, String month,  String scannedBy);
 	public List<List> getStatsTn( String year, String month, String scannedBy);

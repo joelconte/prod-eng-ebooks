@@ -45,6 +45,9 @@
 			<tr><td>
 			<a href="backupAdmin" id="a10">${messages['admin.backupAdmin']}</a>
 			</td></tr>
+			<tr><td>
+			<a href="viewingReports" id="a11">${messages['admin.addViewingReport']}</a>
+			</td></tr>
 			</table>
 		</form>
 		</security:authorize>

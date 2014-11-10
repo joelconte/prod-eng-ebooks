@@ -1,6 +1,7 @@
 package org.familysearch.prodeng.model;
 
 import java.beans.PropertyEditorSupport;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,8 +12,9 @@ public class SqlTimestampPropertyEditor extends PropertyEditorSupport {
 	public static final String DEFAULT_BATCH_PATTERN = "yyyy-MM-dd"; 
 	public static final String BATCH_PATTERN_24HR = "MM/dd/yyyy HH:mm";
 	public static final String BATCH_PATTERN2 = "yyyy-MM-dd HH:mm"; 
+	public static final String DATE_FORMAT3 = "MM/dd/yyyy"; 
 	
-	private final SimpleDateFormat sdf, sdf24, sdf2;
+	private final SimpleDateFormat sdf, sdf24, sdf2, sdf3;
  
 	public SqlTimestampPropertyEditor() {
 		this.sdf = new SimpleDateFormat(
@@ -21,6 +23,8 @@ public class SqlTimestampPropertyEditor extends PropertyEditorSupport {
 				SqlTimestampPropertyEditor.BATCH_PATTERN_24HR);
 		this.sdf2 = new SimpleDateFormat(
 				SqlTimestampPropertyEditor.BATCH_PATTERN2);
+		this.sdf3 = new SimpleDateFormat(
+				SqlTimestampPropertyEditor.DATE_FORMAT3);
 	}
 
 	/**
@@ -35,6 +39,7 @@ public class SqlTimestampPropertyEditor extends PropertyEditorSupport {
 		this.sdf = new SimpleDateFormat(pattern);
 		this.sdf24 = new SimpleDateFormat(BATCH_PATTERN_24HR); 
 		this.sdf2 = new SimpleDateFormat(BATCH_PATTERN2);
+		this.sdf3 = new SimpleDateFormat(DATE_FORMAT3);
 	}
 
 	/**
@@ -108,6 +113,28 @@ public class SqlTimestampPropertyEditor extends PropertyEditorSupport {
 					+ ex.getMessage(), ex);
 		}
 	}
+	
+
+	//same logic as setAsText, but helper method that just returns the Date object
+	public Date textToDate(String text) throws IllegalArgumentException {
+	
+		SimpleDateFormat useThisSDF = this.sdf3;
+	 
+
+		try {
+			if(text.equals(""))
+				return null;
+			 
+				 
+	  
+			return new Date(useThisSDF.parse(text).getTime());
+			
+		} catch (ParseException ex) {
+			throw new IllegalArgumentException("Could not parse date: "
+					+ ex.getMessage(), ex);
+		}
+	}
+	
 	/**
 	 * Format the Timestamp as String, using the specified DateFormat.
 	 */

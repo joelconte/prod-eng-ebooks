@@ -665,6 +665,10 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 					//if "current_timestamp" then already hardcoded it above as value
 					if(!val.equals("current_timestamp"))
 						params.put(columnNames[iCol], tsConvert.textToTimestamp(val));//only put in value if not current_timestamp
+				}else if(colTypes[iCol] == Types.DATE && val != null){
+					//if "current_timestamp" then already hardcoded it above as value
+					if(!val.equals("current_timestamp"))
+						params.put(columnNames[iCol], tsConvert.textToDate(val));//only put in value if not current_timestamp
 				}else {
 					params.put(columnNames[iCol], val);
 				}
@@ -2856,7 +2860,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		return all;
 	}
 
- 
+	
 	@Override 
 	public String getDuplicateTnsInBook(String tnList){
 		if(tnList == "")
@@ -4095,7 +4099,59 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
 	////locking end////
 	
+	
+	////viewingreport////
+	@Override 
+	public String getDuplicatesInViewingReport(List<String> pidList, List<String> dateList){
+		String sqlWhere = "";
+		for(int x = 0; x < pidList.size(); x++) {
+			sqlWhere += " (pid = '" + pidList.get(x) + "' and report_date = to_date('" + dateList.get(x) + "', 'MM/dd/yyyy')) or ";
+		}
+		
+		if(sqlWhere.length()>2)
+			sqlWhere = sqlWhere.substring(0,  sqlWhere.length()-3);
+	 
+		List<List> pidDupeList = getJdbcTemplate().query("select pid, report_date from bookviewingstats where " + sqlWhere, new StringXRowMapper() );
+		String pidListStr = "";
+		for(List<String> r: pidDupeList) {
+			String pid = r.get(0);
+			pidListStr += ", '" + pid + "'";
+		}
+		if(pidListStr != "")
+			pidListStr = pidListStr.substring(2);
+		return pidListStr;
+	}
+
+	@Override 
+	public List<List> getViewingReports() {
+		List viewingReportList = getJdbcTemplate().query("select  PID, NUM_OF_VIEWS, TITLE, ACCESS_RIGHTS, COLLECTION, TN, PUBLISHER, OWNING_INSTITUTION, IE_URL, REPORT_DATE " 
+				+ " from  bookviewingstats ", new StringXRowMapper() );//56 columns
+
+		return viewingReportList;
+	}
+	
+	
+	@Override 
+	public void deleteSelectedViewingReports(List<String> pidList, List<String> dateList) {
+		//String inClause = generateInClause("titleno", pidList);
+		String sqlWhere = "";
+		for(int x = 0; x < pidList.size(); x++) {
+			sqlWhere += " (pid = '" + pidList.get(x) + "' and report_date = to_date('" + dateList.get(x) + "-01', 'yyyy-MM-dd')) or ";
+		}
+		//report_date = to_date( '2010-01-01', 'yyyy-MM-dd'))
+		
+		//remove final "or"
+		if(sqlWhere.length() > 1)
+			sqlWhere = sqlWhere.substring(0, sqlWhere.length() - 4);
+		
+		String sql = "DELETE FROM bookviewingstats  where " + sqlWhere;
+	    getJdbcTemplate().update(sql);
+	}
+	////viewingreport end////
+	
+	
 	////start dashboard/////
+	
 	public int daysBetweenInclusive(String yS, String mS, String dS, String yE, String mE, String dE){
    
 		mS = String.valueOf(Integer.parseInt(mS) - 1); //0 based in Date class
