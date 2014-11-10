@@ -161,6 +161,9 @@ public class SearchMiscController implements MessageSourceAware{
 		
 		//add outer join tns in code
 		List<List> finalList = new ArrayList<List>();
+		if(bookList != null && bookList.get(0) != null)
+			finalList.add(bookList.get(0)); //add column headers
+		
 		boolean foundit = false;
 		for(String tn: l) {
 			for(List<String> row: bookList) {
@@ -187,34 +190,44 @@ public class SearchMiscController implements MessageSourceAware{
 				temp.add("");
 				temp.add("");
 				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
 				 
 				finalList.add(temp);
 			}
 			
 			foundit = false;
 		}
-		
-		//title and table labels
-		List<String> labels = new ArrayList<String>();
-		
-		labels.add(messageSource.getMessage("titleNumber", null, locale));
-		labels.add(messageSource.getMessage("secondaryIdentifier", null, locale));
-		labels.add(messageSource.getMessage("title", null, locale));
-		labels.add(messageSource.getMessage("author", null, locale));
-		labels.add(messageSource.getMessage("subject", null, locale));
-		labels.add(messageSource.getMessage("requestingLocation", null, locale)); 
-		labels.add(messageSource.getMessage("scanComplete", null, locale)); 
- 
-		labels.add(messageSource.getMessage("filesSentToOrem", null, locale)); 
-		labels.add(messageSource.getMessage("filesReceivedByOrem", null, locale)); 
-		labels.add(messageSource.getMessage("tiffOremDriveName", null, locale)); 
-		labels.add(messageSource.getMessage("pdfReady", null, locale)); 
-		labels.add(messageSource.getMessage("dateReleased", null, locale)); 
-		labels.add(messageSource.getMessage("dateLoaded", null, locale)); 
-		labels.add(messageSource.getMessage("url", null, locale)); 
+	 
 
 		model.addAttribute("pageTitle", messageSource.getMessage("search.searchListOfTns", null, locale));
-		model.addAttribute("colLabels", labels);
+		//model.addAttribute("colLabels", labels);
+		if( bookList == null ||  bookList.get(0) == null)
+			model.addAttribute("colCount", 0);
+		else
+			model.addAttribute("colCount", bookList.get(0).size());
 		model.addAttribute("allTnsInfo", finalList);  
  
 		 
@@ -230,7 +243,7 @@ public class SearchMiscController implements MessageSourceAware{
 		//form actions
 		model.addAttribute("buttonsAction", "searchListTns");//not used
 		model.addAttribute("overlayAction", "searchListTns");
-		return "search/miscButtonAndTableForm";
+		return "search/miscButtonAndTableFormSearchTnList";
 		
 	}
 	List<String> removeSpaces(List<String> l){
