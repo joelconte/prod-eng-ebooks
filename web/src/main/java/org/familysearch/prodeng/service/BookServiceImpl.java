@@ -399,11 +399,17 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 
 	@Override
-	public List<List> getSearchTnsList(String tnStrList){
+	public List<List> getSearchTnsListAllColumns(String tnStrList){
 		String inClause = generateInClause("tn", tnStrList);
 		//List tnList = getJdbcTemplate().query("select tn, secondary_identifier, title, author, subject, requesting_location, scan_complete_date, files_sent_to_orem, files_received_by_orem, tiff_orem_drive_name, pdf_ready, date_released, date_loaded, url from BOOK where " + inClause, new StringX14RowMapper());
 		List tnList = getJdbcTemplate().query("select * from BOOK where " + inClause,  new ExtractorWithColumnHeaders());
 		
+		return tnList;
+	}
+	@Override
+	public List<List> getSearchTnsList(String tnStrList){
+		String inClause = generateInClause("tn", tnStrList);
+		List tnList = getJdbcTemplate().query("select tn, secondary_identifier, title, author, subject, requesting_location, scan_complete_date, files_sent_to_orem, files_received_by_orem, tiff_orem_drive_name, pdf_ready, date_released, date_loaded, url from BOOK where " + inClause, new StringX14RowMapper());
 		return tnList;
 	}
 	

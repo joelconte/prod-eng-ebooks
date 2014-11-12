@@ -21,6 +21,9 @@
 			<a href="trackingForm?read" id="a2">${messages['search.searchTrackingForm']}</a>
 			</td></tr>
 			<tr><td>
+			<a href="searchListTnsAllColumns" id="a3">${messages['search.searchListOfTnsAllColumns']}</a>
+			</td></tr>
+			<tr><td>
 			<a href="searchListTns" id="a3">${messages['search.searchListOfTns']}</a>
 			</td></tr>
 			<tr><td>

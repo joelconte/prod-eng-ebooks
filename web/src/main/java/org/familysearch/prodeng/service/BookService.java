@@ -71,6 +71,7 @@ public interface BookService {
 	public List<List> getAdminReleaseEntryWithMatchingDateTnsInfo();
 	public List<List> getAdminReleaseEntryBatchClassTnsInfo();
 	
+	public List<List> getSearchTnsListAllColumns(String tnList);
 	public List<List> getSearchTnsList(String tnList);
 	public List<List> getSearchSecondaryIdsList(String tnList);
 	public List<List> getSearchUrlsList(String tnList);

@@ -146,8 +146,8 @@ public class SearchMiscController implements MessageSourceAware{
 	/////start search list tns page//////////
  
 	//This request mapping is for both GET and POST (ie before pasting data and after showing data)	
-	@RequestMapping(value="search/searchListTns")
-	public String getSearchListTns(String button, String tnData, Model model,  Locale locale) {
+	@RequestMapping(value="search/searchListTnsAllColumns")
+	public String getSearchListTnsAllColumns(String button, String tnData, Model model,  Locale locale) {
 		List<List> bookList = null;
 		List<String> l = new ArrayList();
 		if("save".equals(button)) {
@@ -156,7 +156,7 @@ public class SearchMiscController implements MessageSourceAware{
 			l = removeSpaces(l);
 			String tns = bookService.generateQuotedListString(l);
 			
-			bookList = bookService.getSearchTnsList(tns);  		 
+			bookList = bookService.getSearchTnsListAllColumns(tns);  		 
 	 	}
 		
 		//add outer join tns in code
@@ -222,7 +222,7 @@ public class SearchMiscController implements MessageSourceAware{
 		}
 	 
 
-		model.addAttribute("pageTitle", messageSource.getMessage("search.searchListOfTns", null, locale));
+		model.addAttribute("pageTitle", messageSource.getMessage("search.searchListOfTnsAllColumns", null, locale));
 		//model.addAttribute("colLabels", labels);
 		if( bookList == null ||  bookList.get(0) == null)
 			model.addAttribute("colCount", 0);
@@ -242,10 +242,99 @@ public class SearchMiscController implements MessageSourceAware{
 		
 		//form actions
 		model.addAttribute("buttonsAction", "searchListTns");//not used
-		model.addAttribute("overlayAction", "searchListTns");
+		model.addAttribute("overlayAction", "searchListTnsAllColumns");
 		return "search/miscButtonAndTableFormSearchTnList";
 		
 	}
+	//This request mapping is for both GET and POST (ie before pasting data and after showing data)	
+	@RequestMapping(value="search/searchListTns")
+	public String getSearchListTns(String button, String tnData, Model model,  Locale locale) {
+		List<List> bookList = null;
+		List<String> l = new ArrayList();
+		if("save".equals(button)) {
+			//paste tn list
+			l = bookService.parseExcelDataCol1(tnData);
+			l = removeSpaces(l);
+			String tns = bookService.generateQuotedListString(l);
+			
+			bookList = bookService.getSearchTnsList(tns);  		 
+	 	}
+		
+		//add outer join tns in code
+		List<List> finalList = new ArrayList<List>();
+		boolean foundit = false;
+		for(String tn: l) {
+			for(List<String> row: bookList) {
+				if(row.get(0).equals(tn)) {
+					finalList.add(row);//just add original for returned from sql if it is there
+					foundit = true;
+					break;
+				}
+			}
+			if(foundit == false) {
+				List<String> temp = new ArrayList<String>();
+				temp.add(tn);
+				//need to add extra nulls columns?
+				temp.add("NOT FOUND IN DB");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				temp.add("");
+				 
+				finalList.add(temp);
+			}
+			
+			foundit = false;
+		}
+		
+		//title and table labels
+		List<String> labels = new ArrayList<String>();
+		
+		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("secondaryIdentifier", null, locale));
+		labels.add(messageSource.getMessage("title", null, locale));
+		labels.add(messageSource.getMessage("author", null, locale));
+		labels.add(messageSource.getMessage("subject", null, locale));
+		labels.add(messageSource.getMessage("requestingLocation", null, locale)); 
+		labels.add(messageSource.getMessage("scanComplete", null, locale)); 
+ 
+		labels.add(messageSource.getMessage("filesSentToOrem", null, locale)); 
+		labels.add(messageSource.getMessage("filesReceivedByOrem", null, locale)); 
+		labels.add(messageSource.getMessage("tiffOremDriveName", null, locale)); 
+		labels.add(messageSource.getMessage("pdfReady", null, locale)); 
+		labels.add(messageSource.getMessage("dateReleased", null, locale)); 
+		labels.add(messageSource.getMessage("dateLoaded", null, locale)); 
+		labels.add(messageSource.getMessage("url", null, locale)); 
+
+		model.addAttribute("pageTitle", messageSource.getMessage("search.searchListOfTns", null, locale));
+		model.addAttribute("colLabels", labels);
+		model.addAttribute("allTnsInfo", finalList);  
+ 
+		 
+		//buttons
+		List<List<String>> buttons = new ArrayList<List<String>>();
+		List<String> details = new ArrayList<String>();
+		details.add("overlayButton");//flag
+		details.add(messageSource.getMessage("pasteTnsExcel", null, locale));
+		buttons.add(details);
+	 
+		model.addAttribute("buttons", buttons);
+		
+		//form actions
+		model.addAttribute("buttonsAction", "searchListTns");//not used
+		model.addAttribute("overlayAction", "searchListTns");
+		return "search/miscButtonAndTableForm";
+		
+	}
+		
 	List<String> removeSpaces(List<String> l){
 		List<String> newList = new ArrayList<String>();
 		for(String s: l) {
