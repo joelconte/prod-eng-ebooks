@@ -4131,9 +4131,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	}
 
 	@Override 
-	public List<List> getViewingReports() {
+	public List<List> getViewingReports(String year, String month){
+		if(month.length()==1)
+			month = "0" + month;
 		List viewingReportList = getJdbcTemplate().query("select  PID, NUM_OF_VIEWS, TITLE, ACCESS_RIGHTS, COLLECTION, TN, PUBLISHER, OWNING_INSTITUTION, IE_URL, REPORT_DATE " 
-				+ " from  bookviewingstats ", new StringXRowMapper() );//56 columns
+				+ " from  bookviewingstats where to_char(report_date, 'yyyy') = '" +year + "' and to_char(report_date, 'MM') = '"+ month + "'", new StringXRowMapper() );
 
 		return viewingReportList;
 	}
@@ -4143,17 +4145,29 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	public void deleteSelectedViewingReports(List<String> pidList, List<String> dateList) {
 		//String inClause = generateInClause("titleno", pidList);
 		String sqlWhere = "";
-		for(int x = 0; x < pidList.size(); x++) {
-			sqlWhere += " (pid = '" + pidList.get(x) + "' and report_date = to_date('" + dateList.get(x) + "-01', 'yyyy-MM-dd')) or ";
+		int maxLen = pidList.size();
+		int index = 0;
+		while (index < maxLen) {
+			sqlWhere = "";
+			try {
+				for (int x = index; x < index + 999; x++) {
+					sqlWhere += " (pid = '" + pidList.get(x)
+							+ "' and report_date = to_date('" + dateList.get(x)
+							+ "-01', 'yyyy-MM-dd')) or ";
+				}
+			} catch (Exception e) {
+			}
+			index +=999;
+			//report_date = to_date( '2010-01-01', 'yyyy-MM-dd'))
+			
+			//remove final "or"
+			if(sqlWhere.length() > 1)
+				sqlWhere = sqlWhere.substring(0, sqlWhere.length() - 4);
+			
+			String sql = "DELETE FROM bookviewingstats  where " + sqlWhere;
+		    getJdbcTemplate().update(sql);
+		    
 		}
-		//report_date = to_date( '2010-01-01', 'yyyy-MM-dd'))
-		
-		//remove final "or"
-		if(sqlWhere.length() > 1)
-			sqlWhere = sqlWhere.substring(0, sqlWhere.length() - 4);
-		
-		String sql = "DELETE FROM bookviewingstats  where " + sqlWhere;
-	    getJdbcTemplate().update(sql);
 	}
 	////viewingreport end////
 	

@@ -261,7 +261,7 @@ public interface BookService {
 	
 	////viewingreport////
 	public String getDuplicatesInViewingReport(List<String> pidList, List<String> dateList);
-	public List<List> getViewingReports();
+	public List<List> getViewingReports(String year, String month);
 	public void deleteSelectedViewingReports(List<String> pidList, List<String> dateList);
 	////viewingreport end////
 		

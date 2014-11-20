@@ -42,7 +42,7 @@ public class ViewingReportController implements MessageSourceAware{
 	////////////NewBooks metadata start/////////////
  
 	@RequestMapping(value="admin/viewingReports", method=RequestMethod.GET)
-	public String getViewingReports(HttpServletRequest req, Model model,  Locale locale) {
+	public String getViewingReports(HttpServletRequest req, Model model,  String showRows, String year, String month,  Locale locale) {
 		model.addAttribute("returnTo", req.getServletPath());
 		
 		//title and table labels
@@ -61,7 +61,10 @@ public class ViewingReportController implements MessageSourceAware{
 		 
 		 
 		//////
-		List<List> vr = bookService.getViewingReports();
+		List<List> vr = null;
+		if(showRows != null) {
+			vr = bookService.getViewingReports( year, month);
+		}
 		/*if(!model.containsAttribute("dupeInfo")) {
 			//if already dupeTnsInfo, then just pasted in data and had dupe 
 		
@@ -80,6 +83,9 @@ public class ViewingReportController implements MessageSourceAware{
 		model.addAttribute("pageTitle", messageSource.getMessage("admin.pageTitle.viewingReports", null, locale));
 		model.addAttribute("colLabels", labels);
 		model.addAttribute("allVRInfo", vr);  
+		model.addAttribute("year", year);
+		model.addAttribute("month", month);
+		model.addAttribute("showRows", showRows);
 		//model.addAttribute("allSites", bookService.getAllSites()); 
 		//model.addAttribute("tnColumnNumber", "0");//column where tn is located for creating url
 	 
@@ -103,7 +109,7 @@ public class ViewingReportController implements MessageSourceAware{
 	}
 
 	@RequestMapping(value="admin/viewingReports", method=RequestMethod.POST)
-	public String doViewingReports(String button, HttpServletRequest request, Principal principal,  Model model, Locale locale) {
+	public String doViewingReports(String button, HttpServletRequest request, String showRows, String year, String month,   Model model, Locale locale) {
 		if(button.equals("deleteSelected") ) {
 			Map<String, String[]> parameters = request.getParameterMap();
 			Set<String> keys = parameters.keySet();
@@ -125,16 +131,17 @@ public class ViewingReportController implements MessageSourceAware{
 		
 			
 			bookService.deleteSelectedViewingReports(pidList, dateList);
-		} 
-		//should not happen
-		return "redirect:viewingReports"; //redirect get - guard against refresh-multi-updates and also update displayed url
-
+		} else if(button.equals("load") ) {
+			//noop
+		}  
+		//return "redirect:viewingReports?showRows=true"; //redirect get - guard against refresh-multi-updates and also update displayed url
+		return getViewingReports(request, model, showRows,  year,   month, locale);
 	}
 	 
 	 
 	//do insert of pasted tn data for use in this page
 	@RequestMapping(value="admin/doViewingReportsInserts", method=RequestMethod.POST)
-	public String doViewingReportsInsertsPost(HttpServletRequest req, String doUpdates, String button, String year, String month, String pastedData, Principal principal,  Model model, Locale locale) {
+	public String doViewingReportsInsertsPost(HttpServletRequest req, String doUpdates, String button,  String showRows, String year, String month, String pastedData, Principal principal,  Model model, Locale locale) {
 		if(button.equals("save")) {
 
 			List<List<String>> rows = bookService.parseExcelData(pastedData, 9);//!!need to update count when add new columnds
@@ -160,7 +167,8 @@ public class ViewingReportController implements MessageSourceAware{
 			bookService.insertBatch("BOOKviewingstats", new String[]{"pid", "num_of_views", "title", "access_rights", "collection", "tn", "publisher", "owning_institution", "ie_url", "report_date"}, 
 					new int[] {Types.VARCHAR,  Types.NUMERIC, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.DATE }, rows); 
 		}
-		return "redirect:viewingReports"; //redirect - guard against refresh-multi-updates and also update displayed url
+		return getViewingReports(req, model, showRows,  year,   month, locale);
+//		return "redirect:viewingReports"; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
 	 
 	public void addDateColumn(List<List<String>>rows, String report_date) {

@@ -45,7 +45,7 @@ function showDupeMsgAfterPasteNewDataPost(){
 	  	<%@include file="/WEB-INF/views/includes/adminMenu.html"%>
 		<h1 class="serif">${pageTitle}</h1>
 	   
-		<sf:form id="f1" class="" name="f1" method="post" action="${buttonsAction}" modelAttribute="book">
+		<form id="f1" class="" name="f1" method="post" action="${buttonsAction}" >
 			<input type="hidden" id="dupeList" value="${dupeTnsInfo}"/>
 			<table id="buttonsTable">
 			<tr>
@@ -58,7 +58,76 @@ function showDupeMsgAfterPasteNewDataPost(){
 						<td><button id="${b.get(0)}" name="button" value="${b.get(0)}"    <c:if test="${b.size()>2}"> onclick="if(${b.get(2)}()==false)return false;"</c:if> >${b.get(1)}</button></td>
 					</c:if>
 				</c:forEach>
+				
+				<td style="margin: 11px;">&nbsp;</td>
+  				
+			   <td>
+			   <c:if test="${showRows!=null}">
+			  	  ${messages['showReportRows']} <input type="checkbox" name="showRows" checked="checked" style="margin-left: 3px; margin-right: 5px;" /> 
+			   </c:if>
+			   <c:if test="${showRows==null}">
+			 	   ${messages['showReportRows']} <input type="checkbox" name="showRows" style="margin-left: 3px; margin-right: 5px;" />
+			   </c:if>
+			   
+	 
+			  
+			    ${messages['year']}
+			    <select id="year" name="year">
+			        <c:if test="${year == '2010'}"> <option selected="true">2010</option></c:if>
+			        <c:if test="${year != '2010'}"> <option>2010</option></c:if>
+			        <c:if test="${year == '2011'}"> <option selected="true">2011</option></c:if>
+			        <c:if test="${year != '2011'}"> <option>2011</option></c:if>
+			        <c:if test="${year == '2012'}"> <option selected="true">2012</option></c:if>
+			        <c:if test="${year != '2012'}"> <option>2012</option></c:if>
+			        <c:if test="${year == '2013'}"> <option selected="true">2013</option></c:if>
+			        <c:if test="${year != '2013'}"> <option>2013</option></c:if>
+			        <c:if test="${year == '2014'}"> <option selected="true">2014</option></c:if>
+			        <c:if test="${year != '2014'}"> <option>2014</option></c:if>
+			        <c:if test="${year == '2015'}"> <option selected="true">2015</option></c:if>
+			        <c:if test="${year != '2015'}"> <option>2015</option></c:if>
+			        <c:if test="${year == '2016'}"> <option selected="true">2016</option></c:if>
+			        <c:if test="${year != '2016'}"> <option>2016</option></c:if>
+			        <c:if test="${year == '2017'}"> <option selected="true">2017</option></c:if>
+			        <c:if test="${year != '2017'}"> <option>2017</option></c:if>
+			        <c:if test="${year == '2018'}"> <option selected="true">2018</option></c:if>
+			        <c:if test="${year != '2018'}"> <option>2018</option></c:if>
+			      
+				</select>
+				${messages['month']}
+		  <select id="month" name="month">
+			   		 <c:if test="${month == '1'}"><option selected="true">1</option></c:if>
+			   		 <c:if test="${month == '2'}"><option selected="true">2</option></c:if>
+			   		 <c:if test="${month == '3'}"><option selected="true">3</option></c:if>
+			   		 <c:if test="${month == '4'}"><option selected="true">4</option></c:if>
+			   		 <c:if test="${month == '5'}"><option selected="true">5</option></c:if>
+			   		 <c:if test="${month == '6'}"><option selected="true">6</option></c:if>
+			   		 <c:if test="${month == '7'}"><option selected="true">7</option></c:if>
+			   		 <c:if test="${month == '8'}"><option selected="true">8</option></c:if>
+			   		 <c:if test="${month == '9'}"><option selected="true">9</option></c:if>
+			   		 <c:if test="${month == '10'}"><option selected="true">10</option></c:if>
+			   		 <c:if test="${month == '11'}"><option selected="true">11</option></c:if>
+			   		 <c:if test="${month == '12'}"><option selected="true">12</option></c:if>
+			   		 <c:if test="${month != '1'}"><option>1</option></c:if>
+			   		 <c:if test="${month != '2'}"><option>2</option></c:if>
+			   		 <c:if test="${month != '3'}"><option>3</option></c:if>
+			   		 <c:if test="${month != '4'}"><option>4</option></c:if>
+			   		 <c:if test="${month != '5'}"><option>5</option></c:if>
+			   		 <c:if test="${month != '6'}"><option>6</option></c:if>
+			   		 <c:if test="${month != '7'}"><option>7</option></c:if>
+			   		 <c:if test="${month != '8'}"><option>8</option></c:if>
+			   		 <c:if test="${month != '9'}"><option>9</option></c:if>
+			   		 <c:if test="${month != '10'}"><option>10</option></c:if>
+			   		 <c:if test="${month != '11'}"><option>11</option></c:if>
+			   		 <c:if test="${month != '12'}"><option>12</option></c:if>
+				</select>
+				
+				<button id="load" name="button" value="load">${messages['load']}</button> 
+				</td>
 			</tr>
+						
+		
+	
+	
 			</table>
 			
 			 <input style="margin: 33px 0px -33px 0px;   " class="sorttable_nosort" type="checkbox" id="checkAll" onclick="selectAllCheckboxes('checkAll');" /> <!-- hack to get checkbox to not resort when clicked, move outside of table column --> 
@@ -77,7 +146,7 @@ function showDupeMsgAfterPasteNewDataPost(){
 					<c:forEach var="i" begin="0" end="${colLabels.size()-1}">
 					<td valign="top" align="left">
 						<!-- <a title="${messages['metadataForm.hoverText']}" href="metadataForm?update&titleno=${tn.get(3)}&returnTo=${returnTo}" ><c:out value="${tn.get(i)}"/></a> -->
-						<a title="${messages['metadataForm.hoverText']}" href="metadataForm?update&titleno=${tn.get(tnColumnNumber)}&returnTo=${returnTo}" ><c:out value="${tn.get(i)}"/>
+						  <c:out value="${tn.get(i)}"/>
 					</td>
 
 					</c:forEach>
@@ -85,7 +154,7 @@ function showDupeMsgAfterPasteNewDataPost(){
 				</tr>
 				</c:forEach>
 			</table>
-		</sf:form>
+		</form>
 	  	     
     </div>
   </div>
@@ -102,36 +171,58 @@ function showDupeMsgAfterPasteNewDataPost(){
   
     
       ${messages['year']}
-    <select id="year" name="year">
-    	<option>2010</option>
-     	<option>2011</option>
-     	<option>2012</option>
-     	<option>2013</option>
-     	<option>2014</option>
-     	<option>2015</option>
-     	<option>2016</option>
-     	<option>2017</option>
-     	<option>2018</option>
-     	<option>2019</option>
-     	<option>2020</option>
-	</select>
+         <select id="year" name="year">
+			        <c:if test="${year == '2010'}"> <option selected="true">2010</option></c:if>
+			        <c:if test="${year != '2010'}"> <option>2010</option></c:if>
+			        <c:if test="${year == '2011'}"> <option selected="true">2011</option></c:if>
+			        <c:if test="${year != '2011'}"> <option>2011</option></c:if>
+			        <c:if test="${year == '2012'}"> <option selected="true">2012</option></c:if>
+			        <c:if test="${year != '2012'}"> <option>2012</option></c:if>
+			        <c:if test="${year == '2013'}"> <option selected="true">2013</option></c:if>
+			        <c:if test="${year != '2013'}"> <option>2013</option></c:if>
+			        <c:if test="${year == '2014'}"> <option selected="true">2014</option></c:if>
+			        <c:if test="${year != '2014'}"> <option>2014</option></c:if>
+			        <c:if test="${year == '2015'}"> <option selected="true">2015</option></c:if>
+			        <c:if test="${year != '2015'}"> <option>2015</option></c:if>
+			        <c:if test="${year == '2016'}"> <option selected="true">2016</option></c:if>
+			        <c:if test="${year != '2016'}"> <option>2016</option></c:if>
+			        <c:if test="${year == '2017'}"> <option selected="true">2017</option></c:if>
+			        <c:if test="${year != '2017'}"> <option>2017</option></c:if>
+			        <c:if test="${year == '2018'}"> <option selected="true">2018</option></c:if>
+			        <c:if test="${year != '2018'}"> <option>2018</option></c:if>
+			      
+				</select>
+			 
+				
 	<br>
 	 ${messages['month']}
-    <select id="month" name="month">
-   		<option>1</option>
-   		<option>2</option>
-   		<option>3</option>
-   		<option>4</option>
-   		<option>5</option>
-   		<option>6</option>
-   		<option>7</option>
-   		<option>8</option>
-   		<option>9</option>
-   		<option>10</option>
-   		<option>11</option>
-   		<option>12</option>     
-	</select>
-	
+ 
+			    <select id="month" name="month">
+			   		 <c:if test="${month == '1'}"><option selected="true">1</option></c:if>
+			   		 <c:if test="${month == '2'}"><option selected="true">2</option></c:if>
+			   		 <c:if test="${month == '3'}"><option selected="true">3</option></c:if>
+			   		 <c:if test="${month == '4'}"><option selected="true">4</option></c:if>
+			   		 <c:if test="${month == '5'}"><option selected="true">5</option></c:if>
+			   		 <c:if test="${month == '6'}"><option selected="true">6</option></c:if>
+			   		 <c:if test="${month == '7'}"><option selected="true">7</option></c:if>
+			   		 <c:if test="${month == '8'}"><option selected="true">8</option></c:if>
+			   		 <c:if test="${month == '9'}"><option selected="true">9</option></c:if>
+			   		 <c:if test="${month == '10'}"><option selected="true">10</option></c:if>
+			   		 <c:if test="${month == '11'}"><option selected="true">11</option></c:if>
+			   		 <c:if test="${month == '12'}"><option selected="true">12</option></c:if>
+			   		 <c:if test="${month != '1'}"><option>1</option></c:if>
+			   		 <c:if test="${month != '2'}"><option>2</option></c:if>
+			   		 <c:if test="${month != '3'}"><option>3</option></c:if>
+			   		 <c:if test="${month != '4'}"><option>4</option></c:if>
+			   		 <c:if test="${month != '5'}"><option>5</option></c:if>
+			   		 <c:if test="${month != '6'}"><option>6</option></c:if>
+			   		 <c:if test="${month != '7'}"><option>7</option></c:if>
+			   		 <c:if test="${month != '8'}"><option>8</option></c:if>
+			   		 <c:if test="${month != '9'}"><option>9</option></c:if>
+			   		 <c:if test="${month != '10'}"><option>10</option></c:if>
+			   		 <c:if test="${month != '11'}"><option>11</option></c:if>
+			   		 <c:if test="${month != '12'}"><option>12</option></c:if>
+				</select>
 	
   	<textarea id="pastedData" name="pastedData" rows="9" cols="60" style="height: 220px; width: 466px;">${pastedData}</textarea>   <!-- pasted data exists if pasted dupes then reshow page -->
   	<br>
