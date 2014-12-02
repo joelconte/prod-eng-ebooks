@@ -800,16 +800,14 @@ props.put("mail.smtp.socketFactory.fallback", "false");
 			model.addAttribute("bookErrorMessage", messageSource.getMessage("metadata.error.badRequestingLocation", null, locale));
 			return "errors/generalError";
 		}
-		/* filename is not required
+		//subjecte is required
 		for(List<String> r: rows) {
 			 
-			if(null == r.get(15)) {
-				model.addAttribute("bookErrorMessage", messageSource.getMessage("metadata.error.badfilename", null, locale));
+			if(null == r.get(2)) {
+				model.addAttribute("bookErrorMessage", messageSource.getMessage("metadata.error.missingSubject", null, locale));
 				return "errors/generalError";
-			}
-			
-				
-		}*/
+			}		
+		}
 		return null;
 	}
 
