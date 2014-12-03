@@ -261,6 +261,12 @@ $(function() {
 					</td>
 					</tr>
 					<tr>
+					<td>${messages['trackingForm.scanMetadataComplete']}</td>
+					<td><sf:input id="metadata_complete" path="scanMetadataComplete"  readonly="${isReadOnly}" title="${messages['trackingForm.metadataCompleteHover']}"  />
+						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('scan_metadata_complete'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
+					</td>
+					</tr>
+					<tr>
 					<td>${messages['trackingForm.url']}</td>
 					<td><sf:input  path="url"  readonly="${isReadOnly}"   /></td>
 					</tr>
