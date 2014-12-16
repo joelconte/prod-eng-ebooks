@@ -1,6 +1,6 @@
 <%@include file="/WEB-INF/views/includes/init.jsp"%>
  
-<tags:template>
+<tags:templateScrollHide>
 <jsp:body>
 
 <script>
@@ -29,8 +29,54 @@ function showDupeMsgAfterPasteNewDataPost(){
 			f.action = url;
 		}
 	} 
+	
 }
-  
+
+$(function(){
+
+	  $("#tnTable").tablesorter({
+	    widthFixed : true,
+	    showProcessing: true,
+	    headerTemplate : '{content} {icon}', // Add icon for various themes
+
+	    widgets: [ 'zebra', 'stickyHeaders', 'filter' ],
+
+	    widgetOptions: {
+
+	      // extra class name added to the sticky header row
+	      stickyHeaders : '',
+	      // number or jquery selector targeting the position:fixed element
+	      stickyHeaders_offset : 0,
+	      // added to table ID, if it exists
+	      stickyHeaders_cloneId : '-sticky',
+	      // trigger "resize" event on headers
+	      stickyHeaders_addResizeEvent : true,
+	      // if false and a caption exist, it won't be included in the sticky header
+	      stickyHeaders_includeCaption : true,
+	      // The zIndex of the stickyHeaders, allows the user to adjust this to their needs
+	      stickyHeaders_zIndex : 2,
+	      // jQuery selector or object to attach sticky header to
+	      stickyHeaders_attachTo : null,
+	      // jQuery selector or object to monitor horizontal scroll position (defaults: xScroll > attachTo > window)
+	      stickyHeaders_xScroll : null,
+	      // jQuery selector or object to monitor vertical scroll position (defaults: yScroll > attachTo > window)
+	      stickyHeaders_yScroll : null,
+
+	      // scroll table top into view after filtering
+	      stickyHeaders_filteredToTop: true
+
+	      // *** REMOVED jQuery UI theme due to adding an accordion on this demo page ***
+	      // adding zebra striping, using content and default styles - the ui css removes the background from default
+	      // even and odd class names included for this demo to allow switching themes
+	      // , zebra   : ["ui-widget-content even", "ui-state-default odd"]
+	      // use uitheme widget to apply defauly jquery ui (jui) class names
+	      // see the uitheme demo for more details on how to change the class names
+	      // , uitheme : 'jui'
+	    }
+	  });
+ 
+	});
+ 
 </script> 
 
 
@@ -41,9 +87,10 @@ function showDupeMsgAfterPasteNewDataPost(){
     <div class="span"> 
      
 	  	<%@include file="/WEB-INF/views/includes/scanMenu.html"%>
-		<h1 class="serif">${pageTitle}</h1>
+		<h1 class="slow-hide serif">${pageTitle}</h1>
 	   
-		<sf:form id="f1" class="" name="f1" method="post" action="${buttonsAction}" modelAttribute="book">
+		<sf:form id="f1"  name="f1" method="post" action="${buttonsAction}" modelAttribute="book">
+			<div class="slow-hide">
 			<input type="hidden" id="notList" value="${notTnsInfo}"/>
 			
 			<select id="siteDropdown" onchange="reloadScanListWithSite('f1', 'siteDropdown' );">
@@ -72,14 +119,17 @@ function showDupeMsgAfterPasteNewDataPost(){
 				</c:forEach>
 			</tr>
 			</table>
+			</div>
 			 
 			 <table id="tnTable" class="sortable colSpace">
-			 	<tr>
+			 	<thead id='tableHeader'>
+			 	<tr class="tablesorter-headerRow">
 			 		<th><p style="margin: 0px 0px 0px 16px;"> &nbsp;</p></th> <!-- column for row count -->
 			 		<c:forEach var="colLabel" items="${colLabels}">
 			 		<th class="sorttable_alpha">${colLabel}</th>
 			 		</c:forEach>
 			 	</tr>
+			 	</thead>
 			 	
 			 	<c:set var="rowNum" value="0"/>
 			 	<c:forEach var="tn" items="${allTnsInfo}">
@@ -94,6 +144,7 @@ function showDupeMsgAfterPasteNewDataPost(){
 				</tr>
 				</c:forEach>
 			</table>
+			
 		</sf:form>
 	  	
 			
@@ -122,4 +173,4 @@ function showDupeMsgAfterPasteNewDataPost(){
 		
 
 </jsp:body>
-</tags:template>
+</tags:templateScrollHide>
