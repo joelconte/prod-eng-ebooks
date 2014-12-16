@@ -30,11 +30,11 @@
 		</script>
 
  <style>
- #tnTable {
-    position: fixed;
-    top: 0px; display:none;
-    background-color:white;
-}
+ .wrapper {
+  position: relative;
+  padding: 0 5px;
+  height: 250px;
+  overflow-y: auto;
 }</style>
 
 	</head>
