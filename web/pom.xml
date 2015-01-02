@@ -30,16 +30,7 @@
 
 
 	<dependencies>
-		<dependency> 
-		  <groupId>org.familysearch.cis</groupId>   
-		  <artifactId>cis-client</artifactId> 
-		  <version>2.9</version>
-		</dependency>  
-	    <dependency> 
-		  <groupId>org.familysearch.cis</groupId>   
-		  <artifactId>cis-public-api-schema</artifactId> 
-		  <version>2.9</version>
-		</dependency>  
+	 
 		<dependency>
 			<groupId>org.lds.stack.db</groupId>
 			<artifactId>stack-db-spring</artifactId>
