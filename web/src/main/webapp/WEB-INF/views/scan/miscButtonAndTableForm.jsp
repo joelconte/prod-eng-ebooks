@@ -1,6 +1,6 @@
 <%@include file="/WEB-INF/views/includes/init.jsp"%>
  
-<tags:templateScrollHide>
+<tags:template>
 <jsp:body>
 
 <script>
@@ -129,4 +129,4 @@ function showDupeMsgAfterPasteNewDataPost(){
 		
 
 </jsp:body>
-</tags:templateScrollHide>
+</tags:template>
