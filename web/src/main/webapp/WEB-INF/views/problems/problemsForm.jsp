@@ -9,7 +9,16 @@
 <script src="//code.jquery.com/jquery-1.9.1.js"></script>
 <script src="//code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
  
-<script> 
+<script type="text/javascript"> 
+ 
+
+$(function() {
+	populateProblemInitials();
+	populateProblemDate();
+  $( "#problem_date" ).datepicker();
+  $( "#solution_date" ).datepicker();
+});
+
 function checkAuthority(){
 	var sel= document.getElementById("problemStatus");
 	var statusNew = sel.options[sel.selectedIndex].text;
@@ -26,6 +35,43 @@ function checkAuthority(){
 		sel= document.getElementById("problemStatus");
 		sel.value = statusOrig;
 	} 
+}
+
+function checkSolutionOwner(){
+	var solutionOwner = $('#solutionOwner')[0];
+	var site = solutionOwner.options[solutionOwner.selectedIndex].text;
+	if(site == null || site === "" || site === "All Sites"){
+		alert("A Soltion Owner must be selected.");
+		return false;
+	}
+	return true;
+}
+
+function populateProblemInitials(){
+	var loggedInUser = $('#loggedInUser')[0];	
+ 
+	var userId = loggedInUser.innerHTML.substring(14);
+	var problemInitials = $('#problemInitials')[0];	
+	var saveButton = $('#save')[0];	
+	if(saveButton.innerHTML === "Save New Problem"){
+		//new issue
+		if(problemInitials.value == null  || problemInitials.value === ""){
+			problemInitials.value = userId;
+		}
+		
+	}
+	
+}
+function populateProblemDate(){
+	var problemDate = $('#problem_date')[0];	
+	var saveButton = $('#save')[0];	
+	if(saveButton.innerHTML === "Save New Problem"){
+		//new issue
+		if(problemDate.value == null  || problemDate.value === ""){
+			setValueInDom("problem_date", getCurrentTimestamp());
+		}
+	}
+	
 }
 </script>
 <div class="container-fluid" id="main">
@@ -135,6 +181,7 @@ function checkAuthority(){
 					<td>${messages['problems.problemDate']}</td>
 					<td><sf:input id="problem_date" path="problemDate" readonly="${isReadOnly}" />
 						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('problem_date'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
+						
 					</td>
 					</tr>
 					<tr>
@@ -207,7 +254,7 @@ function checkAuthority(){
 					
 					<c:choose>
 					<c:when test="${mode=='update'}">
-					<td><button id="save" name="save" value="save" onclick="updateUrl2('f1', 'problemsForm', '${save}' );"><c:out value="${saveLabel}"/></button></td>
+					<td><button id="save" name="save" value="save" onclick="if(checkSolutionOwner() == false) return false; updateUrl2('f1', 'problemsForm', '${save}' );"><c:out value="${saveLabel}"/></button></td>
 					<td><button id="cancel" name="cancel" value="cancel" onclick="updateUrl2('f1', 'problemsForm', '${cancel}' );">${messages['cancel']}</button></td>
 					</c:when>
 					<c:when test="${mode=='read' && problem.pn != ''}">
