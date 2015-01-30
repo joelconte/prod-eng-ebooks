@@ -4,7 +4,10 @@
  */
 package org.familysearch.prodeng.problems.controller;
 
+import java.security.Principal;
 import java.sql.Timestamp;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.familysearch.prodeng.model.Problem;
 import org.familysearch.prodeng.model.SqlTimestampPropertyEditor;
@@ -47,19 +50,30 @@ public class ProblemsFormController {
 	//show populated form - for update - used with anchor link "update" - 
 	//same as below but GET for use in list of book links
 	@RequestMapping(value="problems/problemsForm",  params="update", method=RequestMethod.GET)
-	public String displayBookUpdate(String tn, String pn, String doCreate, Model model) {
-		return displayProblemUpdatePost(tn, pn, doCreate, model);
+	public String displayBookUpdate(String tn, String pn, String doCreate, HttpServletRequest request, Model model) {
+		return displayProblemUpdatePost(tn, pn, doCreate, request, model);
 	}
  	
 	//show populated form - for update - used with button "update"
 	@RequestMapping(value="problems/problemsForm", params="update", method=RequestMethod.POST)
-	public String displayProblemUpdatePost(String tn, String pn, String doCreate, Model model) {
+	public String displayProblemUpdatePost(String tn, String pn, String doCreate,  HttpServletRequest request, Model model) {
 		model.addAttribute("mode", "update"); 
 		model.addAttribute("doCreate", doCreate); //if just update then null
-		if(doCreate != null)
-			model.addAttribute("problem", bookService.getNewProblem(tn));  //create new empty problem
-		else
+		if(doCreate != null) {
+			//HttpSession s = request.getSession();
+			Principal principal = request.getUserPrincipal();
+			 
+			String userId = "";
+			if(principal != null) {
+				userId = principal.getName();//userid
+		  	}
+			Problem newProblem = bookService.getNewProblem(tn, userId);
+			model.addAttribute("problem", newProblem);  //create new empty problem
+
+		}
+		else {
 			model.addAttribute("problem", bookService.getProblem(tn, pn));  
+		}
 		model.addAttribute("allStatuses", bookService.getAllStatuses()); 
 		model.addAttribute("allProblemReasons", bookService.getAllProblemReasons()); 
 		model.addAttribute("allProblemReasons2", bookService.getAllProblemReasons2()); 

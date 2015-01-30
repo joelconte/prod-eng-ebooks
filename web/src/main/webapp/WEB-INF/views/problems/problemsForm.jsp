@@ -15,6 +15,7 @@
 $(function() {
 	populateProblemInitials();
 	populateProblemDate();
+	populateSolutionOwner();
   $( "#problem_date" ).datepicker();
   $( "#solution_date" ).datepicker();
 });
@@ -73,6 +74,10 @@ function populateProblemDate(){
 	}
 	
 }
+function populateSolutionOwner(){
+	//done on server side
+}
+
 </script>
 <div class="container-fluid" id="main">
  

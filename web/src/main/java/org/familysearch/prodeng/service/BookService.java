@@ -196,7 +196,7 @@ public interface BookService {
 	public List<List>  getBookClosedProblems(String tn);
 	public void createProblem(Problem problem);
 	public Problem getProblem(String tn, String pn);
-	public Problem getNewProblem(String tn);
+	public Problem getNewProblem(String tn, String userId);
 	public void updateProblem(Problem problem);
 	public String getProblemReasonInUseList(String problemReasonList);
 

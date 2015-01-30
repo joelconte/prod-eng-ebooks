@@ -2602,8 +2602,18 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 
 	@Override 
-	public Problem getNewProblem(String tn){
+	public Problem getNewProblem(String tn, String userId){
 		try {
+			if(userId == null)
+				userId = "";
+			//get users primary location and set it in new empty problem.
+			String sql = "SELECT primary_location FROM users where lower(id) = '" + userId.toLowerCase() + "'"; 
+			List<String> location = getJdbcTemplate().query(sql, new StringRowMapper());
+			String primaryLocation = "";
+			if(location.size()>0) {
+				primaryLocation = location.get(0);
+			}
+			
 			List<String> vals = getJdbcTemplate().query("select max(id) from tf_notes where tn=?", new StringRowMapper(), tn);
 			int nextPn = 1;
 			if(vals != null && vals.size()>0 && vals.get(0) != null) {
@@ -2611,6 +2621,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				nextPn++;
 			}
 			Problem p = new Problem();
+			p.setSolutionOwner(primaryLocation);
 			p.setPn(String.valueOf(nextPn));
 			p.setTn(tn);
 			return p;
