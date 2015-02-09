@@ -140,10 +140,16 @@ $( "#tiff_copy2_archived_date" ).datepicker();
 							<c:if test="${problemOpenList == null || problemOpenList.size() == 0}">
 								<a href="../problems/problemsForm?update&doCreate&tn=${book.tn}&pn=-1" target="_blank">${messages['newIssue']}</a>
 							</c:if>
-							</c:if>
-							<c:forEach var="prob" items="${problemOpenList}">
-								<a href="../problems/problemsForm?read&tn=${prob.get(1)}&pn=${prob.get(0)}" target="_blank">${prob.get(0)}</a>
-							</c:forEach>
+							</c:if>			
+								<c:if test="${problemOpenList != null && problemOpenList.size() > 0}">
+								<div  style="margin-top: 10px; margin-right: 20px; color: blue; border-color: red;  xfont-weight:bold; box-shadow: 0 0 0 red inset, 0 0 8px red;   outline: 0 none;" >
+								</c:if>	
+								<c:forEach var="prob" items="${problemOpenList}">
+									<a href="../problems/problemsForm?read&tn=${prob.get(1)}&pn=${prob.get(0)}" target="_blank">${prob.get(0)}</a>
+								</c:forEach>
+								<c:if test="${problemOpenList != null && problemOpenList.size() > 0}">
+								</div>
+								</c:if>	
 						</c:if>
 					</td>
 					</tr>
