@@ -24,7 +24,7 @@
 
 </header>
 <div class="padding-md overflow">
-<h2>FamilySearch Book Digitization</h2> 
+<h2 style="font-size: 150%">FamilySearch Book Digitization</h2> 
  
 <!--   <form name='f' action="${pageContext['request'].contextPath}/j_spring_security_check" method='POST'>
  <table>
@@ -44,7 +44,7 @@
         <h2>
         
         
-          Sign In to FamilySearch
+          Sign In to FamilySearch Book Digitization
         
         </h2>
         
@@ -89,7 +89,7 @@
     
     
 <p style="height: 600px;"> 
- 	<img src="${pageContext['request'].contextPath}/images/book.jpg"  height="300" width="450"/>
+ 	<!--  <img src="${pageContext['request'].contextPath}/images/book.jpg"  height="300" width="450"/> -->
 </p>
 
 
