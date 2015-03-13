@@ -18,34 +18,36 @@
  
  
 <style>
-	.mainRowHeader{background-color: limegreen;
+	.mainRowHeader{background-color: #87B940;
 		border: 2px solid white;
 		height: 20px;
 		padding-top: 5px;
-		width: 742px;
+		width: 800px;
 	}
-	.secondaryRowHeader{background-color: lightgreen;
+	.secondaryRowHeader{background-color: #DAEBBB;
 		border: 2px solid white;
 		height: 20px;
 		padding-top: 2px;
+		vertical-align: middle;
 	}
-	.mainRightRowHeader{background-color: limegreen;
+	.mainRightRowHeader{background-color: #87B940;
 		border: 2px solid white;
 		height: 30px;
 		padding-top: 5px;
 		width: 390px;
 	}
-	.secondaryRightRowHeader{background-color: lightgreen;
+	.secondaryRightRowHeader{background-color: #DAEBBB;
 		border: 2px solid white;
 		height: 20px;
 		padding-top: 2px;
 	}
-	.secondaryTd{	border: 1px solid white; margin-left:auto; margin-right:auto;}
+	.secondaryTd{  border: 1px solid white; margin-left:auto; margin-right:auto; vertical-align: middle;}
 	.bodyTd{	border: 1px solid white; margin-left:auto; margin-right:auto;  padding-left: 3px;}
 	.arrowTd{	border: 1px solid white; margin-left:auto; margin-right:auto;  padding-left: 7px; }
-	.arrowTdHeader{	border: 1px solid white; margin-left:auto; margin-right:auto; padding-right: 3px;}
-	.rArrow{color: red; border: 2px; padding-left: 3px; padding-top: 5px;}
-	.gArrow{color: green; border: 2px; padding-left: 3px; padding-top: 5px;}
+	.arrowTdHeader{ width:30px;	border: 1px solid white; margin-left:auto; margin-right:auto; padding-right: 3px; vertical-align: middle;}
+	.rArrow{color: red; border: 2px; padding-left: 3px; padding-top: 5px;  font-weight: bold; font-size: 20px; vertical-align: middle;}
+	.gArrow{color: green; border: 2px; padding-left: 3px; padding-top: 5px;  font-weight: bold; font-size: 20px; vertical-align: middle;}
+	.gDash{color: green; border: 2px; padding-left: 3px; padding-top: 5px;  font-weight: light; font-size: 20px; vertical-align: middle;}
 	td{height: 24px;}
 </style>
 <script> 
@@ -312,28 +314,28 @@ $(function() {
 				<td></td>
 				<td align="center" class="secondaryTd">Actual</td>
 				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#65514;</span><span class="rArrow">&#65516; &nbsp;</span></td>
+				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
 				<td></td>
 				<td align="center" class="secondaryTd">Actual</td>
 				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#65514;</span><span class="rArrow">&#65516;  &nbsp;</span></td>
+				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595;  &nbsp;</span></td>
 			</tr>
 			
 			<tr>
 			<td class="bodyTd"  width='177'>${a0}</td>
 			<td class="bodyTd"  width='80'>${a1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassA"></span> </td>
-			<td class="arrowTd" ><c:if test="${a3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-				<c:if test="${a3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-				<c:if test="${a3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${a3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+				<c:if test="${a3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+				<c:if test="${a3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
 			<td class="bodyTd"  width='177'>${g0}</td>
 			<td class="bodyTd"  width='80'>${g1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassG"></span> </td>
-			<td class="arrowTd" ><c:if test="${g3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-				<c:if test="${g3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-				<c:if test="${g3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${g3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+				<c:if test="${g3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+				<c:if test="${g3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			
@@ -342,17 +344,17 @@ $(function() {
 			<td class="bodyTd" >${b0}</td>
 			<td class="bodyTd" >${b1} </td>
 			<td class="bodyTd"  align="center"><span class="fhcSparkClassB"></span> </td>
-			<td class="arrowTd"  ><c:if test="${b3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-				<c:if test="${b3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-				<c:if test="${b3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd"  ><c:if test="${b3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+				<c:if test="${b3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+				<c:if test="${b3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
 			<td class="bodyTd" >${h0}</td>
 			<td class="bodyTd" >${h1} </td>
 			<td  class="bodyTd" align="center"> <span class="fhcSparkClassH"></span> </td>
-			<td class="arrowTd"  ><c:if test="${h3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-				<c:if test="${h3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-				<c:if test="${h3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd"  ><c:if test="${h3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+				<c:if test="${h3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+				<c:if test="${h3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			
@@ -360,17 +362,17 @@ $(function() {
 			<td class="bodyTd" >${c0} </td>
 			<td class="bodyTd" >${c1} </td>
 			<td class="bodyTd"  align="center"><span class="fhcSparkClassC"></span></td>
-			<td class="arrowTd" ><c:if test="${c3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${c3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${c3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${c3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${c3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${c3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			 
 			<td class="bodyTd" >${i0} </td>
 			<td class="bodyTd" >${i1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassI"></span></td>
-			<td class="arrowTd" ><c:if test="${i3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${i3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${i3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${i3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${i3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${i3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			</tr>
 			
@@ -379,17 +381,17 @@ $(function() {
 			<td class="bodyTd" >${d0}</td>
 			<td class="bodyTd" >${d1} </td>
 			<td  class="bodyTd" align="center"> <span class="fhcSparkClassD"></span> </td>
-			<td class="arrowTd" ><c:if test="${d3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${d3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${d3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${d3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${d3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${d3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			 
 			<td class="bodyTd" >${j0}</td>
 			<td class="bodyTd" >${j1} </td>
 			<td  class="bodyTd" align="center"> <span class="fhcSparkClassJ"></span> </td>
-			<td class="arrowTd" ><c:if test="${j3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${j3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${j3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${j3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${j3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${j3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			</tr>
 			
@@ -398,17 +400,17 @@ $(function() {
 			<td class="bodyTd" >${e0}</td>
 			<td class="bodyTd" >${e1} </td>
 			<td  class="bodyTd" align="center"> <span class="fhcSparkClassE"></span> </td>
-			<td class="arrowTd" ><c:if test="${e3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${e3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${e3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${e3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${e3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${e3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			 
 			<td class="bodyTd" >${k0}</td>
 			<td class="bodyTd" >${k1} </td>
 			<td class="bodyTd"  align="center"> <span class="fhcSparkClassK"></span> </td>
-			<td class="arrowTd" ><c:if test="${k3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${k3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${k3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${k3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${k3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${k3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			</tr>
 			
@@ -416,9 +418,9 @@ $(function() {
 			<td class="bodyTd" >${f0}</td>
 			<td class="bodyTd" >${f1} </td>
 			<td  class="bodyTd" align="center"> <span class="fhcSparkClassF"></span> </td>
-			<td class="arrowTd" ><c:if test="${f3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-				<c:if test="${f3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-				<c:if test="${f3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${f3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+				<c:if test="${f3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+				<c:if test="${f3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 				
 				
@@ -427,9 +429,9 @@ $(function() {
 			<td class="bodyTd" >${l0}</td>
 			<td class="bodyTd" >${l1} </td>
 			<td  class="bodyTd" align="center"> <span class="fhcSparkClassL"></span> </td>
-			<td class="arrowTd" ><c:if test="${l3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${l3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${l3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${l3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${l3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${l3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			</tr>
 			
@@ -454,28 +456,28 @@ $(function() {
 				<td></td>
 				<td align="center" class="secondaryTd">Actual</td>
 				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="rArrow">&#65514;</span><span class="gArrow">&#65516; &nbsp;</span></td>
+				<td align="center" class="arrowTdHeader"><span class="rArrow">&#8593;</span><span class="gArrow">&#8595; &nbsp;</span></td>
 				<td></td>
 				<td align="center" class="secondaryTd">Actual</td>
 				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="rArrow">&#65514;</span><span class="gArrow">&#65516;  &nbsp;</span></td>
+				<td align="center" class="arrowTdHeader"><span class="rArrow">&#8593;</span><span class="gArrow">&#8595;  &nbsp;</span></td>
 			</tr>
 			
 			<tr>
 			<td class="bodyTd"  width='177'>${quala0}</td>
 			<td class="bodyTd"  width='80'>${quala1} </td>
 			<td class="bodyTd"  align="center"><span class="fhcSparkClassQualA"></span> </td>
-			<td class="arrowTd" ><c:if test="${quala3=='up'}"><span class="rArrow">&#65514;</span></c:if>
-					<c:if test="${quala3=='down'}"><span class="gArrow">&#65516;</span></c:if>
-					<c:if test="${quala3=='equal'}"><span class="gArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${quala3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${quala3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${quala3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
 			<td class="bodyTd"  width='177'>${quald0}</td>
 			<td class="bodyTd"  width='80'>${quald1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassQualD"></span> </td>
-			<td class="arrowTd" ><c:if test="${quald3=='up'}"><span class="rArrow">&#65514;</span></c:if>
-					<c:if test="${quald3=='down'}"><span class="gArrow">&#65516;</span></c:if>
-					<c:if test="${quald3=='equal'}"><span class="gArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${quald3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${quald3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${quald3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 				
@@ -483,17 +485,17 @@ $(function() {
 			<td class="bodyTd"  width='177'>${qualb0}</td>
 			<td class="bodyTd"  width='80'>${qualb1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassQualB"></span> </td>
-			<td class="arrowTd" ><c:if test="${qualb3=='up'}"><span class="rArrow">&#65514;</span></c:if>
-					<c:if test="${qualb3=='down'}"><span class="gArrow">&#65516;</span></c:if>
-					<c:if test="${qualb3=='equal'}"><span class="gArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${qualb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${qualb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${qualb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
 			<td class="bodyTd"  width='177'>${quale0}</td>
 			<td class="bodyTd"  width='80'>${quale1} </td>
 			<td class="bodyTd" align="center"><span class="fhcSparkClassQualE"></span> </td>
-			<td class="arrowTd" ><c:if test="${quale3=='up'}"><span class="rArrow">&#65514;</span></c:if>
-					<c:if test="${quale3=='down'}"><span class="gArrow">&#65516;</span></c:if>
-					<c:if test="${quale3=='equal'}"><span class="gArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${quale3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${quale3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${quale3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>		
 			
@@ -501,17 +503,17 @@ $(function() {
 			<td class="bodyTd"  width='177'>${qualc0}</td>
 			<td class="bodyTd"  width='80'>${qualc1} </td>
 			<td class="bodyTd" align="center"><span class="fhcSparkClassQualC"></span> </td>
-			<td class="arrowTd" ><c:if test="${qualc3=='up'}"><span class="rArrow">&#65514;</span></c:if>
-					<c:if test="${qualc3=='down'}"><span class="gArrow">&#65516;</span></c:if>
-					<c:if test="${qualc3=='equal'}"><span class="gArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${qualc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${qualc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${qualc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
 			<td class="bodyTd"  width='177'>${qualf0}</td>
 			<td class="bodyTd"  width='80'>${qualf1} </td>
 			<td class="bodyTd" align="center"><span class="fhcSparkClassQualF"></span> </td>
-			<td class="arrowTd" ><c:if test="${qualf3=='up'}"><span class="rArrow">&#65514;</span></c:if>
-					<c:if test="${qualf3=='down'}"><span class="gArrow">&#65516;</span></c:if>
-					<c:if test="${qualf3=='equal'}"><span class="gArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${qualf3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${qualf3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${qualf3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			
@@ -545,43 +547,43 @@ $(function() {
 				<td align="center" class="secondaryTd"></td>
 				<td align="center" class="secondaryTd">Avg/Auditor</td>
 				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#65514;</span><span class="rArrow">&#65516; &nbsp;</span></td>
+				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
 			</tr>
 			
 			<tr>
 			<td class="bodyTd"  width='177'>${audita0}</td>
 			<td class="bodyTd"  width='80'>${audita1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditA"></span> </td>
-			<td class="arrowTd" ><c:if test="${audita3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${audita3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${audita3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${audita3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${audita3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${audita3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${auditb0}</td>
 			<td class="bodyTd"  width='80'>${auditb1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditB"></span> </td>
-			<td class="arrowTd" ><c:if test="${auditb3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${auditb3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${auditb3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${auditb3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${auditb3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${auditb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 		 	</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${auditc0}</td>
 			<td class="bodyTd"  width='80'>${auditc1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditC"></span> </td>
-			<td class="arrowTd" ><c:if test="${auditc3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${auditc3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${auditc3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${auditc3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${auditc3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${auditc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${auditd0}</td>
 			<td class="bodyTd"  width='80'>${auditd1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditD"></span> </td>
-			<td class="arrowTd" ><c:if test="${auditd3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${auditd3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${auditd3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${auditd3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${auditd3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${auditd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			 
@@ -596,52 +598,52 @@ $(function() {
 				<td align="center" class="secondaryTd">Issue</td>
 				<td align="center" class="secondaryTd">%</td>
 				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#65514;</span><span class="rArrow">&#65516; &nbsp;</span></td>
+				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
 			</tr>
 			
 			<tr>
 			<td class="bodyTd"  width='177'>${topa0}</td>
-			<td class="bodyTd"  width='80'>${topa1} </td>
+			<td class="bodyTd" align="center" width='80'>${topa1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopA"></span> </td>
-			<td class="arrowTd" ><c:if test="${topa3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${topa3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${topa3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${topa3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${topa3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${topa3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${topb0}</td>
-			<td class="bodyTd"  width='80'>${topb1} </td>
+			<td class="bodyTd"  align="center" width='80'>${topb1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopB"></span> </td>
-			<td class="arrowTd" ><c:if test="${topb3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${topb3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${topb3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${topb3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${topb3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${topb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 		 	</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${topc0}</td>
-			<td class="bodyTd"  width='80'>${topc1} </td>
+			<td class="bodyTd"  align="center" width='80'>${topc1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopC"></span> </td>
-			<td class="arrowTd" ><c:if test="${topc3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${topc3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${topc3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${topc3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${topc3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${topc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${topd0}</td>
-			<td class="bodyTd"  width='80'>${topd1} </td>
+			<td class="bodyTd" align="center" width='80'>${topd1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopD"></span> </td>
-			<td class="arrowTd" ><c:if test="${topd3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${topd3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${topd3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${topd3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${topd3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${topd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${tope0}</td>
-			<td class="bodyTd"  width='80'>${tope1} </td>
+			<td class="bodyTd" align="center" width='80'>${tope1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopE"></span> </td>
-			<td class="arrowTd" ><c:if test="${tope3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${tope3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${tope3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${tope3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${tope3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${tope3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			 
@@ -656,52 +658,52 @@ $(function() {
 				<td></td>
 				<td align="center" class="secondaryTd">Avg minutes per Book</td>
 				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#65514;</span><span class="rArrow">&#65516; &nbsp;</span></td>
+				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
 			</tr>
 			
 			<tr>
 			<td class="bodyTd"  width='177'>${ageda0}</td>
 			<td class="bodyTd"  width='80'>${ageda1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedA"></span> </td>
-			<td class="arrowTd" ><c:if test="${ageda3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${ageda3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${ageda3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${ageda3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${ageda3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${ageda3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${agedb0}</td>
 			<td class="bodyTd"  width='80'>${agedb1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedB"></span> </td>
-			<td class="arrowTd" ><c:if test="${agedb3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${agedb3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${agedb3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${agedb3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${agedb3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${agedb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 		 	</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${agedc0}</td>
 			<td class="bodyTd"  width='80'>${agedc1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedC"></span> </td>
-			<td class="arrowTd" ><c:if test="${agedc3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${agedc3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${agedc3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${agedc3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${agedc3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${agedc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 			<tr>
 			<td class="bodyTd"  width='177'>${agedd0}</td>
 			<td class="bodyTd"  width='80'>${agedd1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedD"></span> </td>
-			<td class="arrowTd" ><c:if test="${agedd3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${agedd3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${agedd3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${agedd3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${agedd3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${agedd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
 				<tr>
 			<td class="bodyTd"  width='177'>${agede0}</td>
 			<td class="bodyTd"  width='80'>${agede1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedE"></span> </td>
-			<td class="arrowTd" ><c:if test="${agede3=='up'}"><span class="gArrow">&#65514;</span></c:if>
-					<c:if test="${agede3=='down'}"><span class="rArrow">&#65516;</span></c:if>
-					<c:if test="${agede3=='equal'}"><span class="rArrow">-</span></c:if>
+			<td class="arrowTd" ><c:if test="${agede3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+					<c:if test="${agede3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+					<c:if test="${agede3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>			
 			</table>
