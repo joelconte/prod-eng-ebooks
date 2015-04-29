@@ -238,20 +238,19 @@ public class MiscController implements MessageSourceAware{
  
 		
 		/////Aged metrics
+		/* Removing Aged Metrice charts.  True data, but not very useful
 		String[][] agedData = bookService.getDashboardAgedAverages(startDate, endDate, site);
-		
+		 
 		model.addAttribute("ageda0", agedData[0][0]);
 		model.addAttribute("ageda1", agedData[0][1]);
 		model.addAttribute("ageda2", agedData[0][2]);
 		model.addAttribute("ageda3", agedData[0][3]);
-		
 
 		model.addAttribute("agedb0", agedData[1][0]);
 		model.addAttribute("agedb1", agedData[1][1]);
 		model.addAttribute("agedb2", agedData[1][2]);
 		model.addAttribute("agedb3", agedData[1][3]);
 		
-
 		model.addAttribute("agedc0", agedData[2][0]);
 		model.addAttribute("agedc1", agedData[2][1]);
 		model.addAttribute("agedc2", agedData[2][2]);
@@ -268,7 +267,41 @@ public class MiscController implements MessageSourceAware{
 		model.addAttribute("agede1", agedData[4][1]);
 		model.addAttribute("agede2", agedData[4][2]);
 		model.addAttribute("agede3", agedData[4][3]);
+*/
+		
 
+		/////Turnaround Time
+		String[][] turnaroundData = bookService.getDashboardTurnaroundAverages(startDate, endDate, site);
+		
+		model.addAttribute("turnarounda0", turnaroundData[0][0]);
+		model.addAttribute("turnarounda1", turnaroundData[0][1]);
+		model.addAttribute("turnarounda2", turnaroundData[0][2]);
+		model.addAttribute("turnarounda3", turnaroundData[0][3]);
+		
+
+		model.addAttribute("turnaroundb0", turnaroundData[1][0]);
+		model.addAttribute("turnaroundb1", turnaroundData[1][1]);
+		model.addAttribute("turnaroundb2", turnaroundData[1][2]);
+		model.addAttribute("turnaroundb3", turnaroundData[1][3]);
+		
+
+		model.addAttribute("turnaroundc0", turnaroundData[2][0]);
+		model.addAttribute("turnaroundc1", turnaroundData[2][1]);
+		model.addAttribute("turnaroundc2", turnaroundData[2][2]);
+		model.addAttribute("turnaroundc3", turnaroundData[2][3]);
+		
+
+		model.addAttribute("turnaroundd0", turnaroundData[3][0]);
+		model.addAttribute("turnaroundd1", turnaroundData[3][1]);
+		model.addAttribute("turnaroundd2", turnaroundData[3][2]);
+		model.addAttribute("turnaroundd3", turnaroundData[3][3]);
+		
+
+		model.addAttribute("turnarounde0", turnaroundData[4][0]);
+		model.addAttribute("turnarounde1", turnaroundData[4][1]);
+		model.addAttribute("turnarounde2", turnaroundData[4][2]);
+		model.addAttribute("turnarounde3", turnaroundData[4][3]);
+		
  
 		//big chart
 		String[][] goalData = bookService.getDashboardGoalData(startDate, endDate, site);

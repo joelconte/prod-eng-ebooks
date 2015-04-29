@@ -123,6 +123,7 @@ $(function() {
 
     
     //Aged metrics
+    /* Removing Aged Metrice charts.  True data, but not very useful
     var aa2  =  <c:out value="${ageda2}"/>;
     $('.fhcSparkClassAgedA').sparkline(aa2, {type: 'line', width: '100px', fillColor: undefined} ); 
     var ab2  =  <c:out value="${agedb2}"/>;
@@ -133,7 +134,19 @@ $(function() {
     $('.fhcSparkClassAgedD').sparkline(ad2, {type: 'line', width: '100px', fillColor: undefined} ); 
     var ae2  =  <c:out value="${agede2}"/>;
     $('.fhcSparkClassAgedE').sparkline(ae2, {type: 'line', width: '100px', fillColor: undefined} ); 
-   
+   */
+
+    //Turnaround Time
+    var tta2  =  <c:out value="${turnarounda2}"/>;
+    $('.fhcSparkClassTurnaroundA').sparkline(tta2, {type: 'line', width: '100px', fillColor: undefined} ); 
+    var ttb2  =  <c:out value="${turnaroundb2}"/>;
+    $('.fhcSparkClassTurnaroundB').sparkline(ttb2, {type: 'line', width: '100px', fillColor: undefined} ); 
+    var ttc2  =  <c:out value="${turnaroundc2}"/>;
+    $('.fhcSparkClassTurnaroundC').sparkline(ttc2, {type: 'line', width: '100px', fillColor: undefined} ); 
+    var ttd2  =  <c:out value="${turnaroundd2}"/>;
+    $('.fhcSparkClassTurnaroundD').sparkline(ttd2, {type: 'line', width: '100px', fillColor: undefined} ); 
+    var tte2  =  <c:out value="${turnarounde2}"/>;
+    $('.fhcSparkClassTurnaroundE').sparkline(tte2, {type: 'line', width: '100px', fillColor: undefined} ); 
     
     /////////////////////Chart.js
  	//large graph  
@@ -605,8 +618,8 @@ $(function() {
 			<td class="bodyTd"  width='177'>${topa0}</td>
 			<td class="bodyTd" align="center" width='80'>${topa1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopA"></span> </td>
-			<td class="arrowTd" ><c:if test="${topa3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${topa3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${topa3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${topa3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${topa3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
@@ -614,8 +627,8 @@ $(function() {
 			<td class="bodyTd"  width='177'>${topb0}</td>
 			<td class="bodyTd"  align="center" width='80'>${topb1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopB"></span> </td>
-			<td class="arrowTd" ><c:if test="${topb3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${topb3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${topb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${topb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${topb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 		 	</tr>
@@ -623,8 +636,8 @@ $(function() {
 			<td class="bodyTd"  width='177'>${topc0}</td>
 			<td class="bodyTd"  align="center" width='80'>${topc1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopC"></span> </td>
-			<td class="arrowTd" ><c:if test="${topc3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${topc3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${topc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${topc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${topc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
@@ -632,8 +645,8 @@ $(function() {
 			<td class="bodyTd"  width='177'>${topd0}</td>
 			<td class="bodyTd" align="center" width='80'>${topd1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopD"></span> </td>
-			<td class="arrowTd" ><c:if test="${topd3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${topd3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${topd3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${topd3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${topd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
@@ -641,8 +654,8 @@ $(function() {
 			<td class="bodyTd"  width='177'>${tope0}</td>
 			<td class="bodyTd" align="center" width='80'>${tope1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopE"></span> </td>
-			<td class="arrowTd" ><c:if test="${tope3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${tope3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${tope3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${tope3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${tope3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
@@ -650,6 +663,16 @@ $(function() {
 			</table>
 			
 			<!-- Aged Metrics -->
+			<!-- 
+
+Removing Aged Metrice charts.  True data, but not very useful.
+I think the math behind the 46 minutes is showing that the rate of book production is 46 min/book.  (not that it takes 46 minutes for a given book 
+
+to flow through the system one after the other...)
+We can change it to something more useful.
+...So, we could have 1000 books that go through the system in 30 days, then this would show:
+(30*24*60)/1000 = 43.2 min/books...
+			
 			<table  class="mainRightRowHeader" > 
 				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Aged Metrics</h4></td></tr>
 		 	</table>
@@ -665,8 +688,8 @@ $(function() {
 			<td class="bodyTd"  width='177'>${ageda0}</td>
 			<td class="bodyTd"  width='80'>${ageda1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedA"></span> </td>
-			<td class="arrowTd" ><c:if test="${ageda3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${ageda3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${ageda3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${ageda3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${ageda3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
@@ -674,8 +697,8 @@ $(function() {
 			<td class="bodyTd"  width='177'>${agedb0}</td>
 			<td class="bodyTd"  width='80'>${agedb1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedB"></span> </td>
-			<td class="arrowTd" ><c:if test="${agedb3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${agedb3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${agedb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${agedb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${agedb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 		 	</tr>
@@ -683,8 +706,8 @@ $(function() {
 			<td class="bodyTd"  width='177'>${agedc0}</td>
 			<td class="bodyTd"  width='80'>${agedc1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedC"></span> </td>
-			<td class="arrowTd" ><c:if test="${agedc3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${agedc3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${agedc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${agedc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${agedc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
@@ -692,8 +715,8 @@ $(function() {
 			<td class="bodyTd"  width='177'>${agedd0}</td>
 			<td class="bodyTd"  width='80'>${agedd1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedD"></span> </td>
-			<td class="arrowTd" ><c:if test="${agedd3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${agedd3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${agedd3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${agedd3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${agedd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>
@@ -701,9 +724,69 @@ $(function() {
 			<td class="bodyTd"  width='177'>${agede0}</td>
 			<td class="bodyTd"  width='80'>${agede1} </td>
 			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedE"></span> </td>
-			<td class="arrowTd" ><c:if test="${agede3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${agede3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+			<td class="arrowTd" ><c:if test="${agede3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${agede3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${agede3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+			</td>
+			</tr>			
+			</table>
+			 -->
+			
+			<!-- Turnaround Time -->
+			<table  class="mainRightRowHeader" > 
+				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Turnaround Time</h4></td></tr>
+		 	</table>
+			<table>
+			<tr class="secondaryRowHeader">
+				<td></td>
+				<td align="center" class="secondaryTd">Avg time (days) in each phase</td>
+				<td align="center" class="secondaryTd">Trend</td>
+				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
+			</tr>
+			
+			<tr>
+			<td class="bodyTd"  width='177'>${turnarounda0}</td>
+			<td class="bodyTd"  width='80'>${turnarounda1} </td>
+			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundA"></span> </td>
+			<td class="arrowTd" ><c:if test="${turnarounda3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${turnarounda3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${turnarounda3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+			</td>
+			</tr>
+			<tr>
+			<td class="bodyTd"  width='177'>${turnaroundb0}</td>
+			<td class="bodyTd"  width='80'>${turnaroundb1} </td>
+			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundB"></span> </td>
+			<td class="arrowTd" ><c:if test="${turnaroundb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${turnaroundb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${turnaroundb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+			</td>
+		 	</tr>
+			<tr>
+			<td class="bodyTd"  width='177'>${turnaroundc0}</td>
+			<td class="bodyTd"  width='80'>${turnaroundc1} </td>
+			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundC"></span> </td>
+			<td class="arrowTd" ><c:if test="${turnaroundc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${turnaroundc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${turnaroundc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+			</td>
+			</tr>
+			<tr>
+			<td class="bodyTd"  width='177'>${turnaroundd0}</td>
+			<td class="bodyTd"  width='80'>${turnaroundd1} </td>
+			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundD"></span> </td>
+			<td class="arrowTd" ><c:if test="${turnaroundd3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${turnaroundd3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${turnaroundd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+			</td>
+			</tr>
+				<tr>
+			<td class="bodyTd"  width='177'>${turnarounde0}</td>
+			<td class="bodyTd"  width='80'>${turnarounde1} </td>
+			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundE"></span> </td>
+			<td class="arrowTd" ><c:if test="${turnarounde3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+					<c:if test="${turnarounde3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+					<c:if test="${turnarounde3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			</tr>			
 			</table>

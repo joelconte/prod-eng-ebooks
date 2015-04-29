@@ -294,6 +294,7 @@ public interface BookService {
 	public String[][] getDashboardAuditor( String startDate, String endDate, String site);
 	public String[][] getDashboardTop5( String startDate, String endDate, String site);
 	public String[][] getDashboardAgedAverages(String startDate, String endDate, String site);
+	public String[][] getDashboardTurnaroundAverages(String startDate, String endDate, String site);
 	public String[][] getDashboardGoalData( String startDate, String endDate, String site);
 	
 	////end dashboard/////

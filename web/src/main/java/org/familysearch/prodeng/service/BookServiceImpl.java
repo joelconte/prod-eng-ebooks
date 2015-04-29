@@ -4692,7 +4692,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		return ret;
 	}
 	
-	 
+	//Removing Aged Metrice charts. Methods not called True data, but not very useful
 	@Override 
 	public String[][] getDashboardAgedAverages( String startDate, String endDate, String site){
 	
@@ -4764,7 +4764,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			ret[3][0] = "Phase 4 (publish)";//publish-load
 
 			
-			runQueryForAgedDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata book", "date_added", "date_loaded", "all", extraDays, reduction, ret, 4);
+			////not needed. calc by adding up totals  runQueryForAgedDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata book", "date_added", "date_loaded", "all", extraDays, reduction, ret, 4);
 			ret[4][0] = "Phase 1-4 (all)";
 			ret[4][1] = String.format("%.3f", Double.parseDouble(ret[0][1]) + Double.parseDouble(ret[1][1]) + Double.parseDouble(ret[2][1]) + Double.parseDouble(ret[3][1]));
 			ret[4][2] = addStringArrays(ret[0][2], ret[1][2], ret[2][2], ret[3][2]);
@@ -4794,7 +4794,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			ret[3][0] = "Phase 4 (publish)";//publish-load
 
 			
-			runQueryForAgedDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata book", "date_added", "date_loaded", site, extraDays, reduction, ret, 4);
+			//not needed. calc by adding up totals  runQueryForAgedDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata book", "date_added", "date_loaded", site, extraDays, reduction, ret, 4);
 			ret[4][0] = "Phase 1-4 (all)";
 			ret[4][1] = String.format("%.3f", Double.parseDouble(ret[0][1]) + Double.parseDouble(ret[1][1]) + Double.parseDouble(ret[2][1]) + Double.parseDouble(ret[3][1]));
 			ret[4][2] = addStringArrays(ret[0][2], ret[1][2], ret[2][2], ret[3][2]);
@@ -4813,7 +4813,127 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		return ret;
 	}
 	
+	@Override
+	public String[][] getDashboardTurnaroundAverages(String startDate, String endDate, String site){
 
+		String startDateYearFirst, endDateYearFirst;
+		
+	
+		//order for alphabetical ordering of strings
+		//startDate
+		String yS, mS, dS;
+		int i1 = startDate.indexOf("/");
+		mS = startDate.substring(0, i1);
+		String rem = startDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dS = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yS = rem;
+		if(dS.length()==1)
+			dS = "0" + dS;
+		if(mS.length()==1)
+			mS = "0" + mS;
+		
+		startDateYearFirst = yS + "/"+ mS + "/" + dS;
+		
+		
+		//order for alphabetical ordering of strings
+		//endDate
+		String yE, mE, dE;
+		i1 = endDate.indexOf("/");
+		mE = endDate.substring(0, i1);
+		rem = endDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		endDateYearFirst = yE + "/"+ mE + "/" + dE;
+	
+			
+		int daysBetween = daysBetweenInclusive(yS, mS, dS, yE, mE, dE);
+		int width = 10;//number of date slices
+		int deltaDays = daysBetween / width;//this is num days in each time slice
+		int extraDays =  daysBetween % width;
+		double x =  1.0/((double)deltaDays+1.0);//delta days plus the 1 extra day in this period
+		double reduction = 1.0 - x;
+		//next get date slices (10 for now) make sure even number for start/end matching
+		List<String> dates = getDateSlices(yS, mS, dS, daysBetween, width); //daysBetween is inclusive, but returned dates will contain ending date exclusive
+		String[][] ret = new String[5][4]; 
+		
+		//allFhc allPartnerLibs
+		if(site == null || site.equals("All Sites"))
+		{
+	
+			//1/////////////////////////////////////////////////
+			//between bookmetadata start and bookmetadata end
+			runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata", "date_added", "sent_to_scan", "all",   extraDays, reduction, ret, 0);
+			ret[0][0] = "Phase 1 (book pull/metadata)";//catalog metadata
+	
+			runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "book", "scan_start_date", "scan_ia_complete_date", "all", extraDays, reduction, ret, 1);
+			ret[1][0] = "Phase 2 (scan)"; //scan
+			
+			 
+			runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "book", "files_received_by_orem", "date_released", "all",   extraDays, reduction, ret, 2);
+			ret[2][0] = "Phase 3 (ocr processing)";//orem ocr
+			
+			runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "book", "date_released", "date_loaded", "all",   extraDays, reduction, ret, 3);
+			ret[3][0] = "Phase 4 (publish)";//publish-load
+
+			
+			//not needed. calc by adding up totals runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata book", "date_added", "date_loaded", "all", extraDays, reduction, ret, 4);
+			ret[4][0] = "Phase 1-4 (all)";
+			ret[4][1] = String.format("%.3f", Double.parseDouble(ret[0][1]) + Double.parseDouble(ret[1][1]) + Double.parseDouble(ret[2][1]) + Double.parseDouble(ret[3][1]));
+			ret[4][2] = addStringArrays(ret[0][2], ret[1][2], ret[2][2], ret[3][2]);
+			
+			String tmp0 = ret[4][2].substring(1, ret[4][2].length()-1);
+			StringTokenizer st = new StringTokenizer(tmp0, ",");
+			String firstVal = st.nextToken().trim();
+			String lastVal = "";
+			while(st.hasMoreTokens()) {
+				lastVal = st.nextToken().trim();
+			}
+			ret[4][3] = calculateSlope(firstVal, lastVal);
+	 
+		}else {
+			//1/////////////////////////////////////////////////
+			//between bookmetadata start and bookmetadata end
+			runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata", "date_added", "sent_to_scan", site,   extraDays, reduction, ret, 0);
+			ret[0][0] = "Phase 1 (book pull/metadata)";//catalog metadata
+	
+			runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "book", "scan_start_date", "scan_ia_complete_date", site, extraDays, reduction, ret, 1);
+			ret[1][0] = "Phase 2 (scan)"; //scan
+			
+			runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "book", "files_received_by_orem", "date_released", site,   extraDays, reduction, ret, 2);
+			ret[2][0] = "Phase 3 (ocr processing)";//orem ocr
+			
+			runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "book", "date_released", "date_loaded", site,   extraDays, reduction, ret, 3);
+			ret[3][0] = "Phase 4 (publish)";//publish-load
+
+			
+			//not needed. calc by adding up totals runQueryForTurnaroundDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "bookmetadata book", "date_added", "date_loaded", site, extraDays, reduction, ret, 4);
+			ret[4][0] = "Phase 1-4 (all)";
+			ret[4][1] = String.format("%.3f", Double.parseDouble(ret[0][1]) + Double.parseDouble(ret[1][1]) + Double.parseDouble(ret[2][1]) + Double.parseDouble(ret[3][1]));
+			ret[4][2] = addStringArrays(ret[0][2], ret[1][2], ret[2][2], ret[3][2]);
+			
+			String tmp0 = ret[4][2].substring(1, ret[4][2].length()-1);
+			StringTokenizer st = new StringTokenizer(tmp0, ",");
+			String firstVal = st.nextToken().trim();
+			String lastVal = "";
+			while(st.hasMoreTokens()) {
+				lastVal = st.nextToken().trim();
+			}
+			ret[4][3] = calculateSlope(firstVal, lastVal);
+	 
+		}
+				
+		return ret;
+	}
+	
+	
 	@Override 
 	public String[][] getDashboardGoalData( String startDate, String endDate, String site){
 		//model.addAttribute("goalsLabels", "[ \"3/4\", \"February\", \"March\", \"April\", \"May\", \"une\", \"July\" ]");
@@ -4914,33 +5034,33 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		a3 = a3.substring(1, a3.length()-1);
 		
 		int count = 0;
-		int[] ai0 = new int[20];
-		int[] ai1 = new int[20];
-		int[] ai2 = new int[20];
-		int[] ai3 = new int[20];
+		double[] ai0 = new double[20];
+		double[] ai1 = new double[20];
+		double[] ai2 = new double[20];
+		double[] ai3 = new double[20];
 		StringTokenizer st0 = new StringTokenizer(a0, ",");
 		StringTokenizer st1 = new StringTokenizer(a1, ",");
 		StringTokenizer st2 = new StringTokenizer(a2, ",");
 		StringTokenizer st3 = new StringTokenizer(a3, ",");
 		int x = 0;
 		while(st0.hasMoreTokens()) {
-			ai0[x] = Integer.parseInt(st0.nextToken().trim());
+			ai0[x] = Double.parseDouble(st0.nextToken().trim());
 			x++;
 			count++;
 		}
 		x = 0;
 		while(st1.hasMoreTokens()) {
-			ai1[x] = Integer.parseInt(st1.nextToken().trim());
+			ai1[x] = Double.parseDouble(st1.nextToken().trim());
 			x++;
 		}
 		x = 0;
 		while(st2.hasMoreTokens()) {
-			ai2[x] = Integer.parseInt(st2.nextToken().trim());
+			ai2[x] = Double.parseDouble(st2.nextToken().trim());
 			x++;
 		}
 		x = 0;
 		while(st3.hasMoreTokens()) {
-			ai3[x] = Integer.parseInt(st3.nextToken().trim());
+			ai3[x] = Double.parseDouble(st3.nextToken().trim());
 			x++;
 		}
 		
@@ -4953,8 +5073,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	}
 	 
 	public String calculateSlope(String firstPeriodCount, String lastPeriodCount) {
-		int f = Integer.valueOf(firstPeriodCount);
-		int l = Integer.valueOf(lastPeriodCount);
+		double f = Double.valueOf(firstPeriodCount);
+		double l = Double.valueOf(lastPeriodCount);
 		
 		if (f < l)
 			return "up";
@@ -6087,6 +6207,134 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		 ret[arrayIndex][1] = (String) String.format("%.3f", avg);//avg
 		 ret[arrayIndex][2] = arrayStrTns;
 		 ret[arrayIndex][3] = calculateSlope(firstPeriodTNCount, lastPeriodTNCount);
+		 
+	}
+
+	public void runQueryForTurnaroundDashboard(int daysBetween, List<String> dates, String startDateYearFirst, String endDateYearFirst, String table, String colName1, String colName2,  String site, int extraDays, double reduction, String[][] ret, int arrayIndex) {
+		
+		List<List> vals = null;
+		String arrayStrTurnaroundTime = "[";
+	  
+		String firstPeriodTNCount = null;
+		String lastPeriodTNCount = null;
+		String firstPeriodMinutes = null;
+		String lastPeriodMinutes = null;
+
+		String pagesColumn = "num_of_pages";
+	   if(colName2.equalsIgnoreCase("sent_to_scan")) {
+			//metadata
+			pagesColumn = null;//unknown
+		}else if(colName2.equalsIgnoreCase("scan_ia_complete_date")) {
+			//scan
+			pagesColumn = "scan_num_of_pages";
+		}else if(colName2.equalsIgnoreCase("date_released")) {
+			//ocr processing
+			pagesColumn = "num_of_pages";
+		}else if(colName2.equalsIgnoreCase("date_loaded")) {
+			//publish load and total
+			pagesColumn = "pages_online";
+		}
+			
+		boolean isFirstrun = true;
+		//generate string array for chart
+		int reductionCount = 1;
+		String allSql = "";
+		if(site.equals("all")) {
+			if(colName2.equalsIgnoreCase("sent_to_scan")) {
+				//metadata
+				vals = getJdbcTemplate().query("SELECT titleno, 0, (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "' and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper());	
+			}else if(colName2.equalsIgnoreCase("scan_ia_complete_date") || colName2.equalsIgnoreCase("date_released") || colName2.equalsIgnoreCase("date_loaded")) {
+				//scan, ocr processing, publish load, and total	
+				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper());
+			}
+		}else{
+ 
+			if(colName2.equalsIgnoreCase("sent_to_scan")) {
+				//metadata
+				vals = getJdbcTemplate().query("SELECT titleno, 0 , (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.requesting_location = ?  and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper(), site);	
+			}else if(colName2.equalsIgnoreCase("scan_ia_complete_date") || colName2.equalsIgnoreCase("date_released") || colName2.equalsIgnoreCase("date_loaded")) {
+				//scan, ocr processing, publish load, and total
+				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.scanned_by = ?  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper(), site);
+			}
+		}
+		Iterator<List> rows = vals.iterator();
+		List<String> row = null;
+		if(rows.hasNext())
+			row = rows.next();
+		
+		Iterator i = dates.iterator();
+		i.next();//ok to skip first since it is covered in the query
+		int tnCountTotalAll = 0;
+		double minutesTotalAll = 0;
+		while(i.hasNext()) {
+			String queryE = (String)i.next(); 
+			int pageCountTotal = 0;
+			int tnCountTotal = 0;
+			double minutesTotal = 0;
+			
+			String tnCountStr = null;
+			String minutesStr = null;
+			//for(List<String> row: vals) {
+			do {
+				
+				if(row != null && row.get(3).compareTo(queryE) < 0) {
+					//matched in this time slice
+					//get chart array here..
+					//calculate and reduction (averaging) if needed
+					String tn = (String)row.get(0);
+					String pageCountStr = (String)row.get(1);
+					if(pageCountStr == null)
+						pageCountStr = "0";
+					tnCountTotal += 1;
+					String minutes = row.get(2);
+					minutes = minutes.substring(0, minutes.indexOf(" "));
+					minutesTotal += Integer.valueOf(minutes);
+					minutesTotal = (minutesTotal / 24) / 60;//change back into days ..easier than parsing from sql return value
+					int pageCount = Integer.valueOf(pageCountStr);
+					pageCountTotal += pageCount;
+				}else {
+					break;
+				}
+				
+				if(rows.hasNext())
+					row = rows.next();
+				else
+					row = null;
+				
+			}while(rows!=null);
+			
+			tnCountTotalAll += tnCountTotal;
+			tnCountStr = String.valueOf(tnCountTotal);	
+			minutesTotalAll += minutesTotal;
+			minutesStr = String.valueOf(minutesTotal);	
+			//if tnCount is 1, then don't bother averaging, or it averages to 0
+			/*???needed for time?
+			if((reductionCount <= extraDays) && (tnCountTotal !=1) ) {
+				tnCountTotal = (int)(tnCountTotal * reduction);
+				tnCountStr = String.valueOf(tnCountTotal);	
+				reductionCount++;
+			} */
+			arrayStrTurnaroundTime += minutesStr + ", ";
+			 
+			if(isFirstrun)
+			{
+				firstPeriodMinutes = minutesStr;
+			}
+			isFirstrun = false;
+			
+			lastPeriodMinutes = minutesStr;//just always set it each time around
+		}
+		
+		arrayStrTurnaroundTime = arrayStrTurnaroundTime.substring(0,arrayStrTurnaroundTime.length()-2) + "]";//remove comma and finalize array string
+ 
+ 	 
+		 double avg = 0;
+		 if(minutesTotalAll != 0)
+			 avg = ((double)minutesTotalAll)/((double)tnCountTotalAll);
+		 	 //already in minutes avg = avg*24*60;//get minutes
+		 ret[arrayIndex][1] = (String) String.format("%.3f", avg);//avg
+		 ret[arrayIndex][2] = arrayStrTurnaroundTime;
+		 ret[arrayIndex][3] = calculateSlope(firstPeriodMinutes, lastPeriodMinutes);
 		 
 	}
 
