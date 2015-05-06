@@ -99,6 +99,10 @@ public class MiscController implements MessageSourceAware{
 			model.addAttribute("dupeTnsInfo", bookService.getDuplicateTnsInBook(tnListStr));   
 			 
 		}
+		String mojibakeStr = checkMojibake(md, locale);
+		if( mojibakeStr != null) {
+			model.addAttribute("mojibakeMessage", mojibakeStr);
+		}
 		//////
 
 		model.addAttribute("pageTitle", messageSource.getMessage("metadata.pageTitle.newBooks", null, locale));
@@ -145,6 +149,23 @@ public class MiscController implements MessageSourceAware{
 		return "metadata/miscButtonAndTableFormWithCheckbox";
 	}
 
+	//check md if it has any of the following strings
+	public String checkMojibake(List<List> md, Locale locale) {
+		String[] moji = {"??", "Ã©", "¦", "¤", "¬", "¶", "¥", "¼", "Â¿", "¿¿", "ª", "¨", "«", "§", "Š" , "³", "¡", "�", "",  "ÃstÃ"}; 
+		//fyi ""  contains an invisible char often seen between "Än".  If you copypaste it to notepad and save as ansi, it looks different.  In the trackingform in the title field for example it appears as a rectangle with symbols inside. 
+		for(List<String> row : md) {
+			for(String field : row) {
+				for(String x : moji) {
+					if(field != null && field.indexOf(x) != -1) {
+						String[] messageArgs =  {row.get(3), field, x};
+						return messageSource.getMessage("mojibakeMessage", messageArgs, locale);
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	@RequestMapping(value="metadata/metadataNewBooks", method=RequestMethod.POST)
 	public String getMetadataNewBooksPost(String button, HttpServletRequest request, Principal principal,  Model model, Locale locale) {
 		if("checkTns".equals(button)) {

@@ -10,6 +10,7 @@ window.onload=function(){
 		sorttable.innerSortFunction.apply(myTH, []);
 	
 	showDupeMsgAfterPasteNewDataPost();//show confirm if already posted and data has dupes
+	showMojibakeMessage();//always show this even when not entering new data
 }
 
 function showDupeMsgAfterPasteNewDataPost(){
@@ -32,6 +33,17 @@ function showDupeMsgAfterPasteNewDataPost(){
 		}
 	} 
 }
+
+function showMojibakeMessage(){
+	
+	var sel = document.getElementById("mojibakeMessage");
+	var mojibakeMessage = sel.value;
+ 
+	if(mojibakeMessage != ""){
+ 		 alert(mojibakeMessage);
+	} 
+}
+
   
 </script> 
 
@@ -47,6 +59,7 @@ function showDupeMsgAfterPasteNewDataPost(){
 	   
 		<sf:form id="f1" class="" name="f1" method="post" action="${buttonsAction}" modelAttribute="book">
 			<input type="hidden" id="dupeList" value="${dupeTnsInfo}"/>
+			<input type="hidden" id="mojibakeMessage" value="${mojibakeMessage}"/>
 			<table id="buttonsTable">
 			<tr>
 				<td></td><!-- space for checkboxes if I remember correctly -->
