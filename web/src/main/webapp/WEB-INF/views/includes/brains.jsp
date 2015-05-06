@@ -9,11 +9,13 @@
 
 
 <!-- Start of links from familysearch.org -->
+	 <!-- <link rel="stylesheet" href="https://ident.familysearch.org/cis-web/css/build/sign-in.min-bef2d710.css">-->
       <link href='https://edge.fscdn.org/assets/css/header-footer/hf-95cfda2f659c4fe62dde556df446c29f.css' rel='stylesheet' media='all'>
       <link href='https://edge.fscdn.org/assets/css/header-footer/hf-responsive-fb19ffc7fc9dd3c1574773dfebde4e2f.css' rel='stylesheet' media='all'>
       <link href='https://edge.fscdn.org/assets/css/home-e84f9688752b5c8a04968cf81726de3b.styl.css' rel='stylesheet' media='screen'>
-      <link href='https://edge.fscdn.org/assets/css/bootstrap-4e2b1b162d1b0258fe9438059b650cb5.css' rel='stylesheet' media='all'>
-     <!-- <link href='https://edge.fscdn.org/assets/css/responsive-166fbb8fd4a3f5207a500bdf6c2d9186.css' rel='stylesheet' media='screen'>
+      <link href='https://edge.fscdn.org/assets/css/bootstrap-4e2b1b162d1b0258fe9438059b650cb5.css' rel='stylesheet' media='all'>  
+      
+     <!-- old used 2013-2014 <link href='https://edge.fscdn.org/assets/css/responsive-166fbb8fd4a3f5207a500bdf6c2d9186.css' rel='stylesheet' media='screen'>
      
     <link href='https://edge.fscdn.org/assets/css/layout/engage_hf_apr_exp-4c029109fff5aeea2cbde259e6ad26a5.css' rel='stylesheet' media='screen'>
     

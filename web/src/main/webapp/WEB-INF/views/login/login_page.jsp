@@ -7,22 +7,38 @@
 <head>
 		<jsp:include page="/WEB-INF/views/includes/brains.jsp"/>
   <link rel="stylesheet" href="https://ident.familysearch.org/cis-web/css/build/sign-in-36fd5353.css" media="screen">
- 
+  <link rel="stylesheet" href="https://ident.familysearch.org/cis-web/css/build/sign-in.min-bef2d710.css">
 <title>Book Scanning and Processing - Login Page</title></head>
 
 <body class="env-production" onload='document.f.j_username.focus();'>
 <div class="container" id="wrapper">
 
-<header>
-    <h1 class="logo-container">
-      
-        <a href="https://familysearch.org/register/?state=https://familysearch.org/" class="new_account btn">Create an Account</a>
-        <a class="helplink" href="https://familysearch.org/ask">Get help ▾</a>
-      
-      <a class="logo" href="https://familysearch.org">FamilySearch</a>
-    </h1>
+<header class="header" layout="" horizontal="" center="">
+  <h1 class="logo-container">
+    <a class="logo" href="https://familysearch.org">FamilySearch</a>
+  </h1>
+  <span flex=""></span>
+  
+    <div class="account-wrapper" layout="" horizontal="" center="">
+      <a class="helplink" href="https://familysearch.org/ask">Get help ▾</a>
+       <a href="https://familysearch.org/register/?state=https://familysearch.org/" class="new_account btn">Create an Account</a>
+    </div>
+  
 
 </header>
+<!-- 
+<header>
+    <h1 class="logo-container">
+       <span>
+       <a class="logo" href="https://familysearch.org">FamilySearch</a>
+       </span>
+       <a href="https://familysearch.org/register/?state=https://familysearch.org/" class="new_account btn">Create an Account</a>
+        <a class="helplink" href="https://familysearch.org/ask">Get help ▾</a>
+      
+       
+    </h1>
+
+</header> -->
 <div class="padding-md overflow">
 <h2 style="font-size: 150%">FamilySearch Book Digitization</h2> 
  
