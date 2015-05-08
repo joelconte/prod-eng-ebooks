@@ -61,7 +61,7 @@
     
 	</repositories>
 
-	<pluginRepositories />
+	<pluginRepositories/>
 
 	<prerequisites>
 		<maven>${mavenVersion}</maven>
