@@ -52,6 +52,14 @@ $( "#scan_ia_complete_date" ).datepicker();
 $( "#metadata_complete" ).datepicker();
 $( "#files_sent_to_orem" ).datepicker();
 $( "#pull_date" ).datepicker();
+
+$( "#scan_start_date" ).blur( validateDateData );
+$( "#scan_complete_date" ).blur( validateDateData );
+$( "#scan_ia_start_date" ).blur( validateDateData );
+$( "#scan_ia_complete_date" ).blur( validateDateData );
+$( "#metadata_complete" ).blur( validateDateData );
+$( "#files_sent_to_orem" ).blur( validateDateData );
+$( "#pull_date" ).blur( validateDateData );
 setTimeout(processBookState, 100);
 displayBookNotFoundMsg();
 });

@@ -87,10 +87,16 @@ function showMojibakeMessage(){
 			 	<c:forEach var="tn" items="${allTnsInfo}">
 				<tr>
 					<td valign="top" align="left" style="white-space: nowrap;">${rowNum+1}&nbsp;<input type="checkbox" name="rowNum${rowNum}" value="${tn.get(tnColumnNumber)}" /></td>
-					<c:forEach var="i" begin="0" end="${colLabels.size()-1}">
+					
+					<c:set var="encodedTN" value="${tn.get(tnColumnNumber)}"/>
+				 	<c:if test="${encodedTN.contains('&')}">
+				 		<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 	</c:if>
+				 	
+				 	<c:forEach var="i" begin="0" end="${colLabels.size()-1}">
 					<td valign="top" align="left">
 						<!-- <a title="${messages['metadataForm.hoverText']}" href="metadataForm?update&titleno=${tn.get(3)}&returnTo=${returnTo}" ><c:out value="${tn.get(i)}"/></a> -->
-						<a title="${messages['metadataForm.hoverText']}" href="metadataForm?update&titleno=${tn.get(tnColumnNumber)}&returnTo=${returnTo}" ><c:out value="${tn.get(i)}"/>
+						<a title="${messages['metadataForm.hoverText']}" href="metadataForm?update&titleno=${encodedTN}&returnTo=${returnTo}" ><c:out value="${tn.get(i)}"/>
 					</td>
 
 					</c:forEach>

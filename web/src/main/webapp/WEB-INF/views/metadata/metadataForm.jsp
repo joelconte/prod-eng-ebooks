@@ -42,6 +42,8 @@ function displayBookNotFoundMsg(){
 $(function() {
 	displayBookNotFoundMsg();
 $( "#date_original" ).datepicker();
+
+$( "#date_original" ).blur( validateDateData );
 });
 </script>
  

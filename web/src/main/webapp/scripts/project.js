@@ -458,3 +458,32 @@ $.fn.replaceTag = function (newTagObj, keepProps) {
 
     return this;
 };
+
+
+
+
+function validateDateData(event){
+	var elem = event.target;
+	var val = elem.value;
+	var date = val.split("/");
+	var y = parseInt(date[2], 10);
+
+	if(typeof y != "number" || y < 1000 ){
+		if(event.relatedTarget != null && event.relatedTarget.className.indexOf("ui-state-default") != -1){
+			return;//new date selected from date box popup...hack and use name of trackingForm since this works
+		}
+
+		event.preventDefault();
+	 	alert( "Please use a four digit year" );
+	 	
+	 
+		if(event.relatedTarget != null && event.relatedTarget.localName != null && event.relatedTarget.localName.indexOf("select") != -1){
+		  //event.relatedTarget.close();
+			//event.relatedTarget.toggle();//try to close dropdown here
+		} 	
+		event.relatedTarget.blur();
+	 	elem.focus();
+	 	elem.click();
+	 	 
+	}
+};
