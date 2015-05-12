@@ -50,6 +50,24 @@ $( "#pdf_orem_archived_date" ).datepicker();
 $( "#pdf_copy2_archived_date" ).datepicker();
 $( "#tiff_orem_archived_date" ).datepicker();
 $( "#tiff_copy2_archived_date" ).datepicker();
+
+$( "#ia_start_date" ).blur( validateDateData );
+$( "#ia_complete_date" ).blur( validateDateData );
+$( "#pdfDownload_date" ).blur( validateDateData );
+$( "#ocr_start_date" ).blur( validateDateData );
+$( "#ocr_complete_date" ).blur( validateDateData );
+$( "#pdfreview_start_date" ).blur( validateDateData );
+$( "#pdf_ready" ).blur( validateDateData );
+$( "#metadata_complete" ).blur( validateDateData );
+$( "#date_released" ).blur( validateDateData );
+$( "#date_loaded" ).blur( validateDateData );
+$( "#pdf_sent_to_load" ).blur( validateDateData );
+$( "#files_received_by_orem" ).blur( validateDateData );
+$( "#pdf_orem_archived_date" ).blur( validateDateData );
+$( "#pdf_copy2_archived_date" ).blur( validateDateData );
+$( "#tiff_orem_archived_date" ).blur( validateDateData );
+$( "#tiff_copy2_archived_date" ).blur( validateDateData );
+
 });
 </script>
 

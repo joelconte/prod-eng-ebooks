@@ -68,7 +68,35 @@ $( "#tiff_copy2_archived_date" ).datepicker();
 $( "#date_original" ).datepicker();
 $( "#date_republished" ).datepicker();
 $( "#pull_date" ).datepicker();
+
+$( "#scan_complete_date" ).blur( validateDateData );	 
+$( "#scan_ia_complete_date" ).blur( validateDateData );
+$( "#scan_start_date" ).blur( validateDateData );
+$( "#scan_ia_start_date" ).blur( validateDateData );
+$( "#files_sent_to_orem" ).blur( validateDateData );
+$( "#ia_start_date" ).blur( validateDateData );
+$( "#ia_complete_date" ).blur( validateDateData );
+$( "#ocr_start_date" ).blur( validateDateData );
+$( "#ocr_complete_date" ).blur( validateDateData );
+$( "#pdfreview_start_date" ).blur( validateDateData );
+$( "#pdf_ready" ).blur( validateDateData );
+$( "#pdfDownload_date" ).blur( validateDateData );
+$( "#metadata_complete" ).blur( validateDateData );
+$( "#date_released" ).blur( validateDateData );
+$( "#date_loaded" ).blur( validateDateData );
+$( "#pdf_sent_to_load" ).blur( validateDateData );
+$( "#files_received_by_orem" ).blur( validateDateData );
+$( "#pdf_orem_archived_date" ).blur( validateDateData );
+$( "#pdf_copy2_archived_date" ).blur( validateDateData );
+$( "#tiff_orem_archived_date" ).blur( validateDateData );
+$( "#tiff_copy2_archived_date" ).blur( validateDateData );
+$( "#date_original" ).blur( validateDateData );
+$( "#date_republished" ).blur( validateDateData );
+$( "#pull_date" ).blur( validateDateData );
 });
+
+
+ 
 </script>
 
 

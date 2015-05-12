@@ -31,9 +31,15 @@ window.onload=function(){
 			 		</c:forEach>
 			 	</tr>
 			 	<c:forEach var="tn" items="${allTnsInfo}">
+			 		
+			 	<c:set var="encodedTN" value="${tn.get(keyCol)}"/>
+				<c:if test="${encodedTN.contains('&')}">
+						<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				</c:if>
+				 	
 				<tr>
 					<c:forEach var="i" begin="0" end="${colLabels.size()-1}">
-					<td valign="top" align="left"><a title="${messages['metadataForm.viewTrackingFormhoverText']}"  href="trackingForm?read&tn=${tn.get(keyCol)}" ><c:out value="${tn.get(i)}"/></a></td>
+					<td valign="top" align="left"><a title="${messages['metadataForm.viewTrackingFormhoverText']}"  href="trackingForm?read&tn=${encodedTN}" ><c:out value="${tn.get(i)}"/></a></td>
 
 					</c:forEach>
 				</tr>

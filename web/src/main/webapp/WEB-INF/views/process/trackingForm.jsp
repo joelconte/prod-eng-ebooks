@@ -46,6 +46,7 @@ function displayBookNotFoundMsg(){
 $(function() {
 	$( "#date_released" ).datepicker();
 	$( "#files_sent_to_orem" ).datepicker();
+	$( "#ia_start_date" ).datepicker();
 $( "#ia_complete_date" ).datepicker();
 $( "#ocr_start_date" ).datepicker();
 $( "#ocr_complete_date" ).datepicker();
@@ -54,6 +55,19 @@ $( "#pdfreview_start_date" ).datepicker();
 $( "#pdf_ready" ).datepicker();
 $( "#pdfDownload_date" ).datepicker();
 $( "#files_received_by_orem" ).datepicker();
+
+$( "#date_released" ).blur( validateDateData );
+$( "#files_sent_to_orem" ).blur( validateDateData );
+$( "#ia_start_date" ).blur( validateDateData );
+$( "#ia_complete_date" ).blur( validateDateData );
+$( "#ocr_start_date" ).blur( validateDateData );
+$( "#ocr_complete_date" ).blur( validateDateData );
+$( "#metadata_complete" ).blur( validateDateData );
+$( "#pdfreview_start_date" ).blur( validateDateData );
+$( "#pdf_ready" ).blur( validateDateData );
+$( "#pdfDownload_date" ).blur( validateDateData );
+$( "#files_received_by_orem" ).blur( validateDateData );
+
 setTimeout(processBookState, 100);
 displayBookNotFoundMsg();
 });

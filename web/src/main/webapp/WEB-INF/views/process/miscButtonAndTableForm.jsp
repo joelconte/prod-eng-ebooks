@@ -95,7 +95,12 @@ function showDupeMsgAfterPasteNewDataPost(){
 					<td valign="top" align="left" style="white-space: nowrap;">${rowNum+1}&nbsp;</td>
 					<c:forEach var="i" begin="0" end="${colLabels.size()-1}">
 				 
-					<td><a href="trackingForm?update&tn=${tn.get(0)}&returnTo=${returnTo}" ><c:out value="${tn.get(i)}"/></a></td>
+				 	<c:set var="encodedTN" value="${tn.get(0)}"/>
+				 	<c:if test="${encodedTN.contains('&')}">
+				 		<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 	</c:if>
+				 	
+					<td><a href="trackingForm?update&tn=${encodedTN}&returnTo=${returnTo}" ><c:out value="${tn.get(i)}"/></a></td>
 
 					</c:forEach>
 					<c:set var="rowNum" value="${rowNum+1}"/>
