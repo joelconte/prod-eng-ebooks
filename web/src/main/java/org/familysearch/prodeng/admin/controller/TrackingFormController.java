@@ -125,6 +125,11 @@ public class TrackingFormController implements MessageSourceAware{
 		//save book object which was linked in displayBookUpdatePost and form modelAttribute attr
 
 		bookService.updateBook(book, tnOriginal); //tn param can be updated in admin also
+		//tn in url cannot contain &
+		if(tn.contains("&")) {
+			tn = tn.replace("&", "%26");
+		}
+				
 		return "redirect:trackingForm?read&tn=" + tn; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
 
@@ -141,6 +146,11 @@ public class TrackingFormController implements MessageSourceAware{
 		//save book object which was linked in displayBookUpdatePost and form modelAttribute attr
 
 		bookService.updateBook(book, tnOriginal); //tn param can be updated in admin also
+		
+		//tn in url cannot contain &
+		if(tn.contains("&")) {
+			tn = tn.replace("&", "%26");
+		}
 		return "redirect:trackingForm?update&tn=" + tn; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
 	
@@ -150,6 +160,10 @@ public class TrackingFormController implements MessageSourceAware{
 		bookService.checkAndReleaseBookLock(tn, principal.getName());//ignore any return error msg since it is just a cancel (ie even if admin unlocked it, it is ok)
 		
 		//do nothing
+		//tn in url cannot contain &
+		if(tn.contains("&")) {
+			tn = tn.replace("&", "%26");
+		}
 		return "redirect:trackingForm?read&tn=" + tn; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
 	

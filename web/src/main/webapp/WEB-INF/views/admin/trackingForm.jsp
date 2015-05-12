@@ -189,16 +189,21 @@ $( "#pull_date" ).blur( validateDateData );
 					<td class="labelColSize">${messages['trackingForm.problems']}</td>
 					<td> 
 						<c:if test="${book.tn != ''}">
+							<c:set var="encodedTN" value="${book.tn}"/>
+				 			<c:if test="${encodedTN.contains('&')}">
+				 				<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 			</c:if>
+				 		
 							<c:if test="${isReadOnly==false}">
 							<c:if test="${problemOpenList == null || problemOpenList.size() == 0}">
-								<a href="../problems/problemsForm?update&doCreate&tn=${book.tn}&pn=-1" target="_blank">${messages['newIssue']}</a>
+								<a href="../problems/problemsForm?update&doCreate&tn=${encodedTN}&pn=-1" target="_blank">${messages['newIssue']}</a>
 							</c:if>
 							</c:if>
 								<c:if test="${problemOpenList != null && problemOpenList.size() > 0}">
 								<div  style="margin-top: 10px; margin-right: 20px; color: blue; border-color: red;  xfont-weight:bold; box-shadow: 0 0 0 red inset, 0 0 8px red;   outline: 0 none;" >
 								</c:if>	
 								<c:forEach var="prob" items="${problemOpenList}">
-									<a href="../problems/problemsForm?read&tn=${prob.get(1)}&pn=${prob.get(0)}" target="_blank">${prob.get(0)}</a>
+									<a href="../problems/problemsForm?read&tn=${encodedTN}&pn=${prob.get(0)}" target="_blank">${prob.get(0)}</a>
 								</c:forEach>
 								<c:if test="${problemOpenList != null && problemOpenList.size() > 0}">
 								</div>
@@ -212,8 +217,14 @@ $( "#pull_date" ).blur( validateDateData );
 						<c:if test="${problemClosedList == null || problemClosedList.size() == 0}">
 							None
 						</c:if>
+						
+						<c:set var="encodedTN" value="${book.tn}"/>
+				 		<c:if test="${encodedTN.contains('&')}">
+				 				<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 		</c:if>
+				 		
 						<c:forEach var="prob" items="${problemClosedList}">
-							<a href="../problems/problemsForm?read&tn=${prob.get(1)}&pn=${prob.get(0)}" target="_blank">${prob.get(0)}</a>
+							<a href="../problems/problemsForm?read&tn=${encodedTN}&pn=${prob.get(0)}" target="_blank">${prob.get(0)}</a>
 						</c:forEach>
 					</td>
 					</tr>

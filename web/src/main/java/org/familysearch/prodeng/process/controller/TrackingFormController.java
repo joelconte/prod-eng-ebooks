@@ -120,6 +120,12 @@ public class TrackingFormController implements MessageSourceAware{
 		bookService.updateBook(book);
 		if(returnTo != null && returnTo != "") 
 			return "redirect:" + returnTo;
+		
+		//tn in url cannot contain &
+		if(tn.contains("&")) {
+			tn = tn.replace("&", "%26");
+		}
+		
 		return "redirect:trackingForm?read&tn=" + tn; //if no returnTo, then just put back in read state
 	}
 	
@@ -134,6 +140,11 @@ public class TrackingFormController implements MessageSourceAware{
 		}
 		
 		bookService.updateBook(book);
+		
+		//tn in url cannot contain &
+		if(tn.contains("&")) {
+			tn = tn.replace("&", "%26");
+		}
 		
 		if(returnTo != null && returnTo != "") 
 			return "redirect:trackingForm?update&tn=" + tn + "&returnTo=" + returnTo; //keep on same page with returnTo parm added again
