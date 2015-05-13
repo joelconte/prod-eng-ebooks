@@ -21,16 +21,25 @@ function fetchBook(selectId, mode){
 
 	var sel= document.getElementById(selectId);
 	var tn = sel.options[sel.selectedIndex].text;
-
+	
+	//replace & with %26
+	if(tn.contains("&")){
+		tn = tn.replace("&", "%26");
+	}
+	
 	var url = "trackingForm?" + mode + "&tn=" + tn; //mode read,update,create
 	window.location.href=url;
 	 
 }
 function fetchBook2(textId, mode){
-
+ 
 	var sel= document.getElementById(textId);
 	var tn = sel.value;
 	
+	//replace & with %26
+	if(tn.contains("&")){
+		tn = tn.replace("&", "%26");
+	}
 	var url = "trackingForm?" + mode+ "&tn=" + tn; //mode read,update,create
 	window.location.href=url;
 }
@@ -38,6 +47,12 @@ function fetchBook2(textId, mode){
 function fetchAllTns(textId, mode){
 	var sel= document.getElementById(textId);
 	var tn = sel.value;
+	
+	//replace & with %26
+	if(tn.contains("&")){
+		tn = tn.replace("&", "%26");
+	}
+	
 	if(tn != "")
 		var url = "trackingForm?" + mode + "&" + "fetchAllTns=true&tn=" + tn; //mode read,update,create
 	else
@@ -48,6 +63,12 @@ function fetchAllTns(textId, mode){
 function fetchAllTnsMetadata(textId, mode){
 	var sel= document.getElementById(textId);
 	var tn = sel.value;
+	
+	//replace & with %26
+	if(tn.contains("&")){
+		tn = tn.replace("&", "%26");
+	}
+	
 	if(tn != "")
 		var url = "metadataForm?" + mode + "&" + "fetchAllTns=true&tn=" + tn; //mode read,update,create
 	else
@@ -61,6 +82,11 @@ function fetchBookMetadata(selectId, mode){
 	var sel= document.getElementById(selectId);
 	var tn = sel.options[sel.selectedIndex].text;
 
+	//replace & with %26
+	if(tn.contains("&")){
+		tn = tn.replace("&", "%26");
+	}
+	
 	var url = "metadataForm?" + mode + "&titleno=" + tn; //mode read,update,create
 	window.location.href=url;
 	 
@@ -69,6 +95,11 @@ function fetchBook2Metadata(textId, mode){
 
 	var sel= document.getElementById(textId);
 	var tn = sel.value;
+	
+	//replace & with %26
+	if(tn.contains("&")){
+		tn = tn.replace("&", "%26");
+	}
 	
 	var url = "metadataForm?" + mode+ "&titleno=" + tn; //mode read,update,create
 	window.location.href=url;
@@ -96,6 +127,7 @@ function fetchSearch(selectId, mode){
 
 	var sel= document.getElementById(selectId);
 	var search = sel.options[sel.selectedIndex].text;
+
 
 	var url = "searchMisc?" + mode + "&searchId=" + search; //mode read,update,create
 	window.location.href=url;

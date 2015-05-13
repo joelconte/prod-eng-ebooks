@@ -93,6 +93,11 @@ public class ProblemsFormController {
 			bookService.createProblem(problem);  	
 		}
 		
+		//tn in url cannot contain &
+		if(tn.contains("&")) {
+			tn = tn.replace("&", "%26");
+		}
+		
 		if(returnTo != null && returnTo != "") 
 			return "redirect:" + returnTo;
 		return "redirect:problemsForm?read&tn=" + tn + "&pn=" + pn; //redirect - guard against refresh-multi-updates and also update displayed url
@@ -107,6 +112,12 @@ public class ProblemsFormController {
 			oldPn--;
 			pn = String.valueOf(oldPn);
 		}
+		
+		//tn in url cannot contain &
+		if(tn.contains("&")) {
+			tn = tn.replace("&", "%26");
+		}
+		
 		if(returnTo != null && returnTo != "") 
 			return "redirect:" + returnTo;
 		return "redirect:problemsForm?read&tn=" + tn + "&pn=" + pn;//redirect - guard against refresh-multi-updates and also update displayed url

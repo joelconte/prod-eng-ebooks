@@ -100,6 +100,12 @@ public class MetadataFormController implements MessageSourceAware{
 
 		bookService.updateBookMetadata(book, tnOriginal); //tn param can be updated in metadata also
 		
+
+		//tn in url cannot contain &
+		if(titleno.contains("&")) {
+			titleno = titleno.replace("&", "%26");
+		}
+		
 		if(returnTo != null && returnTo != "") 
 			return "redirect:" + returnTo;
 		return "redirect:metadataForm?read&titleno=" + titleno; //redirect - guard against refresh-multi-updates and also update displayed url
@@ -110,6 +116,11 @@ public class MetadataFormController implements MessageSourceAware{
 	public String doBookCancel(@RequestParam("titleno") String titleno,  String returnTo, Model model) {
 		//do nothing
 		
+		//tn in url cannot contain &
+		if(titleno.contains("&")) {
+			titleno = titleno.replace("&", "%26");
+		}
+				
 		if(returnTo != null && returnTo != "") 
 			return "redirect:" + returnTo;
 		return "redirect:metadataForm?read&titleno=" + titleno; //redirect - guard against refresh-multi-updates and also update displayed url
