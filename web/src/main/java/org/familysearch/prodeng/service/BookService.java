@@ -308,6 +308,9 @@ public interface BookService {
 	public String markStartedOcr(List<String> tnList, String principal);
 	public String markCompleteOcr(List<String> tnList);
 	public String markCompletePdfDownload(List<String> tnList, String principal);
+	
+
+	List<List<Object>> stringsToTypes(int[] colType, List<List<String>> rows);
 	//misc end
  
 }

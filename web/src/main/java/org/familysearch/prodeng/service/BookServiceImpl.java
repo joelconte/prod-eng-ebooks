@@ -114,9 +114,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanScanReadyTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select a.tn,  a.partner_Lib_Call_#,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.sent_to_scan, 'mm/dd/yyyy')  from s_01_ready_scan a left outer join bookmetadata b on  a.tn=b.titleno where  a.tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn,  a.partner_Lib_Call_num,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.sent_to_scan, 'mm/dd/yyyy')  from s_01_ready_scan a left outer join bookmetadata b on  a.tn=b.titleno where  a.tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select  a.tn,  a.partner_Lib_Call_#,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.sent_to_scan, 'mm/dd/yyyy')  from s_01_ready_scan a  left outer join bookmetadata b on  a.tn=b.titleno  where  a.requesting_location = ? and  a.tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select  a.tn,  a.partner_Lib_Call_num,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.sent_to_scan, 'mm/dd/yyyy')  from s_01_ready_scan a  left outer join bookmetadata b on  a.tn=b.titleno  where  a.requesting_location = ? and  a.tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
 		
 		return tnList;
 	}
@@ -125,9 +125,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanScanInProgressTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scanned_by from s_01B_scan_in_prog  where tn not in (select tn from s_tf_problems)", new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by from s_01B_scan_in_prog  where tn not in (select tn from s_tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scanned_by from s_01B_scan_in_prog where  scanned_by = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by from s_01B_scan_in_prog where  scanned_by = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX6RowMapper());
 		
 		return tnList;
 	}
@@ -136,9 +136,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanAuditReadyTnsInfo(String location) {
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scanned_by from s_02_ready_image_audit where tn not in (select tn from s_tf_problems)", new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by from s_02_ready_image_audit where tn not in (select tn from s_tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scanned_by from s_02_ready_image_audit  where  scanned_by = ?  and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by from s_02_ready_image_audit  where  scanned_by = ?  and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX6RowMapper());
 		return tnList;
 	}
 
@@ -146,9 +146,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanAuditInProgressTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scan_ia_start_date, scan_image_auditor, scanned_by from s_03_image_auditing_in_prog  where tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scan_ia_start_date, scan_image_auditor, scanned_by from s_03_image_auditing_in_prog  where tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scan_ia_start_date, scan_image_auditor, scanned_by from s_03_image_auditing_in_prog  where scanned_by  = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scan_ia_start_date, scan_image_auditor, scanned_by from s_03_image_auditing_in_prog  where scanned_by  = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
 		return tnList;
 	}
 	
@@ -156,9 +156,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanProcessedReadyForOremTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn,  partner_Lib_Call_#, record_number, title, scan_num_of_Pages,  files_sent_to_orem, remarks_from_scan_center, scanned_by from s_04_processed_ready_orem  where tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  partner_Lib_Call_num, record_number, title, scan_num_of_Pages,  files_sent_to_orem, remarks_from_scan_center, scanned_by from s_04_processed_ready_orem  where tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,  partner_Lib_Call_#, record_number, title, scan_num_of_Pages,  files_sent_to_orem, remarks_from_scan_center, scanned_by from s_04_processed_ready_orem   where scanned_by  = ? and    tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  partner_Lib_Call_num, record_number, title, scan_num_of_Pages,  files_sent_to_orem, remarks_from_scan_center, scanned_by from s_04_processed_ready_orem   where scanned_by  = ? and    tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
 		return tnList;
 	}
 	
@@ -166,9 +166,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanProblemTnsInfo(String location){	
 		List tnList;
 		if(location == null || location.equals("") || location.equals("All Problems"))
-			tnList = getJdbcTemplate().query("select a.tn, q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, scanned_by, a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX10RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num, scanned_by, a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX10RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select a.tn, q.step, status, problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, scanned_by  , a.solution_owner from TF_AllProblems  a , TFALL_0x_All_queues q  where a.solution_owner = ? and a.tn = q.tn", new Object[]{location},  new StringX10RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, q.step, status, problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num, scanned_by  , a.solution_owner from TF_AllProblems  a , TFALL_0x_All_queues q  where a.solution_owner = ? and a.tn = q.tn", new Object[]{location},  new StringX10RowMapper());
 		return tnList;
 	}
 	
@@ -268,9 +268,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessProblemTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals("") || location.equals("All Sites"))
-			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_# , a.solution_owner from TF_AllProblems a , TFALL_0x_All_queues q where a.tn = q.tn ", new StringX10RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num , a.solution_owner from TF_AllProblems a , TFALL_0x_All_queues q where a.tn = q.tn ", new StringX10RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_# ,  a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn and a.solution_owner = ?", new Object[]{location},  new StringX10RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num ,  a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn and a.solution_owner = ?", new Object[]{location},  new StringX10RowMapper());
 		
 		return tnList;
 	}
@@ -279,7 +279,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override
 	public List<List> getAdminProblemTnsInfo(){
-		List tnList = getJdbcTemplate().query("select a.tn,   q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#,  a.solution_owner from tf_allproblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX9RowMapper());
+		List tnList = getJdbcTemplate().query("select a.tn,   q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num,  a.solution_owner from tf_allproblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX9RowMapper());
 		return tnList;
 	}
 	
@@ -502,8 +502,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setPropertyRight(rs.getString("PROPERTY_RIGHT"));
 			book.setPublicationType(rs.getString("PUBLICATION_TYPE"));
 			book.setFilename(rs.getString("FILENAME"));
-			book.setCallNumber(rs.getString("CALL_#"));
-			book.setPartnerLibCallNumber(rs.getString("PARTNER_LIB_CALL_#"));
+			book.setCallNumber(rs.getString("CALL_num"));
+			book.setPartnerLibCallNumber(rs.getString("PARTNER_LIB_CALL_num"));
 			book.setPriorityItem(rs.getString("PRIORITY_ITEM"));
 			book.setWithdrawn(rs.getString("WITHDRAWN"));
 			book.setDigitalCopyOnly(rs.getString("DIGITAL_COPY_ONLY"));
@@ -550,16 +550,16 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setDnpDeletedOffLine(rs.getString("DNP_DELETED_OFF_LINE"));
 			book.setTnChangeHistory(rs.getString("TN_CHANGE_HISTORY"));
 			book.setPdfOremArchivedDate(rs.getTimestamp("PDF_OREM_ARCHIVED_DATE"));
-			book.setPdfOremDriveSerialNumber(rs.getString("PDF_OREM_DRIVE_SERIAL_#"));
+			book.setPdfOremDriveSerialNumber(rs.getString("PDF_OREM_DRIVE_SERIAL_num"));
 			book.setPdfOremDriveName(rs.getString("PDF_OREM_DRIVE_NAME"));
 			book.setPdfCopy2ArchivedDate(rs.getTimestamp("PDF_COPY2_ARCHIVED_DATE"));
-			book.setPdfCopy2DriveSerialNumber(rs.getString("PDF_COPY2_DRIVE_SERIAL_#"));
+			book.setPdfCopy2DriveSerialNumber(rs.getString("PDF_COPY2_DRIVE_SERIAL_num"));
 			book.setPdfCopy2DriveName(rs.getString("PDF_COPY2_DRIVE_NAME"));
 			book.setTiffOremArchivedDate(rs.getTimestamp("TIFF_OREM_ARCHIVED_DATE"));
-			book.setTiffOremDriveSerialNumber(rs.getString("TIFF_OREM_DRIVE_SERIAL_#"));
+			book.setTiffOremDriveSerialNumber(rs.getString("TIFF_OREM_DRIVE_SERIAL_num"));
 			book.setTiffOremDriveName(rs.getString("TIFF_OREM_DRIVE_NAME"));
 			book.setTiffCopy2ArchivedDate(rs.getTimestamp("TIFF_COPY2_ARCHIVED_DATE"));
-			book.setTiffCopy2DriveSerialNumber(rs.getString("TIFF_COPY2_DRIVE_SERIAL_#"));
+			book.setTiffCopy2DriveSerialNumber(rs.getString("TIFF_COPY2_DRIVE_SERIAL_num"));
 			book.setTiffCopy2DriveName(rs.getString("TIFF_COPY2_DRIVE_NAME"));
 			book.setPdfSentToLoad(rs.getTimestamp("PDF_SENT_TO_LOAD"));
 			book.setSite(rs.getString("SITE"));
@@ -668,15 +668,14 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		int iRow = 0;
 		for (List<String> row : rows) {
 			int iCol = 0;
-			for (String val : row) {
+			for (Object val : row) {
 				if(colTypes[iCol] == Types.TIMESTAMP && val != null){
 					//if "current_timestamp" then already hardcoded it above as value
 					if(!val.equals("current_timestamp"))
-						params.put(columnNames[iCol], tsConvert.textToTimestamp(val));//only put in value if not current_timestamp
-				}else if(colTypes[iCol] == Types.DATE && val != null){
-					//if "current_timestamp" then already hardcoded it above as value
-					if(!val.equals("current_timestamp"))
-						params.put(columnNames[iCol], tsConvert.textToDate(val));//only put in value if not current_timestamp
+						params.put(columnNames[iCol], tsConvert.textToTimestamp((String)val));//only put in value if not current_timestamp
+				}else if(colTypes[iCol] == Types.NUMERIC && val != null){
+					val = Double.parseDouble((String)val);
+					params.put(columnNames[iCol], val);
 				}else {
 					params.put(columnNames[iCol], val);
 				}
@@ -799,7 +798,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updateTiffArchivingCopy1() {
 		//this moves notes from x table to Book table
-		String sql = "UPDATE (select a.TIFF_OREM_ARCHIVED_DATE old1, a.TIFF_OREM_DRIVE_SERIAL_# old2, a.TIFF_OREM_DRIVE_NAME old3, b.TIFF_OREM_ARCHIVED_DATE new1, b.TIFF_OREM_SERIAL_# new2, b.TIFF_OREM_DRIVE_NAME new3 from book a, TIFF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		//apparantly is not used since sql does not work, probably since we are archivine on amazon cloud
+		String sql = "UPDATE (select a.TIFF_OREM_ARCHIVED_DATE old1, a.TIFF_OREM_DRIVE_SERIAL_num old2, a.TIFF_OREM_DRIVE_NAME old3, b.TIFF_OREM_ARCHIVED_DATE new1, b.TIFF_OREM_SERIAL_num new2, b.TIFF_OREM_DRIVE_NAME new3 from book a, TIFF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
 		 
 		getJdbcTemplate().update(sql);
 	}
@@ -813,7 +813,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updatePdfArchivingCopy1() {
 		//this moves notes from x table to Book table
-		String sql = "UPDATE (select a.PDF_OREM_ARCHIVED_DATE old1, a.PDF_OREM_DRIVE_SERIAL_# old2, a.PDF_OREM_DRIVE_NAME old3, b.PDF_OREM_ARCHIVED_DATE new1, b.PDF_OREM_SERIAL_# new2, b.PDF_OREM_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		//apparantly is not used since sql does not work, probably since we are archivine on amazon cloud
+		String sql = "UPDATE (select a.PDF_OREM_ARCHIVED_DATE old1, a.PDF_OREM_DRIVE_SERIAL_num old2, a.PDF_OREM_DRIVE_NAME old3, b.PDF_OREM_ARCHIVED_DATE new1, b.PDF_OREM_SERIAL_num new2, b.PDF_OREM_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
 		 
 		getJdbcTemplate().update(sql);
 	}
@@ -827,7 +828,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updatePdfArchivingCopy2() {
 		//this moves notes from x table to Book table
-		String sql = "UPDATE (select a.PDF_COPY2_ARCHIVED_DATE old1, a.PDF_COPY2_DRIVE_SERIAL_# old2, a.PDF_COPY2_DRIVE_NAME old3, b.PDF_COPY2_ARCHIVED_DATE new1, b.PDF_COPY2_SERIAL_# new2, b.PDF_COPY2_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY2_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		//moved to cloud and not used
+		String sql = "UPDATE (select a.PDF_COPY2_ARCHIVED_DATE old1, a.PDF_COPY2_DRIVE_SERIAL_num old2, a.PDF_COPY2_DRIVE_NAME old3, b.PDF_COPY2_ARCHIVED_DATE new1, b.PDF_COPY2_SERIAL_num new2, b.PDF_COPY2_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY2_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
 		 
 		getJdbcTemplate().update(sql);
 	}
@@ -843,8 +845,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		//validate date exists
 		
-	    sql = "UPDATE (select a.Collection old1, a.date_loaded old2, a.loaded_by old3, a.pages_online old4, a.url old5, a.pid old6,  b.collection new1, b.date_loaded new2, b.Loaded_by new3, b.pages_online new4, b.url new5, b.pid new6 from book a, TF_Loading_entry b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3,  old4 = new4,  old5 = new5,  old6 = new6  ";
-				
+	   
+		sql = "UPDATE book as a set Collection  = b.Collection , date_loaded = b.date_loaded , pages_online = b.pages_online , url = b.url , pid =b.pid  from  TF_Loading_entry b  where a.tn = b.tn";
+		//sql = "UPDATE (select a.Collection old1, a.date_loaded old2, a.loaded_by old3, a.pages_online old4, a.url old5, a.pid old6,  b.collection new1, b.date_loaded new2, b.Loaded_by new3, b.pages_online new4, b.url new5, b.pid new6 from book a, TF_Loading_entry b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3,  old4 = new4,  old5 = new5,  old6 = new6  ";		
 	    getJdbcTemplate().update(sql);
 	    return null;
 	}
@@ -858,8 +861,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updateReleaseEntry() {
 		//this moves notes from x table to Book table
-		String sql = "UPDATE (select a.date_released old1,  b.date_released new1 from book a, TF_Released_entry b  where a.tn = b.tn)  set  old1 = new1  ";
-				
+		//String sql = "UPDATE (select a.date_released old1,  b.date_released new1 from book a, TF_Released_entry b  where a.tn = b.tn)  set  old1 = new1  ";
+		String sql = "UPDATE book as a set date_released = b.date_released  from  TF_Released_entry b  where a.tn = b.tn";
 	    getJdbcTemplate().update(sql);
 	}
 	
@@ -998,23 +1001,23 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		if (book.isSecondaryIdentifierSet()) {
 			sql += "secondary_identifier =  :secondaryIdentifier, ";
-			params.put("secondaryIdentifier", book.getSecondaryIdentifier());
+			params.put("secondaryIdentifier",  book.getSecondaryIdentifier()==""?null: book.getSecondaryIdentifier());
 		}
 		if (book.isOclcNumberSet()) {
 			sql += "OCLC_NUMBER =  :oclcNumber, ";
-			params.put("oclcNumber", book.getOclcNumber());
+			params.put("oclcNumber",  book.getOclcNumber()==""?null: book.getOclcNumber());
 		}
 		if (book.isIsbnIssnSet()) {
 			sql += "ISBN_ISSN =  :isbnIssn, ";
-			params.put("isbnIssn", book.getIsbnIssn());
+			params.put("isbnIssn", book.getIsbnIssn()==""?null: book.getIsbnIssn());
 		}
 		if (book.isTitleSet()) {
 			sql += "title =  :title, ";
-			params.put("title", book.getTitle());
+			params.put("title",  book.getTitle()==""?null: book.getTitle());
 		}
 		if (book.isAuthorSet()) {
 			sql += "author = :author, ";
-			params.put("author", book.getAuthor());
+			params.put("author",  book.getAuthor()==""?null: book.getAuthor());
 		}
 		if (book.isPropertyRightSet()) {
 			sql += "property_right = :property_right, ";
@@ -1031,31 +1034,31 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		if (book.isScanningSiteNotesSet()) {
 			sql += "scanning_Site_Notes = :scanningSiteNotes, ";
-			params.put("scanningSiteNotes", book.getScanningSiteNotes());
+			params.put("scanningSiteNotes",  book.getScanningSiteNotes()==""?null: book.getScanningSiteNotes());
 		}
 		if (book.isCallNumberSet()) {
-			sql += "call_# = :callNumber, ";
-			params.put("callNumber", book.getCallNumber());
+			sql += "call_num = :callNumber, ";
+			params.put("callNumber", book.getCallNumber()==""?null: book.getCallNumber());
 		}
 		if (book.isPartnerLibCallNumberSet()) {
-			sql += "partner_lib_call_# = :partnerLibCallNumber, ";
-			params.put("partnerLibCallNumber", book.getPartnerLibCallNumber());
+			sql += "partner_lib_call_num = :partnerLibCallNumber, ";
+			params.put("partnerLibCallNumber", book.getPartnerLibCallNumber()==""?null:  book.getPartnerLibCallNumber());
 		}
 		if (book.isPriorityItemSet()) {
 			sql += "priority_Item = :priorityItem, ";
-			params.put("priorityItem", book.getPriorityItem());
+			params.put("priorityItem",  book.getPriorityItem()==""?null: book.getPriorityItem());
 		}
 		if (book.isWithdrawnSet()) {
 			sql += "withdrawn = :withdrawn, ";
-			params.put("withdrawn", book.getWithdrawn());
+			params.put("withdrawn",  book.getWithdrawn()==""?null: book.getWithdrawn());
 		}
 		if (book.isDigitalCopyOnlySet()) {
 			sql += "digital_Copy_Only = :digitalCopyOnly, ";
-			params.put("digitalCopyOnly", book.getDigitalCopyOnly());
+			params.put("digitalCopyOnly", book.getDigitalCopyOnly()==""?null: book.getDigitalCopyOnly());
 		}
 		if (book.isMediaTypeSet()) {
 			sql += "media_Type = :mediaType, ";
-			params.put("mediaType", book.getMediaType());
+			params.put("mediaType", book.getMediaType()==""?null:  book.getMediaType());
 		}
 		if (book.isMetaDataCompleteSet()) {
 			sql += "metadata_Complete = :metadataComplete, ";
@@ -1063,7 +1066,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isBatchClassSet()) {
 			sql += "batch_Class = :batchClass, ";
-			params.put("batchClass", book.getBatchClass());
+			params.put("batchClass",  book.getBatchClass()==""?null: book.getBatchClass());
 		}
 		if (book.isLanguageSet()) {
 			sql += "language = :language, ";
@@ -1072,11 +1075,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isRemarksFromScanCenterSet()) {
 			sql += "remarks_From_Scan_Center = :remarksFromScanCenter, ";
-			params.put("remarksFromScanCenter", book.getRemarksFromScanCenter());
+			params.put("remarksFromScanCenter", book.getRemarksFromScanCenter()==""?null:  book.getRemarksFromScanCenter());
 		}
 		if (book.isRemarksAboutBookSet()) {
 			sql += "remarks_About_Book = :remarksAboutBook, ";
-			params.put("remarksAboutBook", book.getRemarksAboutBook());
+			params.put("remarksAboutBook", book.getRemarksAboutBook()==""?null: book.getRemarksAboutBook());
 		}
 		if (book.isRequestingLocationSet()) {
 			sql += "requesting_Location = :requestingLocation, ";
@@ -1084,7 +1087,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isRecordNumberSet()) {
 			sql += "record_number = :recordNumber, ";
-			params.put("recordNumber", book.getRecordNumber());
+			params.put("recordNumber",  book.getRecordNumber()==""?null: book.getRecordNumber());
 		}
 		if (book.isOwningInstitutionSet()) {
 			sql += "owning_institution = :owningInstitution, ";
@@ -1096,11 +1099,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isScanOperatorSet()) {
 			sql += "scan_Operator = :scanOperator, ";
-			params.put("scanOperator", book.getScanOperator());
+			params.put("scanOperator",  book.getScanOperator()==""?null: book.getScanOperator());
 		}
 		if (book.isScanMachineIdSet()) {
 			sql += "scan_Machine_Id = :scanMachineId, ";
-			params.put("scanMachineId", book.getScanMachineId());
+			params.put("scanMachineId",  book.getScanMachineId()==""?null: book.getScanMachineId());
 		}
 		if (book.isScanMetadataCompleteSet()) {
 			sql += "scan_Metadata_Complete = :scanMetadataComplete, ";
@@ -1108,7 +1111,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isLocationSet()) {
 			sql += "location = :location, ";
-			params.put("location", book.getLocation());
+			params.put("location",  book.getLocation()==""?null: book.getLocation());
 		}
 		if (book.isScanStartDateSet()) {
 			sql += "scan_Start_Date = :scanStartDate, ";
@@ -1121,7 +1124,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isScanImageAuditorSet()) {
 			sql += "scan_Image_Auditor = :scanImageAuditor, ";
-			params.put("scanImageAuditor", book.getScanImageAuditor());
+			params.put("scanImageAuditor", book.getScanImageAuditor()==""?null:  book.getScanImageAuditor());
 		}
 		if (book.isScanIaStartDateSet()) {
 			sql += "scan_Ia_Start_Date = :scanIaStartDate, ";
@@ -1137,11 +1140,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isScanNumOfPagesSet()) {
 			sql += "scan_Num_Of_Pages = :scanNumOfPages, ";
-			params.put("scanNumOfPages", book.getScanNumOfPages());
+			params.put("scanNumOfPages", (book.getScanNumOfPages()=="" || book.getScanNumOfPages()==null)?null:  Double.parseDouble( book.getScanNumOfPages()));
 		}
 		if (book.isNumOfPagesSet()) {
 			sql += "num_Of_Pages = :numOfPages, ";
-			params.put("numOfPages", book.getNumOfPages());
+			params.put("numOfPages",  (book.getNumOfPages()=="" || book.getNumOfPages()==null)?null: Double.parseDouble(book.getNumOfPages()));
 		}
 		if (book.isFilesReceivedByOremSet()) {
 			sql += "files_Received_By_Orem = :filesReceivedByOrem, ";
@@ -1150,7 +1153,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		if (book.isImageAuditSet()) {
 			sql += "image_Audit = :imageAudit, ";
-			params.put("imageAudit", book.getImageAudit());
+			params.put("imageAudit",  book.getImageAudit()==""?null: book.getImageAudit());
 		}
 		if (book.isIaStartDateSet()) {
 			sql += "ia_Start_Date = :iaStartDate, ";
@@ -1162,7 +1165,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isOcrBySet()) {
 			sql += "OCR_by = :ocrBy, ";
-			params.put("ocrBy", book.getOcrBy());
+			params.put("ocrBy",  book.getOcrBy()==""?null: book.getOcrBy());
 		}
 		if (book.isOcrStartDateSet()) {
 			sql += "OCR_start_date = :ocrStartDate, ";
@@ -1174,7 +1177,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isPdfDownloadBySet()) {
 			sql += "pdf_download_by = :pdfDownloadBy, ";
-			params.put("pdfDownloadBy", book.getPdfDownloadBy());
+			params.put("pdfDownloadBy",  book.getPdfDownloadBy()==""?null: book.getPdfDownloadBy());
 		}
 		if (book.isPdfDownloadDateSet()) {
 			sql += "pdf_download_date = :pdfDownloadDate, ";
@@ -1182,7 +1185,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isPdfreviewBySet()) {
 			sql += "Pdfreview_By = :pdfreviewBy, ";
-			params.put("pdfreviewBy", book.getPdfreviewBy());
+			params.put("pdfreviewBy",  book.getPdfreviewBy()==""?null:  book.getPdfreviewBy());
 		}
 		if (book.isPdfreviewStartDateSet()) {
 			sql += "Pdfreview_Start_Date = :pdfreviewStartDate, ";
@@ -1198,11 +1201,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isCompressionCodeSet()) {
 			sql += "compression_Code = :compressionCode, ";
-			params.put("compressionCode", book.getCompressionCode());
+			params.put("compressionCode", book.getCompressionCode()==""?null: book.getCompressionCode());
 		}
 		if (book.isLoadedBySet()) {
 			sql += "loaded_By = :loadedBy, ";
-			params.put("loadedBy", book.getLoadedBy());
+			params.put("loadedBy", book.getLoadedBy()==""?null:  book.getLoadedBy());
 		}
 		if (book.isDateLoadedSet()) {
 			sql += "date_Loaded = :dateLoaded, ";
@@ -1214,67 +1217,67 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isDnpSet()) {
 			sql += "dnp = :dnp, ";
-			params.put("dnp", book.getDnp());
+			params.put("dnp",  book.getDnp()==""?null:  book.getDnp());
 		}
 		if (book.isDnpDeletedOffLineSet()) {
 			sql += "dnp_Deleted_Off_Line = :dnpDeletedOffLine, ";
-			params.put("dnpDeletedOffLine", book.getDnpDeletedOffLine());
+			params.put("dnpDeletedOffLine",  book.getDnpDeletedOffLine()==""?null: book.getDnpDeletedOffLine());
 		}
 		if (book.isTnChangeHistorySet()) {
 			sql += "tn_Change_History = :tnChangeHistory, ";
-			params.put("tnChangeHistory", book.getTnChangeHistory());
+			params.put("tnChangeHistory",  book.getTnChangeHistory()==""?null: book.getTnChangeHistory());
 		}
 		if (book.isPdfOremArchivedDateSet()) {
 			sql += "pdf_Orem_Archived_Date = :pdfOremArchivedDate, ";
 			params.put("pdfOremArchivedDate", book.getPdfOremArchivedDate());
 		}
 		if (book.isPdfOremDriveSerialNumberSet()) {
-			sql += "pdf_Orem_Drive_Serial_# = :pdfOremDriveSerialNumber, ";
+			sql += "pdf_Orem_Drive_Serial_num = :pdfOremDriveSerialNumber, ";
 			params.put("pdfOremDriveSerialNumber",
-					book.getPdfOremDriveSerialNumber());
+					book.getPdfOremDriveSerialNumber()==""?null: book.getPdfOremDriveSerialNumber());
 		}
 		if (book.isPdfOremDriveNameSet()) {
 			sql += "pdf_Orem_Drive_Name = :pdfOremDriveName, ";
-			params.put("pdfOremDriveName", book.getPdfOremDriveName());
+			params.put("pdfOremDriveName",  book.getPdfOremDriveName()==""?null: book.getPdfOremDriveName());
 		}
 		if (book.isPdfCopy2ArchivedDateSet()) {
 			sql += "pdf_Copy2_Archived_Date = :pdfCopy2ArchivedDate, ";
 			params.put("pdfCopy2ArchivedDate", book.getPdfCopy2ArchivedDate());
 		}
 		if (book.isPdfCopy2DriveSerialNumberSet()) {
-			sql += "pdf_Copy2_Drive_Serial_# = :pdfCopy2DriveSerialNumber, ";
+			sql += "pdf_Copy2_Drive_Serial_num = :pdfCopy2DriveSerialNumber, ";
 			params.put("pdfCopy2DriveSerialNumber",
-					book.getPdfCopy2DriveSerialNumber());
+					 book.getPdfCopy2DriveSerialNumber()==""?null: book.getPdfCopy2DriveSerialNumber());
 		}
 		if (book.isPdfCopy2DriveNameSet()) {
 			sql += "pdf_Copy2_Drive_Name = :pdfCopy2DriveName, ";
-			params.put("pdfCopy2DriveName", book.getPdfCopy2DriveName());
+			params.put("pdfCopy2DriveName",  book.getPdfCopy2DriveName()==""?null: book.getPdfCopy2DriveName());
 		}
 		if (book.isTiffOremArchivedDateSet()) {
 			sql += "tiff_Orem_Archived_Date = :tiffOremArchivedDate, ";
 			params.put("tiffOremArchivedDate", book.getTiffOremArchivedDate());
 		}
 		if (book.isTiffOremDriveSerialNumberSet()) {
-			sql += "tiff_Orem_Drive_Serial_# = :tiffOremDriveSerialNumber, ";
+			sql += "tiff_Orem_Drive_Serial_num = :tiffOremDriveSerialNumber, ";
 			params.put("tiffOremDriveSerialNumber",
-					book.getTiffOremDriveSerialNumber());
+					 book.getTiffOremDriveSerialNumber()==""?null: book.getTiffOremDriveSerialNumber());
 		}
 		if (book.isTiffOremDriveNameSet()) {
 			sql += "tiff_Orem_Drive_Name = :tiffOremDriveName, ";
-			params.put("tiffOremDriveName", book.getTiffOremDriveName());
+			params.put("tiffOremDriveName",  book.getTiffOremDriveName()==""?null: book.getTiffOremDriveName());
 		}
 		if (book.isTiffCopy2ArchivedDateSet()) {
 			sql += "tiff_Copy2_Archived_Date = :tiffCopy2ArchivedDate, ";
 			params.put("tiffCopy2ArchivedDate", book.getTiffCopy2ArchivedDate());
 		}
 		if (book.isTiffCopy2DriveSerialNumberSet()) {
-			sql += "tiff_Copy2_Drive_Serial_# = :tiffCopy2DriveSerialNumber, ";
+			sql += "tiff_Copy2_Drive_Serial_num = :tiffCopy2DriveSerialNumber, ";
 			params.put("tiffCopy2DriveSerialNumber",
-					book.getTiffCopy2DriveSerialNumber());
+					 book.getTiffCopy2DriveSerialNumber()==""?null: book.getTiffCopy2DriveSerialNumber());
 		}
 		if (book.isTiffCopy2DriveNameSet()) {
 			sql += "tiff_Copy2_Drive_Name = :tiffCopy2DriveName, ";
-			params.put("tiffCopy2DriveName", book.getTiffCopy2DriveName());
+			params.put("tiffCopy2DriveName", book.getTiffCopy2DriveName()==""?null: book.getTiffCopy2DriveName());
 		}
 		if (book.isPdfSentToLoadSet()) {
 			sql += "pdf_Sent_To_Load = :pdfSentToLoad, ";
@@ -1286,35 +1289,35 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isUrlSet()) {
 			sql += "url = :url, ";
-			params.put("url", book.getUrl());
+			params.put("url",  book.getUrl()==""?null: book.getUrl());
 		}
 		if (book.isPidSet()) {
 			sql += "pid = :pid, ";
-			params.put("pid", book.getPid());
+			params.put("pid",  book.getPid()==""?null: book.getPid());
 		}
 		if (book.isPagesOnlineSet()) {
 			sql += "pages_Online = :pagesOnline, ";
-			params.put("pagesOnline", book.getPagesOnline());
+			params.put("pagesOnline", (book.getPagesOnline()=="" || book.getPagesOnline()==null)?null:  Double.parseDouble(book.getPagesOnline()));
 		}		
 		if (book.isSubjectSet()) {
 			sql += "subject = :subject, ";
-			params.put("subject", book.getSubject());
+			params.put("subject",  book.getSubject()==""?null:  book.getSubject());
 		}
 		if (book.isFilmnoSet()) {
 			sql += "filmno = :filmno, ";
-			params.put("filmno", book.getFilmno());
+			params.put("filmno", book.getFilmno()==""?null: book.getFilmno());
 		}
 		if (book.isPagesPhysicalDescriptionSet()) {
 			sql += "pages_Physical_Description = :pagesPhysicalDescription, ";
-			params.put("pagesPhysicalDescription", book.getPagesPhysicalDescription());
+			params.put("pagesPhysicalDescription", book.getPagesPhysicalDescription()==""?null: book.getPagesPhysicalDescription());
 		}
 		if (book.isSummarySet()) {
 			sql += "summary = :summary, ";
-			params.put("summary", book.getSummary());
+			params.put("summary",  book.getSummary()==""?null:  book.getSummary());
 		}
 		if (book.isDgsnoSet()) {
 			sql += "dgsno = :dgsno, ";
-			params.put("dgsno", book.getDgsno());
+			params.put("dgsno", book.getDgsno()==""?null:  book.getDgsno());
 		}
 		if (book.isDateOriginalSet()) {
 			sql += "date_Original = :dateOriginal, ";
@@ -1322,15 +1325,15 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isPublisherOriginalSet()) {
 			sql += "publisher_Original = :publisherOriginal, ";
-			params.put("publisherOriginal", book.getPublisherOriginal());
+			params.put("publisherOriginal",  book.getPublisherOriginal()==""?null: book.getPublisherOriginal());
 		}
 		if (book.isFhcTitleSet()) {
 			sql += "fhc_title = :fhcTitle, ";
-			params.put("fhcTitle", book.getFhcTitle());
+			params.put("fhcTitle",  book.getFhcTitle()==""?null: book.getFhcTitle());
 		}
 		if (book.isFhcTnSet()) {
 			sql += "fhc_tn = :fhcTn, ";
-			params.put("fhcTn", book.getFhcTn());
+			params.put("fhcTn",  book.getFhcTn()==""?null: book.getFhcTn());
 		}
 		if (book.isDateRepublishedSet()) {
 			sql += "date_republished = :dateRepublished, ";
@@ -2781,10 +2784,10 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override 
 	public List<List> getInternetArchiveMetadataSendToScanTnsInfo() {
-		List tnList = getJdbcTemplate().query("select tn, title, author, call_#, priority_Item, withdrawn, digital_Copy_Only, media_Type, metadata_Complete, batch_Class, language, remarks_From_Scan_Center, remarks_About_Book, "
+		List tnList = getJdbcTemplate().query("select tn, title, author, call_num, priority_Item, withdrawn, digital_Copy_Only, media_Type, metadata_Complete, batch_Class, language, remarks_From_Scan_Center, remarks_About_Book, "
 				+ " scanned_By, location, scan_Complete_Date, num_of_pages, files_Received_By_Orem, image_Audit, ia_Start_Date, ia_Complete_Date, OCR_by, OCR_complete_date, Pdfreview_By, Pdfreview_Start_Date, pdf_Ready, date_Released, compression_Code, "
-				+ " loaded_By, date_Loaded, collection, dnp, tn_Change_History, pdf_Orem_Archived_Date, pdf_Orem_Drive_Serial_#, pdf_Orem_Drive_Name, pdf_Copy2_Archived_Date, pdf_Copy2_Drive_Serial_#, pdf_Copy2_Drive_Name, tiff_Orem_Archived_Date, "
-				+ " tiff_Orem_Drive_Serial_#, tiff_Orem_Drive_Name, tiff_Copy2_Archived_Date, tiff_Copy2_Drive_Serial_#, tiff_Copy2_Drive_Name, pdf_Sent_to_Load, site, url, pid, pages_Online, secondary_Identifier, oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original " 
+				+ " loaded_By, date_Loaded, collection, dnp, tn_Change_History, pdf_Orem_Archived_Date, pdf_Orem_Drive_Serial_num, pdf_Orem_Drive_Name, pdf_Copy2_Archived_Date, pdf_Copy2_Drive_Serial_num, pdf_Copy2_Drive_Name, tiff_Orem_Archived_Date, "
+				+ " tiff_Orem_Drive_Serial_num, tiff_Orem_Drive_Name, tiff_Copy2_Archived_Date, tiff_Copy2_Drive_Serial_num, tiff_Copy2_Drive_Name, pdf_Sent_to_Load, site, url, pid, pages_Online, secondary_Identifier, oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original " 
 				+ " from  iabookmetadata " 
 				+ " where sent_to_scan is null ", new StringXRowMapper() );//56 columns
 
@@ -3236,7 +3239,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			return;
 		//move metadata table data to book table.  (scan_metadata_complete is now set when book enters scan)
 		String inClause = generateInClause("titleno", tnList);
-		String sql = "INSERT into book (tn, oclc_number, isbn_issn, title, author, call_#,  partner_lib_call_#, language, owning_institution, requesting_location, scanned_by, record_number, subject, filmno, pages_Physical_Description, summary, dgsno, date_Original, publisher_Original, filename,  priority_item, withdrawn, digital_copy_only, media_type, scan_metadata_complete, location,  site) " +
+		String sql = "INSERT into book (tn, oclc_number, isbn_issn, title, author, call_num,  partner_lib_call_num, language, owning_institution, requesting_location, scanned_by, record_number, subject, filmno, pages_Physical_Description, summary, dgsno, date_Original, publisher_Original, filename,  priority_item, withdrawn, digital_copy_only, media_type, scan_metadata_complete, location,  site) " +
 				"select titleno, oclc_number, isbn_issn,  title, author, callno, partner_lib_callno, language, owning_institution,  requesting_location, scanning_location, record_number, subject, filmno, pages, summary, dgsno, date_Original, publisher_Original, filename,   'F', 'F', 'F', 'Book', current_timestamp, '02 Tiffs', 'Orem Digital Processing Center' from bookmetadata where " + inClause;
 	    getJdbcTemplate().update(sql);
 	    
@@ -3252,7 +3255,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		String sql = " UPDATE   (select " +
 				" a.title old1,  " +
 				" a.author old2,  " +
-				" a.call_# old3,  " +
+				" a.call_num old3,  " +
 				" a.language old4,  " +
 				" a.requesting_location old5,  " +
 				" a.scanned_by old6,  " +
@@ -3264,7 +3267,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				" a.scan_metadata_complete old12, " +
 				" a.location old13, " +
 				" a.site old14, " +
-				" a.partner_lib_call_# old15, " +
+				" a.partner_lib_call_num old15, " +
 				" a.subject old16, " +
 				" a.filmno old17, " +
 				" a.pages_Physical_Description old18, " +
@@ -3332,17 +3335,17 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			return;
 		//move metadata table data to book table.  (scan_metadata_complete is now set when book enters scan)
 		String inClause = generateInClause("tn", tnList);
-		String sql =  "INSERT into book ( tn ,  title ,  author ,  call_# ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
+		String sql =  "INSERT into book ( tn ,  title ,  author ,  call_num ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
 					+" language ,  remarks_From_Scan_Center ,  remarks_About_Book ,  scanned_By ,  location ,  scan_Complete_Date ,  num_of_pages ,  files_Received_By_Orem ,  image_Audit ,  ia_Start_Date , "
 					+"  ia_Complete_Date ,  OCR_by ,  OCR_complete_date ,  Pdfreview_By ,  Pdfreview_Start_Date ,  pdf_Ready ,  date_Released ,  compression_Code ,  loaded_By ,  date_Loaded , "
-					+"  collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_# ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_# ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
-					+"  tiff_Orem_Drive_Serial_# ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_# ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
+					+"  collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_num ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_num ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
+					+"  tiff_Orem_Drive_Serial_num ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_num ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
 					+"  secondary_Identifier ,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original) " 
-				    + " select  tn ,  title ,  author ,  call_# ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
+				    + " select  tn ,  title ,  author ,  call_num ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
 					+ " language ,  remarks_From_Scan_Center ,  remarks_About_Book ,  scanned_By ,  location ,  scan_Complete_Date ,  num_of_pages ,  files_Received_By_Orem ,  image_Audit ,  ia_Start_Date , "
 					+ " ia_Complete_Date ,  OCR_by ,  OCR_complete_date ,  Pdfreview_By ,  Pdfreview_Start_Date ,  pdf_Ready ,  date_Released ,  compression_Code ,  loaded_By ,  date_Loaded , "
-					+ " collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_# ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_# ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
-					+ " tiff_Orem_Drive_Serial_# ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_# ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
+					+ " collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_num ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_num ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
+					+ " tiff_Orem_Drive_Serial_num ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_num ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
 					+ " secondary_Identifier,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original from iaBookmetadata where " + inClause;
 	    getJdbcTemplate().update(sql);
 	    
@@ -3353,76 +3356,18 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			return;
 		//move metadata table data to book table.  (scan_metadata_complete is now set when book enters scan)
 		String inClause = generateInClause("b.tn", tnList);
-		String sql = " UPDATE (select " +
-				"a.tn old1 , a.title old2 , a.author old3 , a.call_# old4 , a.priority_Item old5 , a.withdrawn old6 , a.digital_Copy_Only old7 , a.media_Type old8 , a.metadata_Complete old9 , a.batch_Class old10 ,  " +
-				"a.language old11 , a.remarks_From_Scan_Center old12 , a.remarks_About_Book old13 , a.scanned_By old14 , a.location old15 , a.scan_Complete_Date old16 , a.num_of_pages old17 , a.files_Received_By_Orem old18 , a.image_Audit old19 , a.ia_Start_Date old20 ,  " +
-				"a.ia_Complete_Date old21 , a.OCR_by old22 , a.OCR_complete_date old23 , a.Pdfreview_By old24 , a.Pdfreview_Start_Date old25 , a.pdf_Ready old26 , a.date_Released old27 , a.compression_Code old28 , a.loaded_By old29 , a.date_Loaded old30 ,  " +
-				"a.collection old31 , a.dnp old32 , a.tn_Change_History old33 , a.pdf_Orem_Archived_Date old34 , a.pdf_Orem_Drive_Serial_# old35 , a.pdf_Orem_Drive_Name old36 , a.pdf_Copy2_Archived_Date old37 , a.pdf_Copy2_Drive_Serial_# old38 , a.pdf_Copy2_Drive_Name old39 , a.tiff_Orem_Archived_Date old40 ,  " +
-				"a.tiff_Orem_Drive_Serial_# old41 , a.tiff_Orem_Drive_Name old42 , a.tiff_Copy2_Archived_Date old43 , a.tiff_Copy2_Drive_Serial_# old44 , a.tiff_Copy2_Drive_Name old45 , a.pdf_Sent_to_Load old46 , a.site old47 , a.url old48 , a.pid old49 , a.pages_Online old50 ,  " +
-				"a.secondary_Identifier old51 , a.oclc_Number old52, a.fhc_title old53, a.fhc_tn old54, a.owning_institution old55, a.publisher_original old56, " +
-				"b.tn new1 , b.title new2 , b.author new3 , b.call_# new4 , b.priority_Item new5 , b.withdrawn new6 , b.digital_Copy_Only new7 , b.media_Type new8 , b.metadata_Complete new9 , b.batch_Class new10 ,  " +
-				"b.language new11 , b.remarks_From_Scan_Center new12 , b.remarks_About_Book new13 , b.scanned_By new14 , b.location new15 , b.scan_Complete_Date new16 , b.num_of_pages new17 , b.files_Received_By_Orem new18 , b.image_Audit new19 , b.ia_Start_Date new20 ,  " +
-				"b.ia_Complete_Date new21 , b.OCR_by new22 , b.OCR_complete_date new23 , b.Pdfreview_By new24 , b.Pdfreview_Start_Date new25 , b.pdf_Ready new26 , b.date_Released new27 , b.compression_Code new28 , b.loaded_By new29 , b.date_Loaded new30 ,  " +
-				"b.collection new31 , b.dnp new32 , b.tn_Change_History new33 , b.pdf_Orem_Archived_Date new34 , b.pdf_Orem_Drive_Serial_# new35 , b.pdf_Orem_Drive_Name new36 , b.pdf_Copy2_Archived_Date new37 , b.pdf_Copy2_Drive_Serial_# new38 , b.pdf_Copy2_Drive_Name new39 , b.tiff_Orem_Archived_Date new40 ,  " +
-				"b.tiff_Orem_Drive_Serial_# new41 , b.tiff_Orem_Drive_Name new42 , b.tiff_Copy2_Archived_Date new43 , b.tiff_Copy2_Drive_Serial_# new44 , b.tiff_Copy2_Drive_Name new45 , b.pdf_Sent_to_Load new46 , b.site new47 , b.url new48 , b.pid new49 , b.pages_Online new50 ,  " +
-				"b.secondary_Identifier new51 , b.oclc_Number new52,  b.fhc_title new53,  b.fhc_tn new54,  b.owning_institution new55, b.publisher_original new56 " +
-				" from book a, iaBookmetadata b where a.tn=b.tn and " + inClause + " ) " +
-				" set old1 = new1,  " +
-				" old2 = new2, " +
-				" old3 = new3, " +
-				" old4 = new4, " +
-				" old5 = new5, " +
-				" old6 = new6, " +
-				" old7 = new7, " +
-				" old8 = new8, " +
-				" old9 = new9, " +
-				" old10 = new10, " +
-				" old11 = new11, " +
-				" old12 = new12, " +
-				" old13 = new13, " +
-				" old14 = new14, " +
-				" old15 = new15, " +
-				" old16 = new16, " +
-				" old17 = new17, " +
-				" old18 = new18, " +
-				" old19 = new19, " +
-				" old20 = new20, " +
-				" old21 = new21,  " +
-				" old22 = new22, " +
-				" old23 = new23, " +
-				" old24 = new24, " +
-				" old25 = new25, " +
-				" old26 = new26, " +
-				" old27 = new27, " +
-				" old28 = new28, " +
-				" old29 = new29, " +
-				" old30 = new30, " +
-				" old31 = new31,  " +
-				" old32 = new32, " +
-				" old33 = new33, " +
-				" old34 = new34, " +
-				" old35 = new35, " +
-				" old36 = new36, " +
-				" old37 = new37, " +
-				" old38 = new38, " +
-				" old39 = new39, " +
-				" old40 = new40, " +
-				" old41 = new41, " +
-				" old42 = new42, " +
-				" old43 = new43, " +
-				" old44 = new44, " +
-				" old45 = new45, " +
-				" old46 = new46, " +
-				" old47 = new47, " +
-				" old48 = new48, " +
-				" old49 = new49, " +
-				" old50 = new50, " +
-				" old51 = new51, " +
-				" old52 = new52, " +
-				" old53 = new53, " +
-				" old54 = new54, " +
-				" old55 = new55, " +
-				" old56 = new56 ";
+		String sql = "UPDATE book AS a "
+				+ "set tn = b.tn  , title =b.title    , author  = b.author  , call_num =b.call_num   , priority_Item =b.priority_Item   , "
+				+ "withdrawn  =b.withdrawn  , digital_Copy_Only  =b.digital_Copy_Only   , media_Type =b.media_Type   , metadata_Complete  =b.metadata_Complete   , batch_Class =b.batch_Class ,  language  =b.language  , remarks_From_Scan_Center  =b.remarks_From_Scan_Center  ,  "
+				+ "remarks_About_Book  =b.remarks_About_Book   , scanned_By  =b.scanned_By  , location =b.location   , scan_Complete_Date =b.scan_Complete_Date   , num_of_pages  =b.num_of_pages  , files_Received_By_Orem  =b.files_Received_By_Orem  , image_Audit  =b.image_Audit   , "
+				+ "ia_Start_Date =b.ia_Start_Date    ,  ia_Complete_Date  =b.ia_Complete_Date  , OCR_by =b.OCR_by   , OCR_complete_date  =b.OCR_complete_date  , Pdfreview_By  =b.Pdfreview_By   , Pdfreview_Start_Date  =b.Pdfreview_Start_Date  , pdf_Ready =b.pdf_Ready   , date_Released  =b.date_Released   , "
+				+ "compression_Code =b.compression_Code   , loaded_By  =b.loaded_By  , date_Loaded  =b.date_Loaded  ,  collection  =b.collection  , dnp =b.dnp   , tn_Change_History  =b.tn_Change_History  , pdf_Orem_Archived_Date  =b.pdf_Orem_Archived_Date  , "
+				+ "PDF_OREM_DRIVE_SERIAL_NUM  =b.PDF_OREM_DRIVE_SERIAL_NUM  , pdf_Orem_Drive_Name  =b.pdf_Orem_Drive_Name  , pdf_Copy2_Archived_Date  =b.pdf_Copy2_Archived_Date  , pdf_Copy2_Drive_Serial_NUM  =b.pdf_Copy2_Drive_Serial_NUM   , pdf_Copy2_Drive_Name =b.pdf_Copy2_Drive_Name   , "
+				+ "tiff_Orem_Archived_Date  =b.tiff_Orem_Archived_Date   ,  tiff_Orem_Drive_Serial_NUM =b.tiff_Orem_Drive_Serial_NUM   , tiff_Orem_Drive_Name  =b.tiff_Orem_Drive_Name  , tiff_Copy2_Archived_Date  =b.tiff_Copy2_Archived_Date  , tiff_Copy2_Drive_Serial_NUM  =b.tiff_Copy2_Drive_Serial_NUM  , "
+				+ "tiff_Copy2_Drive_Name  =b.tiff_Copy2_Drive_Name  , pdf_Sent_to_Load  =b.pdf_Sent_to_Load  , site  =b.site  , url  =b.url  , pid  =b.pid  , pages_Online =b.pages_Online   ,  secondary_Identifier  =b.secondary_Identifier  , oclc_Number =b.oclc_Number  ,  fhc_title =b.fhc_title, fhc_tn =b.fhc_tn   , "
+				+ "owning_institution =b.owning_institution  , publisher_original =b.publisher_original   from iaBookmetadata b where a.tn=b.tn and " + inClause;
+		 
+
 	
 	    getJdbcTemplate().update(sql);
 	}
@@ -3475,7 +3420,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override 
 	public BookMetadata getBookMetadataFromBookTable(String tn) {
 		try {
-			return getJdbcTemplate().queryForObject("select title, author, subject, tn, oclc_number, isbn_issn, call_#, partner_lib_call_#, filmno, pages_physical_description, summary, dgsno, language, owning_institution, requesting_location, scanned_by, record_number,date_original, publisher_original, filename from BOOK where tn=?", new BookMetadataFromBookTableRowMapper(), tn);
+			return getJdbcTemplate().queryForObject("select title, author, subject, tn, oclc_number, isbn_issn, call_num, partner_lib_call_num, filmno, pages_physical_description, summary, dgsno, language, owning_institution, requesting_location, scanned_by, record_number,date_original, publisher_original, filename from BOOK where tn=?", new BookMetadataFromBookTableRowMapper(), tn);
 		}catch(EmptyResultDataAccessException e) 
 		{ 
 			return new BookMetadata(); //empty for backing bean
@@ -3506,8 +3451,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setTitleno(rs.getString("tn"));
 			book.setOclcNumber(rs.getString("OCLC_NUMBER"));
 			book.setIsbnIssn(rs.getString("ISBN_ISSN"));
-			book.setCallno(rs.getString("call_#"));
-			book.setPartnerLibCallno(rs.getString("partner_lib_call_#"));
+			book.setCallno(rs.getString("call_num"));
+			book.setPartnerLibCallno(rs.getString("partner_lib_call_num"));
 			book.setFilmno(rs.getString("FILMNO"));
 			book.setPages(rs.getString("pages_physical_description"));
 			book.setSummary(rs.getString("SUMMARY"));
@@ -3950,7 +3895,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	@Override
 	public void unlockOldLocks() {
 		//delete older than 24 hours
-		String sql = "DELETE FROM book_lock where   time_locked  < current_timestamp -1  ";
+		String sql = "DELETE FROM book_lock where   time_locked  < CURRENT_TIMESTAMP - INTERVAL '1 day'  ";
 	    getJdbcTemplate().update(sql);
 	}
 	///locking end///
@@ -3960,8 +3905,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	@Override
 	public boolean queryXmlMetadataOracle( String tn, String[][] mdValues, String[][] recordValues){
 		try{
-			//ResultSet rs = s.executeQuery("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_#, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'");
-			List tnList = getJdbcTemplate().query("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_#, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'", new StringXRowMapper() );
+			//ResultSet rs = s.executeQuery("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_num, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'");
+			List tnList = getJdbcTemplate().query("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_num, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'", new StringXRowMapper() );
 			
 			String dateStamp = "";
 			String softwareList = "Tesseract; SIP 12.3.0, Rosetta 2.2.1";
@@ -6869,16 +6814,16 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				"DNP_DELETED_OFF_LINE", 
 				"TN_CHANGE_HISTORY", 
 				"PDF_OREM_ARCHIVED_DATE", 
-				"PDF_OREM_DRIVE_SERIAL_#", 
+				"PDF_OREM_DRIVE_SERIAL_num", 
 				"PDF_OREM_DRIVE_NAME", 
 				"PDF_COPY2_ARCHIVED_DATE", 
-				"PDF_COPY2_DRIVE_SERIAL_#", 
+				"PDF_COPY2_DRIVE_SERIAL_num", 
 				"PDF_COPY2_DRIVE_NAME", 
 				"TIFF_OREM_ARCHIVED_DATE", 
-				"TIFF_OREM_DRIVE_SERIAL_#", 
+				"TIFF_OREM_DRIVE_SERIAL_num", 
 				"TIFF_OREM_DRIVE_NAME", 
 				"TIFF_COPY2_ARCHIVED_DATE", 
-				"TIFF_COPY2_DRIVE_SERIAL_#", 
+				"TIFF_COPY2_DRIVE_SERIAL_num", 
 				"TIFF_COPY2_DRIVE_NAME", 
 				"PDF_SENT_TO_LOAD", 
 				"SITE", 
@@ -7007,6 +6952,24 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}else {
 			return null;
 		}
+	}
+
+	
+	public List<List<Object>> stringsToTypes(int[] colType, List<List<String>> rows){
+		List<List<Object>> rowsObj = (List) rows;//cast to object contents instead of string
+		//List<List<Object>> ret = new ArrayList<List<Object>>();
+		for(List<Object> row : rowsObj) {
+			for(int x = 0; x<colType.length; x++) {
+				 if(colType[x] == Types.NUMERIC) {
+					 if(row.get(x) == null || "".equals(row.get(x)))
+						 row.set(x, null);
+					 else
+						 row.set(x, Double.parseDouble((String)row.get(x)));
+				 }
+			 }
+		 }
+		
+		return rowsObj;
 	}
 	
 	///end misc

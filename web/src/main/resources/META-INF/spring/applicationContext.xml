@@ -48,9 +48,11 @@
 	<stack-db:transaction-manager />
 
 
-	<jee:jndi-lookup id="dataSource" jndi-name="jdbc/default/DataSource" resource-ref="true"/>
+
+
+	<jee:jndi-lookup id="dataSourceOLD" jndi-name="jdbc/default/DataSource" resource-ref="true"/>
 	<jee:jndi-lookup id="dataSource2" jndi-name="jdbc/kofax/DataSource" resource-ref="true"/>
-	<jee:jndi-lookup id="dataSourcePG" jndi-name="jdbc/myPostgres/DataSource" resource-ref="true"/>
+	<jee:jndi-lookup id="dataSource" jndi-name="jdbc/myPostgres/DataSource" resource-ref="true"/>
 
 	<context:mbean-export default-domain="org.familysearch.prodeng.BookScan"/>
 

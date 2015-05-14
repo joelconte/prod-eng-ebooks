@@ -116,7 +116,7 @@ public class ArchiveMiscController implements MessageSourceAware{
 		if(button.equals("save")) {
 			 
 			List<List<String>> rows = bookService.parseExcelData(tnData, -1);
-			bookService.insertBatch("TIFF_ARCHIVING_COPY1_ENTRY", new String[]{"TN", "TIFF_OREM_ARCHIVED_DATE", "TIFF_OREM_SERIAL_#", "TIFF_OREM_DRIVE_NAME"}, new int[] {Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR}, rows); 
+			bookService.insertBatch("TIFF_ARCHIVING_COPY1_ENTRY", new String[]{"TN", "TIFF_OREM_ARCHIVED_DATE", "TIFF_OREM_SERIAL_num", "TIFF_OREM_DRIVE_NAME"}, new int[] {Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR}, rows); 
 		}
 		return "redirect:tiffsBackup"; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
@@ -211,7 +211,7 @@ public class ArchiveMiscController implements MessageSourceAware{
 		if(button.equals("save")) {
 			 
 			List<List<String>> rows = bookService.parseExcelData(tnData, -1);
-			bookService.insertBatch("PDF_ARCHIVING_COPY1_ENTRY", new String[]{"TN", "PDF_OREM_ARCHIVED_DATE", "PDF_OREM_SERIAL_#", "PDF_OREM_DRIVE_NAME"}, new int[] {Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR}, rows); 
+			bookService.insertBatch("PDF_ARCHIVING_COPY1_ENTRY", new String[]{"TN", "PDF_OREM_ARCHIVED_DATE", "PDF_OREM_SERIAL_num", "PDF_OREM_DRIVE_NAME"}, new int[] {Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR}, rows); 
 		}
 		return "redirect:pdfBackup"; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
@@ -305,7 +305,7 @@ public class ArchiveMiscController implements MessageSourceAware{
 		if(button.equals("save")) {
 			 
 			List<List<String>> rows = bookService.parseExcelData(tnData, -1);
-			bookService.insertBatch("PDF_ARCHIVING_COPY2_ENTRY", new String[]{"TN", "PDF_COPY2_ARCHIVED_DATE", "PDF_COPY2_SERIAL_#", "PDF_COPY2_DRIVE_NAME"}, new int[] {Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR}, rows); 
+			bookService.insertBatch("PDF_ARCHIVING_COPY2_ENTRY", new String[]{"TN", "PDF_COPY2_ARCHIVED_DATE", "PDF_COPY2_SERIAL_num", "PDF_COPY2_DRIVE_NAME"}, new int[] {Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR}, rows); 
 		}
 		return "redirect:pdfArchive"; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
