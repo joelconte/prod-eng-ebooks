@@ -2521,7 +2521,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		//always insert id
 		colList += "id, ";
 		valList += ":pn, ";
-		params.put("pn", problem.getPn());
+		params.put("pn", new Integer(problem.getPn()));
 		
 		 
 			colList += "tn, ";
@@ -2590,7 +2590,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override 
 	public Problem getProblem(String tn, String pn) {
 		try {
-			Problem p = getJdbcTemplate().queryForObject("select * from tf_notes where ID=? and tn=?", new ProblemRowMapper(), pn, tn);
+			Problem p = getJdbcTemplate().queryForObject("select * from tf_notes where ID=? and tn=?", new ProblemRowMapper(), new Integer(pn), tn);
 			return p;
 		}catch(EmptyResultDataAccessException e) 
 		{
