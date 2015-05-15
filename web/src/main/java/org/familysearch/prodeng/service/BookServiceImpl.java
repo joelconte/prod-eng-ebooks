@@ -2183,7 +2183,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public List<List> getSiteGoals(String site) {
 		List list;
-		if(site == null || site.equals("")) {
+		if(site == null || site.equals("")  || site.equals("")) {
 			list = getJdbcTemplate().query("select site, year, goal_images_yearly from SITE_GOAL ", new StringX3RowMapper());
 		}else {
 			list = getJdbcTemplate().query("select site, year, goal_images_yearly from SITE_GOAL where site = ? ", new StringX3RowMapper(), site);
@@ -4283,7 +4283,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[12][4];//6 fhc and 6 partner libs
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("")|| site.equals("All Sites"))
 		{
 			
 
@@ -4431,7 +4431,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[6][4];//6 fhc and 6 partner libs
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("") || site.equals("All Sites"))
 		{
 			
 	
@@ -4547,7 +4547,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[12][4];//6 fhc and 6 partner libs
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("") || site.equals("All Sites"))
 		{			
 
 			//1/////////////////////////////////////////////////
@@ -4627,7 +4627,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[6][4]; 
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("") || site.equals("All Sites"))
 		{
 			runQueryForTopDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "all", extraDays, reduction, ret);
 		}else {
@@ -4690,7 +4690,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[5][4]; 
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("") || site.equals("All Sites"))
 		{
 	
 			//1/////////////////////////////////////////////////
@@ -4810,7 +4810,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[5][4]; 
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null || site.equals("") || site.equals("All Sites"))
 		{
 	
 			//1/////////////////////////////////////////////////
@@ -4933,7 +4933,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[1][3];//labels, goals, actuals (monthly)
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("")|| site.equals("All Sites"))
 		{			
 			//1/////////////////////////////////////////////////
 			runQueryForGoals(dates, startDateYearFirst, endDateYearFirst, "all", ret, 0);
@@ -6039,6 +6039,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 
 	}
 
+	//not used anymore
 	public void runQueryForAgedDashboard(int daysBetween, List<String> dates, String startDateYearFirst, String endDateYearFirst, String table, String XcolName1, String colName2,  String site, int extraDays, double reduction, String[][] ret, int arrayIndex) {
 		
 		List<List> vals = null;
@@ -6148,7 +6149,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		 double avg = 0;
 		 if(tnCountTotalAll != 0)
 			 avg = ((double)daysBetween)/((double)tnCountTotalAll);
-		 	 avg = avg*24*60;//get minutes
+		 avg = avg*24*60;//get minutes
 		 ret[arrayIndex][1] = (String) String.format("%.3f", avg);//avg
 		 ret[arrayIndex][2] = arrayStrTns;
 		 ret[arrayIndex][3] = calculateSlope(firstPeriodTNCount, lastPeriodTNCount);
@@ -6184,22 +6185,22 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		//generate string array for chart
 		int reductionCount = 1;
 		String allSql = "";
-		if(site.equals("all")) {
+		if(site.equals("all")  ) {
 			if(colName2.equalsIgnoreCase("sent_to_scan")) {
 				//metadata
-				vals = getJdbcTemplate().query("SELECT titleno, 0, (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "' and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper());	
+				vals = getJdbcTemplate().query("SELECT titleno, 0, (" + colName2 + " - " + colName1 + ") as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "' and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper());	
 			}else if(colName2.equalsIgnoreCase("scan_ia_complete_date") || colName2.equalsIgnoreCase("date_released") || colName2.equalsIgnoreCase("date_loaded")) {
 				//scan, ocr processing, publish load, and total	
-				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper());
+				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ") as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper());
 			}
 		}else{
  
 			if(colName2.equalsIgnoreCase("sent_to_scan")) {
 				//metadata
-				vals = getJdbcTemplate().query("SELECT titleno, 0 , (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.requesting_location = ?  and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper(), site);	
+				vals = getJdbcTemplate().query("SELECT titleno, 0 , (" + colName2 + " - " + colName1 + ")  as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.requesting_location = ?  and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper(), site);	
 			}else if(colName2.equalsIgnoreCase("scan_ia_complete_date") || colName2.equalsIgnoreCase("date_released") || colName2.equalsIgnoreCase("date_loaded")) {
 				//scan, ocr processing, publish load, and total
-				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.scanned_by = ?  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper(), site);
+				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ") as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.scanned_by = ?  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper(), site);
 			}
 		}
 		Iterator<List> rows = vals.iterator();
@@ -6211,6 +6212,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		i.next();//ok to skip first since it is covered in the query
 		int tnCountTotalAll = 0;
 		double minutesTotalAll = 0;
+		int nonZeroTimeCount = 0;
 		while(i.hasNext()) {
 			String queryE = (String)i.next(); 
 			int pageCountTotal = 0;
@@ -6231,10 +6233,20 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 					if(pageCountStr == null)
 						pageCountStr = "0";
 					tnCountTotal += 1;
-					String minutes = row.get(2);
-					minutes = minutes.substring(0, minutes.indexOf(" "));
-					minutesTotal += Integer.valueOf(minutes);
-					minutesTotal = (minutesTotal / 24) / 60;//change back into days ..easier than parsing from sql return value
+					String interval = row.get(2);//postgres x day(s) hh:mm:ss  or hh:mm:ss
+					String days = interval.indexOf("day") == -1 ? "0" : interval.substring(0, interval.indexOf("day"));
+					String hours = "0";
+					String minutes = "0";
+					if(interval.indexOf(":") != -1) {
+						hours = interval.substring(interval.indexOf(":")-2, interval.indexOf(":"));
+						minutes =  interval.substring( interval.indexOf(":")+1, interval.indexOf(":") + 3);
+					}
+					int hoursI = Integer.valueOf(hours);
+					int daysI =  Integer.valueOf(days.trim());
+					int minutesI =  Integer.valueOf(minutes);
+					minutesI = (daysI * 24 * 60) + (hoursI * 60) + minutesI;
+					minutesTotal += minutesI;
+					//minutesTotal = (minutesTotal / 24) / 60;//change back into days ..easier than parsing from sql return value
 					int pageCount = Integer.valueOf(pageCountStr);
 					pageCountTotal += pageCount;
 				}else {
@@ -6250,8 +6262,16 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			
 			tnCountTotalAll += tnCountTotal;
 			tnCountStr = String.valueOf(tnCountTotal);	
-			minutesTotalAll += minutesTotal;
-			minutesStr = String.valueOf(minutesTotal);	
+			minutesTotal = ((minutesTotal /60)/24); //change to days
+			if(tnCountTotal != 0) {
+				minutesTotalAll += (minutesTotal/tnCountTotal);//add up averages for each timeslice
+				minutesStr = String.valueOf(minutesTotal/tnCountTotal);//get average for that timeslice
+			}else {
+				minutesStr = "0";
+			}
+			if (minutesTotal != 0.0)
+				nonZeroTimeCount++;
+			
 			//if tnCount is 1, then don't bother averaging, or it averages to 0
 			/*???needed for time?
 			if((reductionCount <= extraDays) && (tnCountTotal !=1) ) {
@@ -6274,9 +6294,10 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
  
  	 
 		 double avg = 0;
-		 if(minutesTotalAll != 0)
-			 avg = ((double)minutesTotalAll)/((double)tnCountTotalAll);
-		 	 //already in minutes avg = avg*24*60;//get minutes
+		 if(nonZeroTimeCount != 0) {
+			 avg = ((double)minutesTotalAll)/((double)nonZeroTimeCount);
+		 }
+		 	 
 		 ret[arrayIndex][1] = (String) String.format("%.3f", avg);//avg
 		 ret[arrayIndex][2] = arrayStrTurnaroundTime;
 		 ret[arrayIndex][3] = calculateSlope(firstPeriodMinutes, lastPeriodMinutes);
