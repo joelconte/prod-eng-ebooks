@@ -23,7 +23,7 @@ function fetchBook(selectId, mode){
 	var tn = sel.options[sel.selectedIndex].text;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
@@ -37,7 +37,7 @@ function fetchBook2(textId, mode){
 	var tn = sel.value;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	var url = "trackingForm?" + mode+ "&tn=" + tn; //mode read,update,create
@@ -49,7 +49,7 @@ function fetchAllTns(textId, mode){
 	var tn = sel.value;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
@@ -65,7 +65,7 @@ function fetchAllTnsMetadata(textId, mode){
 	var tn = sel.value;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
@@ -83,7 +83,7 @@ function fetchBookMetadata(selectId, mode){
 	var tn = sel.options[sel.selectedIndex].text;
 
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
@@ -97,7 +97,7 @@ function fetchBook2Metadata(textId, mode){
 	var tn = sel.value;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
