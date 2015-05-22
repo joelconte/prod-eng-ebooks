@@ -63,12 +63,13 @@
 
 	<bean id="hostName" class="org.lds.stack.system.canary.info.HostName"/>
 
+<!-- 
 	<stack-canary:resource-checks jmx-domain="org.familysearch.prodeng.BookScan">
 		<stack-canary:project-information ref="manifestBean"/>
  		<stack-canary:project-information ref="hostName"/>
  		<stack-canary:numeric-database-check name="BookScan Database Check" show-query="true" show-return-value="ALWAYS" />
 	</stack-canary:resource-checks>
-	
+	 -->
 
 	<sec:authentication-manager>
 		<sec:authentication-provider ref="ldsAccountAuthenticationProvider" />
