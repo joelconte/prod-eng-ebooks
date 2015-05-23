@@ -60,10 +60,10 @@
 	<bean id="manifestBean" class="org.lds.stack.system.spring.SpringManifestBean" lazy-init="false"/>
 	<!-- Bean to provide context information to JMX -->
 	<bean id="contextMBean" class="org.lds.stack.system.spring.SpringContextMBean" lazy-init="false"/> 
-
+<!-- 
 	<bean id="hostName" class="org.lds.stack.system.canary.info.HostName"/>
 
-<!-- 
+
 	<stack-canary:resource-checks jmx-domain="org.familysearch.prodeng.BookScan">
 		<stack-canary:project-information ref="manifestBean"/>
  		<stack-canary:project-information ref="hostName"/>
