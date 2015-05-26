@@ -785,7 +785,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updateReceivedImages() {
 		//this moves notes from TF_Received_Images_entry table to Book table
-		String sql = "UPDATE (select a.Remarks_from_scan_center old, b.Notes_from_Site new from book a, TF_Received_Images_entry b  where a.tn = b.tn)   set  old = new ";
+		//String sql = "UPDATE (select a.Remarks_from_scan_center old, b.Notes_from_Site new from book a, TF_Received_Images_entry b  where a.tn = b.tn)   set  old = new ";
+		String sql = "UPDATE book as a set Remarks_from_scan_center = b.Notes_from_Site   from  TF_Received_Images_entry b  where a.tn = b.tn";
 		getJdbcTemplate().update(sql);
 	}
 	
@@ -799,8 +800,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public void updateTiffArchivingCopy1() {
 		//this moves notes from x table to Book table
 		//apparantly is not used since sql does not work, probably since we are archivine on amazon cloud
-		String sql = "UPDATE (select a.TIFF_OREM_ARCHIVED_DATE old1, a.TIFF_OREM_DRIVE_SERIAL_num old2, a.TIFF_OREM_DRIVE_NAME old3, b.TIFF_OREM_ARCHIVED_DATE new1, b.TIFF_OREM_SERIAL_num new2, b.TIFF_OREM_DRIVE_NAME new3 from book a, TIFF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
-		 
+		//String sql = "UPDATE (select a.TIFF_OREM_ARCHIVED_DATE old1, a.TIFF_OREM_DRIVE_SERIAL_num old2, a.TIFF_OREM_DRIVE_NAME old3, b.TIFF_OREM_ARCHIVED_DATE new1, b.TIFF_OREM_SERIAL_num new2, b.TIFF_OREM_DRIVE_NAME new3 from book a, TIFF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		String sql = "UPDATE book as a set  TIFF_OREM_ARCHIVED_DATE = b.TIFF_OREM_ARCHIVED_DATE, TIFF_OREM_drive_SERIAL_num = b.TIFF_OREM_SERIAL_num, TIFF_OREM_DRIVE_NAME = b.TIFF_OREM_DRIVE_NAME from TIFF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn";
+		
 		getJdbcTemplate().update(sql);
 	}
 	 
@@ -813,8 +815,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updatePdfArchivingCopy1() {
 		//this moves notes from x table to Book table
-		//apparantly is not used since sql does not work, probably since we are archivine on amazon cloud
-		String sql = "UPDATE (select a.PDF_OREM_ARCHIVED_DATE old1, a.PDF_OREM_DRIVE_SERIAL_num old2, a.PDF_OREM_DRIVE_NAME old3, b.PDF_OREM_ARCHIVED_DATE new1, b.PDF_OREM_SERIAL_num new2, b.PDF_OREM_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		 
+		//String sql = "UPDATE (select a.PDF_OREM_ARCHIVED_DATE old1, a.PDF_OREM_DRIVE_SERIAL_num old2, a.PDF_OREM_DRIVE_NAME old3, b.PDF_OREM_ARCHIVED_DATE new1, b.PDF_OREM_SERIAL_num new2, b.PDF_OREM_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		String sql = "UPDATE book as a set PDF_OREM_ARCHIVED_DATE = b.PDF_OREM_ARCHIVED_DATE, PDF_OREM_DRIVE_SERIAL_num = b.PDF_OREM_SERIAL_num , PDF_OREM_DRIVE_NAME = b.PDF_OREM_DRIVE_NAME from PDF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn";
 		 
 		getJdbcTemplate().update(sql);
 	}
@@ -828,8 +831,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updatePdfArchivingCopy2() {
 		//this moves notes from x table to Book table
-		//moved to cloud and not used
-		String sql = "UPDATE (select a.PDF_COPY2_ARCHIVED_DATE old1, a.PDF_COPY2_DRIVE_SERIAL_num old2, a.PDF_COPY2_DRIVE_NAME old3, b.PDF_COPY2_ARCHIVED_DATE new1, b.PDF_COPY2_SERIAL_num new2, b.PDF_COPY2_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY2_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		//String sql = "UPDATE (select a.PDF_COPY2_ARCHIVED_DATE old1, a.PDF_COPY2_DRIVE_SERIAL_num old2, a.PDF_COPY2_DRIVE_NAME old3, b.PDF_COPY2_ARCHIVED_DATE new1, b.PDF_COPY2_SERIAL_num new2, b.PDF_COPY2_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY2_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		String sql = "UPDATE book as a set .PDF_COPY2_ARCHIVED_DATE = b.PDF_COPY2_ARCHIVED_DATE, PDF_COPY2_DRIVE_SERIAL_num = b.PDF_COPY2_SERIAL_num, PDF_COPY2_DRIVE_NAME = b.PDF_COPY2_DRIVE_NAME from  PDF_ARCHIVING_COPY2_ENTRY b  where a.tn = b.tn ";
 		 
 		getJdbcTemplate().update(sql);
 	}
