@@ -849,7 +849,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		//validate date exists
 		
 	   
-		sql = "UPDATE book as a set Collection  = b.Collection , date_loaded = b.date_loaded , pages_online = b.pages_online , url = b.url , pid =b.pid  from  TF_Loading_entry b  where a.tn = b.tn";
+		sql = "UPDATE book as a set Collection  = b.Collection , date_loaded = b.date_loaded , pages_online =  cast(b.pages_online as integer) , url = b.url , pid =b.pid  from  TF_Loading_entry b  where a.tn = b.tn";
 		//sql = "UPDATE (select a.Collection old1, a.date_loaded old2, a.loaded_by old3, a.pages_online old4, a.url old5, a.pid old6,  b.collection new1, b.date_loaded new2, b.Loaded_by new3, b.pages_online new4, b.url new5, b.pid new6 from book a, TF_Loading_entry b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3,  old4 = new4,  old5 = new5,  old6 = new6  ";		
 	    getJdbcTemplate().update(sql);
 	    return null;
