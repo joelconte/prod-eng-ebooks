@@ -1406,7 +1406,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	////user admin start////
 	public List<String> getAllUserIds() {
-		List<String> userIdList = getJdbcTemplate().query("select id from USERS", new StringRowMapper());	
+		List<String> userIdList = getJdbcTemplate().query("select id from USERS order by id", new StringRowMapper());	
 		return userIdList;
 	}
 	

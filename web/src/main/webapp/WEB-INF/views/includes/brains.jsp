@@ -9,27 +9,20 @@
 
 
 <!-- Start of links from familysearch.org -->
-	 <!-- <link rel="stylesheet" href="https://ident.familysearch.org/cis-web/css/build/sign-in.min-bef2d710.css">-->
-      <link href='https://edge.fscdn.org/assets/css/header-footer/hf-95cfda2f659c4fe62dde556df446c29f.css' rel='stylesheet' media='all'>
-      <link href='https://edge.fscdn.org/assets/css/header-footer/hf-responsive-fb19ffc7fc9dd3c1574773dfebde4e2f.css' rel='stylesheet' media='all'>
+
+	 
+      <link  href="${pageContext['request'].contextPath}/styles/hf-95cfda2f659c4fe62dde556df446c29f.css" rel='stylesheet' media='all'/>
+      <link  href="${pageContext['request'].contextPath}/styles/hf-responsive-fb19ffc7fc9dd3c1574773dfebde4e2f.css" rel='stylesheet' media='all'/>
+      <link  href="${pageContext['request'].contextPath}/styles/home-e84f9688752b5c8a04968cf81726de3b.styl.css" rel='stylesheet' media='screen'/>
+      <link  href="${pageContext['request'].contextPath}/styles/bootstrap-4e2b1b162d1b0258fe9438059b650cb5.css" rel='stylesheet' media='all'/>  
+     
+           <link href='https://edge.fscdn.org/assets/css/header-footer/hf-95cfda2f659c4fe62dde556df446c29f.css' rel='stylesheet' media='all'>
+     <!--  For some strange reason jun 1 2015, the Get Help dropdown arrow gets corrupted image when 29f.css is not served from edge.fscdn...
+          <link href='https://edge.fscdn.org/assets/css/header-footer/hf-responsive-fb19ffc7fc9dd3c1574773dfebde4e2f.css' rel='stylesheet' media='all'>
       <link href='https://edge.fscdn.org/assets/css/home-e84f9688752b5c8a04968cf81726de3b.styl.css' rel='stylesheet' media='screen'>
       <link href='https://edge.fscdn.org/assets/css/bootstrap-4e2b1b162d1b0258fe9438059b650cb5.css' rel='stylesheet' media='all'>  
-      
-     <!-- old used 2013-2014 <link href='https://edge.fscdn.org/assets/css/responsive-166fbb8fd4a3f5207a500bdf6c2d9186.css' rel='stylesheet' media='screen'>
-     
-    <link href='https://edge.fscdn.org/assets/css/layout/engage_hf_apr_exp-4c029109fff5aeea2cbde259e6ad26a5.css' rel='stylesheet' media='screen'>
-    
-    
-    
-    
-      <link href='https://edge.fscdn.org/assets/css/photos-25b6c0f8c56e491d1e46039bd7dbf583.css' rel='stylesheet' media='screen'>
-    
-      <link href='https://edge.fscdn.org/assets/css/index-ed38708b21505735ddd682bd8f49d6d6.css' rel='stylesheet' media='screen'>
-    
-      <link href='https://edge.fscdn.org/assets/css/ui-30ed5ed0c47c83c6dcaf8f25a47d628e.css' rel='stylesheet' media='screen'>
-    
-  -->
-  
+   -->
+   
   <!--[if lte IE 8]>
     <script src="https://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
     <script src='https://edge.fscdn.org/assets/js/html5shiv-printshiv-c42155be65838a3ecf77bfc6caf1ee7f.js'></script>
