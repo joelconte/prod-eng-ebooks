@@ -107,7 +107,7 @@ function showAlreadyProcessedMsgAfterCheckedDataPost(){
 					
 					<c:set var="encodedTN" value="${tn.get(tnColumnNumber)}"/>
 				 	<c:if test="${encodedTN.contains('&')}">
-				 		<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 		<c:set var="encodedTN" value="${fn:replace(encodedTN,'&','&#37;26')}"/>
 				 	</c:if>
 				 	
 				 	<c:forEach var="i" begin="0" end="${colLabels.size()-1}">

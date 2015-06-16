@@ -191,7 +191,7 @@ $( "#pull_date" ).blur( validateDateData );
 						<c:if test="${book.tn != ''}">
 							<c:set var="encodedTN" value="${book.tn}"/>
 				 			<c:if test="${encodedTN.contains('&')}">
-				 				<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 				<c:set var="encodedTN" value="${fn:replace(encodedTN,'&','&#37;26')}"/>
 				 			</c:if>
 				 		
 							<c:if test="${isReadOnly==false}">
@@ -220,7 +220,7 @@ $( "#pull_date" ).blur( validateDateData );
 						
 						<c:set var="encodedTN" value="${book.tn}"/>
 				 		<c:if test="${encodedTN.contains('&')}">
-				 				<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 				<c:set var="encodedTN" value="${fn:replace(encodedTN,'&','&#37;26')}"/>
 				 		</c:if>
 				 		
 						<c:forEach var="prob" items="${problemClosedList}">

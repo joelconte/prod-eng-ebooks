@@ -29,7 +29,7 @@ window.onload=function(){
 			 	
 			 	<c:set var="encodedTN" value="${tn.get(0)}"/>
 				<c:if test="${encodedTN.contains('&')}">
-						<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+						<c:set var="encodedTN" value="${fn:replace(encodedTN,'&','&#37;26')}"/>
 				</c:if>
 				
 				<tr>

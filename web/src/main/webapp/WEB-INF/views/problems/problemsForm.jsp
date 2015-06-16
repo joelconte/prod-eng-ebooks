@@ -42,7 +42,7 @@ function checkSolutionOwner(){
 	var solutionOwner = $('#solutionOwner')[0];
 	var site = solutionOwner.options[solutionOwner.selectedIndex].text;
 	if(site == null || site === "" || site === "All Sites"){
-		alert("A Soltion Owner must be selected.");
+		alert("A Solution Owner must be selected.");
 		return false;
 	}
 	return true;
