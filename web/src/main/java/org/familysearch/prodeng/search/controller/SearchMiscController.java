@@ -16,6 +16,7 @@ import org.familysearch.prodeng.model.Book;
 import org.familysearch.prodeng.model.Search;
 import org.familysearch.prodeng.model.SqlTimestampPropertyEditor;
 import org.familysearch.prodeng.service.BookService;
+import org.familysearch.prodeng.service.BookServiceReadOnly;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -32,11 +33,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SearchMiscController implements MessageSourceAware{
 
 	private BookService bookService;
+	private BookServiceReadOnly bookServiceReadOnly;
 	private MessageSource messageSource;
 	
 	@Autowired
-	public SearchMiscController(BookService bookService) {
+	public SearchMiscController(BookService bookService, BookServiceReadOnly bookServiceReadOnly ) {
 		this.bookService = bookService;
+		this.bookServiceReadOnly = bookServiceReadOnly;
 	}
 
 	@Override
@@ -93,17 +96,23 @@ public class SearchMiscController implements MessageSourceAware{
 	public String runSearchPost(Principal principal, String searchId, String queryText, Model model, Locale locale) {
 		model.addAttribute("pageTitle", messageSource.getMessage("search.pageTitle.searchResult", null, locale));
 		String word = null;
-		if("pauldev".equals(principal.getName())){
+		String theUser = "pauldev";
+		if(theUser.equals(principal.getName())){
 			word = null;
 		}else{
 			word = bookService.checkQuery(queryText);
 		}
 		if(word != null) {
-			model.addAttribute("bookErrorMessage",  messageSource.getMessage("search.securityBadWord", null, locale) + "\n" + word);
-			return "errors/generalError";
+			///todo remove comments here after I run test to make sure i get back db message
+		//todo remove	model.addAttribute("bookErrorMessage",  messageSource.getMessage("search.securityBadWord", null, locale) + "\n" + word);
+		//todo remove	return "errors/generalError";
 		}
 		model.addAttribute("queryText", queryText); 
-		model.addAttribute("result", bookService.runQuery(queryText)); 
+		if(theUser.equals(principal.getName())){
+			model.addAttribute("result", bookService.runQuery(queryText)); 
+		}else {
+			model.addAttribute("result", bookServiceReadOnly.runQuery(queryText));
+		}
 	 
 		return "search/searchMiscResults";
 	}

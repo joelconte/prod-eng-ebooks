@@ -102,7 +102,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public List<String> getBooksByWildcard(String searchBy) {
 		 
-		List<String> tnList = getJdbcTemplate().query("select tn from BOOK where tn like '"+searchBy+"%'", new StringRowMapper());
+		List<String> tnList = getJdbcTemplate().query("select tn from BOOK where tn like '"+searchBy+"%' order by tn", new StringRowMapper());
 		//nList.add(0, " ");//dummy since spring mvc puts '[' at first and ']' at end if not using spring form
 		//tnList.add("");//empty selection for null value
 		//tnList.add(" ");//dummy
