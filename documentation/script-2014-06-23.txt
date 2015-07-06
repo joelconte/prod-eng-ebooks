@@ -1,0 +1,2 @@
+CREATE ROLE postgresquery LOGIN PASSWORD 'password' NOINHERIT VALID UNTIL 'infinity';
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO postgresquery;
