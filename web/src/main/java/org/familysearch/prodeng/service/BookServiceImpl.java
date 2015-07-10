@@ -448,7 +448,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		List<String> sList = getJdbcTemplate().query("select id from SITE where is_scan_site = 'T' and  ( is_inactive_site !='T' or is_inactive_site is null)  order by id", new StringRowMapper());
 		return sList;
 	}
-	
+	@Override
+	public List<String> getAllScanSitesIncludingInactive() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE where is_scan_site = 'T'    order by id", new StringRowMapper());
+		return sList;
+	}
 	
 	@Override
 	public List<String> getAllPropertyRights() {

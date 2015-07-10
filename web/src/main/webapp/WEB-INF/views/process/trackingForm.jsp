@@ -71,6 +71,26 @@ $( "#files_received_by_orem" ).blur( validateDateData );
 setTimeout(processBookState, 100);
 displayBookNotFoundMsg();
 });
+
+
+//later remove validateFormData since it is in project.js...after browsers' cache has chance to refresh
+function validateFormData(){
+	//temp return true since some books may have slipped through scan and in process can't update scanned_by
+	return true;
+	//if scan date is not null then scannedby must not be null - Jeri request
+	var scanSite = $('#scanned_by').val();
+	var scanStartDate = $('#scan_start_date').val();
+	var scanEndDate = $('#scan_complete_date').val();
+	
+	if(scanStartDate != '' || scanEndDate != ''  ){
+		if( scanSite == ''){
+			alert("You must enter a 'Scanned by Site' value because Scan Date or Scan Complete Date have a value.");
+			return false;
+		}
+	}
+	
+	return true;//valid data
+};
 </script>
 
 
@@ -300,7 +320,7 @@ displayBookNotFoundMsg();
 						<c:if test="${false}">
 							<sf:select path="scannedBy" >
 								<sf:option value=""/>
-								<sf:options items="${allSites}" />
+								<sf:options items="${allScanSitesIncludingInactive}" />
 							</sf:select>
 						</c:if>
 						</td>
@@ -425,8 +445,8 @@ displayBookNotFoundMsg();
 			<td></td>
 			<c:choose>
 			<c:when test="${mode=='update'}">
-			<td><button id="saveAndClose" name="saveAndClose" value="saveAndClose" onclick="updateUrl2('f1', 'trackingForm', 'saveAndClose' );">${messages['saveAndClose']}</button></td>
-			<td><button id="save" name="save" value="save" onclick="updateUrl2('f1', 'trackingForm', 'save' );">${messages['save']}</button></td>
+			<td><button id="saveAndClose" name="saveAndClose" value="saveAndClose" onclick="if(validateFormData()==false)return false; updateUrl2('f1', 'trackingForm', 'saveAndClose' );">${messages['saveAndClose']}</button></td>
+			<td><button id="save" name="save" value="save" onclick="if(validateFormData()==false)return false; updateUrl2('f1', 'trackingForm', 'save' );">${messages['save']}</button></td>
 			<td><button id="cancel" name="cancel" value="cancel" onclick="updateUrl2('f1', 'trackingForm', 'cancel' );">${messages['cancel']}</button></td>
 			</c:when>
 			<c:when test="${mode=='read' && book.tn != ''}">

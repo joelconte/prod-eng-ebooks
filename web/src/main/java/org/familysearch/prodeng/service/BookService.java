@@ -80,6 +80,7 @@ public interface BookService {
 	public List<String> getAllSitesIncludingInactive();
 	public List<String> getAllSites();
 	public List<String> getAllScanSites();
+	public List<String> getAllScanSitesIncludingInactive();
 	public List<String> getAllPropertyRights();
 	public List<String> getAllPublicationTypes();
 	public List<List> getAllBatchClasses();

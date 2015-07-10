@@ -519,3 +519,20 @@ function validateDateData(event){
 	 	 
 	}
 };
+
+
+function validateFormData(){
+	//if scan date is not null then scannedby must not be null - Jeri request
+	var scanSite = $('#scanned_by').val();
+	var scanStartDate = $('#scan_start_date').val();
+	var scanEndDate = $('#scan_complete_date').val();
+	
+	if(scanStartDate != '' || scanEndDate != ''  ){
+		if( scanSite == ''){
+			alert("You must enter a 'Scanned by Site' value because Scan Date or Scan Complete Date have a value.");
+			return false;
+		}
+	}
+	
+	return true;//valid data
+};
