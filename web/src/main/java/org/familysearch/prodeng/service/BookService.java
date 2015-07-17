@@ -297,7 +297,8 @@ public interface BookService {
 	public String[][] getDashboardAgedAverages(String startDate, String endDate, String site);
 	public String[][] getDashboardTurnaroundAverages(String startDate, String endDate, String site);
 	public String[][] getDashboardGoalData( String startDate, String endDate, String site);
-	
+	public String[][] getDashboardByMonthDataScanProcessPublish( String startDate, String endDate, String site, int daysDiff);
+	 
 	////end dashboard/////
 	//xml medatdata//
 	public boolean queryXmlMetadataOracle( String tn, String[][] mdValues, String[][] recordValues);
