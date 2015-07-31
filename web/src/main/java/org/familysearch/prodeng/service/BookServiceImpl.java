@@ -5041,7 +5041,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		return ret;
 	}
 	
- 
+	@Override
+	public List<List> getDashboardOpenIssues(){
+		List tnList = getJdbcTemplate().query("select solution_owner, count(solution_owner) from TF_NOTES where status = 'Problem' or status = 'Solution Found' group by solution_owner union select solution_owner, count(solution_owner) from TF_NOTES where solution_owner is null and (status = 'Problem' or status = 'Solution Found' ) group by solution_owner  ", new StringX2RowMapper());
+		return tnList;
+	}
 	
 	public String addStringArrays(String a0, String a1, String a2, String a3) {
 		a0 = a0.substring(1, a0.length()-1);
@@ -7082,6 +7086,64 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		ret[0][1] = arrayStrActualsScan;
 		ret[0][2] = arrayStrActualsProcess;
 		ret[0][3] = arrayStrActualsPublish;
+	}
+	
+
+	@Override
+	public List getGoalsAndActuals(String year, String site) {
+		if(site == null || site.equalsIgnoreCase("") || site.equalsIgnoreCase("all sites")) {
+			site = "all";
+		}
+		String allSql = "";
+		ArrayList returnList = new ArrayList<String>();
+
+		//get goals
+		if ("all".equals(site)) {
+			allSql += "SELECT goal_images_yearly, year from site_goal  where year = '" + year + "' and site = 'All Sites'"; 
+		}else{
+			allSql += "SELECT goal_images_yearly, year from site_goal  where year = '" + year + "' and site = '" + site + "'";
+		}
+		 
+		List<List> vals = getJdbcTemplate().query(allSql, new StringX2RowMapper());
+		if(vals.size() != 0) {
+			returnList.add(vals.get(0).get(0));
+		}
+	
+		//actual results
+		allSql = "";
+		if ("all".equals(site)) {
+			allSql += "SELECT count(tn) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' ";
+		}else{
+			allSql += "SELECT count(tn) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
+		}
+		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
+		if(vals.size() != 0) {
+			returnList.add(vals.get(0).get(0));
+		}
+		 
+		allSql = "";
+		if ("all".equals(site)) {
+			allSql += "SELECT count(tn) from book a  where to_char(date_released, 'yyyy') = '" + year + "' ";
+		}else{
+			allSql += "SELECT count(tn) from book a  where to_char(date_released, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
+		}
+		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
+		if(vals.size() != 0) {
+			returnList.add(vals.get(0).get(0));
+		}
+		
+		allSql = "";
+		if ("all".equals(site)) {
+			allSql += "SELECT count(tn) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' ";
+		}else{
+			allSql += "SELECT count(tn) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
+		}
+		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
+		if(vals.size() != 0) {
+			returnList.add(vals.get(0).get(0));
+		}
+
+		return returnList;
 	}
 	
 	

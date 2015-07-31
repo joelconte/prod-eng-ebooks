@@ -204,6 +204,80 @@ $(function() {
 	});
 </script>
 
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.setOnLoadCallback(drawChart);
+
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart() {
+
+        // Create the scan data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Books');
+        data.addColumn('number', 'Count');
+        data.addRows([
+          ['Goal', <c:out value="${goal}"/>],
+          ['Complete', <c:out value="${scanActual}"/>]
+        ]);
+
+        // Set chart options
+        var options = {'title':'Year To Date - Scan',
+                       'width':200,
+                       'height':150};
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart1 = new google.visualization.PieChart(document.getElementById('chart_div1'));
+        chart1.draw(data, options);
+        
+
+        // Create the process data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Books');
+        data.addColumn('number', 'Count');
+        data.addRows([
+          ['Goal', <c:out value="${goal}"/>],
+          ['Complete', <c:out value="${processActual}"/>]
+        ]);
+
+        // Set chart options
+        var options = {'title':'Year To Date - Processing and OCR',
+                       'width':200,
+                       'height':150};
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart2 = new google.visualization.PieChart(document.getElementById('chart_div2'));
+        chart2.draw(data, options);
+        
+        
+
+        // Create the publish data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Books');
+        data.addColumn('number', 'Count');
+        data.addRows([
+          ['Goal', <c:out value="${goal}"/>],
+          ['Complete', <c:out value="${publishActual}"/>]
+        ]);
+
+        // Set chart options
+        var options = {'title':'Year To Date - Publish',
+                       'width':200,
+                       'height':150};
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart3 = new google.visualization.PieChart(document.getElementById('chart_div3'));
+        chart3.draw(data, options);
+      }
+</script>
+
+
 <div id="wrapper1">
 <div class="container-fluid" id="main" >
  
@@ -331,245 +405,47 @@ $(function() {
 		
 		
 		<td style="padding-left: 6px;">
-			<!-- Image Auditor Averages -->
+			<!-- /Goal Actual Pie Charts -->
 			<table  class="mainRightRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Image Auditor Averages</h4></td></tr>
+				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Yearly Goals</h4></td></tr>
 		 	</table>
 			<table>
-			<tr class="secondaryRowHeader">
-				<td align="center" class="secondaryTd"></td>
-				<td align="center" class="secondaryTd">Avg/Auditor</td>
-				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
-			</tr>
-			
 			<tr>
-			<td class="bodyTd"  width='177'>${audita0}</td>
-			<td class="bodyTd"  width='80'>${audita1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditA"></span> </td>
-			<td class="arrowTd" ><c:if test="${audita3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${audita3=='down'}"><span class="rArrow">&#8595;</span></c:if>
-					<c:if test="${audita3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
+				<td align="center" >
+					<!--Div that will hold the pie chart-->
+  					<div id="chart_div1"></div>
+					<div id="chart_div2"></div>
+					<div id="chart_div3"></div>
+				</td>
 			</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${auditb0}</td>
-			<td class="bodyTd"  width='80'>${auditb1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditB"></span> </td>
-			<td class="arrowTd" ><c:if test="${auditb3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${auditb3=='down'}"><span class="rArrow">&#8595;</span></c:if>
-					<c:if test="${auditb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-		 	</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${auditc0}</td>
-			<td class="bodyTd"  width='80'>${auditc1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditC"></span> </td>
-			<td class="arrowTd" ><c:if test="${auditc3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${auditc3=='down'}"><span class="rArrow">&#8595;</span></c:if>
-					<c:if test="${auditc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${auditd0}</td>
-			<td class="bodyTd"  width='80'>${auditd1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditD"></span> </td>
-			<td class="arrowTd" ><c:if test="${auditd3=='up'}"><span class="gArrow">&#8593;</span></c:if>
-					<c:if test="${auditd3=='down'}"><span class="rArrow">&#8595;</span></c:if>
-					<c:if test="${auditd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			 
 			</table>
 			
-					<!-- Top 5 Image Quality Issues -->
+			
+		    <!-- Open Issues -->
 			<table  class="mainRightRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Top 5 Image Quality Issues</h4></td></tr>
+				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Open Issues</h4></td></tr>
 		 	</table>
 			<table>
 			<tr class="secondaryRowHeader">
-				<td align="center" class="secondaryTd">Issue</td>
-				<td align="center" class="secondaryTd">%</td>
-				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
+				<td align="center"  width='290' class="secondaryTd">Owner</td>
+				<td align="center"  width='100' class="secondaryTd">Number Open</td>
 			</tr>
 			
 			<tr>
-			<td class="bodyTd"  width='177'>${topa0}</td>
-			<td class="bodyTd" align="center" width='80'>${topa1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopA"></span> </td>
-			<td class="arrowTd" ><c:if test="${topa3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${topa3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${topa3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${topb0}</td>
-			<td class="bodyTd"  align="center" width='80'>${topb1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopB"></span> </td>
-			<td class="arrowTd" ><c:if test="${topb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${topb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${topb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-		 	</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${topc0}</td>
-			<td class="bodyTd"  align="center" width='80'>${topc1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopC"></span> </td>
-			<td class="arrowTd" ><c:if test="${topc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${topc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${topc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${topd0}</td>
-			<td class="bodyTd" align="center" width='80'>${topd1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopD"></span> </td>
-			<td class="arrowTd" ><c:if test="${topd3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${topd3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${topd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${tope0}</td>
-			<td class="bodyTd" align="center" width='80'>${tope1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTopE"></span> </td>
-			<td class="arrowTd" ><c:if test="${tope3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${tope3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${tope3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			 
-			</table>
-			
-			<!-- Aged Metrics -->
-			<!-- 
-
-Removing Aged Metrice charts.  True data, but not very useful.
-I think the math behind the 46 minutes is showing that the rate of book production is 46 min/book.  (not that it takes 46 minutes for a given book 
-
-to flow through the system one after the other...)
-We can change it to something more useful.
-...So, we could have 1000 books that go through the system in 30 days, then this would show:
-(30*24*60)/1000 = 43.2 min/books...
-			
-			<table  class="mainRightRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Aged Metrics</h4></td></tr>
-		 	</table>
-			<table>
-			<tr class="secondaryRowHeader">
-				<td></td>
-				<td align="center" class="secondaryTd">Avg minutes per Book</td>
-				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
-			</tr>
-			
-			<tr>
-			<td class="bodyTd"  width='177'>${ageda0}</td>
-			<td class="bodyTd"  width='80'>${ageda1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedA"></span> </td>
-			<td class="arrowTd" ><c:if test="${ageda3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${ageda3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${ageda3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${agedb0}</td>
-			<td class="bodyTd"  width='80'>${agedb1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedB"></span> </td>
-			<td class="arrowTd" ><c:if test="${agedb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${agedb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${agedb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-		 	</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${agedc0}</td>
-			<td class="bodyTd"  width='80'>${agedc1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedC"></span> </td>
-			<td class="arrowTd" ><c:if test="${agedc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${agedc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${agedc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${agedd0}</td>
-			<td class="bodyTd"  width='80'>${agedd1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedD"></span> </td>
-			<td class="arrowTd" ><c:if test="${agedd3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${agedd3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${agedd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
+		 
+			<c:forEach items="${openIssues}" var="row">
 				<tr>
-			<td class="bodyTd"  width='177'>${agede0}</td>
-			<td class="bodyTd"  width='80'>${agede1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassAgedE"></span> </td>
-			<td class="arrowTd" ><c:if test="${agede3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${agede3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${agede3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>			
+			    <td class="bodyTd"  width='177'>${row.get(0)}</td>
+			    <td class="bodyTd" align="center" width='80'>${row.get(1)} </td>
+			    </tr>
+            </c:forEach>
+
+			</tr>	 
 			</table>
-			 -->
+			 
 			
-			<!-- Turnaround Time -->
-			<table  class="mainRightRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Turnaround Time</h4></td></tr>
-		 	</table>
-			<table>
-			<tr class="secondaryRowHeader">
-				<td></td>
-				<td align="center" class="secondaryTd">Avg time (days) in each phase</td>
-				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
-			</tr>
+			<!-- future charts here -->
 			
-			<tr>
-			<td class="bodyTd"  width='177'>${turnarounda0}</td>
-			<td class="bodyTd"  width='80'>${turnarounda1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundA"></span> </td>
-			<td class="arrowTd" ><c:if test="${turnarounda3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${turnarounda3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${turnarounda3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${turnaroundb0}</td>
-			<td class="bodyTd"  width='80'>${turnaroundb1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundB"></span> </td>
-			<td class="arrowTd" ><c:if test="${turnaroundb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${turnaroundb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${turnaroundb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-		 	</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${turnaroundc0}</td>
-			<td class="bodyTd"  width='80'>${turnaroundc1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundC"></span> </td>
-			<td class="arrowTd" ><c:if test="${turnaroundc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${turnaroundc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${turnaroundc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-			<tr>
-			<td class="bodyTd"  width='177'>${turnaroundd0}</td>
-			<td class="bodyTd"  width='80'>${turnaroundd1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundD"></span> </td>
-			<td class="arrowTd" ><c:if test="${turnaroundd3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${turnaroundd3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${turnaroundd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>
-				<tr>
-			<td class="bodyTd"  width='177'>${turnarounde0}</td>
-			<td class="bodyTd"  width='80'>${turnarounde1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassTurnaroundE"></span> </td>
-			<td class="arrowTd" ><c:if test="${turnarounde3=='up'}"><span class="rArrow">&#8593;</span></c:if>
-					<c:if test="${turnarounde3=='down'}"><span class="gArrow">&#8595;</span></c:if>
-					<c:if test="${turnarounde3=='equal'}"><span class="gDash">&#8669;</span></c:if>
-			</td>
-			</tr>			
-			</table>
 			
 		</td>
 		

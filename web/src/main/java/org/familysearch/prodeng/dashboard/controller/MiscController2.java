@@ -94,68 +94,21 @@ public class MiscController2 implements MessageSourceAware{
 	 
 	
 
-		/////Image Auditor Averages
-		String[][] auditData = bookService.getDashboardAuditor(startDate, endDate, site);
-		
-		model.addAttribute("audita0", auditData[0][0]);
-		model.addAttribute("audita1", auditData[0][1]);
-		model.addAttribute("audita2", auditData[0][2]);
-		model.addAttribute("audita3", auditData[0][3]);
-		
-
-		model.addAttribute("auditb0", auditData[1][0]);
-		model.addAttribute("auditb1", auditData[1][1]);
-		model.addAttribute("auditb2", auditData[1][2]);
-		model.addAttribute("auditb3", auditData[1][3]);
-		
-
-		model.addAttribute("auditc0", auditData[2][0]);
-		model.addAttribute("auditc1", auditData[2][1]);
-		model.addAttribute("auditc2", auditData[2][2]);
-		model.addAttribute("auditc3", auditData[2][3]);
-		
-
-		model.addAttribute("auditd0", auditData[3][0]);
-		model.addAttribute("auditd1", auditData[3][1]);
-		model.addAttribute("auditd2", auditData[3][2]);
-		model.addAttribute("auditd3", auditData[3][3]);
-		
- 
+		/////Goal Actual Pie Charts
+		List data = bookService.getGoalsAndActuals(year, site);
+		if(data.size() == 4) {
+			model.addAttribute("goal", data.get(0));
+			model.addAttribute("scanActual", data.get(1));
+			model.addAttribute("processActual", data.get(2));
+			model.addAttribute("publishActual", data.get(3));
+		}
  
 
-		/////Top 5 issues
-		String[][] topData = bookService.getDashboardTop5(startDate, endDate, site);
-		
-		model.addAttribute("topa0", topData[0][0]);
-		model.addAttribute("topa1", topData[0][1]);
-		model.addAttribute("topa2", topData[0][2]);
-		model.addAttribute("topa3", topData[0][3]);
-		
-
-		model.addAttribute("topb0", topData[1][0]);
-		model.addAttribute("topb1", topData[1][1]);
-		model.addAttribute("topb2", topData[1][2]);
-		model.addAttribute("topb3", topData[1][3]);
-		
-
-		model.addAttribute("topc0", topData[2][0]);
-		model.addAttribute("topc1", topData[2][1]);
-		model.addAttribute("topc2", topData[2][2]);
-		model.addAttribute("topc3", topData[2][3]);
-		
-
-		model.addAttribute("topd0", topData[3][0]);
-		model.addAttribute("topd1", topData[3][1]);
-		model.addAttribute("topd2", topData[3][2]);
-		model.addAttribute("topd3", topData[3][3]);
-		
-
-		model.addAttribute("tope0", topData[4][0]);
-		model.addAttribute("tope1", topData[4][1]);
-		model.addAttribute("tope2", topData[4][2]);
-		model.addAttribute("tope3", topData[4][3]);
- 
+		/////Open Issues
+		List<List> openIssues = bookService.getDashboardOpenIssues();
+		model.addAttribute("openIssues", openIssues);
 		 
+		
 		/////Turnaround Time
 		String[][] turnaroundData = bookService.getDashboardTurnaroundAverages(startDate, endDate, site);
 		
