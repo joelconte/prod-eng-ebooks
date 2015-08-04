@@ -219,18 +219,28 @@ $(function() {
       function drawChart() {
 
         // Create the scan data table.
+        var goal = <c:out value="${goal}"/>;
+        var goalStr = "";
+        if(goal == 0){
+        	goalStr = " - No Goal Exists for Site"
+        }else{
+        	goalStr = ""
+        }
+        
+       
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Books');
         data.addColumn('number', 'Count');
         data.addRows([
-          ['Goal', <c:out value="${goal}"/>],
+          ['Goal Remaining', <c:out value="${scanToDo}"/>],
           ['Complete', <c:out value="${scanActual}"/>]
         ]);
 
         // Set chart options
-        var options = {'title':'Year To Date - Scan',
-                       'width':200,
-                       'height':150};
+        var options = {'title':'Year To Date - Scan' + goalStr,
+                       'width':400,
+                       'height':150,
+                       colors: ['red', 'green']};
 
         // Instantiate and draw our chart, passing in some options.
         var chart1 = new google.visualization.PieChart(document.getElementById('chart_div1'));
@@ -242,14 +252,15 @@ $(function() {
         data.addColumn('string', 'Books');
         data.addColumn('number', 'Count');
         data.addRows([
-          ['Goal', <c:out value="${goal}"/>],
+          ['Goal Remaining', <c:out value="${processToDo}"/>],
           ['Complete', <c:out value="${processActual}"/>]
         ]);
 
         // Set chart options
-        var options = {'title':'Year To Date - Processing and OCR',
-                       'width':200,
-                       'height':150};
+        var options = {'title':'Year To Date - Processing and OCR' + goalStr,
+                       'width':400,
+                       'height':150,
+                       colors: ['red', 'green']};
 
         // Instantiate and draw our chart, passing in some options.
         var chart2 = new google.visualization.PieChart(document.getElementById('chart_div2'));
@@ -262,14 +273,15 @@ $(function() {
         data.addColumn('string', 'Books');
         data.addColumn('number', 'Count');
         data.addRows([
-          ['Goal', <c:out value="${goal}"/>],
+          ['Goal Remaining', <c:out value="${publishToDo}"/>],
           ['Complete', <c:out value="${publishActual}"/>]
         ]);
 
         // Set chart options
-        var options = {'title':'Year To Date - Publish',
-                       'width':200,
-                       'height':150};
+        var options = {'title':'Year To Date - Publish' + goalStr,
+                       'width':400,
+                       'height':150, 
+                       colors: ['red', 'green']};
 
         // Instantiate and draw our chart, passing in some options.
         var chart3 = new google.visualization.PieChart(document.getElementById('chart_div3'));

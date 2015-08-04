@@ -680,6 +680,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				}else if(colTypes[iCol] == Types.NUMERIC && val != null){
 					val = Double.parseDouble((String)val);
 					params.put(columnNames[iCol], val);
+				}else if(colTypes[iCol] == Types.INTEGER && val != null){
+					val = Integer.parseInt((String)val);
+					params.put(columnNames[iCol], val);
 				}else {
 					params.put(columnNames[iCol], val);
 				}
@@ -1927,12 +1930,17 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		//set site goals
 		if (site.isIsGoalsSet()) {	
-			List<List<String>> goals = site.getGoals();
+			List<List> goals = site.getGoals();
 			for(List<String> goal : goals) {
-				String year = goal.get(0);
-				String imageCount = goal.get(1);
-				sql = "insert into site_goal (site, year, goal_images_yearly) values(?, ?, ?) ";
-				getJdbcTemplate().update(sql, site, year, imageCount);
+			 
+				String year = goal.get(1);
+				String imageCount = goal.get(2);
+				sql = "insert into site_goal (site, year, goal_images_yearly) values(:site, :year, :goal_image_yearly) ";
+				params = new HashMap<String, Object>();
+				params.put("site", site.getSiteId());
+				params.put("year", year);
+				params.put("goal_image_yearly", Integer.parseInt(imageCount));
+				getNamedParameterJdbcTemplate().update(sql, params);
 			}
 		}
 	}
@@ -1957,66 +1965,61 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			//update all books, metadata, and user fields that have this site
 			String newId = site.getSiteId();
 		
-			String sql = "update book set  Book.site = '"+newId+"' where site = '" + oldId +"'";
+			String sql = "update book set  site = '"+newId+"' where site = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
-			sql = "update book set  Book.owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
+			sql = "update book set   owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
-			sql = "update book set  Book.Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-		
-			sql = "update book set  Book.Scanned_by = '"+newId+"' where Scanned_by = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			
-			
-			sql = "update iaBookmetadata set  iaBookmetadata.site = '"+newId+"' where site = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			sql = "update iaBookmetadata set  iaBookmetadata.owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			sql = "update iaBookmetadata set  iaBookmetadata.Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
+			sql = "update book set   Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 		
-			sql = "update iaBookmetadata set  iaBookmetadata.Scanned_by = '"+newId+"' where Scanned_by = '" + oldId +"'";
+			sql = "update book set  Scanned_by = '"+newId+"' where Scanned_by = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
 			
 			
-			sql = "update Bookmetadata set  Bookmetadata.scanning_location = '"+newId+"' where scanning_location  = '" + oldId +"'";
+			sql = "update iaBookmetadata set  site = '"+newId+"' where site = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
-			sql = "update Bookmetadata set  Bookmetadata.Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
+			sql = "update iaBookmetadata set  owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
-			sql = "update Bookmetadata set  Bookmetadata.owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
+			sql = "update iaBookmetadata set  Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
-			
-			
-			
-			sql = "update Bookmetadataupdate set  Bookmetadataupdate.scanning_location = '"+newId+"' where scanning_location  = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			sql = "update Bookmetadataupdate set  Bookmetadataupdate.Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			sql = "update Bookmetadataupdate set  Bookmetadataupdate.owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			
-			sql = "update site_goal set  site_goal.site = '"+newId+"' where site = '" + oldId +"'";
+		
+			sql = "update iaBookmetadata set  Scanned_by = '"+newId+"' where Scanned_by = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
 			
 			
-			sql = "update users set  users.primary_Location = '"+newId+"' where primary_Location = '" + oldId +"'";
+			sql = "update Bookmetadata set  scanning_location = '"+newId+"' where scanning_location  = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update Bookmetadata set  Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update Bookmetadata set  owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			
+			
+			sql = "update Bookmetadataupdate set  scanning_location = '"+newId+"' where scanning_location  = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update Bookmetadataupdate set  Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update Bookmetadataupdate set  owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update users set  primary_Location = '"+newId+"' where primary_Location = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
 			sql = "update tf_notes set solution_owner = '"+newId+"' where solution_owner = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 		
+			deleteSiteGoals(oldId);
 			deleteSite(oldId);
 		}else {
 			//id is not changed..normal update
@@ -2091,12 +2094,16 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				
 				//set site goals
 				if (site.isIsGoalsSet()) {	
-					List<List<String>> goals = site.getGoals();
+					List<List> goals = site.getGoals();
 					for(List<String> goal : goals) {
-						String year = goal.get(0);
-						String imageCount = goal.get(1);
-						sql = "insert into site_goal (site, year, goal_images_yearly) values(?, ?, ?) ";
-						getJdbcTemplate().update(sql, site, year, imageCount);
+						String year = goal.get(1);
+						String imageCount = goal.get(2);
+						sql = "insert into site_goal (site, year, goal_images_yearly) values(:site, :year, :goal_image_yearly) ";
+						params = new HashMap<String, Object>();
+						params.put("site", site.getSiteId());
+						params.put("year", year);
+						params.put("goal_image_yearly", Integer.parseInt(imageCount));
+						getNamedParameterJdbcTemplate().update(sql, params);
 					}
 				}
 			}catch(Exception e) {
@@ -2115,12 +2122,18 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override 
 	public Site getSite(String id) {
+		Site s = null;
 		try {
-			return getJdbcTemplate().queryForObject("select * from site where id=?", new SiteRowMapper(), id);
+			s = getJdbcTemplate().queryForObject("select * from site where id=?", new SiteRowMapper(), id);
+			List<List> g =  getSiteGoals(id);
+			if(g != null) {
+				s.setGoals(g);
+			}
 		}catch(EmptyResultDataAccessException e) 
 		{ 
 			return new Site(); //empty for backing bean
 		}
+		return s;
 	}
 
 	@Override 
@@ -2195,7 +2208,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}else {
 			list = getJdbcTemplate().query("select site, year, goal_images_yearly from SITE_GOAL where site = ? ", new StringX3RowMapper(), site);
 		}
-			
+		
 		return list;
 	}
 	
@@ -5043,7 +5056,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
 	@Override
 	public List<List> getDashboardOpenIssues(){
-		List tnList = getJdbcTemplate().query("select solution_owner, count(solution_owner) from TF_NOTES where status = 'Problem' or status = 'Solution Found' group by solution_owner union select solution_owner, count(solution_owner) from TF_NOTES where solution_owner is null and (status = 'Problem' or status = 'Solution Found' ) group by solution_owner  ", new StringX2RowMapper());
+		List tnList = getJdbcTemplate().query("select solution_owner, count(solution_owner) as issueCounts from TF_NOTES where status = 'Problem' or status = 'Solution Found' group by solution_owner union select solution_owner, count(solution_owner) as issueCounts from TF_NOTES where solution_owner is null and (status = 'Problem' or status = 'Solution Found' ) group by solution_owner  order by issueCounts ", new StringX2RowMapper());
 		return tnList;
 	}
 	
@@ -7105,42 +7118,52 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}
 		 
 		List<List> vals = getJdbcTemplate().query(allSql, new StringX2RowMapper());
-		if(vals.size() != 0) {
+		if(vals.size() != 0 && vals.get(0).get(0) != null) {
 			returnList.add(vals.get(0).get(0));
+		}else {
+			returnList.add("0");
 		}
 	
-		//actual results
+		//actual results scan
 		allSql = "";
 		if ("all".equals(site)) {
-			allSql += "SELECT count(tn) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' ";
+			allSql += "SELECT sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' ";
 		}else{
-			allSql += "SELECT count(tn) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
+			allSql += "SELECT sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
 		}
 		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
-		if(vals.size() != 0) {
+		if(vals.size() != 0 && vals.get(0).get(0) != null) {
 			returnList.add(vals.get(0).get(0));
+		}else {
+			returnList.add("0");
 		}
 		 
+		//actual results processed/ocr
 		allSql = "";
 		if ("all".equals(site)) {
-			allSql += "SELECT count(tn) from book a  where to_char(date_released, 'yyyy') = '" + year + "' ";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') = '" + year + "' ";
 		}else{
-			allSql += "SELECT count(tn) from book a  where to_char(date_released, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
 		}
 		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
-		if(vals.size() != 0) {
+		if(vals.size() != 0 && vals.get(0).get(0) != null) {
 			returnList.add(vals.get(0).get(0));
+		}else {
+			returnList.add("0");
 		}
 		
+		//actual results publish
 		allSql = "";
 		if ("all".equals(site)) {
-			allSql += "SELECT count(tn) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' ";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' ";
 		}else{
-			allSql += "SELECT count(tn) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
 		}
 		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
-		if(vals.size() != 0) {
+		if(vals.size() != 0 && vals.get(0).get(0) != null) {
 			returnList.add(vals.get(0).get(0));
+		}else {
+			returnList.add("0");
 		}
 
 		return returnList;

@@ -97,10 +97,27 @@ public class MiscController2 implements MessageSourceAware{
 		/////Goal Actual Pie Charts
 		List data = bookService.getGoalsAndActuals(year, site);
 		if(data.size() == 4) {
-			model.addAttribute("goal", data.get(0));
-			model.addAttribute("scanActual", data.get(1));
-			model.addAttribute("processActual", data.get(2));
-			model.addAttribute("publishActual", data.get(3));
+			//some can be 0
+			int goal =  Integer.parseInt((String)data.get(0));
+			int scanActual =  Integer.parseInt((String)data.get(1));
+			int processActual =  Integer.parseInt((String)data.get(2));
+			int publishActual =  Integer.parseInt((String)data.get(3));
+			int scanToDo = goal - scanActual;
+			int processToDo = goal - processActual;
+			int publishToDo = goal - publishActual;
+			if(scanToDo < 0)
+				scanToDo = 0;
+			if(processToDo < 0)
+				processToDo = 0;
+			if(publishToDo < 0)
+				publishToDo = 0;
+			model.addAttribute("goal", goal);
+			model.addAttribute("scanToDo", scanToDo);
+			model.addAttribute("scanActual", scanActual);
+			model.addAttribute("processToDo", processToDo);
+			model.addAttribute("processActual", processActual);
+			model.addAttribute("publishToDo", publishToDo);
+			model.addAttribute("publishActual", publishActual);
 		}
  
 
