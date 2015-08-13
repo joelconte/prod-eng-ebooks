@@ -104,6 +104,7 @@ public class MiscInternetArchiveController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("fhcTn", null, locale));
 		labels.add(messageSource.getMessage("owningInstitution", null, locale));
 		labels.add(messageSource.getMessage("publisher", null, locale));
+		labels.add(messageSource.getMessage("copyright", null, locale));
 		 
 		//////
 		List<List> md = bookService.getInternetArchiveMetadataSendToScanTnsInfo();
@@ -282,7 +283,7 @@ public class MiscInternetArchiveController implements MessageSourceAware{
 			List<String> langList = bookService.getAllLanguageIds();
 			List<String> siteList = bookService.getAllSiteIds();
 			
-			List<List<String>> rows = bookService.parseExcelData(tnData, 56);//!!need to update count when add new columnds
+			List<List<String>> rows = bookService.parseExcelData(tnData, 57);//!!need to update count when add new columnds
 			String tnList = "";
 			for(List<String> r : rows) {
 				tnList += ", '" + r.get(0) + "'";
@@ -335,7 +336,7 @@ public class MiscInternetArchiveController implements MessageSourceAware{
 					Types.TIMESTAMP, Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR,  Types.TIMESTAMP,Types.TIMESTAMP,Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP,
 					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR,Types.TIMESTAMP, 
 					Types.VARCHAR, Types.VARCHAR,  Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.NUMERIC,
-					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
+					Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
 			//bookService.stringsToTypes(colTypes, rows);x
 	
 			bookService.insertBatch("iaBOOKMETADATA", new String[]{"tn", "title", "author", "call_NUM", "priority_Item", "withdrawn", "digital_Copy_Only", "media_Type", "metadata_Complete", "batch_Class", 
@@ -343,7 +344,7 @@ public class MiscInternetArchiveController implements MessageSourceAware{
 					"ia_Complete_Date", "OCR_by", "OCR_complete_date", "pdfreview_By", "pdfreview_Start_Date", "pdf_Ready", "date_Released", "compression_Code", "loaded_By", "date_Loaded", 
 					"collection", "dnp", "tn_Change_History", "pdf_Orem_Archived_Date", "pdf_Orem_Drive_Serial_NUM", "pdf_Orem_Drive_Name", "pdf_Copy2_Archived_Date", "pdf_Copy2_Drive_Serial_NUM", "pdf_Copy2_Drive_Name", "tiff_Orem_Archived_Date", 
 					"tiff_Orem_Drive_Serial_NUM", "tiff_Orem_Drive_Name", "tiff_Copy2_Archived_Date", "tiff_Copy2_Drive_Serial_NUM", "tiff_Copy2_Drive_Name", "pdf_Sent_to_Load", "site", "url", "pid", "pages_Online", 
-					"secondary_Identifier", "oclc_Number", "fhc_title", "fhc_tn", "owning_institution", "publisher_original"}, 
+					"secondary_Identifier", "oclc_Number", "fhc_title", "fhc_tn", "owning_institution", "publisher_original", "property_right"}, 
 					  							colTypes, rows); 
 
 		}

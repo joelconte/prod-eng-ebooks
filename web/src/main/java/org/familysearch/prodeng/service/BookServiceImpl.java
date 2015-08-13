@@ -2807,9 +2807,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		List tnList = getJdbcTemplate().query("select tn, title, author, call_num, priority_Item, withdrawn, digital_Copy_Only, media_Type, metadata_Complete, batch_Class, language, remarks_From_Scan_Center, remarks_About_Book, "
 				+ " scanned_By, location, scan_Complete_Date, num_of_pages, files_Received_By_Orem, image_Audit, ia_Start_Date, ia_Complete_Date, OCR_by, OCR_complete_date, Pdfreview_By, Pdfreview_Start_Date, pdf_Ready, date_Released, compression_Code, "
 				+ " loaded_By, date_Loaded, collection, dnp, tn_Change_History, pdf_Orem_Archived_Date, pdf_Orem_Drive_Serial_num, pdf_Orem_Drive_Name, pdf_Copy2_Archived_Date, pdf_Copy2_Drive_Serial_num, pdf_Copy2_Drive_Name, tiff_Orem_Archived_Date, "
-				+ " tiff_Orem_Drive_Serial_num, tiff_Orem_Drive_Name, tiff_Copy2_Archived_Date, tiff_Copy2_Drive_Serial_num, tiff_Copy2_Drive_Name, pdf_Sent_to_Load, site, url, pid, pages_Online, secondary_Identifier, oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original " 
+				+ " tiff_Orem_Drive_Serial_num, tiff_Orem_Drive_Name, tiff_Copy2_Archived_Date, tiff_Copy2_Drive_Serial_num, tiff_Copy2_Drive_Name, pdf_Sent_to_Load, site, url, pid, pages_Online, secondary_Identifier, oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right " 
 				+ " from  iabookmetadata " 
-				+ " where sent_to_scan is null ", new StringXRowMapper() );//56 columns
+				+ " where sent_to_scan is null ", new StringXRowMapper() );//57 columns
 
 		return tnList;
 	}
@@ -3360,13 +3360,13 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 					+"  ia_Complete_Date ,  OCR_by ,  OCR_complete_date ,  Pdfreview_By ,  Pdfreview_Start_Date ,  pdf_Ready ,  date_Released ,  compression_Code ,  loaded_By ,  date_Loaded , "
 					+"  collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_num ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_num ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
 					+"  tiff_Orem_Drive_Serial_num ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_num ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
-					+"  secondary_Identifier ,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original) " 
+					+"  secondary_Identifier ,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right) " 
 				    + " select  tn ,  title ,  author ,  call_num ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
 					+ " language ,  remarks_From_Scan_Center ,  remarks_About_Book ,  scanned_By ,  location ,  scan_Complete_Date ,  num_of_pages ,  files_Received_By_Orem ,  image_Audit ,  ia_Start_Date , "
 					+ " ia_Complete_Date ,  OCR_by ,  OCR_complete_date ,  Pdfreview_By ,  Pdfreview_Start_Date ,  pdf_Ready ,  date_Released ,  compression_Code ,  loaded_By ,  date_Loaded , "
 					+ " collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_num ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_num ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
 					+ " tiff_Orem_Drive_Serial_num ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_num ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
-					+ " secondary_Identifier,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original from iaBookmetadata where " + inClause;
+					+ " secondary_Identifier,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right from iaBookmetadata where " + inClause;
 	    getJdbcTemplate().update(sql);
 	    
 	}
@@ -3385,7 +3385,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				+ "PDF_OREM_DRIVE_SERIAL_NUM  =b.PDF_OREM_DRIVE_SERIAL_NUM  , pdf_Orem_Drive_Name  =b.pdf_Orem_Drive_Name  , pdf_Copy2_Archived_Date  =b.pdf_Copy2_Archived_Date  , pdf_Copy2_Drive_Serial_NUM  =b.pdf_Copy2_Drive_Serial_NUM   , pdf_Copy2_Drive_Name =b.pdf_Copy2_Drive_Name   , "
 				+ "tiff_Orem_Archived_Date  =b.tiff_Orem_Archived_Date   ,  tiff_Orem_Drive_Serial_NUM =b.tiff_Orem_Drive_Serial_NUM   , tiff_Orem_Drive_Name  =b.tiff_Orem_Drive_Name  , tiff_Copy2_Archived_Date  =b.tiff_Copy2_Archived_Date  , tiff_Copy2_Drive_Serial_NUM  =b.tiff_Copy2_Drive_Serial_NUM  , "
 				+ "tiff_Copy2_Drive_Name  =b.tiff_Copy2_Drive_Name  , pdf_Sent_to_Load  =b.pdf_Sent_to_Load  , site  =b.site  , url  =b.url  , pid  =b.pid  , pages_Online =b.pages_Online   ,  secondary_Identifier  =b.secondary_Identifier  , oclc_Number =b.oclc_Number  ,  fhc_title =b.fhc_title, fhc_tn =b.fhc_tn   , "
-				+ "owning_institution =b.owning_institution  , publisher_original =b.publisher_original   from iaBookmetadata b where a.tn=b.tn and " + inClause;
+				+ "owning_institution =b.owning_institution  , publisher_original =b.publisher_original, property_right=b.property_right   from iaBookmetadata b where a.tn=b.tn and " + inClause;
 		 
 
 	
