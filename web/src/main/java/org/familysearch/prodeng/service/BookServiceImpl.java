@@ -121,9 +121,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanScanReadyTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select a.tn,  a.partner_Lib_Call_num,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.sent_to_scan, 'mm/dd/yyyy')  from s_01_ready_scan a left outer join bookmetadata b on  a.tn=b.titleno where  a.tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn,  a.partner_Lib_Call_num,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.scan_metadata_complete, 'mm/dd/yyyy')  from s_01_ready_scan a left outer join book b on  a.tn=b.tn where  a.tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select  a.tn,  a.partner_Lib_Call_num,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.sent_to_scan, 'mm/dd/yyyy')  from s_01_ready_scan a  left outer join bookmetadata b on  a.tn=b.titleno  where  a.requesting_location = ? and  a.tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select  a.tn,  a.partner_Lib_Call_num,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.scan_metadata_complete, 'mm/dd/yyyy')  from s_01_ready_scan a  left outer join book b on  a.tn=b.tn  where  a.requesting_location = ? and  a.tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
 		
 		return tnList;
 	}
