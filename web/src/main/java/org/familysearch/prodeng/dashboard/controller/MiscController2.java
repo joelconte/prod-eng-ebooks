@@ -49,7 +49,9 @@ public class MiscController2 implements MessageSourceAware{
 		if(year != null && month != null) {
 			int yearInt = Integer.parseInt(year);
 			int monthInt = Integer.parseInt(month);
-			startDate = month + "/01/" + year;
+			startDate = "01/01/" + year;
+			GregorianCalendar gcStartOfYear = new GregorianCalendar(yearInt, 0, 1);//jan 1 of year selected
+			
 			GregorianCalendar gc = new GregorianCalendar(yearInt, monthInt-1, 1);
 			gc.add(Calendar.MONTH, 1);//add 1 month
 			gc.add(Calendar.DAY_OF_MONTH, -1);//subtract 1 day since endDate is inclusive
@@ -59,14 +61,15 @@ public class MiscController2 implements MessageSourceAware{
 			endDate = String.valueOf(endMonthInt) + "/" + String.valueOf(endDayInt) + "/" + String.valueOf(endYearInt);
 			
 			GregorianCalendar gcStart = new GregorianCalendar(yearInt, monthInt-1, 1);
-			daysDiff = Math.abs(gc.get(Calendar.DAY_OF_MONTH)-gcStart.get(Calendar.DAY_OF_MONTH)) + 1;//inclusive  
+			daysDiff = Math.abs(gc.get(Calendar.DAY_OF_YEAR)-gcStartOfYear.get(Calendar.DAY_OF_YEAR)) + 1;//inclusive  
 		} else {
 			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 			   //get current date time  
 			Calendar cal = Calendar.getInstance();
 			int yearInt = cal.get(Calendar.YEAR);
 			int monthInt = cal.get(Calendar.MONTH) + 1;
-			startDate = monthInt + "/01/" + yearInt;
+			startDate = "01/01/" + yearInt;
+			GregorianCalendar gcStartOfYear = new GregorianCalendar(yearInt, 0, 1);//jan 1 of year current since no year selected yet
 			
 			GregorianCalendar gc = new GregorianCalendar(yearInt, monthInt-1, 1);
 			gc.add(Calendar.MONTH, 1);//add 1 month
@@ -77,7 +80,11 @@ public class MiscController2 implements MessageSourceAware{
 			endDate = String.valueOf(endMonthInt) + "/" + String.valueOf(endDayInt) + "/" + String.valueOf(endYearInt);
 			
 			GregorianCalendar gcStart = new GregorianCalendar(yearInt, monthInt-1, 1);
-			daysDiff = Math.abs(gc.get(Calendar.DAY_OF_MONTH)-gcStart.get(Calendar.DAY_OF_MONTH)) + 1;//inclusive  
+			daysDiff = Math.abs(gc.get(Calendar.DAY_OF_YEAR)-gcStartOfYear.get(Calendar.DAY_OF_YEAR)) + 1;//inclusive  
+			
+			//set jsp vars for current year/month
+			year = String.valueOf(yearInt);
+			month = String.valueOf(monthInt);
 		}
 		
 		model.addAttribute("pageTitle", messageSource.getMessage("dashboard.dashboardPageTitle", null, locale));
@@ -95,7 +102,7 @@ public class MiscController2 implements MessageSourceAware{
 	
 
 		/////Goal Actual Pie Charts
-		List data = bookService.getGoalsAndActuals(year, site);
+		List data = bookService.getGoalsAndActuals(year, site);//4 elements goal, scan, process, publish
 		if(data.size() == 4) {
 			//some can be 0
 			int goal =  Integer.parseInt((String)data.get(0));
@@ -118,6 +125,20 @@ public class MiscController2 implements MessageSourceAware{
 			model.addAttribute("processActual", processActual);
 			model.addAttribute("publishToDo", publishToDo);
 			model.addAttribute("publishActual", publishActual);
+			
+			//actual results awaiting to be processed
+			//can be calculated from above data
+			int processedOfScannedToDo = scanActual;
+			int processedOfScannedActual = processActual;
+			model.addAttribute("processedOfScannedToDo", processedOfScannedToDo);//count of images scanned
+			model.addAttribute("processedOfScannedActual", processedOfScannedActual);//count of images processed/ocr'd
+			
+			//actual results  awaiting to be publish
+			//can be calculted from above data
+			int publishedOfProcessedToDo = processActual;
+			int publishedOfProcessedActual = publishActual;
+			model.addAttribute("publishedOfProcessedToDo", publishedOfProcessedToDo);//count of images processed/ocr'd
+			model.addAttribute("publishedOfProcessedActual", publishedOfProcessedActual);//count of images published
 		}
  
 

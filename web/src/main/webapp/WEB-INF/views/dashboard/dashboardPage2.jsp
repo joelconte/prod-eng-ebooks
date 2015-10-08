@@ -49,6 +49,8 @@
 	.gArrow{color: green; border: 2px; padding-left: 3px; padding-top: 5px;  font-weight: bold; font-size: 20px; vertical-align: middle;}
 	.gDash{color: green; border: 2px; padding-left: 3px; padding-top: 5px;  font-weight: light; font-size: 20px; vertical-align: middle;}
 	td{height: 24px;}
+	
+	#chart_divEmpty{ margin-top: 200px; }
 </style>
 <script> 
   
@@ -236,10 +238,10 @@ $(function() {
           ['Complete', <c:out value="${scanActual}"/>]
         ]);
 
-        // Set chart options
+        //  2nd column - Set chart options
         var options = {'title':'Year To Date - Scan' + goalStr,
                        'width':400,
-                       'height':150,
+                       'height':200,
                        colors: ['red', 'green']};
 
         // Instantiate and draw our chart, passing in some options.
@@ -247,7 +249,7 @@ $(function() {
         chart1.draw(data, options);
         
 
-        // Create the process data table.
+        //  2nd column - Create the process data table.
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Books');
         data.addColumn('number', 'Count');
@@ -259,7 +261,7 @@ $(function() {
         // Set chart options
         var options = {'title':'Year To Date - Processing and OCR' + goalStr,
                        'width':400,
-                       'height':150,
+                       'height':200,
                        colors: ['red', 'green']};
 
         // Instantiate and draw our chart, passing in some options.
@@ -268,7 +270,7 @@ $(function() {
         
         
 
-        // Create the publish data table.
+        //  2nd column - Create the publish data table.
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Books');
         data.addColumn('number', 'Count');
@@ -280,13 +282,58 @@ $(function() {
         // Set chart options
         var options = {'title':'Year To Date - Publish' + goalStr,
                        'width':400,
-                       'height':150, 
+                       'height':200, 
                        colors: ['red', 'green']};
 
         // Instantiate and draw our chart, passing in some options.
         var chart3 = new google.visualization.PieChart(document.getElementById('chart_div3'));
         chart3.draw(data, options);
-      }
+    
+      
+      
+
+      // 3rd column - Create the "awaiting to be processed" data table.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Books');
+      data.addColumn('number', 'Count');
+      data.addRows([
+        ['Scanned and Waiting', <c:out value="${processedOfScannedToDo}"/>],
+        ['Complete', <c:out value="${processedOfScannedActual}"/>]
+      ]);
+
+      // Set chart options
+      var options = {'title':'Year To Date - Awaiting to be processed-OCR',
+                     'width':400,
+                     'height':200, 
+                     colors: ['red', 'green']};
+
+      // Instantiate and draw our chart, passing in some options.
+      var chart4= new google.visualization.PieChart(document.getElementById('chart_div4'));
+      chart4.draw(data, options);
+   
+    
+    
+
+    // 3rd column - Create the "awaiting to be published" data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Books');
+    data.addColumn('number', 'Count');
+    data.addRows([
+      ['Processed-OCR and Waiting', <c:out value="${publishedOfProcessedToDo}"/>],
+      ['Complete', <c:out value="${publishedOfProcessedActual}"/>]
+    ]);
+
+    // Set chart options
+    var options = {'title':'Year To Date - Awaiting to be published',
+                   'width':400,
+                   'height':200, 
+                   colors: ['red', 'green']};
+
+    // Instantiate and draw our chart, passing in some options.
+    var chart5 = new google.visualization.PieChart(document.getElementById('chart_div5'));
+    chart5.draw(data, options);
+  };
+  
 </script>
 
 
@@ -398,16 +445,16 @@ $(function() {
 			<table  class="mainRowHeader" >
 				<tr>
 			 		<td>
-			 			<h4 style="text-align:center; margin-bottom: 12px;">Book Counts Per Month</h4>
+			 			<h4 style="text-align:center; margin-bottom: 12px;">Image/page Counts from Beginning of Year Through elected Month</h4>
 			 		</td>
 	            </tr>
 		 	</table>
 		 	 
-		    <canvas id="canvas1" height="300" width="720"></canvas>
+		    <canvas id="canvas1" height="200" width="820"></canvas>
 			<canvas id="canvasLegend"  height="50"></canvas>   
-			<canvas id="canvas2" height="300" width="720"></canvas>
+			<canvas id="canvas2" height="200" width="820"></canvas>
 			<canvas id="canvasLegend2" height="50"></canvas>   
-			<canvas id="canvas3" height="300" width="720"></canvas>
+			<canvas id="canvas3" height="200" width="820"></canvas>
 			<canvas id="canvasLegend3" height="50"></canvas>   
  
 			 	  
@@ -415,11 +462,11 @@ $(function() {
 		</td>
 		
 		
-		
+		<!-- percent of goals scanned,processed,published pie charts here -->
 		<td style="padding-left: 6px;">
 			<!-- /Goal Actual Pie Charts -->
 			<table  class="mainRightRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Yearly Goals</h4></td></tr>
+				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Yearly Goals Completed</h4></td></tr>
 		 	</table>
 			<table>
 			<tr>
@@ -458,6 +505,30 @@ $(function() {
 			
 			<!-- future charts here -->
 			
+			
+		</td>
+				
+		<!-- percent completed of scanned piecharts here -->
+		<td style="padding-left: 6px;">
+			<!-- /Goal Actual Pie Charts -->
+			<table  class="mainRightRowHeader" > 
+				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Yearly Scanned Images - Backlog </h4></td></tr>
+		 	</table>
+			<table>
+			<tr>
+				<td align="center" >
+					<!--Div that will hold the pie chart-->
+  					<div id="chart_divEmpty"></div>
+  					<div id="chart_div4"></div>
+					<div id="chart_div5"></div>
+				</td>
+			</tr>
+			</table>
+			
+		 
+			 
+			
+			<!-- future charts here -->
 			
 		</td>
 		

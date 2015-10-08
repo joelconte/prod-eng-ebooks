@@ -6950,10 +6950,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			
 			
 			
-			tnCountTotalAll += tnCountTotal;
-			String tnCountStr = String.valueOf(tnCountTotal);	
-  
-			arrayStrActualsScan += tnCountStr + ", ";
+			//tnCountTotalAll += tnCountTotal;
+			//String tnCountStr = String.valueOf(tnCountTotal);	
+			imgCountTotalAll += imgCountTotal;
+			String imgCountStr = String.valueOf(imgCountTotal);	
+			arrayStrActualsScan += imgCountStr + ", ";
 		}
 		
 
@@ -7018,10 +7019,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			
 			
 			
-			tnCountTotalAll += tnCountTotal;
-			String tnCountStr = String.valueOf(tnCountTotal);	
+			//tnCountTotalAll += tnCountTotal;
+			//String tnCountStr = String.valueOf(tnCountTotal);	
+			imgCountTotalAll += imgCountTotal;
+			String imgCountStr = String.valueOf(imgCountTotal);	
   
-			arrayStrActualsProcess += tnCountStr + ", ";
+			arrayStrActualsProcess += imgCountStr + ", ";
 		}
 		arrayStrActualsProcess = arrayStrActualsProcess.substring(0,arrayStrActualsProcess.length()-2) + "]";//remove comma and finalize array string
 		
@@ -7086,17 +7089,23 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			
 			
 			
-			tnCountTotalAll += tnCountTotal;
-			String tnCountStr = String.valueOf(tnCountTotal);	
+			//tnCountTotalAll += tnCountTotal;
+			//String tnCountStr = String.valueOf(tnCountTotal);	
+			imgCountTotalAll += imgCountTotal;
+			String imgCountStr = String.valueOf(imgCountTotal);
   
-			arrayStrActualsPublish += tnCountStr + ", ";
+			arrayStrActualsPublish += imgCountStr + ", ";
 		}
 		arrayStrActualsPublish = arrayStrActualsPublish.substring(0,arrayStrActualsPublish.length()-2) + "]";//remove comma and finalize array string
 		
 		
 		/*labels next */
 		for(int x = 1; x<= daysDiff; x++) {
-			arrayStrLabels += "\"" + x + "\", ";
+			if(x % 10 == 1) {
+				arrayStrLabels += "\"" + x + "\", ";
+			}else {
+				arrayStrLabels += "\"\", ";
+			}
 		}
 		 		
 		arrayStrLabels = arrayStrLabels.substring(0,arrayStrLabels.length()-2) + "]";//remove comma and finalize array string
@@ -7111,11 +7120,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 
 	@Override
 	public List getGoalsAndActuals(String year, String site) {
+		//returns 4 elements goal, scan, process, publish
 		if(site == null || site.equalsIgnoreCase("") || site.equalsIgnoreCase("all sites")) {
 			site = "all";
 		}
 		String allSql = "";
-		ArrayList returnList = new ArrayList<String>();
+		ArrayList returnList = new ArrayList<String>();  //4 elements goal, scan, process, publish
 
 		//get goals
 		if ("all".equals(site)) {
@@ -7173,6 +7183,14 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			returnList.add("0");
 		}
 
+		
+
+		//actual results awaiting to be processed
+		//can be calculated from above data
+		
+		//actual results  awaiting to be publish
+		//can be calculted from above data
+		
 		return returnList;
 	}
 	
