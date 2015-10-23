@@ -6384,7 +6384,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			
 			lastPeriodMinutes = minutesStr;//just always set it each time around
 		}
-		
+ 
 		arrayStrTurnaroundTime = arrayStrTurnaroundTime.substring(0,arrayStrTurnaroundTime.length()-2) + "]";//remove comma and finalize array string
  
  	 
@@ -7085,12 +7085,6 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				
 			}while(row!=null);
 			
-			
-			
-			
-			
-			//tnCountTotalAll += tnCountTotal;
-			//String tnCountStr = String.valueOf(tnCountTotal);	
 			imgCountTotalAll += imgCountTotal;
 			String imgCountStr = String.valueOf(imgCountTotal);
   
@@ -7115,17 +7109,18 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		ret[0][1] = arrayStrActualsScan;
 		ret[0][2] = arrayStrActualsProcess;
 		ret[0][3] = arrayStrActualsPublish;
+	
 	}
 	
 
 	@Override
 	public List getGoalsAndActuals(String year, String site) {
-		//returns 4 elements goal, scan, process, publish
+		//returns 6 elements goal, scan, process, publish, ready-to-process(incl previous years scanns), ready-to-publish(incl previous years scanns)
 		if(site == null || site.equalsIgnoreCase("") || site.equalsIgnoreCase("all sites")) {
 			site = "all";
 		}
 		String allSql = "";
-		ArrayList returnList = new ArrayList<String>();  //4 elements goal, scan, process, publish
+		ArrayList returnList = new ArrayList<String>();  //6 elements goal, scan, process, publish, scanned-but-not-processed, processed-but-not-published
 
 		//get goals
 		if ("all".equals(site)) {
@@ -7141,7 +7136,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			returnList.add("0");
 		}
 	
-		//actual results scan
+		//actual results scan for THIS YEAR ONLY
 		allSql = "";
 		if ("all".equals(site)) {
 			allSql += "SELECT sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' ";
@@ -7155,7 +7150,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			returnList.add("0");
 		}
 		 
-		//actual results processed/ocr
+		//actual results processed/ocr THIS YEAR ONLY
 		allSql = "";
 		if ("all".equals(site)) {
 			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') = '" + year + "' ";
@@ -7169,7 +7164,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			returnList.add("0");
 		}
 		
-		//actual results publish
+		//actual results publish THIS YEAR ONLY
 		allSql = "";
 		if ("all".equals(site)) {
 			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' ";
@@ -7185,11 +7180,37 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 
 		
 
-		//actual results awaiting to be processed
-		//can be calculated from above data
+		//actual results awaiting to be processed (CAN BE FOR PREVIOUS YEARS SCANNED IMAGES)
+		//cannot be calculated from above data
+		allSql = "";
+		if ("all".equals(site)) {
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') <= '" + year + "' and date_released is null ";
+		}else{
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') <= '" + year + "' and date_released is null and scanned_by = '" + site + "'";
+		}
+		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
+		if(vals.size() != 0 && vals.get(0).get(0) != null) {
+			returnList.add(vals.get(0).get(0));
+		}else {
+			returnList.add("0");
+		}
 		
-		//actual results  awaiting to be publish
-		//can be calculted from above data
+		
+		//actual results  awaiting to be publish (CAN BE FOR PREVIOUS YEARS SCANNED IMAGES)
+		//cannot be calculted from above data
+		allSql = "";
+		if ("all".equals(site)) {
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') <= '" + year + "' and date_loaded is null";
+		}else{
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') <= '" + year + "' and date_loaded is null and scanned_by = '" + site + "'";
+		}
+		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
+		if(vals.size() != 0 && vals.get(0).get(0) != null) {
+			returnList.add(vals.get(0).get(0));
+		}else {
+			returnList.add("0");
+		}
+		
 		
 		return returnList;
 	}

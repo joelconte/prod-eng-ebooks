@@ -176,6 +176,8 @@ $(function() {
 				onAnimationComplete : null
 				
 			};
+    
+    	//three large line graphs
 		var myLineScan = new Chart(document.getElementById("canvas1").getContext("2d")).Line(lineChartDataScan, options);
 		var myLineProcess = new Chart(document.getElementById("canvas2").getContext("2d")).Line(lineChartDataProcess, options);
 		var myLinePublish = new Chart(document.getElementById("canvas3").getContext("2d")).Line(lineChartDataPublish, options);
@@ -208,7 +210,7 @@ $(function() {
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
-
+	  //PIE charts
       // Load the Visualization API and the piechart package.
       google.load('visualization', '1.0', {'packages':['corechart']});
 
@@ -229,7 +231,7 @@ $(function() {
         	goalStr = ""
         }
         
-       
+        //SCAN
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Books');
         data.addColumn('number', 'Count');
@@ -249,6 +251,8 @@ $(function() {
         chart1.draw(data, options);
         
 
+
+        //PROCESS
         //  2nd column - Create the process data table.
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Books');
@@ -270,6 +274,7 @@ $(function() {
         
         
 
+        //PUBLISH
         //  2nd column - Create the publish data table.
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Books');
@@ -292,13 +297,14 @@ $(function() {
       
       
 
+      //AWAITING PROCESSING
       // 3rd column - Create the "awaiting to be processed" data table.
       var data = new google.visualization.DataTable();
       data.addColumn('string', 'Books');
       data.addColumn('number', 'Count');
       data.addRows([
-        ['Scanned and Waiting', <c:out value="${processedOfScannedToDo}"/>],
-        ['Complete', <c:out value="${processedOfScannedActual}"/>]
+        ['Scanned and Waiting', <c:out value="${readyToProcess}"/>],
+        ['Complete', <c:out value="${processActual}"/>]
       ]);
 
       // Set chart options
@@ -313,14 +319,14 @@ $(function() {
    
     
     
-
+	//AWAITING PUBLISHING
     // 3rd column - Create the "awaiting to be published" data table.
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Books');
     data.addColumn('number', 'Count');
     data.addRows([
-      ['Processed-OCR and Waiting', <c:out value="${publishedOfProcessedToDo}"/>],
-      ['Complete', <c:out value="${publishedOfProcessedActual}"/>]
+      ['Waiting to be Published', <c:out value="${readyToPublish}"/>],
+      ['Complete', <c:out value="${publishActual}"/>]
     ]);
 
     // Set chart options
@@ -445,7 +451,7 @@ $(function() {
 			<table  class="mainRowHeader" >
 				<tr>
 			 		<td>
-			 			<h4 style="text-align:center; margin-bottom: 12px;">Image/page Counts from Beginning of Year Through elected Month</h4>
+			 			<h4 style="text-align:center; margin-bottom: 12px;">Image/page Counts from Beginning of Year Through Selected Month</h4>
 			 		</td>
 	            </tr>
 		 	</table>

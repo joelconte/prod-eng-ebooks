@@ -45,6 +45,7 @@ public class MiscController2 implements MessageSourceAware{
 		String month = req.getParameter("month");
 		String startDate = "";
 		String endDate = "";
+ 		String endDateYMD = "";
 		int daysDiff = 0;//
 		if(year != null && month != null) {
 			int yearInt = Integer.parseInt(year);
@@ -78,6 +79,7 @@ public class MiscController2 implements MessageSourceAware{
 			int endDayInt = gc.get(Calendar.DAY_OF_MONTH);
 			int endYearInt = gc.get(Calendar.YEAR);
 			endDate = String.valueOf(endMonthInt) + "/" + String.valueOf(endDayInt) + "/" + String.valueOf(endYearInt);
+			endDateYMD =  String.valueOf(endYearInt) + "/" + String.valueOf(endMonthInt) + "/" + String.valueOf(endDayInt);
 			
 			GregorianCalendar gcStart = new GregorianCalendar(yearInt, monthInt-1, 1);
 			daysDiff = Math.abs(gc.get(Calendar.DAY_OF_YEAR)-gcStartOfYear.get(Calendar.DAY_OF_YEAR)) + 1;//inclusive  
@@ -102,8 +104,8 @@ public class MiscController2 implements MessageSourceAware{
 	
 
 		/////Goal Actual Pie Charts
-		List data = bookService.getGoalsAndActuals(year, site);//4 elements goal, scan, process, publish
-		if(data.size() == 4) {
+		List data = bookService.getGoalsAndActuals(year, site);//6 elements goal, scan, process, publish, ready-to-process, ready-to-publish
+		if(data.size() == 6) {
 			//some can be 0
 			int goal =  Integer.parseInt((String)data.get(0));
 			int scanActual =  Integer.parseInt((String)data.get(1));
@@ -112,6 +114,13 @@ public class MiscController2 implements MessageSourceAware{
 			int scanToDo = goal - scanActual;
 			int processToDo = goal - processActual;
 			int publishToDo = goal - publishActual;
+			
+			//two 3rd column piechart data
+			int readyToProcess =  Integer.parseInt((String)data.get(4));//imgcount of scan-done and wating to process
+			int readyToPublish =  Integer.parseInt((String)data.get(5));//imgcount of process-done and wating to publish
+
+			 
+			
 			if(scanToDo < 0)
 				scanToDo = 0;
 			if(processToDo < 0)
@@ -119,26 +128,24 @@ public class MiscController2 implements MessageSourceAware{
 			if(publishToDo < 0)
 				publishToDo = 0;
 			model.addAttribute("goal", goal);
-			model.addAttribute("scanToDo", scanToDo);
+			model.addAttribute("scanToDo", scanToDo);//scan todo =goal - scanActual;
 			model.addAttribute("scanActual", scanActual);
-			model.addAttribute("processToDo", processToDo);
+			model.addAttribute("processToDo", processToDo);//goal - processActual;
 			model.addAttribute("processActual", processActual);
-			model.addAttribute("publishToDo", publishToDo);
+			model.addAttribute("publishToDo", publishToDo);//goal - publishActual;
 			model.addAttribute("publishActual", publishActual);
+			//model.addAttribute("readyTofcess", readyToProcess);//scaning done and waiting to process
+			//model.addAttribute("readyToPublish", readyToPublish);//processing done and waiting to publish
 			
-			//actual results awaiting to be processed
+			//piecharts on 3rd col - actual results awaiting to be processed
 			//can be calculated from above data
-			int processedOfScannedToDo = scanActual;
-			int processedOfScannedActual = processActual;
-			model.addAttribute("processedOfScannedToDo", processedOfScannedToDo);//count of images scanned
-			model.addAttribute("processedOfScannedActual", processedOfScannedActual);//count of images processed/ocr'd
+			//model.addAttribute("processedOfScannedToDo", scanActual);//count of images scanned
+			model.addAttribute("readyToProcess", readyToProcess);//count of images processed/ocr'd
 			
-			//actual results  awaiting to be publish
+			//piecharts on 3rd col - actual results  awaiting to be publish
 			//can be calculted from above data
-			int publishedOfProcessedToDo = processActual;
-			int publishedOfProcessedActual = publishActual;
-			model.addAttribute("publishedOfProcessedToDo", publishedOfProcessedToDo);//count of images processed/ocr'd
-			model.addAttribute("publishedOfProcessedActual", publishedOfProcessedActual);//count of images published
+		//	model.addAttribute("publishedOfProcessedToDo", processActual);//count of images processed in prev pie
+			model.addAttribute("readyToPublish", readyToPublish);//count of images published
 		}
  
 
