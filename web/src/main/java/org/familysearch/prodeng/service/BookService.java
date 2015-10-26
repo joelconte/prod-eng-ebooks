@@ -299,7 +299,7 @@ public interface BookService {
 	public String[][] getDashboardGoalData( String startDate, String endDate, String site);
 	public String[][] getDashboardByMonthDataScanProcessPublish( String startDate, String endDate, String site, int daysDiff);
 	public List<List> getDashboardOpenIssues();
-	public List getGoalsAndActuals(String year, String site);
+	public List getGoalsAndActuals(String year, String endDate, String site);
 
 	////end dashboard/////
 	//xml medatdata//

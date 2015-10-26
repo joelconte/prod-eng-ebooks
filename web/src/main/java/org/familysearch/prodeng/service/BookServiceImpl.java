@@ -3367,13 +3367,13 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 					+"  ia_Complete_Date ,  OCR_by ,  OCR_complete_date ,  Pdfreview_By ,  Pdfreview_Start_Date ,  pdf_Ready ,  date_Released ,  compression_Code ,  loaded_By ,  date_Loaded , "
 					+"  collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_num ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_num ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
 					+"  tiff_Orem_Drive_Serial_num ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_num ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
-					+"  secondary_Identifier ,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right) " 
+					+"  secondary_Identifier ,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right, scan_ia_complete_date) " 
 				    + " select  tn ,  title ,  author ,  call_num ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
 					+ " language ,  remarks_From_Scan_Center ,  remarks_About_Book ,  scanned_By ,  location ,  scan_Complete_Date ,  num_of_pages ,  files_Received_By_Orem ,  image_Audit ,  ia_Start_Date , "
 					+ " ia_Complete_Date ,  OCR_by ,  OCR_complete_date ,  Pdfreview_By ,  Pdfreview_Start_Date ,  pdf_Ready ,  date_Released ,  compression_Code ,  loaded_By ,  date_Loaded , "
 					+ " collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_num ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_num ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
 					+ " tiff_Orem_Drive_Serial_num ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_num ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
-					+ " secondary_Identifier,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right from iaBookmetadata where " + inClause;
+					+ " secondary_Identifier,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right, current_timestamp from iaBookmetadata where " + inClause;
 	    getJdbcTemplate().update(sql);
 	    
 	}
@@ -7114,7 +7114,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
 
 	@Override
-	public List getGoalsAndActuals(String year, String site) {
+	public List getGoalsAndActuals(String year, String endDate, String site) {
 		//returns 6 elements goal, scan, process, publish, ready-to-process(incl previous years scanns), ready-to-publish(incl previous years scanns)
 		if(site == null || site.equalsIgnoreCase("") || site.equalsIgnoreCase("all sites")) {
 			site = "all";
@@ -7136,12 +7136,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			returnList.add("0");
 		}
 	
-		//actual results scan for THIS YEAR ONLY
+		//actual results scan for THIS YEAR ONLY through month selected
 		allSql = "";
 		if ("all".equals(site)) {
-			allSql += "SELECT sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' ";
+			allSql += "SELECT sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' ";
 		}else{
-			allSql += "SELECT sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
+			allSql += "SELECT sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' " + "' and scanned_by = '" + site + "'";
 		}
 		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
 		if(vals.size() != 0 && vals.get(0).get(0) != null) {
@@ -7150,12 +7150,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			returnList.add("0");
 		}
 		 
-		//actual results processed/ocr THIS YEAR ONLY
+		//actual results processed/ocr THIS YEAR ONLY through month selected
 		allSql = "";
 		if ("all".equals(site)) {
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') = '" + year + "' ";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') = '" + year + "' and  to_char(date_released, 'yyyy/MM/dd') <= '" + endDate + "' ";
 		}else{
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') = '" + year + "' and  to_char(date_released, 'yyyy/MM/dd') <= '" + endDate + "' " + "' and scanned_by = '" + site + "'";
 		}
 		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
 		if(vals.size() != 0 && vals.get(0).get(0) != null) {
@@ -7164,12 +7164,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			returnList.add("0");
 		}
 		
-		//actual results publish THIS YEAR ONLY
+		//actual results publish THIS YEAR ONLY through month selected
 		allSql = "";
 		if ("all".equals(site)) {
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' ";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' and to_char(date_loaded, 'yyyy/MM/dd') <= '" + endDate + "' ";
 		}else{
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' and scanned_by = '" + site + "'";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_loaded, 'yyyy') = '" + year  + "' and to_char(date_loaded, 'yyyy/MM/dd') <= '" + endDate + "' " + "' and scanned_by = '" + site + "'";
 		}
 		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
 		if(vals.size() != 0 && vals.get(0).get(0) != null) {
@@ -7184,9 +7184,9 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		//cannot be calculated from above data
 		allSql = "";
 		if ("all".equals(site)) {
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') <= '" + year + "' and date_released is null ";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' and date_released is null ";
 		}else{
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') <= '" + year + "' and date_released is null and scanned_by = '" + site + "'";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' and date_released is null and scanned_by = '" + site + "'";
 		}
 		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
 		if(vals.size() != 0 && vals.get(0).get(0) != null) {
@@ -7200,9 +7200,9 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		//cannot be calculted from above data
 		allSql = "";
 		if ("all".equals(site)) {
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') <= '" + year + "' and date_loaded is null";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy/MM/dd') <= '" + endDate + "' and date_loaded is null";
 		}else{
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') <= '" + year + "' and date_loaded is null and scanned_by = '" + site + "'";
+			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy/MM/dd') <= '" + endDate + "' and date_loaded is null and scanned_by = '" + site + "'";
 		}
 		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
 		if(vals.size() != 0 && vals.get(0).get(0) != null) {

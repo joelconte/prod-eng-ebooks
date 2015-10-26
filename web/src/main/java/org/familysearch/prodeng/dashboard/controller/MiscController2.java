@@ -59,7 +59,12 @@ public class MiscController2 implements MessageSourceAware{
 			int endMonthInt = gc.get(Calendar.MONTH)+1;
 			int endDayInt = gc.get(Calendar.DAY_OF_MONTH);
 			int endYearInt = gc.get(Calendar.YEAR);
-			endDate = String.valueOf(endMonthInt) + "/" + String.valueOf(endDayInt) + "/" + String.valueOf(endYearInt);
+			String dd = String.valueOf(endDayInt);
+			String mm = String.valueOf(endMonthInt);
+			dd = dd.length() == 1 ? "0" + dd : dd;
+			mm = mm.length() == 1 ? "0" + mm : mm;
+			endDate = mm + "/" + dd + "/" + String.valueOf(endYearInt);
+			endDateYMD =  String.valueOf(endYearInt) + "/" + mm + "/" + dd;
 			
 			GregorianCalendar gcStart = new GregorianCalendar(yearInt, monthInt-1, 1);
 			daysDiff = Math.abs(gc.get(Calendar.DAY_OF_YEAR)-gcStartOfYear.get(Calendar.DAY_OF_YEAR)) + 1;//inclusive  
@@ -78,8 +83,12 @@ public class MiscController2 implements MessageSourceAware{
 			int endMonthInt = gc.get(Calendar.MONTH)+1;
 			int endDayInt = gc.get(Calendar.DAY_OF_MONTH);
 			int endYearInt = gc.get(Calendar.YEAR);
-			endDate = String.valueOf(endMonthInt) + "/" + String.valueOf(endDayInt) + "/" + String.valueOf(endYearInt);
-			endDateYMD =  String.valueOf(endYearInt) + "/" + String.valueOf(endMonthInt) + "/" + String.valueOf(endDayInt);
+			String dd = String.valueOf(endDayInt);
+			String mm = String.valueOf(endMonthInt);
+			dd = dd.length() == 1 ? "0" + dd : dd;
+			mm = mm.length() == 1 ? "0" + mm : mm;
+			endDate = mm + "/" + dd + "/" + String.valueOf(endYearInt);
+			endDateYMD =  String.valueOf(endYearInt) + "/" + mm + "/" + dd;
 			
 			GregorianCalendar gcStart = new GregorianCalendar(yearInt, monthInt-1, 1);
 			daysDiff = Math.abs(gc.get(Calendar.DAY_OF_YEAR)-gcStartOfYear.get(Calendar.DAY_OF_YEAR)) + 1;//inclusive  
@@ -104,7 +113,7 @@ public class MiscController2 implements MessageSourceAware{
 	
 
 		/////Goal Actual Pie Charts
-		List data = bookService.getGoalsAndActuals(year, site);//6 elements goal, scan, process, publish, ready-to-process, ready-to-publish
+		List data = bookService.getGoalsAndActuals(year, endDateYMD, site);//6 elements goal, scan, process, publish, ready-to-process, ready-to-publish
 		if(data.size() == 6) {
 			//some can be 0
 			int goal =  Integer.parseInt((String)data.get(0));
