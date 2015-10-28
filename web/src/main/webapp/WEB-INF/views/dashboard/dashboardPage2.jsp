@@ -241,7 +241,7 @@ $(function() {
         ]);
 
         //  2nd column - Set chart options
-        var options = {'title':'Year To Date - Scan' + goalStr,
+        var options = {'title':'YTD (selected) - Scan' + goalStr,
                        'width':400,
                        'height':200,
                        colors: ['red', 'green']};
@@ -263,7 +263,7 @@ $(function() {
         ]);
 
         // Set chart options
-        var options = {'title':'Year To Date - Processing and OCR' + goalStr,
+        var options = {'title':'YTD (selected) - Processing and OCR' + goalStr,
                        'width':400,
                        'height':200,
                        colors: ['red', 'green']};
@@ -285,7 +285,7 @@ $(function() {
         ]);
 
         // Set chart options
-        var options = {'title':'Year To Date - Publish' + goalStr,
+        var options = {'title':'YTD (selected) - Publish' + goalStr,
                        'width':400,
                        'height':200, 
                        colors: ['red', 'green']};
@@ -308,7 +308,7 @@ $(function() {
       ]);
 
       // Set chart options
-      var options = {'title':'Year To Date - Awaiting to be processed-OCR',
+      var options = {'title':'YTD (selected) - Awaiting to be processed-OCR',
                      'width':400,
                      'height':200, 
                      colors: ['red', 'green']};
@@ -330,7 +330,7 @@ $(function() {
     ]);
 
     // Set chart options
-    var options = {'title':'Year To Date - Awaiting to be published',
+    var options = {'title':'YTD (selected) - Awaiting to be published',
                    'width':400,
                    'height':200, 
                    colors: ['red', 'green']};
