@@ -3216,9 +3216,19 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				+ "     THEN 'Copyright Protected' "
 				+ "   ELSE  'Public Domain' "
 				+ "   END where tn IN  ( " + tnList + " )";	  
+		
+		//update ocr site for two temp sites for LIMB
+		String sql3 = "UPDATE book " 
+				+ " SET site = "
+				+ "  CASE "
+				+ "   WHEN owning_institution = 'Arizona State Library, Archives and Public Records' "
+				+ "     THEN 'LIMB Server - SLC' "
+				+ "   ELSE  'Orem Digital Processing Center' "
+				+ "   END where tn IN  ( " + tnList + " )";	  
 		 
 	    getJdbcTemplate().update(sql1);
 	    getJdbcTemplate().update(sql2);
+	    getJdbcTemplate().update(sql3);
 	}
 	
 	public List<String> filterOutUpdateTns(List<String> tnList, List<String> dupList) {

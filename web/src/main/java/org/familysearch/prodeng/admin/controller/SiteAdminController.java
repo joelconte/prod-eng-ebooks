@@ -66,12 +66,12 @@ public class SiteAdminController implements MessageSourceAware{
 	//do update/create
 	@RequestMapping(value="admin/siteAdmin", params="save", method=RequestMethod.POST)
 	public String doSiteSave(Site site, String siteIdNew, String siteIdOriginal, String doCreate, Model model) {
-		site.setSiteId(siteIdOriginal);//gets lost also
-		List<List> goals = bookService.getSiteGoals(site.getSiteId()); //goals get lost when returned back from page
-		site.setGoals(goals);
+		List<List> goals = null;
 		site.setSiteId(siteIdNew);
 		
 		if(doCreate == null) {
+			goals = bookService.getSiteGoals(siteIdOriginal); //goals get lost when returned back from page
+			site.setGoals(goals);
 			String failMsg = bookService.updateSite(site, siteIdOriginal); //userId can be changed
 		 
 			if(failMsg != null) {
