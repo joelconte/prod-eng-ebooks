@@ -50,6 +50,7 @@ public class MiscController implements MessageSourceAware{
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("filesSentToOrem", null, locale));
 		labels.add(messageSource.getMessage("imagesReceived", null, locale));
@@ -148,6 +149,7 @@ public class MiscController implements MessageSourceAware{
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("location", null, locale));
 		labels.add(messageSource.getMessage("imagesReceived", null, locale));
@@ -179,6 +181,7 @@ public class MiscController implements MessageSourceAware{
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("auditingBy", null, locale));
 		labels.add(messageSource.getMessage("startDate", null, locale));
@@ -210,6 +213,7 @@ public class MiscController implements MessageSourceAware{
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("fileName", null, locale));
 		labels.add(messageSource.getMessage("backupHardrive", null, locale));
@@ -272,6 +276,7 @@ public class MiscController implements MessageSourceAware{
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("fileName", null, locale));
 		labels.add(messageSource.getMessage("backupHardrive", null, locale));
@@ -334,6 +339,7 @@ public class MiscController implements MessageSourceAware{
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("fileName", null, locale));
 		labels.add(messageSource.getMessage("backupHardrive", null, locale));
@@ -397,6 +403,7 @@ public class MiscController implements MessageSourceAware{
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("fileName", null, locale));
 		labels.add(messageSource.getMessage("dateImported", null, locale));
@@ -428,6 +435,7 @@ public class MiscController implements MessageSourceAware{
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("processingBy", null, locale));
 		labels.add(messageSource.getMessage("startDate", null, locale));
@@ -461,6 +469,7 @@ public class MiscController implements MessageSourceAware{
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
 		labels.add(messageSource.getMessage("step", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("problemStatus", null, locale));
 		labels.add(messageSource.getMessage("problemReason", null, locale));
