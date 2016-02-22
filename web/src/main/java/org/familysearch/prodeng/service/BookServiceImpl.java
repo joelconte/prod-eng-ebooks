@@ -189,7 +189,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(location == null || location.equals(""))
 			tnList = getJdbcTemplate().query("select tn, num_of_pages,  site, scanned_by, TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where tn not in (select tn from tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by,  TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where scanned_by  = ? and   tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by,  TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where site  = ? and   tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		return tnList;
 	}
 	
@@ -200,7 +200,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(location == null || location.equals(""))
 			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by,location, TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_2_ready_to_title_check where tn not in (select tn from tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by, location, TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_2_ready_to_title_check  where scanned_by  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by, location, TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_2_ready_to_title_check  where site  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		
 		return tnList;
 	}
@@ -211,7 +211,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(location == null || location.equals(""))
 			tnList = getJdbcTemplate().query("select  tn,   site, scanned_by, image_audit,TO_CHAR(ia_start_date, 'mm/dd/yyyy'), num_of_pages from tf_3_title_check_in_process where tn not in (select tn from tf_problems) ", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select  tn,   site, scanned_by, image_audit,TO_CHAR(ia_start_date, 'mm/dd/yyyy'), num_of_pages from tf_3_title_check_in_process  where scanned_by  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,   site, scanned_by, image_audit,TO_CHAR(ia_start_date, 'mm/dd/yyyy'), num_of_pages from tf_3_title_check_in_process  where site  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		
 		return tnList;
 	}
@@ -222,7 +222,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(location == null || location.equals(""))
 			tnList = getJdbcTemplate().query("select  tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4_Ready_to_OCR where tn not in (select tn from tf_problems)", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4_Ready_to_OCR  where scanned_by  = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4_Ready_to_OCR  where site  = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX8RowMapper());
 		
 		return tnList;
 	}
@@ -232,7 +232,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(location == null || location.equals(""))
 			tnList = getJdbcTemplate().query("select tn,   site, scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4a_OCR where tn not in (select tn from tf_problems) ", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4a_OCR  where scanned_by  = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4a_OCR  where site = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX8RowMapper());
 		
 		return tnList;
 	}
@@ -243,7 +243,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(location == null || location.equals(""))
 			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_4b_pdf_download where tn not in (select tn from tf_problems)", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_4b_pdf_download  where scanned_by  = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_4b_pdf_download  where site = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX8RowMapper());
 		
 		return tnList;
 	}
@@ -255,7 +255,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(location == null || location.equals(""))
 			tnList = getJdbcTemplate().query("select  tn,   num_of_pages,  site,  scanned_by, filename, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_5_ready_to_pdfreview where tn not in (select tn from tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select  tn,   num_of_pages,  site,  scanned_by, filename, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_5_ready_to_pdfreview  where scanned_by  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,   num_of_pages,  site,  scanned_by, filename, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_5_ready_to_pdfreview  where site  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		
 		return tnList;
 	}
@@ -266,7 +266,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(location == null || location.equals(""))
 			tnList = getJdbcTemplate().query("select  tn,  site,  scanned_by,  pdfreview_by, TO_CHAR(pdfreview_start_date, 'mm/dd/yyyy'), num_of_pages from tf_6_pdfreview_in_process where tn not in (select tn from tf_problems) ", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select  tn,  site, scanned_by,  pdfreview_by, TO_CHAR(pdfreview_start_date, 'mm/dd/yyyy'), num_of_pages from tf_6_pdfreview_in_process where scanned_by  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,  site, scanned_by,  pdfreview_by, TO_CHAR(pdfreview_start_date, 'mm/dd/yyyy'), num_of_pages from tf_6_pdfreview_in_process where site  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		
 		return tnList;
 	}
