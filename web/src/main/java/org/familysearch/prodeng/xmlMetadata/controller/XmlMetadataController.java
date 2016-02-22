@@ -48,6 +48,32 @@ public class XmlMetadataController {
  
 	}
 
+	@RequestMapping(value = "xmlMetadata/getCatalogingBySecondaryId/{secondaryId}", method = RequestMethod.GET)
+	public HttpEntity<byte[]>  getCatalogingBySecondaryId( @PathVariable("secondaryId") String secondaryId, HttpServletRequest req) {
+
+	    byte[] documentBody = getXmlForCataloging(secondaryId);//xml.getBytes();
+	    if(documentBody==null)
+	    	return null;
+	    HttpHeaders header = new HttpHeaders();
+	    header.setContentType(new MediaType("application", "xml"));
+	    header.setContentLength(documentBody.length);
+	    return new HttpEntity<byte[]>(documentBody, header);
+ 
+	}
+	
+	@RequestMapping(value = "xmlMetadata/getIACountTotal", method = RequestMethod.GET)
+	public HttpEntity<byte[]>  getIACountTotal(  HttpServletRequest req) {
+
+	    byte[] documentBody = getXmlIACountTotal();//xml.getBytes();
+	    if(documentBody==null)
+	    	return null;
+	    HttpHeaders header = new HttpHeaders();
+	    header.setContentType(new MediaType("application", "xml"));
+	    header.setContentLength(documentBody.length);
+	    return new HttpEntity<byte[]>(documentBody, header);
+ 
+	}
+	
 	public byte[] getXml(String tn) {
 		try {
 
@@ -65,6 +91,66 @@ public class XmlMetadataController {
 			}			 
 
 			Document doc = generateXmlDoc(mdValues, recordValues, mdValues[33][1]);
+			doc.setXmlStandalone(true); //remove standalone=no attr at top
+
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			//not working transformerFactory.setAttribute("indent-number", 5); 
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //with this I get /r/n which is needed (still no indent though)
+			DOMSource source = new DOMSource(doc);
+			ByteArrayOutputStream bos=new ByteArrayOutputStream();
+			StreamResult result=new StreamResult(bos);
+			transformer.transform(source, result);
+			byte[] array=bos.toByteArray();
+			return array;
+		}catch(Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public byte[] getXmlForCataloging(String secondaryId) {
+		try {
+			String[][] mdValues =  new String[7][2];
+			boolean pass = bookService.queryXmlCatalogingData(secondaryId, mdValues);
+			if(!pass){
+				//error not in db
+				return null;
+			}			 
+
+			Document doc = generateXmlDocCataloging(mdValues);
+			doc.setXmlStandalone(true); //remove standalone=no attr at top
+
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			//not working transformerFactory.setAttribute("indent-number", 5); 
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //with this I get /r/n which is needed (still no indent though)
+			DOMSource source = new DOMSource(doc);
+			ByteArrayOutputStream bos=new ByteArrayOutputStream();
+			StreamResult result=new StreamResult(bos);
+			transformer.transform(source, result);
+			byte[] array=bos.toByteArray();
+			return array;
+		}catch(Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public byte[] getXmlIACountTotal() {
+		try {
+			String[][] mdValues =  new String[1][2];
+			boolean pass = bookService.queryGetXmlIACountTotal(mdValues);
+			if(!pass){
+				//error not in db
+				return null;
+			}			 
+
+			Document doc = generateXmlDocCataloging(mdValues);
 			doc.setXmlStandalone(true); //remove standalone=no attr at top
 
 
@@ -158,6 +244,98 @@ public class XmlMetadataController {
 			Element accessElem = doc.createElement("access");//nonspc
 			accessElem.appendChild(doc.createTextNode("nonspc"));
 			rootElement.appendChild(accessElem);
+
+			return doc;
+
+		}catch(Exception e){
+			System.out.println(e);
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	public Document queryGetXmlIACountTotal(String[][] mdValues){
+
+		for(int x = 0; x<mdValues.length; x++){
+			if(mdValues[x][1]==null){
+				mdValues[x][1] = "";
+			}
+			 
+		}
+		 
+		try{
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.newDocument();
+
+			Element rootElement = doc.createElement("book_cataloging_count");
+			doc.appendChild(rootElement);
+
+			Element mdElem = doc.createElement("metadata");
+			mdElem.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			mdElem.setAttribute("xmlns:dc", "http://purl.org/dc/elements/1.1/");
+			mdElem.setAttribute("xmlns:dcterms", "http:/purl.org/dc/terms/");
+			mdElem.setAttribute("xmlns:ldsterms", "http://ldschurch.org/ldsterms/ldsterms.xsd");
+			rootElement.appendChild(mdElem);
+
+			//all metadata children
+			//ie: <dc:identifier>20996_01</dc:identifier> 
+			for(int x = 0; x< mdValues.length; x++){
+			 				
+				if((mdValues[x][0] != null) && ("".equals(mdValues[x][0]) == false)){
+					Element md = doc.createElement(mdValues[x][0]);
+					md.appendChild(doc.createTextNode(mdValues[x][1]));
+					mdElem.appendChild(md);
+				}
+			}
+
+			return doc;
+
+		}catch(Exception e){
+			System.out.println(e);
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+	public Document generateXmlDocCataloging(String[][] mdValues){
+
+		for(int x = 0; x<mdValues.length; x++){
+			if(mdValues[x][1]==null){
+				mdValues[x][1] = "";
+			}
+			 
+		}
+		 
+		try{
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.newDocument();
+
+			Element rootElement = doc.createElement("book_cataloging_data");
+			doc.appendChild(rootElement);
+
+			Element mdElem = doc.createElement("metadata");
+			mdElem.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+			mdElem.setAttribute("xmlns:dc", "http://purl.org/dc/elements/1.1/");
+			mdElem.setAttribute("xmlns:dcterms", "http:/purl.org/dc/terms/");
+			mdElem.setAttribute("xmlns:ldsterms", "http://ldschurch.org/ldsterms/ldsterms.xsd");
+			rootElement.appendChild(mdElem);
+
+			//all metadata children
+			//ie: <dc:identifier>20996_01</dc:identifier> 
+			for(int x = 0; x< mdValues.length; x++){
+			 				
+				if((mdValues[x][0] != null) && ("".equals(mdValues[x][0]) == false)){
+					Element md = doc.createElement(mdValues[x][0]);
+					md.appendChild(doc.createTextNode(mdValues[x][1]));
+					mdElem.appendChild(md);
+				}
+			}
+
+ 
+ 
 
 			return doc;
 

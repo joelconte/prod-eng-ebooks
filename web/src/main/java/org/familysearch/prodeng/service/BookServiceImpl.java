@@ -4067,6 +4067,66 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}
 
 	}
+	
+
+	@Override
+	public boolean queryXmlCatalogingData( String secondaryId, String[][] mdValues){
+		try{
+			List tnList = getJdbcTemplate().query("select TN, SECONDARY_IDENTIFIER, OCLC_NUMBER, TITLE, AUTHOR, BATCH_CLASS, LANGUAGE from book where BATCH_CLASS = 'Internet Archives (IA)' and URL is not null and secondary_identifier = '"+secondaryId+"'", new StringXRowMapper() );
+			
+			String dateStamp = "";
+			 
+			if(tnList.size()>0){
+				List<String> row = (List<String>) tnList.get(0);
+				//mdValues = new String[37][2];
+				//recordValues = new String[8][2];			//put in id attr names and key inner-html in this array
+				mdValues[0][0] = "tn"; mdValues[0][1] = row.get(0);
+				mdValues[1][0] = "SECONDARY_IDENTIFIER"; mdValues[1][1] = row.get(1);
+				mdValues[2][0] = "OCLC_NUMBER"; mdValues[2][1] = row.get(2);
+				mdValues[3][0] = "TITLE"; mdValues[3][1] = row.get(3);
+				mdValues[4][0] = "AUTHOR"; mdValues[4][1] =  row.get(4);
+				mdValues[5][0] = "BATCH_CLASS"; mdValues[5][1] = row.get(5);
+				mdValues[6][0] = "LANGUAGE"; mdValues[6][1] = row.get(6);
+				return true;
+				 
+			}else{
+				return false;//not in oracle
+			}
+			
+		}catch(Exception e){
+			System.out.println(e);
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	@Override
+	public boolean queryGetXmlIACountTotal(String[][] mdValues) {
+		try{
+			List tnList = getJdbcTemplate().query("select count(*) from book where BATCH_CLASS = 'Internet Archives (IA)' and URL is not null", new StringXRowMapper() );
+
+			String dateStamp = "";
+
+			if(tnList.size()>0){
+				List<String> row = (List<String>) tnList.get(0);
+				//mdValues = new String[37][2];
+				//recordValues = new String[8][2];			//put in id attr names and key inner-html in this array
+				mdValues[0][0] = "count"; mdValues[0][1] = row.get(0);
+				return true;
+
+			}else{
+				return false;//not in oracle
+			}
+
+		}catch(Exception e){
+			System.out.println(e);
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+	
 	///xml metadata end//
 	private static class ExtractorWithColumnHeaders implements ResultSetExtractor<List<List<String>>> {
 		  @Override

@@ -93,6 +93,8 @@
 		<sec:logout invalidate-session="true" />
 		<sec:intercept-url requires-channel="http" pattern="/spring_security_login" access="permitAll" />
 		<sec:intercept-url pattern="/xmlMetadata/getTn/**" access="permitAll"/>
+		<sec:intercept-url pattern="/xmlMetadata/getCatalogingBySecondaryId/**" access="permitAll"/> 
+		<sec:intercept-url pattern="/xmlMetadata/getIACountTotal/**" access="permitAll"/>
 		<sec:intercept-url pattern="/**" access="isAuthenticated() and hasAnyRole( 'admin', 'supervisor', 'scan', 'process', 'metadata', 'search')" />
   		<sec:http-basic/>
 	
