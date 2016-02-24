@@ -56,6 +56,16 @@
 	<jee:jndi-lookup id="dataSourceQuery" jndi-name="jdbc/myPostgresQuery/DataSource" resource-ref="true"/>
 
 	<context:mbean-export default-domain="org.familysearch.prodeng.BookScan"/>
+	
+	<!-- Spring Configuration needed to avoid URI using dots to be truncated --> 
+      <!-- no, this allows for ambiguous params  <bean id="handlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="useSuffixPatternMatch" value="false"/>
+    </bean> 
+  <bean
+        class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="useDefaultSuffixPattern" value="false" />
+    </bean>  -->
+	
 
 	<!-- Bean to parse MANIFEST.MF providing useful project information -->
 	<bean id="manifestBean" class="org.lds.stack.system.spring.SpringManifestBean" lazy-init="false"/>

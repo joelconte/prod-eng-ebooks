@@ -189,7 +189,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(location == null || location.equals(""))
 			tnList = getJdbcTemplate().query("select tn, num_of_pages,  site, scanned_by, TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where tn not in (select tn from tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by,  TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where site  = ? and   tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by,  TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where scanned_by  = ? and   tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		return tnList;
 	}
 	
