@@ -143,19 +143,19 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanAuditReadyTnsInfo(String location) {
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by from s_02_ready_image_audit where tn not in (select tn from s_tf_problems)", new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by, scan_image_auditor, scan_ia_start_date from s_02_ready_image_audit where tn not in (select tn from s_tf_problems)", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by from s_02_ready_image_audit  where  scanned_by = ?  and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by, scan_image_auditor, scan_ia_start_date from s_02_ready_image_audit  where  scanned_by = ?  and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringXRowMapper());
 		return tnList;
 	}
 
 	@Override
-	public List<List> getScanAuditInProgressTnsInfo(String location){
+	public List<List> getScanAuditReadyTnsInfo2(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scan_ia_start_date, scan_image_auditor, scanned_by from s_03_image_auditing_in_prog  where tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by , scan_image_auditor, scan_ia_complete_date,  scan_image_auditor2, scan_ia_start_date2 from s_03_ready_image_audit2  where tn not in (select tn from s_tf_problems) ", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scan_ia_start_date, scan_image_auditor, scanned_by from s_03_image_auditing_in_prog  where scanned_by  = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by ,scan_image_auditor, scan_ia_complete_date,  scan_image_auditor2, scan_ia_start_date2  from s_03_ready_image_audit2   where scanned_by  = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringXRowMapper());
 		return tnList;
 	}
 	
@@ -460,6 +460,16 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		List<String> sList = getJdbcTemplate().query("select id from SITE where is_scan_site = 'T'    order by id", new StringRowMapper());
 		return sList;
 	}
+	@Override
+	public List<String> getAllOcrSites() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE where is_process_site = 'T' and  ( is_inactive_site !='T' or is_inactive_site is null)  order by id", new StringRowMapper());
+		return sList;
+	}
+	@Override
+	public List<String> getAllOcrSitesIncludingInactive() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE where is_process_site = 'T'    order by id", new StringRowMapper());
+		return sList;
+	}
 	
 	@Override
 	public List<String> getAllPropertyRights() {
@@ -536,6 +546,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setScanCompleteDate(rs.getTimestamp("SCAN_COMPLETE_DATE"));
 			book.setScanImageAuditor(rs.getString("SCAN_IMAGE_AUDITOR"));
 			book.setScanIaStartDate(rs.getTimestamp("SCAN_IA_START_DATE"));
+			book.setScanIaCompleteDate2(rs.getTimestamp("SCAN_IA_COMPLETE_DATE2"));
+			book.setScanImageAuditor2(rs.getString("SCAN_IMAGE_AUDITOR2"));
+			book.setScanIaStartDate2(rs.getTimestamp("SCAN_IA_START_DATE2"));
 			book.setScanIaCompleteDate(rs.getTimestamp("SCAN_IA_COMPLETE_DATE"));
 			book.setFilesSentToOrem(rs.getTimestamp("FILES_SENT_TO_OREM"));
 			book.setScanNumOfPages(rs.getString("SCAN_NUM_OF_PAGES"));
@@ -624,6 +637,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(sList.size() > 0)
 			b.setBatchClass(sList.get(0));
 
+		
+		//call to set dates if need to skip due to new limb process of not needing titlecheck etc
+		if (b.getSite().equals("LIMB Server - SLC")){
+			autoUpdateSkipStepsEtc(b, "OCR_end_date");
+		}
 		return b;
 	}
 
@@ -1151,6 +1169,20 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			sql += "scan_Ia_Complete_Date = :scanIaCompleteDate, ";
 			params.put("scanIaCompleteDate", book.getScanIaCompleteDate());
 		}
+
+		if (book.isScanImageAuditor2Set()) {
+			sql += "scan_Image_Auditor2 = :scanImageAuditor2, ";
+			params.put("scanImageAuditor2", book.getScanImageAuditor2()==""?null:  book.getScanImageAuditor2());
+		}
+		if (book.isScanIaStartDate2Set()) {
+			sql += "scan_Ia_Start_Date2 = :scanIaStartDate2, ";
+			params.put("scanIaStartDate2", book.getScanIaStartDate2());
+		}
+		if (book.isScanIaCompleteDate2Set()) {
+			sql += "scan_Ia_Complete_Date2 = :scanIaCompleteDate2, ";
+			params.put("scanIaCompleteDate2", book.getScanIaCompleteDate2());
+		}
+		
 		if (book.isFilesSentToOremSet()) {
 			sql += "files_Sent_To_Orem = :filesSentToOrem, ";
 			params.put("filesSentToOrem", book.getFilesSentToOrem());
@@ -3230,6 +3262,24 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	    getJdbcTemplate().update(sql2);
 	    getJdbcTemplate().update(sql3);
 	}
+	
+
+	@Override 
+	public void autoUpdateSkipStepsEtc(Book b, String skipTo) {
+		if(skipTo.equals("OCR_end_date")) {
+			/* fields from views that need to be set to dummy date
+			book.files_received_by_orem IS NOT NULL
+			book.ia_start_date IS NOT NULL
+			book.ia_complete_date IS NOT NULL
+			book.ocr_start_date IS NOT NULL*/
+			b.setFilesReceivedByOrem(b.getFilesSentToOrem());
+			b.setIaStartDate(b.getFilesSentToOrem());
+			b.setIaCompleteDate(b.getFilesSentToOrem());
+			b.setOcrStartDate(b.getFilesSentToOrem());
+		}
+	  
+	}
+	
 	
 	public List<String> filterOutUpdateTns(List<String> tnList, List<String> dupList) {
 		List<String> insertTns = new ArrayList();

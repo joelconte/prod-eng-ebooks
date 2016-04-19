@@ -95,6 +95,7 @@ public class TrackingFormController implements MessageSourceAware{
 		model.addAttribute("mode", "update"); 
 		model.addAttribute("book", bookService.getBook(tn)); 
 		model.addAttribute("allSites", bookService.getAllSites()); 
+		model.addAttribute("ocrSites", bookService.getAllOcrSites()); 
 		model.addAttribute("allScanSitesIncludingInactive", bookService.getAllScanSitesIncludingInactive());
 		model.addAttribute("allPropertyRights", bookService.getAllPropertyRights()); 
 		model.addAttribute("allPublicationTypes", bookService.getAllPublicationTypes()); 

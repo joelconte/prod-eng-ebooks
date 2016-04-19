@@ -49,6 +49,8 @@ $( "#scan_start_date" ).datepicker();
 $( "#scan_complete_date" ).datepicker();
 $( "#scan_ia_start_date" ).datepicker();
 $( "#scan_ia_complete_date" ).datepicker();
+$( "#scan_ia_start_date2" ).datepicker();
+$( "#scan_ia_complete_date2" ).datepicker();
 $( "#metadata_complete" ).datepicker();
 $( "#files_sent_to_orem" ).datepicker();
 $( "#pull_date" ).datepicker();
@@ -57,6 +59,8 @@ $( "#scan_start_date" ).blur( validateDateData );
 $( "#scan_complete_date" ).blur( validateDateData );
 $( "#scan_ia_start_date" ).blur( validateDateData );
 $( "#scan_ia_complete_date" ).blur( validateDateData );
+$( "#scan_ia_start_date2" ).blur( validateDateData );
+$( "#scan_ia_complete_date2" ).blur( validateDateData );
 $( "#metadata_complete" ).blur( validateDateData );
 $( "#files_sent_to_orem" ).blur( validateDateData );
 $( "#pull_date" ).blur( validateDateData );
@@ -300,12 +304,11 @@ function validateFormData(){
 					<tr>
 					<td>${messages['trackingForm.ocrSite']}</td>
 					<td>
-						<!-- readonly in scan -->
-						<c:if test="${true}"><sf:input  path="site"  readonly="true"   /></c:if>
-						<c:if test="${false}">
+						<c:if test="${isReadOnly == true}"><sf:input  path="site"  readonly="${isReadOnly}"   /></c:if>
+						<c:if test="${isReadOnly == false}">
 							<sf:select path="site" >
 								<sf:option value=""/>
-								<sf:options items="${allSites}" />
+								<sf:options items="${ocrSites}" />
 							</sf:select>
 						</c:if>
 					</td>
@@ -393,6 +396,25 @@ function validateFormData(){
 						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('scan_ia_complete_date'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
 					</td>
 					</tr>
+					<tr><td class="rowSpace"></td></tr>
+					
+					<tr>
+					<td>${messages['trackingForm.scanImageAuditor2']}</td>
+					<td><sf:input path="scanImageAuditor2" readonly="${isReadOnly}" /></td>
+					</tr>
+					<tr>
+					<td>${messages['trackingForm.scanAuditDate2']}</td>
+					<td><sf:input id="scan_ia_start_date2" path="scanIaStartDate2" readonly="${isReadOnly}" />
+						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('scan_ia_start_date2'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
+					</td>
+					</tr>
+					<tr>
+					<td>${messages['trackingForm.scanAuditCompleteDate2']}</td>
+					<td><sf:input id="scan_ia_complete_date2" path="scanIaCompleteDate2" readonly="${isReadOnly}" />
+						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('scan_ia_complete_date2'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
+					</td>
+					</tr>
+					
 					<tr><td class="rowSpace"></td></tr>
 					<tr>
 					<td>${messages['trackingForm.filesSentToOrem']}</td>

@@ -59,6 +59,9 @@ public class Book implements Serializable {
     private String scanImageAuditor;
     private Timestamp scanIaStartDate;
     private Timestamp scanIaCompleteDate;
+    private String scanImageAuditor2;
+    private Timestamp scanIaStartDate2;
+    private Timestamp scanIaCompleteDate2;
     private Timestamp filesSentToOrem;
     private String scanNumOfPages;
     private String numOfPages;
@@ -146,6 +149,9 @@ public class Book implements Serializable {
     private boolean scanImageAuditorSet = false;
     private boolean scanIaStartDateSet = false;
     private boolean scanIaCompleteDateSet = false;
+    private boolean scanImageAuditor2Set = false;
+    private boolean scanIaStartDate2Set = false;
+    private boolean scanIaCompleteDate2Set = false;
     private boolean filesSentToOremSet = false;
     private boolean scanNumOfPagesSet = false;
     private boolean numOfPagesSet = false;
@@ -365,6 +371,15 @@ public class Book implements Serializable {
 	}
 	public String getScanImageAuditor() {
 		return scanImageAuditor;
+	}
+	public Timestamp getScanIaCompleteDate2() {
+		return scanIaCompleteDate2;
+	}
+	public Timestamp getScanIaStartDate2() {
+		return scanIaStartDate2;
+	}
+	public String getScanImageAuditor2() {
+		return scanImageAuditor2;
 	}
 	public String getScanMachineId() {
 		return scanMachineId;
@@ -685,6 +700,18 @@ public class Book implements Serializable {
 		this.scanImageAuditor = scanImageAuditor;
 		this.scanImageAuditorSet = true;
 	}
+	public void setScanIaCompleteDate2(Timestamp scanIaCompleteDate2) {
+		this.scanIaCompleteDate2 = scanIaCompleteDate2;
+		this.scanIaCompleteDate2Set = true;
+	}
+	public void setScanIaStartDate2(Timestamp scanIaStartDate2) {
+		this.scanIaStartDate2 = scanIaStartDate2;
+		this.scanIaStartDate2Set = true;
+	}
+	public void setScanImageAuditor2(String scanImageAuditor2) {
+		this.scanImageAuditor2 = scanImageAuditor2;
+		this.scanImageAuditor2Set = true;
+	}
 	public void setScanMachineId(String scanMachineId) {
 		this.scanMachineId = scanMachineId;
 		this.scanMachineIdSet = true;
@@ -976,6 +1003,15 @@ public class Book implements Serializable {
 	}
 	public boolean isScanImageAuditorSet() {
 		return scanImageAuditorSet;
+	}
+	public boolean isScanIaCompleteDate2Set() {
+		return scanIaCompleteDate2Set;
+	}
+	public boolean isScanIaStartDate2Set() {
+		return scanIaStartDate2Set;
+	}
+	public boolean isScanImageAuditor2Set() {
+		return scanImageAuditor2Set;
 	}
 	public boolean isScanMachineIdSet() {
 		return scanMachineIdSet;

@@ -304,6 +304,16 @@ function setValueInDom(id, value){
    " box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);  " +
    " outline: 0 none;   " ;
 };
+/*
+function highlightInDom(id){
+	var elem = document.getElementById(id);
+	
+	//elem.className += " flickerText"; have to add inline to override other css
+	elem.style.cssText="color: blue; border-color: red;  xfont-weight:bold; " +
+   " box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);  " +
+   " outline: 0 none;   " ;
+};*/
+
 
 function processBookState(){
 	//get url (state) + user and then auto-populate and highlight text
@@ -335,14 +345,28 @@ function processBookState(){
 			setValueInDom("scan_complete_date", "");
 			break;
 		case "/scan/auditReady":
-			setValueInDom("scanImageAuditor", user);
-			//setValueInDom("scan_ia_start_date", getCurrentTimestamp());
-			setValueInDom("scan_ia_start_date", "");
+
+			
+			var scanIaStart1 = document.getElementById("scan_ia_start_date").value;
+			if(scanIaStart1==null || scanIaStart1==''){
+				setValueInDom("scanImageAuditor", user);
+				//setValueInDom("scan_ia_start_date", getCurrentTimestamp());
+				setValueInDom("scan_ia_start_date", "");
+			}else{
+				setValueInDom("scan_ia_complete_date", "");
+			}
+			
 			break;
 		case "/scan/auditInProgress":
 			//setValueInDom("scanImageAuditor", user);
 			//setValueInDom("scan_ia_complete_date", getCurrentTimestamp());
-			setValueInDom("scan_ia_complete_date", "");
+			var scanIaStart2 = document.getElementById("scan_ia_start_date2").value;
+			if(scanIaStart2==null || scanIaStart2==''){
+				setValueInDom("scanImageAuditor2", user);
+				setValueInDom("scan_ia_start_date2", "");
+			}else{
+				setValueInDom("scan_ia_complete_date2", "");
+			}
 			break;
 		case "/scan/scanProblems":
 			break;

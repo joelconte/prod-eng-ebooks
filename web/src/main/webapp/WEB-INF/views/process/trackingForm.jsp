@@ -335,6 +335,18 @@ function validateFormData(){
 					<td><sf:input  id="files_sent_to_orem" path="filesSentToOrem" readonly="true" />
 					</td>
 					</tr>
+					<tr>
+					<td>${messages['trackingForm.ocrSite']}</td>
+					<td>
+						<c:if test="${isReadOnly == true}"><sf:input  path="site"  readonly="${isReadOnly}"   /></c:if>
+						<c:if test="${isReadOnly == false}">
+							<sf:select path="site" >
+								<sf:option value=""/>
+								<sf:options items="${ocrSites}" />
+							</sf:select>
+						</c:if>
+					</td>
+					</tr>
 					
 					<tr><td class="rowSpace"></td></tr>
 					<tr>

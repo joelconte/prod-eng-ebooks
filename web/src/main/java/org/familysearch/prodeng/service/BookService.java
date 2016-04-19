@@ -35,7 +35,7 @@ public interface BookService {
 	public List<List> getScanScanReadyTnsInfo(String location);
 	public List<List> getScanScanInProgressTnsInfo(String location);
 	public List<List> getScanAuditReadyTnsInfo(String location);
-	public List<List> getScanAuditInProgressTnsInfo(String location);
+	public List<List> getScanAuditReadyTnsInfo2(String location);
 	public List<List> getScanProcessedReadyForOremTnsInfo(String location);
 	public List<List> getScanProblemTnsInfo(String location);
 	
@@ -81,6 +81,8 @@ public interface BookService {
 	public List<String> getAllSites();
 	public List<String> getAllScanSites();
 	public List<String> getAllScanSitesIncludingInactive();
+	public List<String> getAllOcrSites();
+	public List<String> getAllOcrSitesIncludingInactive();
 	public List<String> getAllPropertyRights();
 	public List<String> getAllPublicationTypes();
 	public List<List> getAllBatchClasses();
@@ -235,6 +237,7 @@ public interface BookService {
 	public void migrateInternetArchiveMetadataToBookInsert( String tnList );
 	public void migrateInternetArchiveMetadataToBookUpdate( String tnList );
 	public void autoUpdateCopyrightSerialEtc(String tnList);
+	public void autoUpdateSkipStepsEtc(Book b, String skipTo);
 	public String getDuplicateTnsInMetadata(String tnList);
 	public String getDuplicateTnsInBook(String tnList);
 	public List<String> getDuplicateTnsInBookList(String tnList);
