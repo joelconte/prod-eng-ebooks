@@ -16,7 +16,7 @@
 
 	<properties>
 		<projectName>BookScan</projectName>
-		<jdkVersion>1.7</jdkVersion>
+		<jdkVersion>1.6</jdkVersion>
 		<contextRoot>/BookScan</contextRoot>
 		<appUrl>http://localhost:8080${contextRoot}</appUrl>
 	</properties>

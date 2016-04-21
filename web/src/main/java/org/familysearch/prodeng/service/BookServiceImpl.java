@@ -173,9 +173,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanProblemTnsInfo(String location){	
 		List tnList;
 		if(location == null || location.equals("") || location.equals("All Problems"))
-			tnList = getJdbcTemplate().query("select a.tn, q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num, scanned_by, a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX10RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, q.step,  a.status,  problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num, a.scanned_by,  b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q, book b where a.tn = q.tn and a.tn=b.tn ", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select a.tn, q.step, status, problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num, scanned_by  , a.solution_owner from TF_AllProblems  a , TFALL_0x_All_queues q  where a.solution_owner = ? and a.tn = q.tn", new Object[]{location},  new StringX10RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, q.step, a.status, a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num, a.scanned_by  , b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from TF_AllProblems  a , TFALL_0x_All_queues q , book b where a.solution_owner = ? and a.tn = q.tn  and a.tn=b.tn ", new Object[]{location},  new StringXRowMapper());
 		return tnList;
 	}
 	
@@ -275,9 +275,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessProblemTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals("") || location.equals("All Sites"))
-			tnList = getJdbcTemplate().query("select   a.tn, q.step, a.site, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num , a.solution_owner from TF_AllProblems a , TFALL_0x_All_queues q where a.tn = q.tn ", new StringX11RowMapper());
+			tnList = getJdbcTemplate().query("select   a.tn, q.step, a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,  b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from TF_AllProblems a , TFALL_0x_All_queues q , book b where a.tn = q.tn and a.tn=b.tn ", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select   a.tn, q.step, a.site, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num ,  a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn and a.solution_owner = ?", new Object[]{location},  new StringX11RowMapper());
+			tnList = getJdbcTemplate().query("select   a.tn, q.step, a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,   b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q, book b where a.tn = q.tn and a.tn=b.tn and a.solution_owner = ?", new Object[]{location},  new StringXRowMapper());
 		
 		return tnList;
 	}
@@ -286,7 +286,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override
 	public List<List> getAdminProblemTnsInfo(){
-		List tnList = getJdbcTemplate().query("select a.tn,   q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_num,  a.solution_owner from tf_allproblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX9RowMapper());
+		List tnList = getJdbcTemplate().query("select a.tn,   q.step,  a.status,  a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num,  b.scanned_by  , b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a, TFALL_0x_All_queues q  , book b where a.tn = q.tn  and a.tn=b.tn ", new StringXRowMapper());
 		return tnList;
 	}
 	
@@ -7440,7 +7440,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
 	public void saveUpdatedColumnValue(String tnList, String columnName, String newValue){
 		String inClause = generateInClause("tn", tnList);
+		
 		String sql1 = "UPDATE book SET " + columnName + " = '" + newValue + "' where " + inClause;
+		if(newValue.equals("")) {
+			sql1 = "UPDATE book SET " + columnName + " = null where " + inClause;
+		}
+		
 		try {
 			getJdbcTemplate().update(sql1);
 		}catch(Exception e) {

@@ -53,7 +53,7 @@ $( "#scan_ia_start_date2" ).datepicker();
 $( "#scan_ia_complete_date2" ).datepicker();
 $( "#metadata_complete" ).datepicker();
 $( "#files_sent_to_orem" ).datepicker();
-$( "#pull_date" ).datepicker();
+
 
 $( "#scan_start_date" ).blur( validateDateData );
 $( "#scan_complete_date" ).blur( validateDateData );
@@ -63,7 +63,7 @@ $( "#scan_ia_start_date2" ).blur( validateDateData );
 $( "#scan_ia_complete_date2" ).blur( validateDateData );
 $( "#metadata_complete" ).blur( validateDateData );
 $( "#files_sent_to_orem" ).blur( validateDateData );
-$( "#pull_date" ).blur( validateDateData );
+
 setTimeout(processBookState, 100);
 displayBookNotFoundMsg();
 });
@@ -85,6 +85,7 @@ function validateFormData(){
 	
 	return true;//valid data
 };
+
 
 </script>
 
@@ -324,12 +325,6 @@ function validateFormData(){
 				<td id="col2" class="colPadding" style="vertical-align: top;">
 					<table>
 					<tr>
-					<td>${messages['trackingForm.pullDate']}</td>
-					<td><sf:input id="pull_date" path="pullDate" readonly="${isReadOnly}" />
-						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('pull_date'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
-					</td>
-					</tr>
-					<tr>
 					<td>${messages['trackingForm.requestingLocation']}</td>
 					<td>
 						<c:if test="${true}"><sf:input path="requestingLocation"  readonly="true"   /></c:if>
@@ -360,7 +355,7 @@ function validateFormData(){
 					</tr>
 					<tr>
 					<td>${messages['trackingForm.scanMachineId']}</td>
-					<td><sf:input path="scanMachineId" readonly="${isReadOnly}" /></td>
+					<td><sf:input id="scan_machine" path="scanMachineId" readonly="${isReadOnly}" /></td>
 					</tr>
 					<tr>
 					<td>${messages['trackingForm.scanDate']}</td>
@@ -377,7 +372,7 @@ function validateFormData(){
 					<tr><td class="rowSpace"></td></tr>
 					<tr>
 					<td>${messages['trackingForm.scanNumOfPages']}</td>
-					<td><sf:input  path="scanNumOfPages" readonly="${isReadOnly}" /></td>
+					<td><sf:input id="scan_num_of_pages" path="scanNumOfPages" readonly="${isReadOnly}" /></td>
 					</tr>
 					<tr><td class="rowSpace"></td></tr>
 					<tr>

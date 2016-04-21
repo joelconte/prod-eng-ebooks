@@ -313,6 +313,7 @@ function highlightInDom(id){
    " box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);  " +
    " outline: 0 none;   " ;
 };*/
+ 
 
 
 function processBookState(){
@@ -336,8 +337,8 @@ function processBookState(){
 			//setValueInDom("scan_start_date", getCurrentTimestamp());
 			setValueInDom("scan_start_date", "");
 			setValueInDom("scanned_by", scannedBy);//Cathy req
-			setValueInDom("pull_date", "");//102014
-		
+			setValueInDom("scan_machine", "");	
+			setValueInDom("scan_num_of_pages", "");	
 			break;
 		case "/scan/scanInProgress":
 	 
@@ -413,6 +414,7 @@ function processBookState(){
 			break;
 	}
 }
+
 
 function doubleCheckDelete(){
 	var deleteit = confirm("Are you sure you want to DELETE this book?");

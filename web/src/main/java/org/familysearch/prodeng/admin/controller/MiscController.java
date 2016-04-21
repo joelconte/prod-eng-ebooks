@@ -49,6 +49,9 @@ public class MiscController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("problemDate", null, locale));
 		labels.add(messageSource.getMessage("problemInitials", null, locale));		
 		labels.add(messageSource.getMessage("callNumber", null, locale));
+		labels.add(messageSource.getMessage("scanningLocation", null, locale));
+		labels.add(messageSource.getMessage("scanDate", null, locale));
+		labels.add(messageSource.getMessage("sentToOcr", null, locale));
 		labels.add(messageSource.getMessage("solutionOwner", null, locale));
  
 		model.addAttribute("pageTitle", messageSource.getMessage("admin.pageTitle.problems", null, locale));
@@ -132,7 +135,6 @@ public class MiscController implements MessageSourceAware{
 		return "redirect:receivedNotes"; //redirect get - guard against refresh-multi-updates and also update displayed url
 
 	}
-	 
 	//do insert of pasted tn data for use in receivedNotes page
 	@RequestMapping(value="admin/doReceivedNotesInsertTns", method=RequestMethod.POST)
 	public String doInsertTnsReceivedNotesPost(String button, String tnData, Model model) {

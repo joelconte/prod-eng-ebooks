@@ -46,7 +46,10 @@
 			<a href="backupAdmin" id="a10">${messages['admin.backupAdmin']}</a>
 			</td></tr>
 			<tr><td>
-			<a href="viewingReports" id="a11">${messages['admin.addViewingReport']}</a>
+			<a href="jacobsTool" id="a11">${messages['admin.jacobsTool']}</a>
+			</td></tr>
+			<tr><td>
+			<a href="viewingReports" id="a12">${messages['admin.addViewingReport']}</a>
 			</td></tr>
 			</table>
 		</form>
