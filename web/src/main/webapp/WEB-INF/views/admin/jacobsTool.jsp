@@ -11,7 +11,7 @@
 	  <%@include file="/WEB-INF/views/includes/adminMenu.html"%>
 	 
 		<h1 class="serif">Jacobs Tool</h1>
-	    <a href="JacobsTool.zip">Download</a>	
+	    <a href="../jacobsTool/JacobsTool.zip">Download</a>	
 	  
     </div>
  

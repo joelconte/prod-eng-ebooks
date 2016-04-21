@@ -22,7 +22,7 @@ public class JacobsToolController {
 	@RequestMapping(value="admin/jacobsTool", method=RequestMethod.GET)
 	public String getJacobsTool(HttpServletRequest req, Model model, Locale locale) {
 	 
-		return "jacobsTool/jacobsTool";//launch jsp that contains applet
+		return "admin/jacobsTool";//launch jsp that contains applet
 	}
  
 
