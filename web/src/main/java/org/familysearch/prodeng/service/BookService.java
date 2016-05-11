@@ -49,6 +49,7 @@ public interface BookService {
 	public List<List> getProcessPdfInProgressTnsInfo(String location);
 	public List<List> getProcessProblemTnsInfo(String location);
 	
+	public List<List> getCatalogProblemTnsInfo();
 	public List<List> getAdminProblemTnsInfo();
 	public List<List> getAdminPdfDateNoReleaseDateTnsInfo();
 	public List<List> getAdminReceivedNotesTnsInfo();

@@ -22,6 +22,9 @@
 			<a href="adminProblems" id="a2">${messages['admin.problems']}</a>
 			</td></tr>
 			<tr><td>
+			<a href="catalogProblems" id="a2">${messages['catalog.problems']}</a>
+			</td></tr>
+			<tr><td>
 			<a href="receivedNotes" id="a3">${messages['admin.received']}</a>
 			</td></tr>
 			<tr><td>

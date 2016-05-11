@@ -57,10 +57,49 @@ public class MiscController implements MessageSourceAware{
 		model.addAttribute("pageTitle", messageSource.getMessage("admin.pageTitle.problems", null, locale));
 		model.addAttribute("colLabels", labels);
 		model.addAttribute("allTnsInfo", bookService.getAdminProblemTnsInfo()); 
-		return "admin/miscBookList";
-	}
-	  
 
+		//buttons
+		List<List<String>> buttons = new ArrayList<List<String>>();
+		List<String> details = new ArrayList<String>();
+		details.add("exportButton");
+		details.add(messageSource.getMessage("createExcelFile", null, locale));
+		buttons.add(details);
+		model.addAttribute("buttons", buttons);
+
+		return "admin/miscButtonAndTableForm";
+	} 
+
+	@RequestMapping(value="admin/catalogProblems", method=RequestMethod.GET)
+	public String getCatalogProblems(Model model, Locale locale) {
+		List<String> labels = new ArrayList<String>();
+		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("step", null, locale));
+		labels.add(messageSource.getMessage("problemStatus", null, locale));
+		labels.add(messageSource.getMessage("problemReason", null, locale));
+		labels.add(messageSource.getMessage("problemText", null, locale));	
+		labels.add(messageSource.getMessage("problemDate", null, locale));
+		labels.add(messageSource.getMessage("problemInitials", null, locale));		
+		labels.add(messageSource.getMessage("callNumber", null, locale));
+		labels.add(messageSource.getMessage("scanningLocation", null, locale));
+		labels.add(messageSource.getMessage("scanDate", null, locale));
+		labels.add(messageSource.getMessage("sentToOcr", null, locale));
+		labels.add(messageSource.getMessage("solutionOwner", null, locale));
+ 
+		model.addAttribute("pageTitle", messageSource.getMessage("catalog.pageTitle.problems", null, locale));
+		model.addAttribute("colLabels", labels);
+		model.addAttribute("allTnsInfo", bookService.getCatalogProblemTnsInfo()); 
+		
+		//buttons
+		List<List<String>> buttons = new ArrayList<List<String>>();
+		List<String> details = new ArrayList<String>();
+		details.add("exportButton");
+		details.add(messageSource.getMessage("createExcelFile", null, locale));
+		buttons.add(details);
+		model.addAttribute("buttons", buttons);
+
+		return "admin/miscButtonAndTableForm";
+	}
+	
 	////////////receivedNotes start//////////////
 	@RequestMapping(value="admin/receivedNotes", method=RequestMethod.GET)
 	public String getReceivedNotes(Model model, Locale locale) {

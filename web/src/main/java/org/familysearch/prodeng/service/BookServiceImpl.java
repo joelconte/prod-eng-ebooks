@@ -289,6 +289,12 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		List tnList = getJdbcTemplate().query("select a.tn,   q.step,  a.status,  a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num,  b.scanned_by  , b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a, TFALL_0x_All_queues q  , book b where a.tn = q.tn  and a.tn=b.tn ", new StringXRowMapper());
 		return tnList;
 	}
+
+	@Override
+	public List<List> getCatalogProblemTnsInfo(){
+		List tnList = getJdbcTemplate().query("select a.tn,   q.step,  a.status,  a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num,  b.scanned_by  , b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a, TFALL_0x_All_queues q  , book b where a.tn = q.tn  and a.tn=b.tn and a.solution_owner = 'Publishing' ", new StringXRowMapper());
+		return tnList;
+	}
 	
 	@Override
 	public List<List> getAdminPdfDateNoReleaseDateTnsInfo(){

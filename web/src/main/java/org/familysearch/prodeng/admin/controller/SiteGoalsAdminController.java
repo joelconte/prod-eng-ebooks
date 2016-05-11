@@ -101,7 +101,6 @@ public class SiteGoalsAdminController implements MessageSourceAware{
 			bookService.deleteSelectedSiteGoals(tnList);
 		} 
  
-		//should not happen
 		return "redirect:siteGoalsAdmin"; //redirect get - guard against refresh-multi-updates and also update displayed url
 	}
 	
