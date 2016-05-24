@@ -58,6 +58,7 @@ public class MiscController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("recordNumber", null, locale));
 		labels.add(messageSource.getMessage("title", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
+		labels.add(messageSource.getMessage("owningInstitution", null, locale));
 		labels.add(messageSource.getMessage("requestingLocation", null, locale));
 		labels.add(messageSource.getMessage("scanningLocation", null, locale));
 		labels.add(messageSource.getMessage("dateEntered", null, locale));
