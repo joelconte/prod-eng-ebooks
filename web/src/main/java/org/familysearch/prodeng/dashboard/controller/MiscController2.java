@@ -8,8 +8,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,21 +44,23 @@ public class MiscController2 implements MessageSourceAware{
 	public String get(HttpServletRequest req, Model model, Locale locale) {
 		
 		String year = req.getParameter("year");
-		String month = req.getParameter("month");
+		//String month = req.getParameter("month");
 		String startDate = "";
 		String endDate = "";
  		String endDateYMD = "";
 		int daysDiff = 0;//
-		if(year != null && month != null) {
+		int endMonthInt = 0;
+		if(year != null) {		
 			int yearInt = Integer.parseInt(year);
-			int monthInt = Integer.parseInt(month);
+			Calendar cal = Calendar.getInstance();
+			int monthInt = cal.get(Calendar.MONTH) + 1;
 			startDate = "01/01/" + year;
 			GregorianCalendar gcStartOfYear = new GregorianCalendar(yearInt, 0, 1);//jan 1 of year selected
 			
 			GregorianCalendar gc = new GregorianCalendar(yearInt, monthInt-1, 1);
 			gc.add(Calendar.MONTH, 1);//add 1 month
 			gc.add(Calendar.DAY_OF_MONTH, -1);//subtract 1 day since endDate is inclusive
-			int endMonthInt = gc.get(Calendar.MONTH)+1;
+			endMonthInt = gc.get(Calendar.MONTH)+1;
 			int endDayInt = gc.get(Calendar.DAY_OF_MONTH);
 			int endYearInt = gc.get(Calendar.YEAR);
 			String dd = String.valueOf(endDayInt);
@@ -80,7 +84,7 @@ public class MiscController2 implements MessageSourceAware{
 			GregorianCalendar gc = new GregorianCalendar(yearInt, monthInt-1, 1);
 			gc.add(Calendar.MONTH, 1);//add 1 month
 			gc.add(Calendar.DAY_OF_MONTH, -1);//subtract 1 day since endDate is inclusive
-			int endMonthInt = gc.get(Calendar.MONTH)+1;
+			endMonthInt = gc.get(Calendar.MONTH)+1;
 			int endDayInt = gc.get(Calendar.DAY_OF_MONTH);
 			int endYearInt = gc.get(Calendar.YEAR);
 			String dd = String.valueOf(endDayInt);
@@ -95,67 +99,38 @@ public class MiscController2 implements MessageSourceAware{
 			
 			//set jsp vars for current year/month
 			year = String.valueOf(yearInt);
-			month = String.valueOf(monthInt);
+			//month = String.valueOf(monthInt);
 		}
 		
 		model.addAttribute("pageTitle", messageSource.getMessage("dashboard.dashboardPageTitle", null, locale));
 		List<String> sites =  bookService.getAllSites();
 		model.addAttribute("allLocations",sites);
 		String site = req.getParameter("site");
+		if(site==null) {
+			site = "All Sites";
+		}
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("endDate", endDate);
 		model.addAttribute("year", year);
-		model.addAttribute("month", month);
+		//model.addAttribute("month", month);
 		model.addAttribute("site", site);
 		String productionData[][];
 		
 	 
 	
 
-		/////Goal Actual Pie Charts
-		List data = bookService.getGoalsAndActuals(year, endDateYMD, site);//6 elements goal, scan, process, publish, ready-to-process, ready-to-publish
-		if(data.size() == 6) {
-			//some can be 0
-			int goal =  Integer.parseInt((String)data.get(0));
-			int scanActual =  Integer.parseInt((String)data.get(1));
-			int processActual =  Integer.parseInt((String)data.get(2));
-			int publishActual =  Integer.parseInt((String)data.get(3));
-			int scanToDo = goal - scanActual;
-			int processToDo = goal - processActual;
-			int publishToDo = goal - publishActual;
-			
-			//two 3rd column piechart data
-			int readyToProcess =  Integer.parseInt((String)data.get(4));//imgcount of scan-done and wating to process
-			int readyToPublish =  Integer.parseInt((String)data.get(5));//imgcount of process-done and wating to publish
-
-			 
-			
-			if(scanToDo < 0)
-				scanToDo = 0;
-			if(processToDo < 0)
-				processToDo = 0;
-			if(publishToDo < 0)
-				publishToDo = 0;
-			model.addAttribute("goal", goal);
-			model.addAttribute("scanToDo", scanToDo);//scan todo =goal - scanActual;
-			model.addAttribute("scanActual", scanActual);
-			model.addAttribute("processToDo", processToDo);//goal - processActual;
-			model.addAttribute("processActual", processActual);
-			model.addAttribute("publishToDo", publishToDo);//goal - publishActual;
-			model.addAttribute("publishActual", publishActual);
-			//model.addAttribute("readyTofcess", readyToProcess);//scaning done and waiting to process
-			//model.addAttribute("readyToPublish", readyToPublish);//processing done and waiting to publish
-			
-			//piecharts on 3rd col - actual results awaiting to be processed
-			//can be calculated from above data
-			//model.addAttribute("processedOfScannedToDo", scanActual);//count of images scanned
-			model.addAttribute("readyToProcess", readyToProcess);//count of images processed/ocr'd
-			
-			//piecharts on 3rd col - actual results  awaiting to be publish
-			//can be calculted from above data
-		//	model.addAttribute("publishedOfProcessedToDo", processActual);//count of images processed in prev pie
-			model.addAttribute("readyToPublish", readyToPublish);//count of images published
+		/////YTDGoal and YTDscan and YTDpublish Actual Pie Charts
+		List<List>  data = bookService.getGoalsAndActuals(year, endMonthInt, endDateYMD, site);// list of rows(site,YTDGoal,scanYTD,scanYTDTodo,publishYTD,publishYTDTodo) 
+	 	//convert List<List> to js 2-dim array string
+		String twoDimArrayStr = "[";
+		for(List r : data) {
+			String a = "['" + r.get(0) + "'," + r.get(1) + "," + r.get(2) + "," + r.get(3) + "," + r.get(4) + "," + r.get(5) + "],";
+			twoDimArrayStr += a;
 		}
+		twoDimArrayStr = twoDimArrayStr.substring(0, twoDimArrayStr.length()-1) + "]";//trim comma
+		
+		model.addAttribute("twoDimArrayStr",  twoDimArrayStr); 
+		model.addAttribute("ytdPiesCount",  data.size()); 
  
 
 		/////Open Issues
@@ -197,6 +172,7 @@ public class MiscController2 implements MessageSourceAware{
 		
  
 		//big chart
+		/* removed
 		String[][] goalData = bookService.getDashboardByMonthDataScanProcessPublish(startDate, endDate, site, daysDiff);
 		//model.addAttribute("goalsLabels", "[ \"3/4\", \"February\", \"March\", \"April\", \"May\", \"une\", \"July\" ]");
 		//model.addAttribute("goals","[ 65, 59, 90, 81, 56, 55, 40 ]");
@@ -207,11 +183,87 @@ public class MiscController2 implements MessageSourceAware{
 		model.addAttribute("scanActuals", goalData[0][1]);
 		model.addAttribute("processActuals", goalData[0][2]);
 		model.addAttribute("publishActuals", goalData[0][3]);
+		*/
+		
+		 //calls valid for: Site, "all sites", "allFhc", "allPartnerLibs", "allInternetArchives"
+		String[][] horizontalLineDataOneSite;
+		String[][] horizontalLineDataFHL;
+		String[][] horizontalLineDataPartnerLibraries;
+		String[][] horizontalLineDataInternetArchive;
+		String horizontalLineDataOneSiteString = null;
+		String horizontalLineDataFHLString = null;
+		String horizontalLineDataPartnerLibrariesString = null;
+		String horizontalLineDataInternetArchiveString = null;
+		
+		if("All Sites".equals(site)) {
+			 
+			horizontalLineDataFHL = bookService.getDashboarDataYTDScanPublish(startDate, endDate, "allFhc", daysDiff);
+			horizontalLineDataPartnerLibraries = bookService.getDashboarDataYTDScanPublish(startDate, endDate, "allPartnerLibs", daysDiff);
+			horizontalLineDataInternetArchive = bookService.getDashboarDataYTDScanPublish(startDate, endDate, "allInternetArchives", daysDiff);
 
+			horizontalLineDataFHLString = arraysToString(horizontalLineDataFHL);
+			horizontalLineDataPartnerLibrariesString = arraysToString(horizontalLineDataPartnerLibraries);
+			horizontalLineDataInternetArchiveString = arraysToString(horizontalLineDataInternetArchive);
+			model.addAttribute("horizontalLineDataFHL", horizontalLineDataFHLString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
+			model.addAttribute("horizontalLineDataPartnerLibraries", horizontalLineDataPartnerLibrariesString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
+			model.addAttribute("horizontalLineDataInternetArchive", horizontalLineDataInternetArchiveString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
+			model.addAttribute("horizontalLineDataOneSite", "[]");//send flag //dummy for js
+		}else {
+			horizontalLineDataOneSite = bookService.getDashboarDataYTDScanPublish(startDate, endDate, site, daysDiff);
+			horizontalLineDataOneSiteString = arraysToString(horizontalLineDataOneSite);
+			model.addAttribute("horizontalLineDataOneSite", horizontalLineDataOneSiteString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
+			model.addAttribute("horizontalLineDataFHL", "[]"); //send flag //dummy for js
+			model.addAttribute("horizontalLineDataPartnerLibraries", "[]"); //send flag //dummy for js
+			model.addAttribute("horizontalLineDataInternetArchive", "[]");//send flag //dummy for js
+		}
 		
 		return "dashboard/dashboardPage2";
 	}
 
+	public String arraysToString(String[][] a) {
+		Map<String, String> months = new HashMap<String,String>();
+		months.put("1", "'Jan'");
+		months.put("2", "'Feb'");
+		months.put("3", "'Mar'");
+		months.put("4", "'Apr'");
+		months.put("5", "'May'");
+		months.put("6", "'Jun'");
+		months.put("7", "'Jul'");
+		months.put("8", "'Aug'");
+		months.put("9", "'Sep'");
+		months.put("10", "'Oct'");
+		months.put("11", "'Nov'");
+		months.put("12", "'Dec'");
+		//first array is just dummy labels that are not currently displayed, but required to be in array
+		String retVal = "[";//['xMonth', 'xScan', 'xPublish', 'xGoal'], ";
+		int aLen = a.length;
+		for(int y = 0; y<aLen; y++) {
+			if(a[y][0]==null) {
+				break;//array is padded with nulls at end
+			}
+			retVal += "[";
+			for(int x=0; x< 4; x++) {
+				if(x==0 && y!=0) {//y=0 are labels
+					retVal += months.get(a[y][x]) + ",";
+				}else {
+					/*if(a[y][x].equals("0"))
+					{
+						retVal += "1,";//in order to show a line, use 1 as count
+					}else {*/
+						retVal += a[y][x] + ",";
+					 
+				}
+			}
+			retVal = retVal.substring(0, retVal.length()-1);//rem comma
+			retVal += "],";
+		}
+		retVal = retVal.substring(0, retVal.length()-1);//rem comma
+		retVal += "]";
+		
+		return retVal;
+		
+	}
+	
 	@RequestMapping(value="dashboard/dashboardPage2", method=RequestMethod.POST)
 	public String post(HttpServletRequest req, Model model, Locale locale) {
 		return get(req, model, locale);

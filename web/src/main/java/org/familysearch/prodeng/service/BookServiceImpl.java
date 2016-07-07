@@ -5126,7 +5126,66 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		return newArray;
 	}
 	
+ 
+	@Override 
+	public String[][] getDashboarDataYTDScanPublish( String startDate, String endDate, String site, int daysDiff){
 
+		String startDateYearFirst, endDateYearFirst;
+		
+
+		//order for alphabetical ordering of strings
+		//startDate
+		String yS, mS, dS;
+		int i1 = startDate.indexOf("/");
+		mS = startDate.substring(0, i1);
+		String rem = startDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dS = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yS = rem;
+		if(dS.length()==1)
+			dS = "0" + dS;
+		if(mS.length()==1)
+			mS = "0" + mS;
+
+		startDateYearFirst = yS + "/"+ mS + "/" + dS;
+
+
+		//order for alphabetical ordering of strings
+		//endDate
+		String yE, mE, dE;
+		i1 = endDate.indexOf("/");
+		mE = endDate.substring(0, i1);
+		rem = endDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		endDateYearFirst = yE + "/"+ mE + "/" + dE;
+
+		List<String> dates = getDateSlicesByMonthly(yS, mS, dS, yE, mE, dE); //slices are 1 month long  
+		String[][] ret =  new String[12][4]; 
+		
+		//allFhc allPartnerLibs
+		if(site == null  || site.equals("") || site.equals("All Sites"))
+		{			
+			//1/////////////////////////////////////////////////
+			runQueryForYTDByMonth(dates, startDateYearFirst, endDateYearFirst, "all", ret);
+
+		}else {
+			
+			//1/////////////////////////////////////////////////
+			runQueryForYTDByMonth(dates, startDateYearFirst, endDateYearFirst, site, ret);
+		}
+		 
+		return ret;
+	}
+
+	//method not used anymore
 	@Override 
 	public String[][] getDashboardByMonthDataScanProcessPublish( String startDate, String endDate, String site, int daysDiff){
 		//model.addAttribute("goalsLabels", "[ \"3/4\", \"February\", \"March\", \"April\", \"May\", \"une\", \"July\" ]");
@@ -7003,6 +7062,187 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	}
 	
 
+	public void runQueryForYTDByMonth(List<String> dates, String startDateYearFirst, String endDateYearFirst, String site, String[][] retArray) {
+		String monthlyGoal = String.valueOf(getGoalBySite(startDateYearFirst.substring(0, 4), site) / 12);
+		
+		List<List> vals = null;
+		 
+		//labels are dummy labels and not showen on page, but needed for chart library
+		retArray[0][0] = "'Month'";
+		retArray[0][1] = "'Scan'";
+		retArray[0][2] = "'Publish'";
+		retArray[0][3] = "'Goal'";
+	
+		/*generate string array for chart of scanned */
+		String allSql = "";
+
+		if(site.equals("allFhc")) {
+			vals = getJdbcTemplate().query("SELECT tn,  scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}else if (site.equals("allPartnerLibs")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}else if (site.equals("allInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}/*else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}*/
+		else {
+			//specific site
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd')  from book where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper(), site);
+		}
+		
+		Iterator<List> rows = vals.iterator();
+		List<String> row = null;
+		if(rows.hasNext())
+			row = rows.next();
+		
+		Iterator i = dates.iterator();
+		i.next();//ok to skip first since it is covered in the query
+		int tnCountTotalAll = 0;//total for all time slices
+		int imgCountTotalAll = 0;//total for all time slices
+		int monthIndex = 0;
+		while(i.hasNext()) {
+			monthIndex++;//remember that 0 contains labels, so start off at 1
+			String queryE = (String)i.next(); 
+			int imgCountTotal = 0;//total per time slice
+			int tnCountTotal = 0;//total per time slice
+
+			  
+			do {
+				if(row != null && row.get(3).compareTo(queryE) < 0) {
+					//matched in this time slice
+					//get chart array here..
+					//calculate and reduction (averaging) if needed
+					String tn = (String)row.get(0);
+					//use scanpagecount or pagecount if it is null or 0
+					String scanPageCountStr = (String)row.get(1);
+					String pageCountStr = (String)row.get(2);
+					if(scanPageCountStr == null || scanPageCountStr.equals("0"))
+						scanPageCountStr = pageCountStr;
+					if(pageCountStr == null)
+						pageCountStr = "0";
+					tnCountTotal += 1;
+					int pageCount = Integer.valueOf(pageCountStr);
+					imgCountTotal += pageCount;
+				}else {
+					break;
+				}
+				
+				if(rows.hasNext())
+					row = rows.next();
+				else
+					row = null;
+				
+			}while(row!=null);
+			retArray[monthIndex][0] = String.valueOf(monthIndex);
+			String imgCountStr = String.valueOf(imgCountTotal);	
+			retArray[monthIndex][1] = imgCountStr;//elem 1 is scan page counts
+			retArray[monthIndex][3] = monthlyGoal;//3 is goal monthly
+		}
+		
+ 
+
+		/*generate string array for chart of published */
+		allSql = "";
+		
+		if(site.equals("allFhc")) {
+			vals = getJdbcTemplate().query("SELECT tn,   num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allPartnerLibs")) {
+			vals = getJdbcTemplate().query("SELECT tn,  num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn,  num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}/*else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}*/
+		else {
+			//specific site
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd')  from book where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper(), site);
+		}
+		
+		rows = vals.iterator();
+		row = null;
+		if(rows.hasNext())
+			row = rows.next();
+		
+		i = dates.iterator();
+		i.next();//ok to skip first since it is covered in the query
+		tnCountTotalAll = 0;//total for all time slices
+		imgCountTotalAll = 0;//total for all time slices
+		monthIndex = 0;
+		while(i.hasNext()) {
+			monthIndex++;//remember that 0 contains labels, so start off at 1
+			String queryE = (String)i.next(); 
+			int imgCountTotal = 0;//total per time slice
+			int tnCountTotal = 0;//total per time slice
+		
+			  
+			do {
+				if(row != null && row.get(2).compareTo(queryE) < 0) {
+					//matched in this time slice
+					//get chart array here..
+					//calculate and reduction (averaging) if needed
+					String tn = (String)row.get(0);
+				 
+					String pageCountStr = (String)row.get(1);
+			
+					if(pageCountStr == null)
+						pageCountStr = "0";
+					tnCountTotal += 1;
+					int pageCount = Integer.valueOf(pageCountStr);
+					imgCountTotal += pageCount;
+				}else {
+					break;
+				}
+				
+				if(rows.hasNext())
+					row = rows.next();
+				else
+					row = null;
+				
+			}while(row!=null);
+			
+			String imgCountStr = String.valueOf(imgCountTotal);	
+			retArray[monthIndex][2] = imgCountStr;//elem 2 is publish page counts
+		}
+ 
+	 
+		return;// retArray;
+	
+	}
+
+	/*
+	 * 
+	 * Gets goals for: Site, "all sites", "allFhc", "allPartnerLibs", "allInternetArchives"
+	 */
+	public int getGoalBySite(String year, String site) {
+		 
+		if(site == null || site.equalsIgnoreCase("") || site.equalsIgnoreCase("all sites")) {
+			site = "all";
+		}
+		String allSql = "";
+		ArrayList returnList = new ArrayList<String>();   
+
+		//get goals
+		if ("all".equals(site)) {
+			allSql += "SELECT goal_images_yearly, year from site_goal  where year = '" + year + "' and site = 'All Sites'"; 
+		}else if ("allFhc".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.is_fhc = 'T' and year = '" + year + "'";
+		}else if ("allPartnerLibs".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.is_partner_institution = 'T' and year = '" + year + "'";
+		}else if ("allInternetArchives".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.id like 'Internet%' and year = '" + year + "'";
+		}else {
+			allSql += "SELECT goal_images_yearly, year from site_goal  where year = '" + year + "' and site = '" + site + "'";
+		}
+		 
+		List<List> vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
+		if(vals.size() != 0 && vals.get(0).get(0) != null) {
+			return Integer.parseInt((String)vals.get(0).get(0));
+		}else {
+			return 0;
+		}
+	}
+	
+
 	public void runQueryForScanByMonth(List<String> dates, String startDateYearFirst, String endDateYearFirst, String site, String[][] ret,  int arrayIndex, int daysDiff) {
 	
 		List<List> vals = null;
@@ -7237,108 +7477,124 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		ret[0][3] = arrayStrActualsPublish;
 	
 	}
+
+	
 	
 
+	//return list of rows(site,YTDGoal,scanYTD,scanYTDTodo,publishYTD,publishYTDTodo) 
 	@Override
-	public List getGoalsAndActuals(String year, String endDate, String site) {
-		//returns 6 elements goal, scan, process, publish, ready-to-process(incl previous years scanns), ready-to-publish(incl previous years scanns)
+	public List<List> getGoalsAndActuals(String year, int endMonthInt, String endDate, String site) {
+		
+		//returns 
 		if(site == null || site.equalsIgnoreCase("") || site.equalsIgnoreCase("all sites")) {
-			site = "all";
+			site = "All Sites";
 		}
 		String allSql = "";
-		ArrayList returnList = new ArrayList<String>();  //6 elements goal, scan, process, publish, scanned-but-not-processed, processed-but-not-published
+		ArrayList returnList = new ArrayList<String>(); 
 
-		//get goals
-		if ("all".equals(site)) {
-			allSql += "SELECT goal_images_yearly, year from site_goal  where year = '" + year + "' and site = 'All Sites'"; 
-		}else{
-			allSql += "SELECT goal_images_yearly, year from site_goal  where year = '" + year + "' and site = '" + site + "'";
+		if ("All Sites".equals(site)) {
+			//get goals- all sites that are active and leftouterjoin with goals if exist or 0 if not
+			allSql += "SELECT  a.id, COALESCE (b.goal_images_yearly, 0) from site a left outer join site_goal b on a.id=b.site and b.year = '" + year + "'  where   (a.is_inactive_site != 'T' or a.is_inactive_site is null) and a.id not in ( 'DNP', 'All Sites') order by a.id";
+		}else {
+			allSql += "SELECT  a.id, COALESCE (b.goal_images_yearly, 0) from site a left outer join site_goal b on a.id=b.site and b.year = '" + year + "'  where   (a.is_inactive_site != 'T' or a.is_inactive_site is null) and a.id = '" +site+ "' order by a.id";
 		}
-		 
+			
 		List<List> vals = getJdbcTemplate().query(allSql, new StringX2RowMapper());
 		if(vals.size() != 0 && vals.get(0).get(0) != null) {
-			returnList.add(vals.get(0).get(0));
-		}else {
-			returnList.add("0");
+			String allGoal = "0";
+
+			for(List g : vals) {
+				if(g.get(0).equals("All Sites")) {
+					allGoal = (String) g.get(1);
+				}
+				if(!g.get(1).equals("0")) {
+					int goalInt = Integer.valueOf( (String) g.get(1));
+					int goalMonthInt = (goalInt * endMonthInt) / 12;
+					g.set(1, String.valueOf(goalMonthInt));
+				}
+			}
 		}
+			/*
+			//for now, if no goal, then just set it to total goal so piechart will print
+			for(List g : goalVals) {
+				int goal = (Integer) g.get(1);
+				if(goal == 0) {
+					g.set(1, allGoal);
+				}
+			}*/
+			
 	
 		//actual results scan for THIS YEAR ONLY through month selected
 		allSql = "";
-		if ("all".equals(site)) {
-			allSql += "SELECT sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' ";
-		}else{
-			allSql += "SELECT sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' " + "' and scanned_by = '" + site + "'";
+		if ("All Sites".equals(site)) {
+			allSql += "SELECT scanned_by, coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0) from book a where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "'  group by scanned_by order by scanned_by";
+ 		}else{
+			allSql += "SELECT scanned_by, coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' " + " and scanned_by = '" + site + "'  group by scanned_by";
 		}
-		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
-		if(vals.size() != 0 && vals.get(0).get(0) != null) {
-			returnList.add(vals.get(0).get(0));
-		}else {
-			returnList.add("0");
+		List<List> valsScan = getJdbcTemplate().query(allSql, new StringX2RowMapper());
+		
+		//put in map for quicker retrieval and since some goal sites may not be in result site resultset 
+		Map<String, String> scanMap = new HashMap();
+		for(List s : valsScan) {
+			scanMap.put((String)s.get(0), (String)s.get(1));//scansite and scancomplete
 		}
+		for(List ret : vals) {
+			 
+				String scanCount = scanMap.get(ret.get(0));
+				if(scanCount != null) {
+					ret.add(2, scanCount);//insert SCAN results into vals List
+					Integer goalInt = Integer.parseInt((String)ret.get(1));
+					Integer scanInt = Integer.parseInt(scanCount);
+					if(goalInt<scanInt)
+						ret.add(3, "0");//0 left
+					else
+						ret.add(3, String.valueOf(goalInt - scanInt));//value left todo
+				}else {
+					ret.add(2, "0");//if scanresult site not in scanresult list
+					Integer goalInt = Integer.parseInt((String)ret.get(1));
+					ret.add(3, String.valueOf(goalInt - 0));//value left todo
+				}
 		 
-		//actual results processed/ocr THIS YEAR ONLY through month selected
-		allSql = "";
-		if ("all".equals(site)) {
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') = '" + year + "' and  to_char(date_released, 'yyyy/MM/dd') <= '" + endDate + "' ";
-		}else{
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy') = '" + year + "' and  to_char(date_released, 'yyyy/MM/dd') <= '" + endDate + "' " + "' and scanned_by = '" + site + "'";
-		}
-		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
-		if(vals.size() != 0 && vals.get(0).get(0) != null) {
-			returnList.add(vals.get(0).get(0));
-		}else {
-			returnList.add("0");
-		}
-		
-		//actual results publish THIS YEAR ONLY through month selected
-		allSql = "";
-		if ("all".equals(site)) {
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_loaded, 'yyyy') = '" + year + "' and to_char(date_loaded, 'yyyy/MM/dd') <= '" + endDate + "' ";
-		}else{
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_loaded, 'yyyy') = '" + year  + "' and to_char(date_loaded, 'yyyy/MM/dd') <= '" + endDate + "' " + "' and scanned_by = '" + site + "'";
-		}
-		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
-		if(vals.size() != 0 && vals.get(0).get(0) != null) {
-			returnList.add(vals.get(0).get(0));
-		}else {
-			returnList.add("0");
 		}
 
 		
-
-		//actual results awaiting to be processed (CAN BE FOR PREVIOUS YEARS SCANNED IMAGES)
-		//cannot be calculated from above data
+		//actual results publish for THIS YEAR ONLY through month selected
 		allSql = "";
-		if ("all".equals(site)) {
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' and date_released is null ";
-		}else{
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' and date_released is null and scanned_by = '" + site + "'";
+		if ("All Sites".equals(site)) {
+			allSql += "SELECT scanned_by, coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy') = '" + year + "' and to_char(date_loaded, 'yyyy/MM/dd') <= '" + endDate + "'  group by scanned_by order by scanned_by";
+ 		}else{
+			allSql += "SELECT scanned_by, coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy') = '" + year + "' and to_char(date_loaded, 'yyyy/MM/dd') <= '" + endDate + "' " + " and scanned_by = '" + site + "'  group by scanned_by";
 		}
-		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
-		if(vals.size() != 0 && vals.get(0).get(0) != null) {
-			returnList.add(vals.get(0).get(0));
-		}else {
-			returnList.add("0");
+		List<List> valsPublish = getJdbcTemplate().query(allSql, new StringX2RowMapper());
+		
+		//put in map for quicker retrieval
+		Map<String, String> publishMap = new HashMap();
+		for(List p : valsPublish) {
+			publishMap.put((String)p.get(0), (String)p.get(1));
+		}
+		for(List ret : vals) {
+			 
+				String publishCount = publishMap.get(ret.get(0));
+				if(publishCount != null) {
+					ret.add(3, publishCount);//insert PUB results into vals List
+					Integer goalInt = Integer.parseInt((String)ret.get(1));
+					Integer publishInt = Integer.parseInt(publishCount);
+					if(goalInt<publishInt)
+						ret.add(3, "0");//0 left
+					else
+						ret.add(3, String.valueOf(goalInt - publishInt));//value left todo
+				}else {
+					ret.add(3, "0");//insert PUB results into result List
+					Integer goalInt = Integer.parseInt((String)ret.get(1));
+					ret.add(3, String.valueOf(goalInt - 0));//value left todo
+				}
+			
 		}
 		
+	 
+		  
 		
-		//actual results  awaiting to be publish (CAN BE FOR PREVIOUS YEARS SCANNED IMAGES)
-		//cannot be calculted from above data
-		allSql = "";
-		if ("all".equals(site)) {
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy/MM/dd') <= '" + endDate + "' and date_loaded is null";
-		}else{
-			allSql += "SELECT sum(num_of_pages) from book a  where to_char(date_released, 'yyyy/MM/dd') <= '" + endDate + "' and date_loaded is null and scanned_by = '" + site + "'";
-		}
-		vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
-		if(vals.size() != 0 && vals.get(0).get(0) != null) {
-			returnList.add(vals.get(0).get(0));
-		}else {
-			returnList.add("0");
-		}
-		
-		
-		return returnList;
+		return vals;
 	}
 	
 	

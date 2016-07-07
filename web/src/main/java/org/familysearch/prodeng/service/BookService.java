@@ -303,8 +303,9 @@ public interface BookService {
 	public String[][] getDashboardGoalData( String startDate, String endDate, String site);
 	public String[][] getDashboardByMonthDataScanProcessPublish( String startDate, String endDate, String site, int daysDiff);
 	public List<List> getDashboardOpenIssues();
-	public List getGoalsAndActuals(String year, String endDate, String site);
-
+	public List<List> getGoalsAndActuals(String year, int endMonthInt, String endDate, String site);
+	public String[][] getDashboarDataYTDScanPublish( String startDate, String endDate, String site, int daysDiff);
+	
 	////end dashboard/////
 	//xml medatdata//
 	public boolean queryXmlMetadataOracle( String tn, String[][] mdValues, String[][] recordValues);

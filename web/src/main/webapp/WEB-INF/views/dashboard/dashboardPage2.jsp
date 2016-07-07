@@ -22,7 +22,7 @@
 		border: 2px solid white;
 		height: 20px;
 		padding-top: 5px;
-		width: 800px;
+		width: 500px;
 	}
 	.secondaryRowHeader{background-color: #DAEBBB;
 		border: 2px solid white;
@@ -56,7 +56,9 @@
   
 $(function() { 
     /////////////////////Chart.js
- 	//large graph  
+ 	
+    	/* removed
+    	//large graph  
  	 
 		var lineChartDataScan = {
 			labels : <c:out value="${xAxisLabels}"  escapeXml="false" />,
@@ -176,7 +178,9 @@ $(function() {
 				onAnimationComplete : null
 				
 			};
-    
+     
+       
+       
     	//three large line graphs
 		var myLineScan = new Chart(document.getElementById("canvas1").getContext("2d")).Line(lineChartDataScan, options);
 		var myLineProcess = new Chart(document.getElementById("canvas2").getContext("2d")).Line(lineChartDataProcess, options);
@@ -201,11 +205,98 @@ $(function() {
 		ctx.fillRect(20,10,70,2)
 		ctx.font = "16px Arial";
 		ctx.fillText("Publish",20,30);
+		*/
+		
 		
 		$("#start_date").datepicker();
 		$("#end_date").datepicker();
 
 	});
+</script>
+
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+//combo chart using google charts bar chart for monthly numbers - https://developers.google.com/chart/
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawVisualization);
+
+
+      function drawVisualization() {
+        // Some raw data (not necessarily accurate)
+        
+        var horizontalLineDataOneSite = <c:out value="${horizontalLineDataOneSite}" escapeXml="false" />;//these will be 2-dim array string, or 'none'
+        var horizontalLineDataFHL = <c:out value="${horizontalLineDataFHL}" escapeXml="false" />;
+        var horizontalLineDataPartnerLibraries = <c:out value="${horizontalLineDataPartnerLibraries}" escapeXml="false" />;
+        var horizontalLineDataInternetArchive = <c:out value="${horizontalLineDataInternetArchive}" escapeXml="false" />;
+       
+       /* horizontalLineData = [
+         ['xMonth', 'xScan',   'xPublish', 'xGoal'],
+         ['J',  165, 450, 214.6],
+         ['F',  135, 288, 214.6],
+         ['M',  157, 397, 214.6],
+         ['A',  139, 215, 214.6],
+         ['M',  136, 366, 214.6]
+     	 ];*/
+     	
+     	var dataOneSite = google.visualization.arrayToDataTable(horizontalLineDataOneSite);
+        var dataFHL = google.visualization.arrayToDataTable(horizontalLineDataFHL);
+     	var dataHorizontalLineDataPartnerLibraries = google.visualization.arrayToDataTable(horizontalLineDataPartnerLibraries);
+     	var dataHorizontalLineDataInternetArchive = google.visualization.arrayToDataTable(horizontalLineDataInternetArchive);
+
+
+    var options0 = {
+       legend: {position: 'none'},
+       orientation: 'vertical',
+       title : '<c:out value="${site}" escapeXml="false" />',
+       seriesType: 'bars',
+       series: {0: {color: 'blue'}, 1: {color: 'green'}, 2: {type: 'line'}}
+    };
+    var options1 = {
+      legend: {position: 'none'},
+      orientation: 'vertical',
+      title : 'FHCs and FHLs',
+      seriesType: 'bars',
+      series: {0: {color: 'blue'}, 1: {color: 'green'}, 2: {type: 'line'}}
+    };
+
+    var options2 = {
+      legend: {position: 'none'},
+      orientation: 'vertical',
+      title : 'Partner Libraries',
+      seriesType: 'bars',
+      series: {0: {color: 'blue'}, 1: {color: 'green'}, 2: {type: 'line'}}
+    };
+
+    var options3 = {
+      legend: {position: 'none'},
+      orientation: 'vertical',
+      title : 'Internet Archive',
+      seriesType: 'bars',
+      series: {0: {color: 'blue'}, 1: {color: 'green'}, 2: {type: 'line'}}
+    };
+    
+    
+    //horizontal line charts - left side
+    if(horizontalLineDataOneSite!=null && horizontalLineDataOneSite!=''){
+    	var chart = new google.visualization.ComboChart(document.getElementById('google_combo_div1'));
+        chart.draw(dataOneSite, options0);
+        document.getElementById('google_combo_div2').style.display = "none";
+        document.getElementById('google_combo_div3').style.display = "none";
+    }else{
+    	var chart = new google.visualization.ComboChart(document.getElementById('google_combo_div1'));
+        chart.draw(dataFHL, options1);
+        var chart = new google.visualization.ComboChart(document.getElementById('google_combo_div2'));
+        chart.draw(dataHorizontalLineDataPartnerLibraries, options2);
+        var chart = new google.visualization.ComboChart(document.getElementById('google_combo_div3'));
+        chart.draw(dataHorizontalLineDataInternetArchive, options3);
+    }
+   
+  
+
+  }
+
+
 </script>
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -223,121 +314,98 @@ $(function() {
       function drawChart() {
 
         // Create the scan data table.
-        var goal = <c:out value="${goal}"/>;
+        /*var goal = <c:out value="${goal}"/>;
         var goalStr = "";
         if(goal == 0){
         	goalStr = " - No Goal Exists for Site"
         }else{
         	goalStr = ""
+        }*/
+        
+        
+        //SCAN YTD 2nd column piecharts
+        
+        var siteCount = <c:out value="${ytdPiesCount}"   escapeXml="false" />;
+        //need to convert java list<list> into some sort of js datastructure
+        var ytdPies = <c:out value="${twoDimArrayStr}"  escapeXml="false" />;//js 2-dim array
+        
+        for(x=0;x<siteCount;x++){
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Books');
+            data.addColumn('number', 'Count');
+            data.addRows([
+              ['Goal Remaining',  ytdPies[x][3]],
+              ['Complete', ytdPies[x][2]]
+            ]);
+
+            //   Set chart options
+            var title = '';
+            if(ytdPies[x][1] > 0){
+            	title = ytdPies[x][0] + ' [' + ytdPies[x][2] + ' / ' + ytdPies[x][1] + ']'; //[complete/goal]
+            	var options = {'fontSize': 12,
+            			'title': title,
+                        'width':400,
+                        'height':150,
+                        colors: ['red', 'green'],
+                        chartArea: {left:16}};
+
+         		// Instantiate and draw our chart, passing in some options.
+        		var chartX = new google.visualization.PieChart(document.getElementById('ytd_scan_div'+x));
+        		chartX.draw(data, options);
+            }else{
+            	//no pie chart, just site name
+	            title = ytdPies[x][0] + ' [' + ytdPies[x][2] + ' / ' + ytdPies[x][1] + ']'; //[complete/goal]
+	            var elem = document.getElementById('ytd_scan_div'+x);
+	            elem.innerHTML = '<h6 style="padding-left: 15px; text-align: left;">'+title+'</h6>';
+	            
+            }
+            
+            
         }
+
+
+
+        //PUBLISHED
+        //  3rd column - piecharts
         
-        //SCAN
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Books');
-        data.addColumn('number', 'Count');
-        data.addRows([
-          ['Goal Remaining', <c:out value="${scanToDo}"/>],
-          ['Complete', <c:out value="${scanActual}"/>]
-        ]);
-
-        //  2nd column - Set chart options
-        var options = {'title':'YTD (selected) - Scan' + goalStr,
-                       'width':400,
-                       'height':200,
-                       colors: ['red', 'green']};
-
-        // Instantiate and draw our chart, passing in some options.
-        var chart1 = new google.visualization.PieChart(document.getElementById('chart_div1'));
-        chart1.draw(data, options);
+        siteCount = <c:out value="${ytdPiesCount}"   escapeXml="false" />;
+        //need to convert java list<list> into some sort of js datastructure
+        ytdPies = <c:out value="${twoDimArrayStr}"  escapeXml="false" />;//js 2-dim array
         
+        for(x=0;x<siteCount;x++){
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Books');
+            data.addColumn('number', 'Count');
+            data.addRows([
+              ['Goal Remaining',  ytdPies[x][5]],
+              ['Complete', ytdPies[x][4]]
+            ]);
 
+            //   Set chart options
+            var title = '';
+            if(ytdPies[x][1] > 0){
+            	title = ytdPies[x][0] + ' [' + ytdPies[x][4] + ' / ' + ytdPies[x][1] + ']'; //[complete/goal]
+            	var options = {'fontSize': 12,
+            			'title': title,
+                        'width':400,
+                        'height':150,
+                        colors: ['red', 'green'],
+                        chartArea: {left:16}};
 
-        //PROCESS
-        //  2nd column - Create the process data table.
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Books');
-        data.addColumn('number', 'Count');
-        data.addRows([
-          ['Goal Remaining', <c:out value="${processToDo}"/>],
-          ['Complete', <c:out value="${processActual}"/>]
-        ]);
-
-        // Set chart options
-        var options = {'title':'YTD (selected) - Processing and OCR' + goalStr,
-                       'width':400,
-                       'height':200,
-                       colors: ['red', 'green']};
-
-        // Instantiate and draw our chart, passing in some options.
-        var chart2 = new google.visualization.PieChart(document.getElementById('chart_div2'));
-        chart2.draw(data, options);
-        
-        
-
-        //PUBLISH
-        //  2nd column - Create the publish data table.
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Books');
-        data.addColumn('number', 'Count');
-        data.addRows([
-          ['Goal Remaining', <c:out value="${publishToDo}"/>],
-          ['Complete', <c:out value="${publishActual}"/>]
-        ]);
-
-        // Set chart options
-        var options = {'title':'YTD (selected) - Publish' + goalStr,
-                       'width':400,
-                       'height':200, 
-                       colors: ['red', 'green']};
-
-        // Instantiate and draw our chart, passing in some options.
-        var chart3 = new google.visualization.PieChart(document.getElementById('chart_div3'));
-        chart3.draw(data, options);
-    
-      
-      
-
-      //AWAITING PROCESSING
-      // 3rd column - Create the "awaiting to be processed" data table.
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Books');
-      data.addColumn('number', 'Count');
-      data.addRows([
-        ['Scanned and Waiting', <c:out value="${readyToProcess}"/>],
-        ['Complete', <c:out value="${processActual}"/>]
-      ]);
-
-      // Set chart options
-      var options = {'title':'YTD (selected) - Awaiting to be processed-OCR',
-                     'width':400,
-                     'height':200, 
-                     colors: ['red', 'green']};
-
-      // Instantiate and draw our chart, passing in some options.
-      var chart4= new google.visualization.PieChart(document.getElementById('chart_div4'));
-      chart4.draw(data, options);
-   
-    
-    
-	//AWAITING PUBLISHING
-    // 3rd column - Create the "awaiting to be published" data table.
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Books');
-    data.addColumn('number', 'Count');
-    data.addRows([
-      ['Waiting to be Published', <c:out value="${readyToPublish}"/>],
-      ['Complete', <c:out value="${publishActual}"/>]
-    ]);
-
-    // Set chart options
-    var options = {'title':'YTD (selected) - Awaiting to be published',
-                   'width':400,
-                   'height':200, 
-                   colors: ['red', 'green']};
-
-    // Instantiate and draw our chart, passing in some options.
-    var chart5 = new google.visualization.PieChart(document.getElementById('chart_div5'));
-    chart5.draw(data, options);
+         		// Instantiate and draw our chart, passing in some options.
+        		var chartX = new google.visualization.PieChart(document.getElementById('ytd_publish_div'+x));
+        		chartX.draw(data, options);
+            }else{
+            	//no pie chart, just site name
+	            title = ytdPies[x][0] + ' [' + ytdPies[x][4] + ' / ' + ytdPies[x][1] + ']'; //[complete/goal]
+	            var elem = document.getElementById('ytd_publish_div'+x);
+	            elem.innerHTML = '<h6 style="padding-left: 15px; text-align: left;">'+title+'</h6>';
+	            
+            }
+            
+            
+        }
+       
   };
   
 </script>
@@ -396,10 +464,16 @@ $(function() {
 			        <c:if test="${year != '2017'}"> <option>2017</option></c:if>
 			        <c:if test="${year == '2018'}"> <option selected="true">2018</option></c:if>
 			        <c:if test="${year != '2018'}"> <option>2018</option></c:if>
+			        <c:if test="${year == '2019'}"> <option selected="true">2019</option></c:if>
+			        <c:if test="${year != '2019'}"> <option>2019</option></c:if>
+			        <c:if test="${year == '2020'}"> <option selected="true">2020</option></c:if>
+			        <c:if test="${year != '2020'}"> <option>2020</option></c:if>
+			        <c:if test="${year == '2021'}"> <option selected="true">2021</option></c:if>
+			        <c:if test="${year != '2021'}"> <option>2021</option></c:if>
 			      
 				</select>
 				</th>
-				<th>${messages['month']}</th>
+				<!-- <th>${messages['month']}</th>
 				<th><select id="month" name="month">
 			   		 <c:if test="${month == '1'}"><option selected="true">1</option></c:if>
 			   		 <c:if test="${month != '1'}"><option>1</option></c:if>
@@ -427,9 +501,9 @@ $(function() {
 			   		 <c:if test="${month != '12'}"><option>12</option></c:if>
  
 				</select>
-				</th>
+				</th> -->
 				<th>&nbsp;&nbsp;
-		 		<select style="margin-bottom: 0px;" id="siteDropdown" name="site" >
+		 		<select   id="siteDropdown" name="site" >
 				 
 				 
 				<c:forEach var="i" items="${allLocations}">
@@ -439,61 +513,34 @@ $(function() {
 				</select>
 			</th>
 			<th>
-			 <button value="load" name="load" id="load">Refresh</button>
+			 <button value="load" name="load" id="load" style="margin-bottom: 7px;">Refresh</button>
 			</th>
 			</tr>		
 		</table>
 		
 		
 		<table> <tr><td style="padding-bottom: 340px;">
-			  
-			<!-- big graph -->
 			<table  class="mainRowHeader" >
 				<tr>
 			 		<td>
-			 			<h4 style="text-align:center; margin-bottom: 12px;">Image/page Counts from Beginning of Year Through Selected Month</h4>
+			 			<h4 style="text-align:center; margin-bottom: 12px;">YTD Scan and Publish counts</h4>
 			 		</td>
 	            </tr>
 		 	</table>
-		 	 
-		    <canvas id="canvas1" height="200" width="820"></canvas>
-			<canvas id="canvasLegend"  height="50"></canvas>   
-			<canvas id="canvas2" height="200" width="820"></canvas>
-			<canvas id="canvasLegend2" height="50"></canvas>   
-			<canvas id="canvas3" height="200" width="820"></canvas>
-			<canvas id="canvasLegend3" height="50"></canvas>   
- 
-			 	  
+			<div id="google_combo_div1" style="width: 400px; height: 300px;"></div>
+			<div id="google_combo_div2" style="width: 400px; height: 300px;"></div>
+			<div id="google_combo_div3" style="width: 400px; height: 300px;"></div>
 			 
-		</td>
-		
-		
-		<!-- percent of goals scanned,processed,published pie charts here -->
-		<td style="padding-left: 6px;">
-			<!-- /Goal Actual Pie Charts -->
-			<table  class="mainRightRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Yearly Goals Completed</h4></td></tr>
-		 	</table>
-			<table>
-			<tr>
-				<td align="center" >
-					<!--Div that will hold the pie chart-->
-  					<div id="chart_div1"></div>
-					<div id="chart_div2"></div>
-					<div id="chart_div3"></div>
-				</td>
-			</tr>
-			</table>
-			
+			  
 			
 		    <!-- Open Issues -->
-			<table  class="mainRightRowHeader" > 
+			<table  class="mainRowHeader" > 
 				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Open Issues</h4></td></tr>
 		 	</table>
 			<table>
 			<tr class="secondaryRowHeader">
-				<td align="center"  width='290' class="secondaryTd">Owner</td>
-				<td align="center"  width='100' class="secondaryTd">Number Open</td>
+				<td align="center"  width='360' class="secondaryTd">Owner</td>
+				<td align="center"  width='140' class="secondaryTd">Number Open</td>
 			</tr>
 			
 			<tr>
@@ -508,6 +555,50 @@ $(function() {
 			</tr>	 
 			</table>
 			 
+			 
+			 
+			<!-- big graph  - removed
+			<table  class="mainRowHeader" >
+				<tr>
+			 		<td>
+			 			<h4 style="text-align:center; margin-bottom: 12px;">Image/page Counts from Beginning of Year Through Selected Month</h4>
+			 		</td>
+	            </tr>
+		 	</table>
+		 	 
+		 	
+		 	  
+		    <canvas id="canvas1" height="200" width="820"></canvas>
+			<canvas id="canvasLegend"  height="50"></canvas>   
+			<canvas id="canvas2" height="200" width="820"></canvas>
+			<canvas id="canvasLegend2" height="50"></canvas>   
+			<canvas id="canvas3" height="200" width="820"></canvas>
+			<canvas id="canvasLegend3" height="50"></canvas>   
+ 
+			 	   -->
+			 
+		</td>
+		
+		
+		<!-- YTD scan and publish pie charts here -->
+		<td style="padding-left: 6px;">
+			<!-- /Goal Actual Pie Charts -->
+			<table  class="mainRightRowHeader" > 
+				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">YTD Scan / Goal</h4></td></tr>
+		 	</table>
+			<table>
+			<tr>
+				<td align="center" >
+					<!--Extra dummy Divs that will hold the pie chart-->
+					<c:forEach var="i" begin="0" end="${ytdPiesCount}">
+						<div id="ytd_scan_div${i}"></div>
+					</c:forEach>
+  				
+				</td>
+			</tr>
+			</table>
+			
+			
 			
 			<!-- future charts here -->
 			
@@ -518,15 +609,17 @@ $(function() {
 		<td style="padding-left: 6px;">
 			<!-- /Goal Actual Pie Charts -->
 			<table  class="mainRightRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Yearly Scanned Images - Backlog </h4></td></tr>
+				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">YTD Publish / Goal</h4></td></tr>
 		 	</table>
 			<table>
 			<tr>
 				<td align="center" >
 					<!--Div that will hold the pie chart-->
-  					<div id="chart_divEmpty"></div>
-  					<div id="chart_div4"></div>
-					<div id="chart_div5"></div>
+					<c:forEach var="i" begin="0" end="${ytdPiesCount}">
+						<div id="ytd_publish_div${i}"></div>
+					</c:forEach>
+  					 
+  				
 				</td>
 			</tr>
 			</table>
