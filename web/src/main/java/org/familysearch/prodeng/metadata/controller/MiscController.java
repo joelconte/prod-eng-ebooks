@@ -367,10 +367,10 @@ public class MiscController implements MessageSourceAware{
 			}
 		}
 		
-        int numCols = 10;
+        int numCols = 12;
         String csvColumns = "";
 		  
-        String[] columns = {"TN", "Title", "Author", "Requesting_location", "Owning_institution", "Scanning_location", "Num_of_pages", "scan_complete_date", "files_received_by_orem", "URL"};
+        String[] columns = {"TN", "Title", "Author", "Call_Num", "Partner_Lib_Call_Num", "Requesting_location", "Owning_institution", "Scanning_location", "Num_of_pages", "scan_complete_date", "files_received_by_orem", "URL"};
         for (int x = 0; x < numCols; x++) {
             csvColumns += columns[x] + ", ";
         }

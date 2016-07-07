@@ -3097,8 +3097,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		String inClause1 = generateInClause("a.titleno", allTnListStr);
 		String inClause = generateInClause("titleno", allTnListStr);
 		 
-		List tnList = getJdbcTemplate().query("select a.titleno, a.title, a.author, a.requesting_location, a.owning_institution, a.scanning_location, a.pages, b.scan_complete_date, b.files_received_by_orem, b.url from BOOKmetadata a " 
-							+ " left outer join book b on a.titleno = b.tn  where  " + inClause1 , new StringX10RowMapper());
+		List tnList = getJdbcTemplate().query("select a.titleno, a.title, a.author, a.callno, a.partner_lib_callno, a.requesting_location, a.owning_institution, a.scanning_location, a.pages, b.scan_complete_date, b.files_received_by_orem, b.url from BOOKmetadata a " 
+							+ " left outer join book b on a.titleno = b.tn  where  " + inClause1 , new StringX12RowMapper());
 		List emailList = getJdbcTemplate().query("select id, send_scan_notice, email, primary_location from users where send_scan_notice = 'T' and primary_location in ( select distinct(requesting_location) from bookmetadata where " + inClause + " union select distinct(owning_institution) from BOOKmetadata  where " + inClause + ")", new StringX4RowMapper());
 		List emailList2 = getJdbcTemplate().query("select id, send_scan_notice, email, 'ALLSITES' from users where send_scan_notice = 'T' and primary_location is null", new StringX4RowMapper());
 
@@ -3116,8 +3116,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override 
 	public Object[] getReportForSendToScanSelectedMetadataAll(){
   
-		List tnList = getJdbcTemplate().query("select a.titleno, a.title, a.author, a.requesting_location, a.owning_institution, a.scanning_location, a.pages, b.scan_complete_date, b.files_received_by_orem, b.url  " 
-										+ " from BOOKmetadata a left outer join book b on a.titleno = b.tn  where a.titleno in (select c.titleno from BookMetadata c where c.sent_to_scan is null)", new StringX10RowMapper());
+		List tnList = getJdbcTemplate().query("select a.titleno, a.title, a.author, a.callno, a.partner_lib_callno, a.requesting_location, a.owning_institution, a.scanning_location, a.pages, b.scan_complete_date, b.files_received_by_orem, b.url  " 
+										+ " from BOOKmetadata a left outer join book b on a.titleno = b.tn  where a.titleno in (select c.titleno from BookMetadata c where c.sent_to_scan is null)", new StringX12RowMapper());
 		List emailList = getJdbcTemplate().query("select id, send_scan_notice, email, primary_location from users where send_scan_notice = 'T' and primary_location " 
 				+ " in ( select distinct (requesting_location) from bookmetadata where  titleno "
 				+ " in (select titleno from BookMetadata where sent_to_scan is null ) "
