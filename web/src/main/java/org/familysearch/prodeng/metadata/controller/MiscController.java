@@ -384,7 +384,7 @@ public class MiscController implements MessageSourceAware{
         	String csvStr = "";
         	for (List<String> r : tnData) {
         		//check if requesting or owning matches site
-        		if("ALLSITES".equals(site) || site.equals(r.get(3) + " - " + r.get(4))) {
+        		if("ALLSITES".equals(site) || site.equals(r.get(5) + " - " + r.get(6))) {
         			doThisSite = true;
 
         			for (int t = 0; t < numCols; t++) {
@@ -461,7 +461,7 @@ public class MiscController implements MessageSourceAware{
 			if(toEmailAddr == null || toEmailAddr.equals(""))
 				continue;
 			String toSite = row.get(3);
-			String fromEmailAddr = "books@ldschurch.org";
+			String fromEmailAddr = "bookscanadmin@ldschurch.org";
 			String subject =  "FamilySearch BookScan Metadata - " + toSite;
 			String body = "Hello,\n\n\nNew books have been sent to your location (Requesting_location or Owning_institution) to scan.  \nPlease see attached report.\n\n";
 			body = body + dataList.get(toSite);//append text report
@@ -496,7 +496,7 @@ System.out.println("EMAIL: 			" + toEmailAddr + "  " + toSite);
 			if(toEmailAddr == null || toEmailAddr.equals(""))
 				continue;
 			String toSite = row.get(3);
-			String fromEmailAddr = "books@ldschurch.org";
+			String fromEmailAddr = "bookscanadmin@ldschurch.org";
 			String subject =  "FamilySearch BookScan Metadata - " + toSite;
 			String body = "Hello,\n\n\nNew books have been sent to your location (Requesting_location or Owning_institution) to scan.  \nPlease see attached report.\n\n";
 			
@@ -571,7 +571,7 @@ System.out.println("EMAIL: 			" + toEmailAddr + "  " + toSite);
 					if(toEmailAddr == null || toEmailAddr.equals(""))
 						continue;
 
-					String fromEmailAddr = "books@ldschurch.org";
+					String fromEmailAddr = "bookscanadmin@ldschurch.org";
 					String subject = "FamilySearch BookScan Metadata - " + site;
 					String body = "Hello,\n\n\nNew books have been sent to your location (Requesting_location or Owning_institution) to scan.  \nPlease see attached report.\n\n";
 
@@ -635,7 +635,7 @@ System.out.println("EMAIL: 			" + toEmailAddr + "  " + toSite);
 			if(toEmailAddr == null || toEmailAddr.equals(""))
 				continue;
 			String toSite = row.get(3);
-			String fromEmailAddr = "books@ldschurch.org";
+			String fromEmailAddr = "bookscanadmin@ldschurch.org";
 			String subject = "FamilySearch BookScan Metadata - " + toSite;
 			String body = "Hello,\n\n\nNew books have been sent to your location (Requesting_location or Owning_institution) to scan.  \nPlease see attached report.\n\n";
 			

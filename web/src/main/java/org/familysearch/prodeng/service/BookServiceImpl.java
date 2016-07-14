@@ -7576,17 +7576,17 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			 
 				String publishCount = publishMap.get(ret.get(0));
 				if(publishCount != null) {
-					ret.add(3, publishCount);//insert PUB results into vals List
+					ret.add(4, publishCount);//insert PUB results into vals List
 					Integer goalInt = Integer.parseInt((String)ret.get(1));
 					Integer publishInt = Integer.parseInt(publishCount);
 					if(goalInt<publishInt)
-						ret.add(3, "0");//0 left
+						ret.add(5, "0");//0 left
 					else
-						ret.add(3, String.valueOf(goalInt - publishInt));//value left todo
+						ret.add(5, String.valueOf(goalInt - publishInt));//value left todo
 				}else {
-					ret.add(3, "0");//insert PUB results into result List
+					ret.add(4, "0");//insert PUB results into result List
 					Integer goalInt = Integer.parseInt((String)ret.get(1));
-					ret.add(3, String.valueOf(goalInt - 0));//value left todo
+					ret.add(5, String.valueOf(goalInt - 0));//value left todo
 				}
 			
 		}
