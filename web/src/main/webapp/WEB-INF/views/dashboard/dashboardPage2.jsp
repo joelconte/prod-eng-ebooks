@@ -246,14 +246,14 @@ $(function() {
 
 
     var options0 = {
-       legend: {position: 'none'},
+       lxegend: {position: 'none'},
        orientation: 'vertical',
        title : '<c:out value="${site}" escapeXml="false" />',
        seriesType: 'bars',
        series: {0: {color: 'blue'}, 1: {color: 'green'}, 2: {type: 'line'}}
     };
     var options1 = {
-      legend: {position: 'none'},
+      xlegend: {position: 'none'},
       orientation: 'vertical',
       title : 'FHCs and FHLs',
       seriesType: 'bars',
@@ -261,7 +261,7 @@ $(function() {
     };
 
     var options2 = {
-      legend: {position: 'none'},
+      xlegend: {position: 'none'},
       orientation: 'vertical',
       title : 'Partner Libraries',
       seriesType: 'bars',
@@ -269,7 +269,7 @@ $(function() {
     };
 
     var options3 = {
-      legend: {position: 'none'},
+      xlegend: {position: 'none'},
       orientation: 'vertical',
       title : 'Internet Archive',
       seriesType: 'bars',
@@ -523,13 +523,29 @@ $(function() {
 			<table  class="mainRowHeader" >
 				<tr>
 			 		<td>
-			 			<h4 style="text-align:center; margin-bottom: 12px;">YTD Scan and Publish counts</h4>
+			 			<h4 style="text-align:center; margin-bottom: 12px;">Scan and Publish counts</h4>
 			 		</td>
 	            </tr>
 		 	</table>
-			<div id="google_combo_div1" style="width: 400px; height: 300px;"></div>
-			<div id="google_combo_div2" style="width: 400px; height: 300px;"></div>
-			<div id="google_combo_div3" style="width: 400px; height: 300px;"></div>
+		 	<div  style="padding-left: 20px;">
+		 	 
+		 	<div style="padding-top: 11px; padding-left: 50px;">
+		 	MTD Scan (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalMTDScan}"/> <br>
+		 	</div>
+		 	<div style="padding-top: 11px; padding-left: 50px;">
+			MTD Publish (books, images): <c:out value="${aboveHorizontalLineTotalMTDPublish}"/> <br> 
+			</div>
+			<div style="padding-top: 11px; padding-left: 50px;">
+			YTD Scan (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalYTDScan}"/> <br>
+			</div>
+			<div style="padding-top: 11px; padding-left: 50px;">
+			YTD Publish (books, images): <c:out value="${aboveHorizontalLineTotalYTDPublish}"/><br> 
+			</div>
+		 	 
+		 	</div>
+			<div id="google_combo_div1" style="width: 450px; height: 300px;"></div>
+			<div id="google_combo_div2" style="width: 450px; height: 300px;"></div>
+			<div id="google_combo_div3" style="width: 450px; height: 300px;"></div>
 			 
 			  
 			

@@ -305,6 +305,7 @@ public interface BookService {
 	public List<List> getDashboardOpenIssues();
 	public List<List> getGoalsAndActuals(String year, int endMonthInt, String endDate, String site);
 	public String[][] getDashboarDataYTDScanPublish( String startDate, String endDate, String site, int daysDiff);
+	public String[] getDashboarDataTotalYTDScanPublish(String startDate, String startDateCurrentMonth, String endDate, String site);
 	
 	////end dashboard/////
 	//xml medatdata//

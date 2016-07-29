@@ -5185,6 +5185,83 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		return ret;
 	}
 
+	@Override 
+	public String[] getDashboarDataTotalYTDScanPublish(String startDate, String startDateCurrentMonth, String endDate, String site) {
+
+		String startDateYearFirst, startDateCurrentMonthYearFirst, endDateYearFirst;
+		
+
+		//order for alphabetical ordering of strings
+		//startDate
+		String yS, mS, dS;
+		int i1 = startDate.indexOf("/");
+		mS = startDate.substring(0, i1);
+		String rem = startDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dS = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yS = rem;
+		if(dS.length()==1)
+			dS = "0" + dS;
+		if(mS.length()==1)
+			mS = "0" + mS;
+
+		startDateYearFirst = yS + "/"+ mS + "/" + dS;
+
+
+		//order for alphabetical ordering of strings
+		//first day of current month
+		String yE, mE, dE;
+		i1 = startDateCurrentMonth.indexOf("/");
+		mE = startDateCurrentMonth.substring(0, i1);
+		rem = startDateCurrentMonth.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		startDateCurrentMonthYearFirst = yE + "/"+ mE + "/" + dE;
+		
+
+		//order for alphabetical ordering of strings
+		//endDate
+		i1 = endDate.indexOf("/");
+		mE = endDate.substring(0, i1);
+		rem = endDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		endDateYearFirst = yE + "/"+ mE + "/" + dE;
+		 
+		List<List> vals= getJdbcTemplate().query("SELECT count(tn), sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateCurrentMonthYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper());
+	 	String retValScanMTD = vals.get(0).get(0) + " " + vals.get(0).get(1);
+		
+	 	vals = getJdbcTemplate().query("SELECT count(tn), sum(num_of_pages) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateCurrentMonthYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper()); 
+		String retValPublishMTD = vals.get(0).get(0) + " " + vals.get(0).get(1);
+		
+		vals = getJdbcTemplate().query("SELECT count(tn), sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper());
+	 	String retValScanYTD = vals.get(0).get(0) + " " + vals.get(0).get(1);
+	 	
+		vals = getJdbcTemplate().query("SELECT count(tn), sum(num_of_pages) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper()); 
+		String retValPublishYTD = vals.get(0).get(0) + " " + vals.get(0).get(1);
+		
+		String[] ret = new String[4];
+		ret[0] = retValScanMTD;
+		ret[1] = retValPublishMTD;
+		ret[2] = retValScanYTD;
+		ret[3] = retValPublishYTD;
+		
+		return ret;
+	}
+
 	//method not used anymore
 	@Override 
 	public String[][] getDashboardByMonthDataScanProcessPublish( String startDate, String endDate, String site, int daysDiff){
@@ -7541,6 +7618,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		for(List ret : vals) {
 			 
 				String scanCount = scanMap.get(ret.get(0));
+				
 				if(scanCount != null) {
 					ret.add(2, scanCount);//insert SCAN results into vals List
 					Integer goalInt = Integer.parseInt((String)ret.get(1));
@@ -7592,8 +7670,36 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}
 		
 	 
-		  
-		
+		//remove rows with all 0 counts
+		//and calculate totals
+		int goalTotal = 0;
+		int scanTotal = 0;
+		int scanLeft = 0;
+		int publishTotal = 0;
+		int publishLeft = 0;
+		Iterator<List> i = vals.iterator();
+		while(i.hasNext()) {
+			List n = i.next();
+			if(n.get(1).equals("0") && n.get(2).equals("0") && n.get(3).equals("0") && n.get(4).equals("0") && n.get(5).equals("0")) {
+				i.remove();
+			}else {
+				goalTotal += Integer.parseInt((String)n.get(1));
+				scanTotal += Integer.parseInt((String)n.get(2));
+				scanLeft += Integer.parseInt((String)n.get(3));
+				publishTotal += Integer.parseInt((String)n.get(4));
+				publishLeft += Integer.parseInt((String)n.get(5));
+			}
+		}
+		if("All Sites".equals(site) && ( goalTotal > 0 ||  scanTotal > 0 ||  scanLeft > 0 ||  publishTotal > 0 ||  publishLeft > 0)) {
+			List<String> totals = new ArrayList<String>();
+			totals.add("All Sites");
+			totals.add(String.valueOf(goalTotal));
+			totals.add(String.valueOf(scanTotal));
+			totals.add(String.valueOf(scanLeft));
+			totals.add(String.valueOf(publishTotal));
+			totals.add(String.valueOf(publishLeft));
+			vals.add(0, totals);//put totals pie at top
+		}
 		return vals;
 	}
 	

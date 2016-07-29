@@ -48,8 +48,10 @@ public class MiscController2 implements MessageSourceAware{
 		String startDate = "";
 		String endDate = "";
  		String endDateYMD = "";
+ 		String startDateCurrentMonth = "";
 		int daysDiff = 0;//
 		int endMonthInt = 0;
+		String endingMonthLabel = "";
 		if(year != null) {		
 			int yearInt = Integer.parseInt(year);
 			Calendar cal = Calendar.getInstance();
@@ -60,6 +62,8 @@ public class MiscController2 implements MessageSourceAware{
 			GregorianCalendar gc = new GregorianCalendar(yearInt, monthInt-1, 1);
 			gc.add(Calendar.MONTH, 1);//add 1 month
 			gc.add(Calendar.DAY_OF_MONTH, -1);//subtract 1 day since endDate is inclusive
+			endingMonthLabel = gc.getDisplayName(Calendar.MONTH, Calendar.LONG,  Locale.getDefault());
+ 
 			endMonthInt = gc.get(Calendar.MONTH)+1;
 			int endDayInt = gc.get(Calendar.DAY_OF_MONTH);
 			int endYearInt = gc.get(Calendar.YEAR);
@@ -68,6 +72,7 @@ public class MiscController2 implements MessageSourceAware{
 			dd = dd.length() == 1 ? "0" + dd : dd;
 			mm = mm.length() == 1 ? "0" + mm : mm;
 			endDate = mm + "/" + dd + "/" + String.valueOf(endYearInt);
+			startDateCurrentMonth = mm + "/" + "01" + "/" + String.valueOf(endYearInt);//first of current month starting 
 			endDateYMD =  String.valueOf(endYearInt) + "/" + mm + "/" + dd;
 			
 			GregorianCalendar gcStart = new GregorianCalendar(yearInt, monthInt-1, 1);
@@ -84,6 +89,7 @@ public class MiscController2 implements MessageSourceAware{
 			GregorianCalendar gc = new GregorianCalendar(yearInt, monthInt-1, 1);
 			gc.add(Calendar.MONTH, 1);//add 1 month
 			gc.add(Calendar.DAY_OF_MONTH, -1);//subtract 1 day since endDate is inclusive
+			endingMonthLabel = gc.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
 			endMonthInt = gc.get(Calendar.MONTH)+1;
 			int endDayInt = gc.get(Calendar.DAY_OF_MONTH);
 			int endYearInt = gc.get(Calendar.YEAR);
@@ -93,6 +99,7 @@ public class MiscController2 implements MessageSourceAware{
 			mm = mm.length() == 1 ? "0" + mm : mm;
 			endDate = mm + "/" + dd + "/" + String.valueOf(endYearInt);
 			endDateYMD =  String.valueOf(endYearInt) + "/" + mm + "/" + dd;
+			startDateCurrentMonth = mm + "/" + "01" + "/" + String.valueOf(endYearInt);//first of current month starting 
 			
 			GregorianCalendar gcStart = new GregorianCalendar(yearInt, monthInt-1, 1);
 			daysDiff = Math.abs(gc.get(Calendar.DAY_OF_YEAR)-gcStartOfYear.get(Calendar.DAY_OF_YEAR)) + 1;//inclusive  
@@ -102,7 +109,7 @@ public class MiscController2 implements MessageSourceAware{
 			//month = String.valueOf(monthInt);
 		}
 		
-		model.addAttribute("pageTitle", messageSource.getMessage("dashboard.dashboardPageTitle", null, locale));
+		model.addAttribute("pageTitle", messageSource.getMessage("dashboard.dashboardPageTitle", null, locale) + " - through " + endingMonthLabel );
 		List<String> sites =  bookService.getAllSites();
 		model.addAttribute("allLocations",sites);
 		String site = req.getParameter("site");
@@ -114,6 +121,7 @@ public class MiscController2 implements MessageSourceAware{
 		model.addAttribute("year", year);
 		//model.addAttribute("month", month);
 		model.addAttribute("site", site);
+		model.addAttribute("endingMonthLabel", endingMonthLabel);
 		String productionData[][];
 		
 	 
@@ -137,7 +145,7 @@ public class MiscController2 implements MessageSourceAware{
 		List<List> openIssues = bookService.getDashboardOpenIssues();
 		model.addAttribute("openIssues", openIssues);
 		 
-		
+		/*
 		/////Turnaround Time
 		String[][] turnaroundData = bookService.getDashboardTurnaroundAverages(startDate, endDate, site);
 		
@@ -169,7 +177,7 @@ public class MiscController2 implements MessageSourceAware{
 		model.addAttribute("turnarounde1", turnaroundData[4][1]);
 		model.addAttribute("turnarounde2", turnaroundData[4][2]);
 		model.addAttribute("turnarounde3", turnaroundData[4][3]);
-		
+		*/
  
 		//big chart
 		/* removed
@@ -204,17 +212,29 @@ public class MiscController2 implements MessageSourceAware{
 			horizontalLineDataFHLString = arraysToString(horizontalLineDataFHL);
 			horizontalLineDataPartnerLibrariesString = arraysToString(horizontalLineDataPartnerLibraries);
 			horizontalLineDataInternetArchiveString = arraysToString(horizontalLineDataInternetArchive);
+			String totalScanPublish[] = bookService.getDashboarDataTotalYTDScanPublish(startDate, startDateCurrentMonth, endDate, "all");
+			
 			model.addAttribute("horizontalLineDataFHL", horizontalLineDataFHLString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
 			model.addAttribute("horizontalLineDataPartnerLibraries", horizontalLineDataPartnerLibrariesString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
 			model.addAttribute("horizontalLineDataInternetArchive", horizontalLineDataInternetArchiveString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
 			model.addAttribute("horizontalLineDataOneSite", "[]");//send flag //dummy for js
+			model.addAttribute("aboveHorizontalLineTotalMTDScan", totalScanPublish[0]);
+			model.addAttribute("aboveHorizontalLineTotalMTDPublish", totalScanPublish[1]);
+			model.addAttribute("aboveHorizontalLineTotalYTDScan", totalScanPublish[2]);
+			model.addAttribute("aboveHorizontalLineTotalYTDPublish", totalScanPublish[3]);
 		}else {
 			horizontalLineDataOneSite = bookService.getDashboarDataYTDScanPublish(startDate, endDate, site, daysDiff);
 			horizontalLineDataOneSiteString = arraysToString(horizontalLineDataOneSite);
+			String totalScanPublish[] = bookService.getDashboarDataTotalYTDScanPublish(startDate, startDateCurrentMonth, endDate, "all");
+			
 			model.addAttribute("horizontalLineDataOneSite", horizontalLineDataOneSiteString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
 			model.addAttribute("horizontalLineDataFHL", "[]"); //send flag //dummy for js
 			model.addAttribute("horizontalLineDataPartnerLibraries", "[]"); //send flag //dummy for js
 			model.addAttribute("horizontalLineDataInternetArchive", "[]");//send flag //dummy for js
+			model.addAttribute("aboveHorizontalLineTotalMTDScan", totalScanPublish[0]);
+			model.addAttribute("aboveHorizontalLineTotalMTDPublish", totalScanPublish[1]);
+			model.addAttribute("aboveHorizontalLineTotalYTDScan", totalScanPublish[2]);
+			model.addAttribute("aboveHorizontalLineTotalYTDPublish", totalScanPublish[3]);
 		}
 		
 		return "dashboard/dashboardPage2";
