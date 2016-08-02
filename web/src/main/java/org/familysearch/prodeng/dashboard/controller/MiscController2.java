@@ -219,9 +219,11 @@ public class MiscController2 implements MessageSourceAware{
 			model.addAttribute("horizontalLineDataInternetArchive", horizontalLineDataInternetArchiveString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
 			model.addAttribute("horizontalLineDataOneSite", "[]");//send flag //dummy for js
 			model.addAttribute("aboveHorizontalLineTotalMTDScan", totalScanPublish[0]);
-			model.addAttribute("aboveHorizontalLineTotalMTDPublish", totalScanPublish[1]);
-			model.addAttribute("aboveHorizontalLineTotalYTDScan", totalScanPublish[2]);
-			model.addAttribute("aboveHorizontalLineTotalYTDPublish", totalScanPublish[3]);
+			model.addAttribute("aboveHorizontalLineTotalIaRtMTDScan", totalScanPublish[1]);
+			model.addAttribute("aboveHorizontalLineTotalMTDPublish", totalScanPublish[2]);
+			model.addAttribute("aboveHorizontalLineTotalYTDScan", totalScanPublish[3]);
+			model.addAttribute("aboveHorizontalLineTotalIaRtYTDScan", totalScanPublish[4]);
+			model.addAttribute("aboveHorizontalLineTotalYTDPublish", totalScanPublish[5]);
 		}else {
 			horizontalLineDataOneSite = bookService.getDashboarDataYTDScanPublish(startDate, endDate, site, daysDiff);
 			horizontalLineDataOneSiteString = arraysToString(horizontalLineDataOneSite);
@@ -232,9 +234,11 @@ public class MiscController2 implements MessageSourceAware{
 			model.addAttribute("horizontalLineDataPartnerLibraries", "[]"); //send flag //dummy for js
 			model.addAttribute("horizontalLineDataInternetArchive", "[]");//send flag //dummy for js
 			model.addAttribute("aboveHorizontalLineTotalMTDScan", totalScanPublish[0]);
-			model.addAttribute("aboveHorizontalLineTotalMTDPublish", totalScanPublish[1]);
-			model.addAttribute("aboveHorizontalLineTotalYTDScan", totalScanPublish[2]);
-			model.addAttribute("aboveHorizontalLineTotalYTDPublish", totalScanPublish[3]);
+			model.addAttribute("aboveHorizontalLineTotalIaRtMTDScan", totalScanPublish[1]);
+			model.addAttribute("aboveHorizontalLineTotalMTDPublish", totalScanPublish[2]);
+			model.addAttribute("aboveHorizontalLineTotalYTDScan", totalScanPublish[3]);
+			model.addAttribute("aboveHorizontalLineTotalIaRtYTDScan", totalScanPublish[4]);
+			model.addAttribute("aboveHorizontalLineTotalYTDPublish", totalScanPublish[5]);
 		}
 		
 		return "dashboard/dashboardPage2";

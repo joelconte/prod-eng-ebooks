@@ -5240,24 +5240,32 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		if(mE.length()==1)
 			mE = "0" + mE;
 		endDateYearFirst = yE + "/"+ mE + "/" + dE;
-		 
-		List<List> vals= getJdbcTemplate().query("SELECT count(tn), sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateCurrentMonthYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper());
-	 	String retValScanMTD = vals.get(0).get(0) + " " + vals.get(0).get(1);
+		//use this below to include IA books coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0) 
+		List<List> vals= getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateCurrentMonthYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and scanned_by not in ('Internet Archives (RT)')", new StringX2RowMapper());
+	 	String retValScanMTD = vals.get(0).get(0) + " " + vals.get(0).get(1);//wo ia-rt site
+	 	
+		vals= getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateCurrentMonthYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and scanned_by in ('Internet Archives (RT)')", new StringX2RowMapper());
+		String retValScanIaRtMTD = vals.get(0).get(0) + " " + vals.get(0).get(1); //only ia-rt site
 		
-	 	vals = getJdbcTemplate().query("SELECT count(tn), sum(num_of_pages) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateCurrentMonthYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper()); 
+	 	vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateCurrentMonthYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper()); 
 		String retValPublishMTD = vals.get(0).get(0) + " " + vals.get(0).get(1);
 		
-		vals = getJdbcTemplate().query("SELECT count(tn), sum(scan_num_of_pages) from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper());
-	 	String retValScanYTD = vals.get(0).get(0) + " " + vals.get(0).get(1);
+		vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and scanned_by not in ('Internet Archives (RT)')", new StringX2RowMapper());
+	 	String retValScanYTD = vals.get(0).get(0) + " " + vals.get(0).get(1);//wo ia-rt site
 	 	
-		vals = getJdbcTemplate().query("SELECT count(tn), sum(num_of_pages) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper()); 
+	 	vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and scanned_by in ('Internet Archives (RT)')", new StringX2RowMapper());
+	 	String retValScanIaRtYTD = vals.get(0).get(0) + " " + vals.get(0).get(1); //only ia-rt site
+	 
+		vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper()); 
 		String retValPublishYTD = vals.get(0).get(0) + " " + vals.get(0).get(1);
 		
-		String[] ret = new String[4];
+		String[] ret = new String[6];
 		ret[0] = retValScanMTD;
-		ret[1] = retValPublishMTD;
-		ret[2] = retValScanYTD;
-		ret[3] = retValPublishYTD;
+		ret[1] = retValScanIaRtMTD;
+		ret[2] = retValPublishMTD;
+		ret[3] = retValScanYTD;
+		ret[4] = retValScanIaRtYTD;
+		ret[5] = retValPublishYTD;
 		
 		return ret;
 	}

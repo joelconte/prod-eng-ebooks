@@ -533,10 +533,16 @@ $(function() {
 		 	MTD Scan (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalMTDScan}"/> <br>
 		 	</div>
 		 	<div style="padding-top: 11px; padding-left: 50px;">
+		 	MTD Scan IA-RT (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalIaRtMTDScan}"/> <br>
+		 	</div>
+		 	<div style="padding-top: 11px; padding-left: 50px;">
 			MTD Publish (books, images): <c:out value="${aboveHorizontalLineTotalMTDPublish}"/> <br> 
 			</div>
 			<div style="padding-top: 11px; padding-left: 50px;">
 			YTD Scan (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalYTDScan}"/> <br>
+			</div>
+			<div style="padding-top: 11px; padding-left: 50px;">
+			YTD Scan IA-RT (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalIaRtYTDScan}"/> <br>
 			</div>
 			<div style="padding-top: 11px; padding-left: 50px;">
 			YTD Publish (books, images): <c:out value="${aboveHorizontalLineTotalYTDPublish}"/><br> 
