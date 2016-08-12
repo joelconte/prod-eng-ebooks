@@ -7585,11 +7585,16 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}
 			
 		List<List> vals = getJdbcTemplate().query(allSql, new StringX2RowMapper());
+		List nullSite = new ArrayList(); //since some books are processed with no site by accident add null value site also so total numbers jive
+		nullSite.add(null);
+		nullSite.add("0");
+		
+		vals.add(nullSite);
 		if(vals.size() != 0 && vals.get(0).get(0) != null) {
 			String allGoal = "0";
 
 			for(List g : vals) {
-				if(g.get(0).equals("All Sites")) {
+				if("All Sites".equals(g.get(0))) {
 					allGoal = (String) g.get(1);
 				}
 				if(!g.get(1).equals("0")) {
@@ -7659,7 +7664,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			publishMap.put((String)p.get(0), (String)p.get(1));
 		}
 		for(List ret : vals) {
-			 
+		 
 				String publishCount = publishMap.get(ret.get(0));
 				if(publishCount != null) {
 					ret.add(4, publishCount);//insert PUB results into vals List
