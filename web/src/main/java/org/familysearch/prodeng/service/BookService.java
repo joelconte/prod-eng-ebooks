@@ -11,6 +11,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.familysearch.prodeng.model.Book;
 import org.familysearch.prodeng.model.BookMetadata;
+import org.familysearch.prodeng.model.NonBook;
 import org.familysearch.prodeng.model.Problem;
 import org.familysearch.prodeng.model.Search;
 import org.familysearch.prodeng.model.Site;
@@ -325,4 +326,14 @@ public interface BookService {
 	List<List<Object>> stringsToTypes(int[] colType, List<List<String>> rows);
 	//misc end
  
+	//start nonbook docs
+	public void createNonBook(NonBook book) throws ConstraintViolationException;
+	public List<String> getAllDns();
+	public NonBook getNonBook(String dn);
+	public List<String> getNonBooksByWildcard(String searchBy);
+	public void updateNonBook(NonBook book);
+	public void updateNonBook(NonBook book, String oldDn);
+	public void deleteNonBook(String dn);
+	//start nonbook docs
+	
 }

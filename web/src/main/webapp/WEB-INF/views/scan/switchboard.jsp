@@ -38,6 +38,9 @@
 			<tr><td>
 			<a href="trackingForm?read" id="a1">${messages['scan.trackingForm']}</a>
 			</td></tr>
+			<tr><td>
+			<a href="nonBookTrackingForm?read" id="a8">${messages['scan.nonBookTrackingForm']}</a>
+			</td></tr>
 			</table>
 		</form>
     	</security:authorize>

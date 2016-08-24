@@ -44,6 +44,8 @@ function fetchBook2(textId, mode){
 	window.location.href=url;
 }
     
+
+
 function fetchAllTns(textId, mode){
 	var sel= document.getElementById(textId);
 	var tn = sel.value;
@@ -160,6 +162,7 @@ function goBackToInternetArchiveMetadata( ){
 
 //update action on form formId with mode and page url - (use to update url on form right before button click submits it) 
 function updateUrl2(formId, page, mode){
+	 	
 	//var el = document.getElementById(selectId);
 	//var tn = el.options[el.selectedIndex].text;//select box tn
 	var f = document.getElementById(formId); //form
@@ -168,8 +171,11 @@ function updateUrl2(formId, page, mode){
 		url = url + "&returnTo=" + getUrlParm("returnTo");
 	f.action = url;
 }
+  
  
-
+	
+	
+	
 //update action on form formId with mode and page url - (use to update url on form right before button click submits it)  and udate target attr for new/same window
 function updateUrlAndTarget(formId, page, mode, target){
 	updateUrl2(formId, page, mode);

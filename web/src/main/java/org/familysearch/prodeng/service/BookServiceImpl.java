@@ -33,6 +33,7 @@ import javax.validation.Validator;
 import org.apache.commons.io.FileUtils;
 import org.familysearch.prodeng.model.Book;
 import org.familysearch.prodeng.model.BookMetadata;
+import org.familysearch.prodeng.model.NonBook;
 import org.familysearch.prodeng.model.Problem;
 import org.familysearch.prodeng.model.Search;
 import org.familysearch.prodeng.model.Site;
@@ -609,6 +610,34 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setPullDate(rs.getTimestamp("pull_date"));
 
 			return book;
+		}
+	}
+
+	private static class NonBookRowMapper implements RowMapper<NonBook> {
+		@Override
+		public NonBook mapRow(ResultSet rs, int rowNum) throws SQLException {
+			NonBook nonBook = new NonBook();
+			nonBook.setDn(rs.getString("DN"));
+			nonBook.setTitle(rs.getString("TITLE"));
+			nonBook.setAuthor(rs.getString("AUTHOR"));
+			nonBook.setFilename(rs.getString("FILENAME"));
+			nonBook.setMediaType(rs.getString("MEDIA_TYPE"));
+			nonBook.setLanguage(rs.getString("LANGUAGE"));
+			nonBook.setRemarksFromScanCenter(rs.getString("REMARKS_FROM_SCAN_CENTER"));
+			nonBook.setRemarksAboutBook(rs.getString("REMARKS_ABOUT_BOOK"));
+			nonBook.setRequestingLocation(rs.getString("REQUESTING_LOCATION"));
+			nonBook.setOwningInstitution(rs.getString("OWNING_INSTITUTION"));
+			nonBook.setScannedBy(rs.getString("SCANNED_BY"));
+			nonBook.setScanOperator(rs.getString("SCAN_OPERATOR"));
+			nonBook.setScanMachineId(rs.getString("SCAN_MACHINE_ID"));
+			nonBook.setScanStartDate(rs.getTimestamp("SCAN_START_DATE"));
+			nonBook.setScanCompleteDate(rs.getTimestamp("SCAN_COMPLETE_DATE"));
+			nonBook.setScanImageAuditor(rs.getString("SCAN_IMAGE_AUDITOR"));
+			nonBook.setScanIaStartDate(rs.getTimestamp("SCAN_IA_START_DATE"));
+			nonBook.setScanIaCompleteDate(rs.getTimestamp("SCAN_IA_COMPLETE_DATE"));
+			nonBook.setScanNumOfPages(rs.getString("SCAN_NUM_OF_PAGES"));
+
+			return nonBook;
 		}
 	}
 	
@@ -7937,6 +7966,176 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	}
 	
 	///end misc
+	
+	//non book sql start
+
+	/* (non-Javadoc)
+	 * @see org.familysearch.prodeng.service.BookService#createBook(org.familysearch.prodeng.model.Book)
+	 */
+	@Override
+	@Transactional
+	public void createNonBook(NonBook nonBook) throws ConstraintViolationException {
+		try {
+		String sql = "insert into nonBook (dn) values ( '" + nonBook.getDn() + "' )";
+	    getJdbcTemplate().update(sql);
+	    
+	    this.updateNonBook(nonBook);
+		}catch(Exception e) {
+			String sql = "delete from nonBook where dn = '" + nonBook.getDn() + "'";
+		    getJdbcTemplate().update(sql);
+		}
+	} 
+	
+	@Override
+	public List<String> getAllDns() {
+		List<String> dnList = getJdbcTemplate().query("select dn from NONBOOK", new StringRowMapper());
+		return dnList;
+	}
+	
+
+	@Override
+	public NonBook getNonBook(String dn) {
+		try {
+			return getJdbcTemplate().queryForObject("select * from NONBOOK where DN=?", new NonBookRowMapper(), dn);
+		}catch(EmptyResultDataAccessException e) 
+		{ 
+			return new NonBook(); //empty for backing bean
+		}
+	} 
+	
+
+	@Override
+	public List<String> getNonBooksByWildcard(String searchBy) {
+		 
+		List<String> dnList = getJdbcTemplate().query("select dn from NonBOOK where dn like '"+searchBy+"%' order by dn", new StringRowMapper());
+		
+		//nList.add(0, " ");//dummy since spring mvc puts '[' at first and ']' at end if not using spring form
+		//tnList.add("");//empty selection for null value
+		//tnList.add(" ");//dummy
+	
+		return dnList;
+	}
+
+	@Override
+	public void updateNonBook(NonBook book) {
+		updateNonBook(book, book.getDn());
+	}
+	
+	@Override
+	public void updateNonBook(NonBook book, String oldDn) {
+		// TODO add some data validation and display nice error message (ie dup tn and secondaryIdentifier
+		
+		 		
+		String sql = "update nonbook set ";
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		//tn will always updated even if not change to simplify sql generation		
+		sql += "dn = :dn, ";
+		params.put("dn", book.getDn());
+		 
+		if (book.isTitleSet()) {
+			sql += "title =  :title, ";
+			params.put("title",  book.getTitle()==""?null: book.getTitle());
+		}
+		if (book.isAuthorSet()) {
+			sql += "author = :author, ";
+			params.put("author",  book.getAuthor()==""?null: book.getAuthor());
+		} 
+		if (book.isFilenameSet()) {
+			sql += "filename = :filename, ";
+			params.put("filename", book.getFilename()==""?null:book.getFilename());  //dropdown select "" change to null
+		}
+		 
+		if (book.isMediaTypeSet()) {
+			sql += "media_Type = :mediaType, ";
+			params.put("mediaType", book.getMediaType()==""?null:  book.getMediaType());
+		}
+		 
+		if (book.isLanguageSet()) {
+			sql += "language = :language, ";
+			params.put("language", book.getLanguage()==""?null:book.getLanguage());  //dropdown select "" change to null
+			
+		}
+		if (book.isRemarksFromScanCenterSet()) {
+			sql += "remarks_From_Scan_Center = :remarksFromScanCenter, ";
+			params.put("remarksFromScanCenter", book.getRemarksFromScanCenter()==""?null:  book.getRemarksFromScanCenter());
+		}
+		if (book.isRemarksAboutBookSet()) {
+			sql += "remarks_About_Book = :remarksAboutBook, ";
+			params.put("remarksAboutBook", book.getRemarksAboutBook()==""?null: book.getRemarksAboutBook());
+		}
+		if (book.isRequestingLocationSet()) {
+			sql += "requesting_Location = :requestingLocation, ";
+			params.put("requestingLocation", book.getRequestingLocation()==""?null:book.getRequestingLocation());  //dropdown select "" change to null
+		}
+		 
+		if (book.isOwningInstitutionSet()) {
+			sql += "owning_institution = :owningInstitution, ";
+			params.put("owningInstitution", book.getOwningInstitution()==""?null:book.getOwningInstitution());  //dropdown select "" change to null
+		}
+		if (book.isScannedBySet()) {
+			sql += "scanned_By = :scannedBy, ";
+			params.put("scannedBy", book.getScannedBy()==""?null:book.getScannedBy());  //dropdown select "" change to null
+		}
+		if (book.isScanOperatorSet()) {
+			sql += "scan_Operator = :scanOperator, ";
+			params.put("scanOperator",  book.getScanOperator()==""?null: book.getScanOperator());
+		}
+		if (book.isScanMachineIdSet()) {
+			sql += "scan_Machine_Id = :scanMachineId, ";
+			params.put("scanMachineId",  book.getScanMachineId()==""?null: book.getScanMachineId());
+		} 
+		
+		if (book.isScanStartDateSet()) {
+			sql += "scan_Start_Date = :scanStartDate, ";
+			params.put("scanStartDate", book.getScanStartDate());
+		}
+		
+		if (book.isScanCompleteDateSet()) {
+			sql += "scan_Complete_Date = :scanCompleteDate, ";
+			params.put("scanCompleteDate", book.getScanCompleteDate());
+		}
+		if (book.isScanImageAuditorSet()) {
+			sql += "scan_Image_Auditor = :scanImageAuditor, ";
+			params.put("scanImageAuditor", book.getScanImageAuditor()==""?null:  book.getScanImageAuditor());
+		}
+		if (book.isScanIaStartDateSet()) {
+			sql += "scan_Ia_Start_Date = :scanIaStartDate, ";
+			params.put("scanIaStartDate", book.getScanIaStartDate());
+		}
+		if (book.isScanIaCompleteDateSet()) {
+			sql += "scan_Ia_Complete_Date = :scanIaCompleteDate, ";
+			params.put("scanIaCompleteDate", book.getScanIaCompleteDate());
+		}
+  
+		if (book.isScanNumOfPagesSet()) {
+			sql += "scan_Num_Of_Pages = :scanNumOfPages, ";
+			params.put("scanNumOfPages", (book.getScanNumOfPages()=="" || book.getScanNumOfPages()==null)?null:  Double.parseDouble( book.getScanNumOfPages()));
+		} 
+		     
+		String dn;
+		if(oldDn != null)
+			dn = oldDn;
+		else
+			dn = book.getDn();
+		//remove final comma
+		sql = sql.substring(0, sql.length() - 2) + " where dn = '" + dn + "'";
+			 
+		getNamedParameterJdbcTemplate().update(sql, params);
+	 
+	}
+	
+	@Override
+	public void deleteNonBook(String dn) {
+		String sql = "DELETE FROM NONBOOK where dn = ?";
+	    getJdbcTemplate().update(sql, dn);
+	}
+	
+	//non book sql end
+	
+	
+	
 	private static class StringRowMapper implements RowMapper<String> {
 		@Override
 		public String mapRow(ResultSet rs, int rowNum) throws SQLException {
