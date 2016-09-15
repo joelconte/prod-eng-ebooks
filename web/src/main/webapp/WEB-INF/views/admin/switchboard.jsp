@@ -43,9 +43,6 @@
 			<a href="batchUpdateAdmin" id="a8">${messages['admin.batchUpdateAdmin']}</a>
 			</td></tr>
 			<tr><td>
-			<a href="metadataAdmin" id="a9">${messages['admin.metadataAdmin']}</a>
-			</td></tr>
-			<tr><td>
 			<a href="backupAdmin" id="a10">${messages['admin.backupAdmin']}</a>
 			</td></tr>
 			<tr><td>
