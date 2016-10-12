@@ -21,6 +21,9 @@
 			<tr><td>
 			<a href="dashboardPage2" id="a2">${messages['dashboard.dashboard2']}</a>
 			</td></tr>
+			<tr><td>
+			<a href="dashboardPage3" id="a3">${messages['dashboard.dashboard3']}</a>
+			</td></tr>
 			</table>
 		</form>
  

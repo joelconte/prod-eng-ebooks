@@ -266,9 +266,13 @@ public interface BookService {
 	///metadata end///
 	
 	////viewingreport////
-	public String getDuplicatesInViewingReport(List<String> pidList, List<String> dateList);
-	public List<List> getViewingReports(String year, String month);
-	public void deleteSelectedViewingReports(List<String> pidList, List<String> dateList);
+	public void insertBookViewingStats(String year, String month, String totalViews, String numUniqueViews);
+	public boolean getDuplicatesInViewingReport(String year, String month);
+	public List<List> getViewingReports( );
+	public void deleteSelectedViewingReports(List<String> yearList, List<String> monthList);
+	public List<List> getViewingStats5Years(int currentYear);
+	public List<List> getPast12MonthViews();
+	//public List<List> getViewingStats5YearsX(int currentYear);
 	////viewingreport end////
 		
 	///reports///

@@ -4247,66 +4247,157 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
 	
 	////viewingreport////
+	@Override
+	public void insertBookViewingStats(String year, String month, String totalViews, String numUniqueViews) {
+		String sql = "insert into bookviewingstats values ( " + totalViews + " , " + numUniqueViews + ", '" + year + "', '" + month + "' )";
+	    getJdbcTemplate().update(sql);
+	}
+
+	
 	@Override 
-	public String getDuplicatesInViewingReport(List<String> pidList, List<String> dateList){
-		String sqlWhere = "";
-		for(int x = 0; x < pidList.size(); x++) {
-			sqlWhere += " (pid = '" + pidList.get(x) + "' and report_date = to_date('" + dateList.get(x) + "', 'MM/dd/yyyy')) or ";
-		}
-		
-		if(sqlWhere.length()>2)
-			sqlWhere = sqlWhere.substring(0,  sqlWhere.length()-3);
+	public boolean getDuplicatesInViewingReport(String year, String month){
+		 
+		List<List> dupeList = getJdbcTemplate().query("select month, year from bookviewingstats where month = ? and year = ? ", new StringXRowMapper(), Integer.parseInt(month), Integer.parseInt(year));
+		if(dupeList!= null && dupeList.size()>0)
+			return true;
+		else
+			return false;
 	 
-		List<List> pidDupeList = getJdbcTemplate().query("select pid, report_date from bookviewingstats where " + sqlWhere, new StringXRowMapper() );
-		String pidListStr = "";
-		for(List<String> r: pidDupeList) {
-			String pid = r.get(0);
-			pidListStr += ", '" + pid + "'";
-		}
-		if(pidListStr != "")
-			pidListStr = pidListStr.substring(2);
-		return pidListStr;
 	}
 
 	@Override 
-	public List<List> getViewingReports(String year, String month){
-		if(month.length()==1)
-			month = "0" + month;
-		List viewingReportList = getJdbcTemplate().query("select  PID, NUM_OF_VIEWS, TITLE, ACCESS_RIGHTS, COLLECTION, TN, PUBLISHER, OWNING_INSTITUTION, IE_URL, REPORT_DATE " 
-				+ " from  bookviewingstats where to_char(report_date, 'yyyy') = '" +year + "' and to_char(report_date, 'MM') = '"+ month + "'", new StringXRowMapper() );
+	public List<List> getViewingReports( ){
+	 
+		List viewingReportList = getJdbcTemplate().query("select year, month, num_of_views, num_of_book_views " 
+				+ " from  bookviewingstats", new StringXRowMapper() );
 
 		return viewingReportList;
 	}
 	
 	
 	@Override 
-	public void deleteSelectedViewingReports(List<String> pidList, List<String> dateList) {
-		//String inClause = generateInClause("titleno", pidList);
-		String sqlWhere = "";
-		int maxLen = pidList.size();
-		int index = 0;
-		while (index < maxLen) {
-			sqlWhere = "";
-			try {
-				for (int x = index; x < index + 999; x++) {
-					sqlWhere += " (pid = '" + pidList.get(x)
-							+ "' and report_date = to_date('" + dateList.get(x)
-							+ "-01', 'yyyy-MM-dd')) or ";
-				}
-			} catch (Exception e) {
-			}
-			index +=999;
-			//report_date = to_date( '2010-01-01', 'yyyy-MM-dd'))
-			
-			//remove final "or"
-			if(sqlWhere.length() > 1)
-				sqlWhere = sqlWhere.substring(0, sqlWhere.length() - 4);
-			
-			String sql = "DELETE FROM bookviewingstats  where " + sqlWhere;
-		    getJdbcTemplate().update(sql);
+	public void deleteSelectedViewingReports(List<String> yearList, List<String> monthList) {
+		 
+		int mIndex = 0;
+		for(String y: yearList) {
+			String m = monthList.get(mIndex++);
+			int yy = Integer.parseInt(y);
+			int mm = Integer.parseInt(m);
+			String sql = "DELETE FROM bookviewingstats  where year = ? and month = ? ";
+		    getJdbcTemplate().update(sql, yy, mm);
 		    
 		}
 	}
+	
+	@Override 
+	public List<List> getViewingStats5Years(int startingYear){
+		
+		List viewingReportList = getJdbcTemplate().query("select year, month, num_of_views, num_of_book_views " 
+				+ " from  bookviewingstats where year >= ? and year < ? order by year, month", new StringXRowMapper(), startingYear, startingYear+5 );
+
+		return viewingReportList;
+	}
+	
+	@Override
+	public List<List> getPast12MonthViews(){
+		//return 3 lists 1- month lables, 2- total views,  3- unique book views
+		
+		Calendar c = Calendar.getInstance();
+		int month = c.get(Calendar.MONTH) + 1;//1 based
+		int year = c.get(Calendar.YEAR);
+
+		List<List> viewingReportList = getJdbcTemplate().query("select year, month, num_of_views, num_of_book_views " 
+				+ " from  bookviewingstats where (year = ? and month >= ?) or (year = ? and month <= ?) order by year, month", new StringXRowMapper(), year - 1, month, year, month);
+
+		List<List> ret = new ArrayList();
+		List months = new ArrayList();
+		List totals = new ArrayList();
+		List uniques = new ArrayList();
+		int m = month;
+		int y = year - 1;
+		
+		Iterator<List> i = viewingReportList.iterator();
+		//iterate 13 times ie jan2015 - jan2016
+		boolean gotoNext = true;
+		List r = null;
+		for(int x=0; x<13 ; x++) {
+			//set month labels
+			if(m == 1)
+				months.add("Jan " + String.valueOf(y).substring(2));
+			else if(m == 2)
+				months.add("Feb " + String.valueOf(y).substring(2));
+			else if(m == 3)
+				months.add("Mar " + String.valueOf(y).substring(2));
+			else if(m == 4)
+				months.add("Apr " + String.valueOf(y).substring(2));
+			else if(m == 5)
+				months.add("May " + String.valueOf(y).substring(2));
+			else if(m == 6)
+				months.add("Jun " + String.valueOf(y).substring(2));
+			else if(m == 7)
+				months.add("Jul " + String.valueOf(y).substring(2));
+			else if(m == 8)
+				months.add("Aug " + String.valueOf(y).substring(2));
+			else if(m == 9)
+				months.add("Sep " + String.valueOf(y).substring(2));
+			else if(m == 10)
+				months.add("Oct " + String.valueOf(y).substring(2));
+			else if(m == 11)
+				months.add("Nov " + String.valueOf(y).substring(2));
+			else if(m == 12)
+				months.add("Dec " + String.valueOf(y).substring(2));
+				
+			if(gotoNext) {
+				if(i.hasNext())
+					r = i.next();
+				else
+					r = null;
+			}
+			
+			int queryY = -1;//month year not in query result and at end of query results
+			int queryM = -1;
+			if(r!=null){
+				queryY = Integer.parseInt((String)r.get(0));
+				queryM = Integer.parseInt((String)r.get(1));
+			}
+			
+			if(queryY == y && queryM == m) {
+					//found in query ..add to list
+					totals.add(r.get(2));
+					uniques.add(r.get(3));
+					gotoNext = true;
+			}else {
+					totals.add("0");
+					uniques.add("0");
+					gotoNext = false;
+			}
+			if(m==12)
+				m = 1;
+			else
+				m++;
+			
+			if(m == 1)
+				y++;//move to next year
+			 
+		}
+		
+		
+		ret.add(months);
+		ret.add(totals);
+		ret.add(uniques);
+		
+		return ret;
+		
+	}
+	
+	public List<List> XgetViewingStats5Years(int currentYear){
+		List viewingReportList = getJdbcTemplate().query("select year, month, num_of_views, num_of_book_views " 
+				+ " from  bookviewingstats", new StringXRowMapper() );
+
+		return viewingReportList;
+	}
+	
+	
 	////viewingreport end////
 	
 	
