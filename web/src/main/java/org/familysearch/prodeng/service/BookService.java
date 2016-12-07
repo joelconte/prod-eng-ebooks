@@ -306,11 +306,11 @@ public interface BookService {
 	public String[][] getDashboardAgedAverages(String startDate, String endDate, String site);
 	public String[][] getDashboardTurnaroundAverages(String startDate, String endDate, String site);
 	public String[][] getDashboardGoalData( String startDate, String endDate, String site);
-	public String[][] getDashboardByMonthDataScanProcessPublish( String startDate, String endDate, String site, int daysDiff);
+	public String[][] XgetDashboardByMonthDataScanProcessPublish( String startDate, String endDate, String site, int daysDiff);
 	public List<List> getDashboardOpenIssues();
 	public List<List> getGoalsAndActuals(String year, int endMonthInt, String endDate, String site);
 	public String[][] getDashboarDataYTDScanPublish( String startDate, String endDate, String site, int daysDiff);
-	public String[] getDashboarDataTotalYTDScanPublish(String startDate, String startDateCurrentMonth, String endDate, String site);
+	public String[] getDashboarDataTotalYTDScanPublish(String startDate, String endDate, String fomStartDate, String fomStartDateCurrentMonth, String fomEndDate, String site);
 	
 	////end dashboard/////
 	//xml medatdata//

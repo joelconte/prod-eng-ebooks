@@ -22,7 +22,13 @@
 		border: 2px solid white;
 		height: 20px;
 		padding-top: 5px;
-		width: 500px;
+		width: 600px;
+	}
+	.mainRowHeaderWide{background-color: #87B940;
+		border: 2px solid white;
+		height: 20px;
+		padding-top: 5px;
+		width: 810px;
 	}
 	.secondaryRowHeader{background-color: #DAEBBB;
 		border: 2px solid white;
@@ -43,6 +49,7 @@
 	}
 	.secondaryTd{  border: 1px solid white; margin-left:auto; margin-right:auto; vertical-align: middle;}
 	.bodyTd{	border: 1px solid white; margin-left:auto; margin-right:auto;  padding-left: 3px;}
+	.bodyTd2{	 }
 	.arrowTd{	border: 1px solid white; margin-left:auto; margin-right:auto;  padding-left: 7px; }
 	.arrowTdHeader{ width:30px;	border: 1px solid white; margin-left:auto; margin-right:auto; padding-right: 3px; vertical-align: middle;}
 	.rArrow{color: red; border: 2px; padding-left: 3px; padding-top: 5px;  font-weight: bold; font-size: 20px; vertical-align: middle;}
@@ -52,49 +59,123 @@
 	
 	#chart_divEmpty{ margin-top: 200px; }
 </style>
-<script> 
+<script type="text/javascript"> 
+  
+  function checkDashboard2Dates(){
+	  var dStart = document.getElementById('start_date').value;
+	  var dEnd = document.getElementById('end_date').value;
+	  var i = dStart.indexOf('/');
+	  i = dStart.indexOf('/', i+1);
+	  var y1 = dStart.substring(i+1);
+	  i = dEnd.indexOf('/');
+	  i = dEnd.indexOf('/', i+1);
+	  var y2 = dEnd.substring(i+1);
+	  
+	  if(y1==y2){
+		  document.getElementById('f1').submit();
+	  }else{
+		  window.alert("Start and End dates must be within the same year.");
+		  return false;
+	  }
+  }
   
 $(function() { 
-    /////////////////////Chart.js
- 	
-    	/* removed
-    	//large graph  
+	 
+		///////////////////////sparklines
+	 
+		//production
+		var fhcA =  <c:out value="${a2}"/>;
+	    $('.fhcSparkClassA').sparkline(fhcA, {type: 'line', width: '130px', fillColor: undefined} ); 
+	    var fhcB  =  <c:out value="${b2}"/>;
+	    $('.fhcSparkClassB').sparkline(fhcB, {type: 'line', width: '130px', fillColor: undefined} ); 
+	    var fhcC  =  <c:out value="${c2}"/>;
+	    $('.fhcSparkClassC').sparkline(fhcC, {type: 'line', width: '130px', fillColor: undefined} ); 
+	    var fhcD  =  <c:out value="${d2}"/>;
+	    $('.fhcSparkClassD').sparkline(fhcD, {type: 'line', width: '130px', fillColor: undefined} ); 
+	    var fhcE  =  <c:out value="${e2}"/>;
+	    $('.fhcSparkClassE').sparkline(fhcE, {type: 'line', width: '130px', fillColor: undefined} ); 
+	    var fhcF  =  <c:out value="${f2}"/>;
+	    $('.fhcSparkClassF').sparkline(fhcF, {type: 'line', width: '130px', fillColor: undefined} ); 
+	    
+	    
+
+	    //quality
+	    var qa2  =  <c:out value="${quala2}"/>;
+	    $('.fhcSparkClassQualA').sparkline(qa2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var qb2  =  <c:out value="${qualb2}"/>;
+	    $('.fhcSparkClassQualB').sparkline(qb2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var qc2  =  <c:out value="${qualc2}"/>;
+	    $('.fhcSparkClassQualC').sparkline(qc2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    
+
+
+	    //Image Auditor Averages
+	    var aa2  =  <c:out value="${audita2}"/>;
+	    $('.fhcSparkClassAuditA').sparkline(aa2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var ab2  =  <c:out value="${auditb2}"/>;
+	    $('.fhcSparkClassAuditB').sparkline(ab2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var ac2  =  <c:out value="${auditc2}"/>;
+	    $('.fhcSparkClassAuditC').sparkline(ac2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var ad2  =  <c:out value="${auditd2}"/>;
+	    $('.fhcSparkClassAuditD').sparkline(ad2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    
+
+
+	    //Top 5 issues
+	    var ta2  =  <c:out value="${topa2}"/>;
+	    $('.fhcSparkClassTopA').sparkline(ta2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var tb2  =  <c:out value="${topb2}"/>;
+	    $('.fhcSparkClassTopB').sparkline(tb2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var tc2  =  <c:out value="${topc2}"/>;
+	    $('.fhcSparkClassTopC').sparkline(tc2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var td2  =  <c:out value="${topd2}"/>;
+	    $('.fhcSparkClassTopD').sparkline(td2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var te2  =  <c:out value="${tope2}"/>;
+	    $('.fhcSparkClassTopE').sparkline(te2, {type: 'line', width: '100px', fillColor: undefined} ); 
+
+	    
+	    //Turnaround Time
+	    var tta2  =  <c:out value="${turnarounda2}"/>;
+	    $('.fhcSparkClassTurnaroundA').sparkline(tta2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var ttb2  =  <c:out value="${turnaroundb2}"/>;
+	    $('.fhcSparkClassTurnaroundB').sparkline(ttb2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var ttc2  =  <c:out value="${turnaroundc2}"/>;
+	    $('.fhcSparkClassTurnaroundC').sparkline(ttc2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var ttd2  =  <c:out value="${turnaroundd2}"/>;
+	    $('.fhcSparkClassTurnaroundD').sparkline(ttd2, {type: 'line', width: '100px', fillColor: undefined} ); 
+	    var tte2  =  <c:out value="${turnarounde2}"/>;
+	    $('.fhcSparkClassTurnaroundE').sparkline(tte2, {type: 'line', width: '100px', fillColor: undefined} );   
+	    
+	    
+ 	   	/////////////////////Chart.js
+ 		//large graph  
  	 
-		var lineChartDataScan = {
-			labels : <c:out value="${xAxisLabels}"  escapeXml="false" />,
+		var lineChartData = {
+			labels : <c:out value="${goalsLabels}"  escapeXml="false" />,
 			datasets : [ {
 				fillColor : "orange",
 				strokeColor : "orange",
 				pointColor : "orange",
 				pointStrokeColor : "#fff",
-				data : <c:out value="${scanActuals}"/>,
+				data : <c:out value="${goals}"/>,
+			 
+			}, {
+				fillColor : "blue",
+				strokeColor : "blue",
+				pointColor : "blue",
+				pointStrokeColor : "#fff",
+				data : <c:out value="${scan}"/>,
+			 
+			}, {
+				fillColor : "green",
+				strokeColor : "green",
+				pointColor : "green",
+				pointStrokeColor : "#fff",
+				data : <c:out value="${publish}"/>,
 			 
 			} ]
 
 		}
-		var lineChartDataProcess = {
-				labels : <c:out value="${xAxisLabels}"  escapeXml="false" />,
-				datasets : [  {
-					fillColor : "blue",
-					strokeColor : "blue",
-					pointColor : "blue",
-					pointStrokeColor : "#fff",
-					data : <c:out value="${processActuals}"/>,
-				 
-				} ]
-
-			}
-		var lineChartDataPublish = {
-				labels : <c:out value="${xAxisLabels}"  escapeXml="false" />,
-				datasets : [ {	fillColor : "green",
-					strokeColor : "green",
-					pointColor : "green",
-					pointStrokeColor : "#fff",
-					data : <c:out value="${publishActuals}"/>,
-				 
-				} ]
-
-			}
 		var options = {
 				
 				//Boolean - If we show the scale above the chart data			
@@ -178,34 +259,27 @@ $(function() {
 				onAnimationComplete : null
 				
 			};
-     
-       
-       
-    	//three large line graphs
-		var myLineScan = new Chart(document.getElementById("canvas1").getContext("2d")).Line(lineChartDataScan, options);
-		var myLineProcess = new Chart(document.getElementById("canvas2").getContext("2d")).Line(lineChartDataProcess, options);
-		var myLinePublish = new Chart(document.getElementById("canvas3").getContext("2d")).Line(lineChartDataPublish, options);
+		var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Line(lineChartData, options);
 
 		//draw legends by hand
 		var c = document.getElementById("canvasLegend");
 		var ctx = c.getContext("2d");
-		ctx.fillStyle="orange";
+		ctx.fillStyle="Orange";
+		ctx.fillRect(20,10,70,2);
+		ctx.font = "16px Arial";
+		ctx.fillText("Goal",20,30);
+		c = document.getElementById("canvasLegend2");
+		var ctx = c.getContext("2d");
+		ctx.fillStyle="blue";
 		ctx.fillRect(20,10,70,2);
 		ctx.font = "16px Arial";
 		ctx.fillText("Scan",20,30);
-		var c = document.getElementById("canvasLegend2");
-		var ctx = c.getContext("2d");
-		ctx.fillStyle="blue";
-		ctx.fillRect(20,10,70,2)
-		ctx.font = "16px Arial";
-		ctx.fillText("Process",20,30);
-		var c = document.getElementById("canvasLegend3");
+		c = document.getElementById("canvasLegend3");
 		var ctx = c.getContext("2d");
 		ctx.fillStyle="green";
-		ctx.fillRect(20,10,70,2)
+		ctx.fillRect(20,10,70,2);
 		ctx.font = "16px Arial";
 		ctx.fillText("Publish",20,30);
-		*/
 		
 		
 		$("#start_date").datepicker();
@@ -419,33 +493,21 @@ $(function() {
      <form id="f1"name="f1" method="post" action="" >
 	  	<%@include file="/WEB-INF/views/includes/dashboardMenu.html"%>
 		<h1 class="serif">${pageTitle}</h1>
+		
+		<!-- Date selection table -->
 		<table>
-		<!-- <tr> 
+		<tr> 
 	   		<th>${messages['startDate']}</th>
 			<th><input id="start_date" name="startDate" value="${startDate}"/>
-				<button  class="dtUp" onclick="js:currentTimestamp('start_date'); return false;">&larr;&nbsp; ${messages['now']}</button>
 			</th>
-			<th>&nbsp;&nbsp; ${messages['endDate']}</th>
+			<th>&nbsp;&nbsp; ${messages['endDate']} (Used for YTD)</th>
 			<th><input id="end_date" name="endDate"  value="${endDate}"/>
-				<button  class="dtUp" onclick="js:currentTimestamp('end_date'); return false;">&larr;&nbsp; ${messages['now']}</button>
 			</th>
-			<th>&nbsp;&nbsp;
-		 		<select style="margin-bottom: 0px;" id="siteDropdown" name="site" >
-				 
-				 
-				<c:forEach var="i" items="${allLocations}">
-    				<c:if test="${i==site}"><option selected>${i}</option> </c:if>
-					<c:if test="${i!=site}"><option>${i}</option> </c:if>
-				</c:forEach>
-				</select>
-			</th>
-			<th>
-			 <button value="load" name="load" id="load">Refresh</button>
-			</th>
-		</tr> -->
-		<tr>
+		 
+		 
+			<!--
 				<th>${messages['year']} </th>
-			    <th><select id="year" name="year">
+				<th><select id="year" name="year">
 			        <c:if test="${year == '2010'}"> <option selected="true">2010</option></c:if>
 			        <c:if test="${year != '2010'}"> <option>2010</option></c:if>
 			        <c:if test="${year == '2011'}"> <option selected="true">2011</option></c:if>
@@ -471,9 +533,9 @@ $(function() {
 			        <c:if test="${year == '2021'}"> <option selected="true">2021</option></c:if>
 			        <c:if test="${year != '2021'}"> <option>2021</option></c:if>
 			      
-				</select>
+					</select>
 				</th>
-				<!-- <th>${messages['month']}</th>
+				 <th>${messages['month']}</th>
 				<th><select id="month" name="month">
 			   		 <c:if test="${month == '1'}"><option selected="true">1</option></c:if>
 			   		 <c:if test="${month != '1'}"><option>1</option></c:if>
@@ -506,154 +568,474 @@ $(function() {
 		 		<select   id="siteDropdown" name="site" >
 				 
 				 
-				<c:forEach var="i" items="${allLocations}">
+				<c:forEach var="i" items="${allScanLocations}">
     				<c:if test="${i==site}"><option selected>${i}</option> </c:if>
 					<c:if test="${i!=site}"><option>${i}</option> </c:if>
 				</c:forEach>
 				</select>
-			</th>
-			<th>
-			 <button value="load" name="load" id="load" style="margin-bottom: 7px;">Refresh</button>
-			</th>
+				</th>
+				<th>
+				 <button value="load" name="load" id="load" style="margin-bottom: 7px;"  onclick="js:checkDashboard2Dates(); return false;">Refresh</button>
+				</th>
 			</tr>		
 		</table>
 		
-		
-		<table> <tr><td style="padding-bottom: 340px;">
-			<table  class="mainRowHeader" >
-				<tr>
-			 		<td>
-			 			<h4 style="text-align:center; margin-bottom: 12px;">Scan and Publish counts</h4>
-			 		</td>
-	            </tr>
-		 	</table>
-		 	<div  style="padding-left: 20px;">
+		<!-- MAIN   table -->
+		<table> 
+			<tr>
+				<!--  left side page td -->
+				<td style="padding-bottom: 340px;">
+					<table  class="mainRowHeader" >
+						<tr>
+			 				<td>
+			 				<h4 style="text-align:center; margin-bottom: 12px;">Scan and Publish counts</h4>
+			 				</td>
+	            		</tr>
+		 			</table>
+		 			<div  style="padding-left: 20px;">
+			 	 
+			 			<div style="padding-top: 11px; padding-left: 50px;">
+			 			(date-range) Scan (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalDateRangeScan}"/> <br>
+			 			</div>
+					 	 
+					 	<div style="padding-top: 11px; padding-left: 50px;">
+						(date-range) Publish (books, images): <c:out value="${aboveHorizontalLineTotalDateRangePublish}"/> <br> 
+						</div>
+						<div style="padding-top: 22px; padding-left: 10px; font-size: 140%; ">
+						YTD Scan (books, images): &nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalYTDScan}"/> <br>
+						</div>
+					
+						<div style="padding-top: 18px;  padding-bottom: 5px; padding-left: 10px; font-size: 140%; ">
+						YTD Publish (books, images): <c:out value="${aboveHorizontalLineTotalYTDPublish}"/><br> 
+						</div>
 		 	 
-		 	<div style="padding-top: 11px; padding-left: 50px;">
-		 	MTD Scan (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalMTDScan}"/> <br>
-		 	</div>
-		 	<div style="padding-top: 11px; padding-left: 50px;">
-		 	MTD Scan IA-RT (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalIaRtMTDScan}"/> <br>
-		 	</div>
-		 	<div style="padding-top: 11px; padding-left: 50px;">
-			MTD Publish (books, images): <c:out value="${aboveHorizontalLineTotalMTDPublish}"/> <br> 
-			</div>
-			<div style="padding-top: 11px; padding-left: 50px;">
-			YTD Scan (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalYTDScan}"/> <br>
-			</div>
-			<div style="padding-top: 11px; padding-left: 50px;">
-			YTD Scan IA-RT (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalIaRtYTDScan}"/> <br>
-			</div>
-			<div style="padding-top: 11px; padding-left: 50px;">
-			YTD Publish (books, images): <c:out value="${aboveHorizontalLineTotalYTDPublish}"/><br> 
-			</div>
-		 	 
-		 	</div>
-			<div id="google_combo_div1" style="width: 450px; height: 300px;"></div>
-			<div id="google_combo_div2" style="width: 450px; height: 300px;"></div>
-			<div id="google_combo_div3" style="width: 450px; height: 300px;"></div>
-			 
+		 			</div>
+					<div id="google_combo_div1" style="width: 450px; height: 300px;"></div>
+					<div id="google_combo_div2" style="width: 450px; height: 300px;"></div>
+					<div id="google_combo_div3" style="width: 450px; height: 300px;"></div>
+					 
 			  
 			
-		    <!-- Open Issues -->
-			<table  class="mainRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Open Issues</h4></td></tr>
-		 	</table>
-			<table>
-			<tr class="secondaryRowHeader">
-				<td align="center"  width='360' class="secondaryTd">Owner</td>
-				<td align="center"  width='140' class="secondaryTd">Number Open</td>
-			</tr>
-			
-			<tr>
-		 
-			<c:forEach items="${openIssues}" var="row">
-				<tr>
-			    <td class="bodyTd"  width='177'>${row.get(0)}</td>
-			    <td class="bodyTd" align="center" width='80'>${row.get(1)} </td>
-			    </tr>
-            </c:forEach>
-
-			</tr>	 
-			</table>
-			 
-			 
-			 
-			<!-- big graph  - removed
-			<table  class="mainRowHeader" >
-				<tr>
-			 		<td>
-			 			<h4 style="text-align:center; margin-bottom: 12px;">Image/page Counts from Beginning of Year Through Selected Month</h4>
-			 		</td>
-	            </tr>
-		 	</table>
-		 	 
-		 	
-		 	  
-		    <canvas id="canvas1" height="200" width="820"></canvas>
-			<canvas id="canvasLegend"  height="50"></canvas>   
-			<canvas id="canvas2" height="200" width="820"></canvas>
-			<canvas id="canvasLegend2" height="50"></canvas>   
-			<canvas id="canvas3" height="200" width="820"></canvas>
-			<canvas id="canvasLegend3" height="50"></canvas>   
- 
-			 	   -->
-			 
-		</td>
+				    <!-- Open Issues -->
+					<table  class="mainRowHeader" > 
+						<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Open Issues</h4></td></tr>
+				 	</table>
+					<table>
+					<tr class="secondaryRowHeader">
+						<td align="center"  width='400' class="secondaryTd">Owner</td>
+						<td align="center"  width='200' class="secondaryTd">Number Open</td>
+					</tr>
+					
+					<tr>
+				 
+					<c:forEach items="${openIssues}" var="row">
+						<tr>
+					    <td class="bodyTd"  width='177'>${row.get(0)}</td>
+					    <td class="bodyTd" align="center" width='80'>${row.get(1)} </td>
+					    </tr>
+		            </c:forEach>
 		
-		
-		<!-- YTD scan and publish pie charts here -->
-		<td style="padding-left: 6px;">
-			<!-- /Goal Actual Pie Charts -->
-			<table  class="mainRightRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">YTD Scan / Goal</h4></td></tr>
-		 	</table>
-			<table>
-			<tr>
-				<td align="center" >
-					<!--Extra dummy Divs that will hold the pie chart-->
-					<c:forEach var="i" begin="0" end="${ytdPiesCount}">
-						<div id="ytd_scan_div${i}"></div>
-					</c:forEach>
-  				
-				</td>
-			</tr>
-			</table>
-			
-			
-			
-			<!-- future charts here -->
-			
-			
-		</td>
+					</tr>	 
+					</table> 
+					
+					<!-- ////////////////PRODUCTION SPARKLINES//////////////////// -->
 				
-		<!-- percent completed of scanned piecharts here -->
-		<td style="padding-left: 6px;">
-			<!-- /Goal Actual Pie Charts -->
-			<table  class="mainRightRowHeader" > 
-				<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">YTD Publish / Goal</h4></td></tr>
-		 	</table>
-			<table>
-			<tr>
-				<td align="center" >
-					<!--Div that will hold the pie chart-->
-					<c:forEach var="i" begin="0" end="${ytdPiesCount}">
-						<div id="ytd_publish_div${i}"></div>
-					</c:forEach>
-  					 
-  				
+					<table class="mainRowHeader">
+				 		<tr>
+				 			<td>
+				 				<h4 style="text-align:center; margin-bottom: 8px;">Production</h4>
+				 			</td>
+		              	</tr>
+					</table>
+					<table>
+					<tr class="secondaryRowHeader">
+						<td style="height: 33px; width: 200px;"></td>
+						<td align="center" class="secondaryTd" style="height: 33px; width: 160px;">Actual</td>
+						<td align="center" class="secondaryTd"  style="height: 33px; width: 180px;">Trend</td>
+						<td align="center" class="arrowTdHeader"  style="height: 33px; width: 50px;"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
+					</tr>
+					
+					<tr>
+					<td class="bodyTd"  width='177'>${a0}</td>
+					<td class="bodyTd"  width='80'>${a1} </td>
+					<td  class="bodyTd" align="center"><span class="fhcSparkClassA"></span> </td>
+					<td class="arrowTd" ><c:if test="${a3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+						<c:if test="${a3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+						<c:if test="${a3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+					</td>
+					</tr>
+					
+					
+					<tr>
+					<td class="bodyTd" >${b0}</td>
+					<td class="bodyTd" >${b1} </td>
+					<td class="bodyTd"  align="center"><span class="fhcSparkClassB"></span> </td>
+					<td class="arrowTd"  ><c:if test="${b3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+						<c:if test="${b3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+						<c:if test="${b3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+					</td>
+					</tr>
+					
+					<tr>
+					<td class="bodyTd" >${c0} </td>
+					<td class="bodyTd" >${c1} </td>
+					<td class="bodyTd"  align="center"><span class="fhcSparkClassC"></span></td>
+					<td class="arrowTd" ><c:if test="${c3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+							<c:if test="${c3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+							<c:if test="${c3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+				 	</td>
+					</tr>
+					
+					
+					<tr>
+					<td class="bodyTd" >${d0}</td>
+					<td class="bodyTd" >${d1} </td>
+					<td  class="bodyTd" align="center"> <span class="fhcSparkClassD"></span> </td>
+					<td class="arrowTd" ><c:if test="${d3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+							<c:if test="${d3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+							<c:if test="${d3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+					</td>	 
+					</tr>
+					
+					
+					<tr>
+					<td class="bodyTd" >${e0}</td>
+					<td class="bodyTd" >${e1} </td>
+					<td  class="bodyTd" align="center"> <span class="fhcSparkClassE"></span> </td>
+					<td class="arrowTd" ><c:if test="${e3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+							<c:if test="${e3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+							<c:if test="${e3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+					</td>
+					</tr>
+					
+					<tr>
+					<td class="bodyTd" >${f0}</td>
+					<td class="bodyTd" >${f1} </td>
+					<td  class="bodyTd" align="center"> <span class="fhcSparkClassF"></span> </td>
+					<td class="arrowTd" ><c:if test="${f3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+						<c:if test="${f3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+						<c:if test="${f3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+					</td>
+					</tr>
+					
+					</table>
+							
+				 	
+					
+						<!-- ////////////////end PRODUCTION SPARKLINES//////////////////// -->
+				</td>
+		
+				<!-- right side of page td -->
+				<td>
+					<table>
+
+						<!-- big graph  spanning 2 columns-->
+						<tr>
+						<td colspan="2">
+						<table  class="mainRowHeaderWide" >
+							<tr>
+						 		<td>
+						 			<h4 style="text-align:center; margin-bottom: 12px;">YTD Scan / Publish / Goal</h4>
+						 		</td>
+				            </tr>
+					 	</table>
+					
+					    <canvas id="canvas" height="200" width="830"></canvas>
+						<canvas id="canvasLegend"  width="100" height="50" style="padding-left:500px; "></canvas>  
+						<canvas id="canvasLegend2" width="100" height="50"></canvas>   
+						<canvas id="canvasLegend3" width="100" height="50"></canvas>   
+			 			<div style="height:22px;"></div>
+						</td>
+							
+						</tr>
+					
+					
+						<!-- right side 2 skinny columns of pie charts -->
+						<tr> 	    
+
+						<!-- YTD scan and publish pie charts here -->
+						<td style="padding-left: 6px;">
+							<!-- /Goal Actual Pie Charts -->
+							<table  class="mainRightRowHeader" > 
+								<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">YTD Scan / Goal</h4></td></tr>
+						 	</table>
+							<table>
+							<tr>
+								<td align="center" >
+									<!--Extra dummy Divs that will hold the pie chart-->
+									<c:forEach var="i" begin="0" end="${ytdPiesCount}">
+										<div id="ytd_scan_div${i}"></div>
+									</c:forEach>
+				  				
+								</td>
+							</tr>
+							</table>
+							
+							
+							
+										
+							<!-- Quality -->
+							<table  class="mainRowHeader" style="width: 387px;" >
+							<tr>
+						 		<td>
+						 				<h4 style="text-align:center; margin-bottom: 8px;">Quality</h4>
+						 			</td>
+				              	</tr>
+							 
+						 	</table>
+							<table>
+							<tr class="secondaryRowHeader">
+								<td style="width: 158px;"></td>
+								<td align="center" class="secondaryTd">Actual</td>
+								<td align="center" class="secondaryTd">Trend</td>
+								<td align="center" class="arrowTdHeader"><span class="rArrow">&#8593;</span><span class="gArrow">&#8595; &nbsp;</span></td>
+							</tr>
+							
+							<tr>
+							<td class="bodyTd"  width='158'>${quala0}</td>
+							<td class="bodyTd"  width='80'>${quala1} </td>
+							<td class="bodyTd"  align="center"><span class="fhcSparkClassQualA"></span> </td>
+							<td class="arrowTd" ><c:if test="${quala3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+									<c:if test="${quala3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+									<c:if test="${quala3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+							</td>
+							</tr>
+								
+							<tr>
+							<td class="bodyTd"  width='158'>${qualb0}</td>
+							<td class="bodyTd"  width='80'>${qualb1} </td>
+							<td  class="bodyTd" align="center"><span class="fhcSparkClassQualB"></span> </td>
+							<td class="arrowTd" ><c:if test="${qualb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+									<c:if test="${qualb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+									<c:if test="${qualb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+							</td>
+							</tr>		
+							
+							<tr>
+							<td class="bodyTd"  width='158'>${qualc0}</td>
+							<td class="bodyTd"  width='80'>${qualc1} </td>
+							<td class="bodyTd" align="center"><span class="fhcSparkClassQualC"></span> </td>
+							<td class="arrowTd" ><c:if test="${qualc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+									<c:if test="${qualc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+									<c:if test="${qualc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+							</td>
+							</tr>
+							</table>
+			            
+			            
+			            
+			            	<!-- Image Auditor Averages -->
+			            	<div style="height: 33px;"></div>
+							<table  class="mainRightRowHeader" > 
+								<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Image Auditor Averages</h4></td></tr>
+						 	</table>
+							<table>
+							<tr class="secondaryRowHeader">
+								<td align="center" class="secondaryTd"></td>
+								<td align="center" class="secondaryTd">Avg/Auditor</td>
+								<td align="center" class="secondaryTd">Trend</td>
+								<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
+							</tr>
+							
+							<tr>
+							<td class="bodyTd"  width='158'>${audita0}</td>
+							<td class="bodyTd"  width='82'>${audita1} </td>
+							<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditA"></span> </td>
+							<td class="arrowTd" ><c:if test="${audita3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+									<c:if test="${audita3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+									<c:if test="${audita3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+							</td>
+							</tr>
+							<tr>
+							<td class="bodyTd"  width='158'>${auditb0}</td>
+							<td class="bodyTd"  width='82'>${auditb1} </td>
+							<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditB"></span> </td>
+							<td class="arrowTd" ><c:if test="${auditb3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+									<c:if test="${auditb3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+									<c:if test="${auditb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+							</td>
+						 	</tr>
+							<tr>
+							<td class="bodyTd"  width='158'>${auditc0}</td>
+							<td class="bodyTd"  width='82'>${auditc1} </td>
+							<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditC"></span> </td>
+							<td class="arrowTd" ><c:if test="${auditc3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+									<c:if test="${auditc3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+									<c:if test="${auditc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+							</td>
+							</tr>
+							<tr>
+							<td class="bodyTd"  width='158'>${auditd0}</td>
+							<td class="bodyTd"  width='82'>${auditd1} </td>
+							<td  class="bodyTd" align="center"><span class="fhcSparkClassAuditD"></span> </td>
+							<td class="arrowTd" ><c:if test="${auditd3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+									<c:if test="${auditd3=='down'}"><span class="rArrow">&#8595;</span></c:if>
+									<c:if test="${auditd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+							</td>
+							</tr>
+							</table>
+			
+			
+				
+							<!-- future charts here -->
+				
+						</td>
+									
+			
+					
+						<!-- percent completed of scanned piecharts here -->
+						<td style="padding-left: 6px;">
+						<!-- /Goal Actual Pie Charts -->
+						<table  class="mainRightRowHeader" > 
+							<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">YTD Publish / Goal</h4></td></tr>
+					 	</table>
+						<table>
+						<tr>
+							<td align="center" >
+								<!--Div that will hold the pie chart-->
+								<c:forEach var="i" begin="0" end="${ytdPiesCount}">
+									<div id="ytd_publish_div${i}"></div>
+								</c:forEach>
+			  					 
+			  				
+							</td>
+						</tr>
+						</table>
+					
+					
+					
+						<!-- Top 5 Image Quality Issues -->
+						<table  class="mainRightRowHeader"  style="width:400px;" > 
+							<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Top 5 Image Quality Issues</h4></td></tr>
+					 	</table>
+						<table  style="width:400px;">
+						<tr class="secondaryRowHeader">
+							<td align="center" class="secondaryTd">Issue</td>
+							<td align="center" class="secondaryTd">%</td>
+							<td align="center" class="secondaryTd">Trend</td>
+							<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
+						</tr>
+						
+						<tr>
+						<td class="bodyTd"  width='158'>${topa0}</td>
+						<td class="bodyTd" align="center" width='82'>${topa1} </td>
+						<td  class="bodyTd" align="center"><span class="fhcSparkClassTopA"></span> </td>
+						<td class="arrowTd" ><c:if test="${topa3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${topa3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${topa3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+						</tr>
+						<tr>
+						<td class="bodyTd"  width='158'>${topb0}</td>
+						<td class="bodyTd"  align="center" width='82'>${topb1} </td>
+						<td  class="bodyTd" align="center"><span class="fhcSparkClassTopB"></span> </td>
+						<td class="arrowTd" ><c:if test="${topb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${topb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${topb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+					 	</tr>
+						<tr>
+						<td class="bodyTd"  width='158'>${topc0}</td>
+						<td class="bodyTd"  align="center" width='82'>${topc1} </td>
+						<td  class="bodyTd" align="center"><span class="fhcSparkClassTopC"></span> </td>
+						<td class="arrowTd" ><c:if test="${topc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${topc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${topc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+						</tr>
+						<tr>
+						<td class="bodyTd"  width='158'>${topd0}</td>
+						<td class="bodyTd" align="center" width='82'>${topd1} </td>
+						<td  class="bodyTd" align="center"><span class="fhcSparkClassTopD"></span> </td>
+						<td class="arrowTd" ><c:if test="${topd3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${topd3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${topd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+						</tr>
+						<tr>
+						<td class="bodyTd"  width='158'>${tope0}</td>
+						<td class="bodyTd" align="center" width='82'>${tope1} </td>
+						<td  class="bodyTd" align="center"><span class="fhcSparkClassTopE"></span> </td>
+						<td class="arrowTd" ><c:if test="${tope3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${tope3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${tope3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+						</tr>
+						 
+						</table>
+						
+			
+			
+			
+						<!-- Turnaround Time -->
+						<table  class="mainRightRowHeader" style="width: 400px;"> 
+							<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Turnaround Time</h4></td></tr>
+					 	</table>
+						<table style="width:400px;">
+						<tr class="secondaryRowHeader">
+							<td style="width:100px;"></td>
+							<td align="center" class="secondaryTd" style="width:100px;">Avg time (days) in each phase</td>
+							<td align="center" class="secondaryTd"  style="width:100px;">Trend</td>
+							<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
+						</tr>
+						
+						<tr>
+						<td class="bodyTd2"  >${turnarounda0}</td>
+						<td class="bodyTd2"  >${turnarounda1} </td>
+						<td  class="bodyTd2" align="center"><span class="fhcSparkClassTurnaroundA"></span> </td>
+						<td class="arrowTd" ><c:if test="${turnarounda3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${turnarounda3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${turnarounda3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+						</tr>
+						<tr>
+						<td class="bodyTd2"  >${turnaroundb0}</td>
+						<td class="bodyTd2"   >${turnaroundb1} </td>
+						<td  class="bodyTd2" align="center"><span class="fhcSparkClassTurnaroundB"></span> </td>
+						<td class="arrowTd" ><c:if test="${turnaroundb3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${turnaroundb3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${turnaroundb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+					 	</tr>
+						<tr>
+						<td class="bodyTd2"   >${turnaroundc0}</td>
+						<td class="bodyTd2"  >${turnaroundc1} </td>
+						<td  class="bodyTd2" align="center"><span class="fhcSparkClassTurnaroundC"></span> </td>
+						<td class="arrowTd" ><c:if test="${turnaroundc3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${turnaroundc3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${turnaroundc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+						</tr>
+						<tr>
+						<td class="bodyTd2"   >${turnaroundd0}</td>
+						<td class="bodyTd2"  >${turnaroundd1} </td>
+						<td  class="bodyTd2" align="center"><span class="fhcSparkClassTurnaroundD"></span> </td>
+						<td class="arrowTd" ><c:if test="${turnaroundd3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${turnaroundd3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${turnaroundd3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+						</tr>
+							<tr>
+						<td class="bodyTd2"  >${turnarounde0}</td>
+						<td class="bodyTd2"  >${turnarounde1} </td>
+						<td  class="bodyTd2" align="center"><span class="fhcSparkClassTurnaroundE"></span> </td>
+						<td class="arrowTd" ><c:if test="${turnarounde3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+								<c:if test="${turnarounde3=='down'}"><span class="gArrow">&#8595;</span></c:if>
+								<c:if test="${turnarounde3=='equal'}"><span class="gDash">&#8669;</span></c:if>
+						</td>
+						</tr>			
+						</table>
+						
+						
+			
+						<!-- future charts here -->
+						
+						</td>
+						</tr>
+					</table>
 				</td>
 			</tr>
-			</table>
-			
-		 
-			 
-			
-			<!-- future charts here -->
-			
-		</td>
-		
-		</tr></table>
+		</table>
 		
 		</form>
     </div>

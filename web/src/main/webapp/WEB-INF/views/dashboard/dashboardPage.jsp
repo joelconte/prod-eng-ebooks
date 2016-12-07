@@ -267,7 +267,7 @@ $(function() {
 		ctx.fillStyle="blue";
 		ctx.fillRect(20,10,70,2);
 		ctx.font = "16px Arial";
-		ctx.fillText("Actual",20,30);
+		ctx.fillText("Publish",20,30);
 		
 		
 		$("#start_date").datepicker();
