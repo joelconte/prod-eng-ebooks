@@ -4089,7 +4089,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				}
 
 				mdValues[14][0] = "dcterms:isPartOf"; mdValues[14][1] = isPartOf;
-				mdValues[15][0] = "dc:rightsHolder"; mdValues[15][1] = "Refer to document for copyright information";
+				mdValues[15][0] = "dcterms:rightsHolder"; mdValues[15][1] = "Refer to document for copyright information";
 				mdValues[16][0] = "dc:type"; mdValues[16][1] = "text";
 				mdValues[17][0] = "dc:format"; mdValues[17][1] = "text/pdf";
 				mdValues[18][0] = "ldsterms:callno"; mdValues[18][1] = row.get(9);
