@@ -403,25 +403,35 @@ public class MiscController2 implements MessageSourceAware{
 		String[][] horizontalLineDataFHL;
 		String[][] horizontalLineDataPartnerLibraries;
 		String[][] horizontalLineDataInternetArchive;
+		String[][] horizontalLineDataInternetArchiveRt;
+		String[][] horizontalLineDataGmrv;
 		String horizontalLineDataOneSiteString = null;
 		String horizontalLineDataFHLString = null;
 		String horizontalLineDataPartnerLibrariesString = null;
 		String horizontalLineDataInternetArchiveString = null;
+		String horizontalLineDataInternetArchiveRtString = null;
+		String horizontalLineDataGmrvString = null;
 		
 		if("All Sites".equals(site)) {
 			 
 			horizontalLineDataFHL = bookService.getDashboarDataYTDScanPublish(fomStartDate, fomEndDate, "allFhc", daysDiff);
 			horizontalLineDataPartnerLibraries = bookService.getDashboarDataYTDScanPublish(fomStartDate, fomEndDate, "allPartnerLibs", daysDiff);
 			horizontalLineDataInternetArchive = bookService.getDashboarDataYTDScanPublish(fomStartDate, fomEndDate, "allInternetArchives", daysDiff);
+			horizontalLineDataInternetArchiveRt = bookService.getDashboarDataYTDScanPublish(fomStartDate, fomEndDate, "rtInternetArchives", daysDiff);
+			horizontalLineDataGmrv = bookService.getDashboarDataYTDScanPublish(fomStartDate, fomEndDate, "gmrv", daysDiff);
 
 			horizontalLineDataFHLString = arraysToString(horizontalLineDataFHL);
 			horizontalLineDataPartnerLibrariesString = arraysToString(horizontalLineDataPartnerLibraries);
 			horizontalLineDataInternetArchiveString = arraysToString(horizontalLineDataInternetArchive);
+			horizontalLineDataInternetArchiveRtString = arraysToString(horizontalLineDataInternetArchiveRt);
+			horizontalLineDataGmrvString = arraysToString(horizontalLineDataGmrv);
 			String totalScanPublish[] = bookService.getDashboarDataTotalYTDScanPublish(startDate, endDate, fomStartDate, fomStartDateCurrentMonth, fomEndDate, "All Sites");
 			
 			model.addAttribute("horizontalLineDataFHL", horizontalLineDataFHLString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
 			model.addAttribute("horizontalLineDataPartnerLibraries", horizontalLineDataPartnerLibrariesString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
 			model.addAttribute("horizontalLineDataInternetArchive", horizontalLineDataInternetArchiveString);//"[['Month', 'Scan', 'Publish', 'Goal'], ['J',  165, 450, 214.6],  ['F',  135, 288, 214.6],      ['M',  157, 397, 214.6],     ['A',  139, 215, 214.6],       ['M',  136, 366, 214.6] ]");
+			model.addAttribute("horizontalLineDataInternetArchiveRt", horizontalLineDataInternetArchiveRtString);
+			model.addAttribute("horizontalLineDataGmrv", horizontalLineDataGmrvString);
 			model.addAttribute("horizontalLineDataOneSite", "[]");//send flag //dummy for js
 			
 			//text counts in upper left
@@ -440,6 +450,8 @@ public class MiscController2 implements MessageSourceAware{
 			model.addAttribute("horizontalLineDataFHL", "[]"); //send flag //dummy for js
 			model.addAttribute("horizontalLineDataPartnerLibraries", "[]"); //send flag //dummy for js
 			model.addAttribute("horizontalLineDataInternetArchive", "[]");//send flag //dummy for js
+			model.addAttribute("horizontalLineDataInternetArchiveRt",  "[]");//send flag //dummy for js
+			model.addAttribute("horizontalLineDataGmrv",  "[]");//send flag //dummy for js
 			
 			//text counts in upper left
 			model.addAttribute("aboveHorizontalLineTotalDateRangeScan", totalScanPublish[0]);

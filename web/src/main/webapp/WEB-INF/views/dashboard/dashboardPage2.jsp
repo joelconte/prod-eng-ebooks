@@ -303,6 +303,8 @@ $(function() {
         var horizontalLineDataFHL = <c:out value="${horizontalLineDataFHL}" escapeXml="false" />;
         var horizontalLineDataPartnerLibraries = <c:out value="${horizontalLineDataPartnerLibraries}" escapeXml="false" />;
         var horizontalLineDataInternetArchive = <c:out value="${horizontalLineDataInternetArchive}" escapeXml="false" />;
+        var horizontalLineDataInternetArchiveRt = <c:out value="${horizontalLineDataInternetArchiveRt}" escapeXml="false" />;
+        var horizontalLineDataGmrv = <c:out value="${horizontalLineDataGmrv}" escapeXml="false" />;
        
        /* horizontalLineData = [
          ['xMonth', 'xScan',   'xPublish', 'xGoal'],
@@ -317,6 +319,8 @@ $(function() {
         var dataFHL = google.visualization.arrayToDataTable(horizontalLineDataFHL);
      	var dataHorizontalLineDataPartnerLibraries = google.visualization.arrayToDataTable(horizontalLineDataPartnerLibraries);
      	var dataHorizontalLineDataInternetArchive = google.visualization.arrayToDataTable(horizontalLineDataInternetArchive);
+     	var dataHorizontalLineDataInternetArchiveRt = google.visualization.arrayToDataTable(horizontalLineDataInternetArchiveRt);
+     	var dataHorizontalLineDataGmrv = google.visualization.arrayToDataTable(horizontalLineDataGmrv);
 
 
     var options0 = {
@@ -345,18 +349,35 @@ $(function() {
     var options3 = {
       xlegend: {position: 'none'},
       orientation: 'vertical',
-      title : 'Internet Archive',
+      title : 'Internet Archive (w/o RT)',
       seriesType: 'bars',
       series: {0: {color: 'blue'}, 1: {color: 'green'}, 2: {type: 'line'}}
     };
     
+    var options4 = {
+ 	      xlegend: {position: 'none'},
+ 	      orientation: 'vertical',
+ 	      title : 'Internet Archive - RT',
+ 	      seriesType: 'bars',
+ 	      series: {0: {color: 'blue'}, 1: {color: 'green'}, 2: {type: 'line'}}
+    };
+    var options5 = {
+   	      xlegend: {position: 'none'},
+   	      orientation: 'vertical',
+   	      title : 'GMRV',
+   	      seriesType: 'bars',
+   	      series: {0: {color: 'blue'}, 1: {color: 'green'}, 2: {type: 'line'}}
+   	};
     
     //horizontal line charts - left side
     if(horizontalLineDataOneSite!=null && horizontalLineDataOneSite!=''){
     	var chart = new google.visualization.ComboChart(document.getElementById('google_combo_div1'));
         chart.draw(dataOneSite, options0);
+        document.getElementById('google_combo_div1').style.marginTop = "150px";
         document.getElementById('google_combo_div2').style.display = "none";
         document.getElementById('google_combo_div3').style.display = "none";
+        document.getElementById('google_combo_div4').style.display = "none";
+        document.getElementById('google_combo_div5').style.display = "none";
     }else{
     	var chart = new google.visualization.ComboChart(document.getElementById('google_combo_div1'));
         chart.draw(dataFHL, options1);
@@ -364,6 +385,10 @@ $(function() {
         chart.draw(dataHorizontalLineDataPartnerLibraries, options2);
         var chart = new google.visualization.ComboChart(document.getElementById('google_combo_div3'));
         chart.draw(dataHorizontalLineDataInternetArchive, options3);
+        var chart = new google.visualization.ComboChart(document.getElementById('google_combo_div4'));
+        chart.draw(dataHorizontalLineDataInternetArchiveRt, options4);
+        var chart = new google.visualization.ComboChart(document.getElementById('google_combo_div5'));
+        chart.draw(dataHorizontalLineDataGmrv, options5);
     }
    
   
@@ -418,8 +443,8 @@ $(function() {
             	title = ytdPies[x][0] + ' [' + ytdPies[x][2] + ' / ' + ytdPies[x][1] + ']'; //[complete/goal]
             	var options = {'fontSize': 12,
             			'title': title,
-                        'width':400,
-                        'height':150,
+                        'width':420,
+                        'height':200,
                         colors: ['red', 'green'],
                         chartArea: {left:16}};
 
@@ -461,8 +486,8 @@ $(function() {
             	title = ytdPies[x][0] + ' [' + ytdPies[x][4] + ' / ' + ytdPies[x][1] + ']'; //[complete/goal]
             	var options = {'fontSize': 12,
             			'title': title,
-                        'width':400,
-                        'height':150,
+                        'width':420,
+                        'height':200,
                         colors: ['red', 'green'],
                         chartArea: {left:16}};
 
@@ -592,7 +617,7 @@ $(function() {
 			 				</td>
 	            		</tr>
 		 			</table>
-		 			<div  style="padding-left: 20px;">
+		 			<div  style="margin-top: 40px; padding-left: 20px;">
 			 	 
 			 			<div style="padding-top: 11px; padding-left: 50px;">
 			 			(date-range) Scan (books, images): &nbsp;&nbsp;&nbsp;&nbsp;<c:out value="${aboveHorizontalLineTotalDateRangeScan}"/> <br>
@@ -610,9 +635,11 @@ $(function() {
 						</div>
 		 	 
 		 			</div>
-					<div id="google_combo_div1" style="width: 450px; height: 300px;"></div>
-					<div id="google_combo_div2" style="width: 450px; height: 300px;"></div>
-					<div id="google_combo_div3" style="width: 450px; height: 300px;"></div>
+					<div id="google_combo_div1" style="margin-top: 400px; width: 450px; height: 270px;"></div>
+					<div id="google_combo_div2" style="margin-top: -22px; width: 450px; height: 270px;"></div>
+					<div id="google_combo_div3" style="margin-top: -22px; width: 450px; height: 270px;"></div>
+					<div id="google_combo_div4" style="margin-top: -22px; width: 450px; height: 270px;"></div>
+					<div id="google_combo_div5" style="margin-top: -22px; width: 450px; height: 270px;"></div>
 					 
 			  
 			
@@ -756,7 +783,7 @@ $(function() {
 						<!-- YTD scan and publish pie charts here -->
 						<td style="padding-left: 6px;">
 							<!-- /Goal Actual Pie Charts -->
-							<table  class="mainRightRowHeader" > 
+							<table  class="mainRightRowHeader" style="margin-bottom:-44px;"> 
 								<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">YTD Scan / Goal</h4></td></tr>
 						 	</table>
 							<table>
@@ -764,7 +791,7 @@ $(function() {
 								<td align="center" >
 									<!--Extra dummy Divs that will hold the pie chart-->
 									<c:forEach var="i" begin="0" end="${ytdPiesCount}">
-										<div id="ytd_scan_div${i}"></div>
+										<div id="ytd_scan_div${i}" style="margin-top: 48px; mxargin-right:-30px; "></div>
 									</c:forEach>
 				  				
 								</td>
@@ -775,7 +802,7 @@ $(function() {
 							
 										
 							<!-- Quality -->
-							<table  class="mainRowHeader" style="width: 387px;" >
+							<table  class="mainRowHeader" style="width: 387px; margin-top: 20px;" >
 							<tr>
 						 		<td>
 						 				<h4 style="text-align:center; margin-bottom: 8px;">Quality</h4>
@@ -886,7 +913,7 @@ $(function() {
 						<!-- percent completed of scanned piecharts here -->
 						<td style="padding-left: 6px;">
 						<!-- /Goal Actual Pie Charts -->
-						<table  class="mainRightRowHeader" > 
+						<table  class="mainRightRowHeader"  style="margin-bottom:-44px;">  
 							<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">YTD Publish / Goal</h4></td></tr>
 					 	</table>
 						<table>
@@ -894,7 +921,7 @@ $(function() {
 							<td align="center" >
 								<!--Div that will hold the pie chart-->
 								<c:forEach var="i" begin="0" end="${ytdPiesCount}">
-									<div id="ytd_publish_div${i}"></div>
+									<div id="ytd_publish_div${i}" style="margin-top: 48px; mxargin-right:-30px; "></div>
 								</c:forEach>
 			  					 
 			  				
@@ -905,7 +932,7 @@ $(function() {
 					
 					
 						<!-- Top 5 Image Quality Issues -->
-						<table  class="mainRightRowHeader"  style="width:400px;" > 
+						<table  class="mainRightRowHeader"  style="width:400px; margin-top: 20px;" >
 							<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Top 5 Image Quality Issues</h4></td></tr>
 					 	</table>
 						<table  style="width:400px;">

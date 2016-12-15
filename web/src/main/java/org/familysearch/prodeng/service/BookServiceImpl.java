@@ -7419,7 +7419,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}else if (site.equals("allPartnerLibs")) {
 			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
 		}else if (site.equals("allInternetArchives")) {
-			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' and a.scanned_by not in ('Internet Archives (RT)') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}else if (site.equals("rtInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('Internet Archives (RT)') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}else if (site.equals("gmrv")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('GMRV') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
 		}/*else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
 			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}*/
@@ -7487,8 +7491,13 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}else if (site.equals("allPartnerLibs")) {
 			vals = getJdbcTemplate().query("SELECT tn,  num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}else if (site.equals("allInternetArchives")) {
-			vals = getJdbcTemplate().query("SELECT tn,  num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
-		}/*else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
+			vals = getJdbcTemplate().query("SELECT tn,  num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%'  and a.scanned_by not in ('Internet Archives (RT)') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("rtInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('Internet Archives (RT)') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("gmrv")) {
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('GMRV') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}
+	/*else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
 			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}*/
 		else {
@@ -7549,7 +7558,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 
 	/*
 	 * 
-	 * Gets goals for: Site, "all sites", "allFhc", "allPartnerLibs", "allInternetArchives"
+	 * Gets goals for: Site, "all sites", "allFhc", "allPartnerLibs", "allInternetArchives" "rtInternetArchives" "gmrv" "
 	 */
 	public int getGoalBySite(String year, String site) {
 		 
@@ -7567,7 +7576,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}else if ("allPartnerLibs".equals(site)){
 			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.is_partner_institution = 'T' and year = '" + year + "'";
 		}else if ("allInternetArchives".equals(site)){
-			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.id like 'Internet%' and year = '" + year + "'";
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.id like 'Internet%' and b.id != 'Internet Archives (RT)' and year = '" + year + "'";
+		}else if ("rtInternetArchives".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site  and b.id = 'Internet Archives (RT)' and year = '" + year + "'";
+		}else if ("gmrv".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.id = 'GMRV' and year = '" + year + "'";
 		}else {
 			allSql += "SELECT goal_images_yearly, year from site_goal  where year = '" + year + "' and site = '" + site + "'";
 		}
@@ -7838,11 +7851,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}
 			
 		List<List> vals = getJdbcTemplate().query(allSql, new StringX2RowMapper());
-		List nullSite = new ArrayList(); //since some books are processed with no site by accident add null value site also so total numbers jive
+		/*List nullSite = new ArrayList(); //since some books are processed with no site by accident add null value site also so total numbers jive
 		nullSite.add(null);
 		nullSite.add("0");
 		
-		vals.add(nullSite);
+		vals.add(nullSite);*/
 		if(vals.size() != 0 && vals.get(0).get(0) != null) {
 			String allGoal = "0";
 
@@ -7966,7 +7979,109 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			totals.add(String.valueOf(publishLeft));
 			vals.add(0, totals);//put totals pie at top
 		}
-		return vals;
+		
+
+		if (!"All Sites".equals(site)) {
+			return vals;//just 1 site, no need to combine
+		}else {
+			/////////////Group into 6 groups (allsites, fhl, partners, ia, ia-rt, gmrv)
+			List<List> combinedVals = new ArrayList();
+			List<String> group1 = new ArrayList<String>();
+			group1.add("All Sites");
+			for(int x=0; x<5; x++) {
+				group1.add("0");//initialize to 0
+			}
+			List<String> group2 = new ArrayList<String>();
+			group2.add("FHCs and FHLs");
+			for(int x=0; x<5; x++) {
+				group2.add("0");//initialize to 0
+			}
+			List<String> group3 = new ArrayList<String>();
+			group3.add("Partner Libraries");
+			for(int x=0; x<5; x++) {
+				group3.add("0");//initialize to 0
+			}
+			List<String> group4 = new ArrayList<String>();
+			group4.add("Internet Archive (w/o RT)");
+			for(int x=0; x<5; x++) {
+				group4.add("0");//initialize to 0
+			}
+			List<String> group5 = new ArrayList<String>();
+			group5.add("Internet Archive (RT)");
+			for(int x=0; x<5; x++) {
+				group5.add("0");//initialize to 0
+			}
+			List<String> group6 = new ArrayList<String>();
+			group6.add("GMRV");
+			for(int x=0; x<5; x++) {
+				group6.add("0");//initialize to 0
+			}
+			
+			combinedVals.add(group1);
+			combinedVals.add(group2);
+			combinedVals.add(group3);
+			combinedVals.add(group4);
+			combinedVals.add(group5);
+			combinedVals.add(group6);
+			
+			allSql = "SELECT  a.id, a.is_fhc, a.is_partner_institution   from site a order by a.id";
+			
+			List<List> sites = getJdbcTemplate().query(allSql, new StringX3RowMapper());
+			Map<String, List> sitesMap = new HashMap<String, List>();
+			
+			for(List r : sites) {
+				sitesMap.put((String)r.get(0), r);
+			}
+			
+			for(List r : vals) {
+				String siteName = (String)r.get(0);
+			
+				Object isFhlStr = sitesMap.get(siteName).get(1);
+				boolean isFhl = (isFhlStr!=null && isFhlStr.equals("T")) ? true : false;
+				Object isPartnerStr = sitesMap.get(siteName).get(2);
+				boolean isPartner = (isPartnerStr!=null && isPartnerStr.equals("T")) ? true : false;
+				
+				int groupIndex = 0;
+				if(siteName.equals("All Sites")) { 
+					groupIndex = 0;
+				}else if(siteName.contains("Internet") && !siteName.equals("Internet Archives (RT)")) {
+					groupIndex = 3;
+				}else if(siteName.equals("Internet Archives (RT)")) {
+					groupIndex = 4;
+				}else if(siteName.equals("GMRV")) {
+					groupIndex = 5;
+				}else if(isFhl) {
+					groupIndex = 1;
+				}else if(isPartner) {
+					groupIndex = 2;
+				}
+				
+					
+				goalTotal = Integer.parseInt((String)r.get(1));
+				scanTotal = Integer.parseInt((String)r.get(2));
+				scanLeft = Integer.parseInt((String)r.get(3));
+				publishTotal = Integer.parseInt((String)r.get(4));
+				publishLeft = Integer.parseInt((String)r.get(5));
+				
+				List combinedRow = combinedVals.get(groupIndex);
+				
+				int goalTotalAll = Integer.parseInt((String)combinedRow.get(1));
+				int scanTotalAll = Integer.parseInt((String)combinedRow.get(2));
+				int scanLeftAll = Integer.parseInt((String)combinedRow.get(3));
+				int publishTotalAll = Integer.parseInt((String)combinedRow.get(4));
+				int publishLeftAll = Integer.parseInt((String)combinedRow.get(5));
+	
+				combinedRow.set(1, String.valueOf(goalTotal + goalTotalAll));
+				combinedRow.set(2, String.valueOf(scanTotal + scanTotalAll));
+				combinedRow.set(3, String.valueOf(scanLeft + scanLeftAll));
+				combinedRow.set(4, String.valueOf(publishTotal + publishTotalAll));
+				combinedRow.set(5, String.valueOf(publishLeft + publishLeftAll));
+				 
+			}
+			return combinedVals;
+		}
+		
+		
 	}
 	
 	
