@@ -6567,7 +6567,14 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		for(int x = 0 ; x < 5; x++) {
 			for(int y = 0 ; y < 10; y++) { //ten date range queries
 				//get chart array here..
-				List<String> row = (List<String>) iter.next();
+				List<String> row;
+				if(iter.hasNext()) {
+					row = (List<String>) iter.next();
+				}else {
+					//for date range less than X
+					row = new ArrayList();
+					row.add("0");
+				}
 				//calculate and reduction (averaging) if needed
 				String tnCountStr = (String)row.get(0);
 			 

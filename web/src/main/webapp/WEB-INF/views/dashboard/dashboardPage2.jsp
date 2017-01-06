@@ -645,7 +645,7 @@ $(function() {
 			
 				    <!-- Open Issues -->
 					<table  class="mainRowHeader" > 
-						<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Open Issues</h4></td></tr>
+						<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Open Issues (today)</h4></td></tr>
 				 	</table>
 					<table>
 					<tr class="secondaryRowHeader">
@@ -670,7 +670,7 @@ $(function() {
 					<table class="mainRowHeader">
 				 		<tr>
 				 			<td>
-				 				<h4 style="text-align:center; margin-bottom: 8px;">Production</h4>
+				 				<h4 style="text-align:center; margin-bottom: 8px;">Production (date-range)</h4>
 				 			</td>
 		              	</tr>
 					</table>
@@ -805,7 +805,7 @@ $(function() {
 							<table  class="mainRowHeader" style="width: 387px; margin-top: 20px;" >
 							<tr>
 						 		<td>
-						 				<h4 style="text-align:center; margin-bottom: 8px;">Quality</h4>
+						 				<h4 style="text-align:center; margin-bottom: 8px;">Quality (date-range)</h4>
 						 			</td>
 				              	</tr>
 							 
@@ -854,7 +854,7 @@ $(function() {
 			            	<!-- Image Auditor Averages -->
 			            	<div style="height: 33px;"></div>
 							<table  class="mainRightRowHeader" > 
-								<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Image Auditor Averages</h4></td></tr>
+								<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Image Auditor Averages (date-range)</h4></td></tr>
 						 	</table>
 							<table>
 							<tr class="secondaryRowHeader">
@@ -933,7 +933,7 @@ $(function() {
 					
 						<!-- Top 5 Image Quality Issues -->
 						<table  class="mainRightRowHeader"  style="width:400px; margin-top: 20px;" >
-							<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Top 5 Image Quality Issues</h4></td></tr>
+							<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Top 5 Image Quality Issues (date-range)</h4></td></tr>
 					 	</table>
 						<table  style="width:400px;">
 						<tr class="secondaryRowHeader">
@@ -996,7 +996,7 @@ $(function() {
 			
 						<!-- Turnaround Time -->
 						<table  class="mainRightRowHeader" style="width: 400px;"> 
-							<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Turnaround Time</h4></td></tr>
+							<tr><td><h4 style="text-align:center; maxrgin-bottom: 0px;">Turnaround Time (date-range)</h4></td></tr>
 					 	</table>
 						<table style="width:400px;">
 						<tr class="secondaryRowHeader">

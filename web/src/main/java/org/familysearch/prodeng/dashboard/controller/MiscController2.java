@@ -107,7 +107,7 @@ public class MiscController2 implements MessageSourceAware{
 			fomStartDate = "01/01/" + year;
 			GregorianCalendar gcStartOfYear = new GregorianCalendar(yearInt, 0, 1);//jan 1 of year selected
 			
-			GregorianCalendar gc = new GregorianCalendar(yearInt, monthInt-1, 1);
+			GregorianCalendar gc = new GregorianCalendar(yearInt, Integer.parseInt(mE)-1, 1);
 			gc.add(Calendar.MONTH, 1);//add 1 month
 			gc.add(Calendar.DAY_OF_MONTH, -1);//subtract 1 day since fomEndDate is inclusive
 			endingMonthLabel = gc.getDisplayName(Calendar.MONTH, Calendar.LONG,  Locale.getDefault());
