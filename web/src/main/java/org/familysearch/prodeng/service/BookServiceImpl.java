@@ -5302,7 +5302,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		if(mE.length()==1)
 			mE = "0" + mE;
 		endDateYearFirst = yE + "/"+ mE + "/" + dE;
-
+ 
 		List<String> dates = getDateSlicesByMonthly(yS, mS, dS, yE, mE, dE); //slices are 1 month long  
 		String[][] ret =  new String[13][4]; //12 months and labels - size 13
 		
@@ -5429,13 +5429,13 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		 	vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper()); 
 			retValPublishDateRange = vals.get(0).get(0) + ", " + vals.get(0).get(1);
 			
-			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper());
+			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "'", new StringX2RowMapper());
 		 	retValScanYTD = vals.get(0).get(0) + ", " + vals.get(0).get(1);//wo ia-rt site
 		 	
 		 	//vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "' and scanned_by in ('Internet Archives (RT)')", new StringX2RowMapper());
 		 	//String retValScanIaRtYTD = vals.get(0).get(0) + " " + vals.get(0).get(1); //only ia-rt site
 		 
-			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper()); 
+			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "'", new StringX2RowMapper()); 
 			retValPublishYTD = vals.get(0).get(0) + ", " + vals.get(0).get(1);
 		}else {
 			List<List> vals= getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper());
@@ -5447,13 +5447,13 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		 	vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper()); 
 			retValPublishDateRange = vals.get(0).get(0) + ", " + vals.get(0).get(1);
 			
-			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper());
+			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper());
 		 	retValScanYTD = vals.get(0).get(0) + ", " + vals.get(0).get(1);//wo ia-rt site
 		 	
 		 	//vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "' and scanned_by in ('Internet Archives (RT)')", new StringX2RowMapper());
 		 	//String retValScanIaRtYTD = vals.get(0).get(0) + " " + vals.get(0).get(1); //only ia-rt site
 		 
-			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper()); 
+			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper()); 
 			retValPublishYTD = vals.get(0).get(0) + ", " + vals.get(0).get(1);
 		}
 		String[] ret = new String[6];
@@ -5517,12 +5517,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		if(site == null  || site.equals("") || site.equals("All Sites"))
 		{			
 			//1/////////////////////////////////////////////////
-			runQueryForScanByMonth(dates, startDateYearFirst, endDateYearFirst, "all", ret, 0, daysDiff);
+			xrunQueryForScanByMonth(dates, startDateYearFirst, endDateYearFirst, "all", ret, 0, daysDiff);
 
 		}else {
 			
 			//1/////////////////////////////////////////////////
-			runQueryForScanByMonth(dates, startDateYearFirst, endDateYearFirst, site, ret, 0, daysDiff);
+			xrunQueryForScanByMonth(dates, startDateYearFirst, endDateYearFirst, site, ret, 0, daysDiff);
 		}
 		 
 		return ret;
@@ -7424,21 +7424,21 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String allSql = "";
 
 		if(site.equals("allFhc")) {
-			vals = getJdbcTemplate().query("SELECT tn,  scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn,  scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
 		}else if (site.equals("allPartnerLibs")) {
-			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
 		}else if (site.equals("allInternetArchives")) {
-			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' and a.scanned_by not in ('Internet Archives (RT)') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' and a.scanned_by not in ('Internet Archives (RT)') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
 		}else if (site.equals("rtInternetArchives")) {
-			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('Internet Archives (RT)') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('Internet Archives (RT)') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
 		}else if (site.equals("gmrv")) {
-			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('GMRV') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('GMRV') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
 		}/*else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
 			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}*/
 		else {
-			//specific site
-			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd')  from book where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper(), site);
+			//specific site 
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd')  from book where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper(), site);
 		}
 		
 		Iterator<List> rows = vals.iterator();
@@ -7465,10 +7465,10 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 					//calculate and reduction (averaging) if needed
 					String tn = (String)row.get(0);
 					//use scanpagecount or pagecount if it is null or 0
-					String scanPageCountStr = (String)row.get(1);
+					//String scanPageCountStr = (String)row.get(1);
 					String pageCountStr = (String)row.get(2);
-					if(scanPageCountStr == null || scanPageCountStr.equals("0"))
-						scanPageCountStr = pageCountStr;
+					//if(scanPageCountStr == null || scanPageCountStr.equals("0"))
+						//scanPageCountStr = pageCountStr;
 					if(pageCountStr == null)
 						pageCountStr = "0";
 					tnCountTotal += 1;
@@ -7496,22 +7496,22 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		allSql = "";
 		
 		if(site.equals("allFhc")) {
-			vals = getJdbcTemplate().query("SELECT tn,   num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn,    coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}else if (site.equals("allPartnerLibs")) {
-			vals = getJdbcTemplate().query("SELECT tn,  num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn,   coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}else if (site.equals("allInternetArchives")) {
-			vals = getJdbcTemplate().query("SELECT tn,  num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%'  and a.scanned_by not in ('Internet Archives (RT)') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn,   coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%'  and a.scanned_by not in ('Internet Archives (RT)') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}else if (site.equals("rtInternetArchives")) {
-			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('Internet Archives (RT)') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn,  coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('Internet Archives (RT)') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}else if (site.equals("gmrv")) {
-			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('GMRV') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+			vals = getJdbcTemplate().query("SELECT tn,  coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('GMRV') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}
 	/*else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
 			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
 		}*/
 		else {
 			//specific site
-			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd')  from book where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper(), site);
+			vals = getJdbcTemplate().query("SELECT tn,  coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd')  from book where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper(), site);
 		}
 		
 		rows = vals.iterator();
@@ -7603,7 +7603,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	}
 	
 
-	public void runQueryForScanByMonth(List<String> dates, String startDateYearFirst, String endDateYearFirst, String site, String[][] ret,  int arrayIndex, int daysDiff) {
+	public void xrunQueryForScanByMonth(List<String> dates, String startDateYearFirst, String endDateYearFirst, String site, String[][] ret,  int arrayIndex, int daysDiff) {
 	
 		List<List> vals = null;
 		String arrayStrLabels = "[";

@@ -66,7 +66,7 @@ public class MiscController2 implements MessageSourceAware{
 			endDate = monthInt + "/" + dayInt + "/" + yearInt;
 		}
 		
-		//fomEndDate
+		//fomEndDate  (actually next month -1)
 		int i1 = endDate.indexOf("/");
 		String mE = endDate.substring(0, i1);
 		String rem = endDate.substring(i1 + 1 );
@@ -177,7 +177,7 @@ public class MiscController2 implements MessageSourceAware{
 	
 
 		/////PIE charts - YTDGoal and YTDscan and YTDpublish Actual Pie Charts
-		List<List>  data = bookService.getGoalsAndActuals(year, endMonthIntPieChart, endDateYMD, site);// list of rows(site,YTDGoal,scanYTD,scanYTDTodo,publishYTD,publishYTDTodo) 
+		List<List>  data = bookService.getGoalsAndActuals(year, endMonthIntPieChart, fomEndDateYMD, site);// list of rows(site,YTDGoal,scanYTD,scanYTDTodo,publishYTD,publishYTDTodo) 
 	 	//convert List<List> to js 2-dim array string
 		String twoDimArrayStr = "[";
 		for(List r : data) {
