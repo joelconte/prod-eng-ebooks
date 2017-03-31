@@ -109,8 +109,10 @@ public class SearchMiscController implements MessageSourceAware{
 		}
 		model.addAttribute("queryText", queryText); 
 		if(theUser.equals(principal.getName())){
+			bookService.doBookAudit(principal.getName(), "misc query", queryText);
 			model.addAttribute("result", bookService.runQuery(queryText)); 
 		}else {
+			bookService.doBookAudit(principal.getName(), "misc query", queryText);
 			model.addAttribute("result", bookServiceReadOnly.runQuery(queryText));
 		}
 	 

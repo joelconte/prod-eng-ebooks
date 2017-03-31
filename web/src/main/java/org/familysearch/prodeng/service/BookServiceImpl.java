@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.inject.Inject;
@@ -757,7 +758,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 
 	@Override
-	public void updateBatchMetatdataUpdates(String tableName, String[] columnNames,  List<List> rows) {
+	public void updateBatchMetatdataUpdates(String userId, String tableName, String[] columnNames,  List<List> rows) {
 		int colCount = columnNames.length;//rows.get(0).size(); //actual data, which may be a subset of columns in table
 		int rowCount = rows.size();
 		 
@@ -839,7 +840,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				b.setFilename(val);
 			} 
 		 
-			updateBook(b);
+			updateBook(userId, b);
 		}
 
 	}
@@ -1037,14 +1038,15 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 	
 	@Override
-	public void updateBook(Book book) {
-		updateBook(book, book.getTn());
+	public void updateBook(String userId, Book book) {
+		updateBook(userId, book, book.getTn());
 	}
 	
 	@Override
-	public void updateBook(Book book, String oldTn) {
+	public void updateBook(String userId, Book book, String oldTn) {
 		// TODO add some data validation and display nice error message (ie dup tn and secondaryIdentifier
-		
+
+
 		//check for problems
 		boolean hasProblems = false;
 		String newTempTn = "";
@@ -1441,21 +1443,42 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		 
 		getNamedParameterJdbcTemplate().update(sql, params);
-	 
 		
 		//check for problems
 		if(oldTn.equals(book.getTn()) == false) {
 			 
 			if(hasProblems == true) {
-				sql = "UPDATE tf_notes set tn = '" + book.getTn() + "' where tn = '" + newTempTn + "'";
-				getJdbcTemplate().update(sql);
+				String sql2 = "UPDATE tf_notes set tn = '" + book.getTn() + "' where tn = '" + newTempTn + "'";
+				getJdbcTemplate().update(sql2);
 				    
-				sql = "DELETE FROM book where tn = '" + newTempTn + "'";
-			    getJdbcTemplate().update(sql);
-				
-			  
+				sql2 = "DELETE FROM book where tn = '" + newTempTn + "'";
+			    getJdbcTemplate().update(sql2);
 				
 			}
+		}
+		
+		Set<String> keys = params.keySet();
+		String sqlStr = "";
+		for(String k : keys) {
+			sqlStr += " " + k + "=" + params.get(k);
+		}
+		sqlStr = " params-->" + sqlStr;
+		
+		doBookAudit(userId, tn, sqlStr);
+	}
+	
+	@Override
+	public void doBookAudit(String userId, String tn, String sql) {
+		try {
+			if(sql.length() > 3023)
+				sql = sql.substring(0,  3022);
+			
+			sql = sql.replaceAll("'", "\\'");
+			String auditSql = "insert into bookaudit values ( '" + userId + "', current_timestamp, '" + tn + "', '" + sql + "')";
+			
+		    getJdbcTemplate().update(auditSql);
+		}catch(Exception e) {
+			System.out.println(e);
 		}
 	}
 	
@@ -3006,7 +3029,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 	
 	@Override 
-	public List<String> getMetadataCompleteAndSent(){
+	public List<String> getMetadataCompleteAndSent(String userId){
+		doBookAudit(userId, "query all metadata", "select all from bookmetadata");
 		List tnList = getJdbcTemplate().query("select title, author, subject, titleno, callno, partner_lib_callno, filmno, pages, summary, dgsno, language, owning_institution, requesting_location, scanning_location, record_number, date_original, publisher_original, filename, sent_to_scan  from  bookmetadata " 
 				+ " where check_complete is not null ", new StringX19RowMapper() );
 		return tnList;
@@ -3102,7 +3126,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 
 	@Override
-	public String sendToDoUpdateSelectedMetadata(List<String> allTnList, String sender) {
+	public String sendToDoUpdateSelectedMetadata(String userId, List<String> allTnList, String sender) {
 		 
 		 	String[] columnNames = {"title", "author", "subject", "titleno", "callno", "partner_lib_callno", "filmno", "pages", "summary", "dgsno", "language", "owning_institution", "requesting_location", "scanning_location", "record_number", "date_original", "publisher_original", "filename", "current_timestamp_date_added", "metadata_adder"};
 
@@ -3110,7 +3134,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		 	List<List> allMd = getMetadataUpdateTnsInfo(tnList);
 			//next update timestamp in metadata table								
 			 
-		 	updateBatchMetatdataUpdates("bookmetadataupdate", columnNames, allMd);
+		 	updateBatchMetatdataUpdates(userId, "bookmetadataupdate", columnNames, allMd);
 		 	deleteSelectedMetadataForUpdate(tnList);
 			return "";
  
@@ -3193,14 +3217,14 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 
 	@Override 
-	public String sendToDoUpdateAllMetadata(String sender){
+	public String sendToDoUpdateAllMetadata(String userId, String sender){
 
 	 	String[] columnNames = {"title", "author", "subject", "titleno", "callno", "partner_lib_callno", "filmno", "pages", "summary", "dgsno", "language", "owning_institution", "requesting_location", "scanning_location", "record_number", "date_original", "publisher_original", "filename", "current_timestamp_date_added", "metadata_adder"};
 	 	 
 	 	List<List> allMd = getMetadataUpdateTnsInfo( );
 		//next update timestamp in metadata table								
 		 
-	 	updateBatchMetatdataUpdates("bookmetadataupdate", columnNames, allMd);
+	 	updateBatchMetatdataUpdates(userId, "bookmetadataupdate", columnNames, allMd);
 
 	 	deleteAllUpdateMetadata();
 	 	
@@ -8199,14 +8223,14 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		
 	}
 	
-	public void saveUpdatedColumnValue(String tnList, String columnName, String newValue){
+	public void saveUpdatedColumnValue(String userId, List<String> tnList1, String tnList, String columnName, String newValue){
 		String inClause = generateInClause("tn", tnList);
 		
 		String sql1 = "UPDATE book SET " + columnName + " = '" + newValue + "' where " + inClause;
 		if(newValue.equals("")) {
 			sql1 = "UPDATE book SET " + columnName + " = null where " + inClause;
 		}
-		
+		 
 		try {
 			getJdbcTemplate().update(sql1);
 		}catch(Exception e) {
@@ -8214,6 +8238,32 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			sql1 = "UPDATE book SET " + columnName + " = to_date('" + newValue + "', 'MM/DD/YYYY') where " + inClause;
 			getJdbcTemplate().update(sql1);
 		}
+		 
+		
+
+		//next insert a row for each tn in audit table
+		List<List<String>> insertData = new ArrayList();
+		if(sql1.length() > 3023)
+			sql1 = sql1.substring(0, 1022);
+		for(String tn : tnList1) {
+		 
+			 
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Calendar cal = Calendar.getInstance();
+			//cal.add(Calendar.DATE, 1); 
+			String formatted = dateFormat.format(cal.getTime());
+			//String d = dateFormat.format(cal);
+			List<String> row = new ArrayList();
+			row.add(userId);
+			row.add(formatted); //"2021-11-12 20:22:23"); //current_timestamp");//d);;;;
+			row.add(tn);
+			row.add(sql1);
+			insertData.add(row);
+				 
+		}
+		  
+	    insertBatch("bookaudit", new String[]{"userid", "updatedate", "tn", "text"}, new int[] {Types.VARCHAR,  Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR}, insertData); 
+
 	}
 	
 	

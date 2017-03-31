@@ -119,7 +119,7 @@ public class TrackingFormController implements MessageSourceAware{
 		}
 		 
 		
-		bookService.updateBook(book);
+		bookService.updateBook(principal.getName(), book);
 		if(returnTo != null && returnTo != "") 
 			return "redirect:" + returnTo;
 		
@@ -141,7 +141,7 @@ public class TrackingFormController implements MessageSourceAware{
 			//return "process/trackingForm";
 		}
 		
-		bookService.updateBook(book);
+		bookService.updateBook(principal.getName(), book);
 		
 		//tn in url cannot contain &
 		if(tn.contains("&")) {

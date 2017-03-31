@@ -4,6 +4,7 @@
  */
 package org.familysearch.prodeng.admin.controller;
 
+import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +89,7 @@ public class BatchUpdateAdminController implements MessageSourceAware{
 	
 	//do processing of pasted TNs 
 	@RequestMapping(value="admin/batchUpdateAdmin", method=RequestMethod.POST)
-	public String doInsertAddTnListPost(HttpServletRequest req,  String button, String newValue, String tnData, String prevTnData, String columnName,  Model model,  Locale locale) {
+	public String doInsertAddTnListPost(HttpServletRequest req,  Principal principal, String button, String newValue, String tnData, String prevTnData, String columnName,  Model model,  Locale locale) {
 	
 		if(button==null) {
 			tnData = prevTnData; //for redisplay
@@ -108,7 +109,7 @@ public class BatchUpdateAdminController implements MessageSourceAware{
 				l = bookService.parseExcelDataCol1(tnData);
 			}
 			String tns = bookService.generateQuotedListString(l);
-			bookService.saveUpdatedColumnValue(tns, columnName, newValue);//do update
+			bookService.saveUpdatedColumnValue(principal.getName(), l, tns, columnName, newValue);//do update
 			
 			return displayBatchUpdateRead(newValue, tnData, prevTnData, columnName,  model, locale);
 		}

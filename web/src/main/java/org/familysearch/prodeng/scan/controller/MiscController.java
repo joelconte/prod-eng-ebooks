@@ -138,7 +138,7 @@ public class MiscController implements MessageSourceAware{
 						
 					}
 				
-					bookService.updateBook(book);
+					bookService.updateBook(principal.getName(), book);
 				}
 				
 				bookService.updateBooksSkipScan(inTnList);//sets file_sent_to_orem as flag to move on to processing
@@ -222,7 +222,7 @@ public class MiscController implements MessageSourceAware{
 						
 					}
 				
-					bookService.updateBook(book);
+					bookService.updateBook(principal.getName(), book);
 				}
 				
 				bookService.updateBooksSkipScanAndProcess(inTnList);//sets file_sent_to_orem as flag to move on to processing

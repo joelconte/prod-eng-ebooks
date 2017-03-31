@@ -769,12 +769,12 @@ public class MiscController implements MessageSourceAware{
 			} 
 
 			 
-			String dupListStr = bookService.sendToDoUpdateSelectedMetadata(tnList, principal.getName());
+			String dupListStr = bookService.sendToDoUpdateSelectedMetadata(principal.getName(), tnList, principal.getName());
 		 
 			return "redirect:metadataUpdateBooks"; //redirect get - guard against refresh-multi-updates and also update displayed url
 		}else if(button.equals("allMetadataDoUpdate")) {
 			 
-			String dupListStr = bookService.sendToDoUpdateAllMetadata(principal.getName());
+			String dupListStr = bookService.sendToDoUpdateAllMetadata(principal.getName(),principal.getName());
 			
 			return "redirect:metadataUpdateBooks"; //redirect get - guard against refresh-multi-updates and also update displayed url
 		} 
@@ -788,7 +788,7 @@ public class MiscController implements MessageSourceAware{
 	
 	///////////metadata complete and sent start/////////////
 	@RequestMapping(value="metadata/metadataCompleteAndSent", method=RequestMethod.GET)
-	public String getMetadataCompleteAndSentPost(  Model model, Locale locale) {
+	public String getMetadataCompleteAndSentPost(  Model model, Locale locale, Principal principal) {
  
 		
 		//title and table labels
@@ -816,7 +816,7 @@ public class MiscController implements MessageSourceAware{
 		
 		model.addAttribute("pageTitle", messageSource.getMessage("metadata.pageTitle.metadataCompleteAndSent", null, locale));
 		model.addAttribute("colLabels", labels); 
-		model.addAttribute("allTnsInfo", bookService.getMetadataCompleteAndSent()); 
+		model.addAttribute("allTnsInfo", bookService.getMetadataCompleteAndSent(principal.getName())); 
 		model.addAttribute("keyCol", 3);//use col 3 for request on TN 
 		return "metadata/miscBookList";
 	}

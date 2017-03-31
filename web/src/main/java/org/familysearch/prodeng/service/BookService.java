@@ -114,10 +114,12 @@ public interface BookService {
 	public List<String> parseExcelDataCol1(String tnData);
 	public List<List<String>>  parseExcelData(String tnData, int colCount);
 	
-	public void updateBook(Book book);
+	public void updateBook(String userId, Book book);
+	
+	public void doBookAudit(String userId, String tn, String sql);
 	
 	//use this when tn also is updated
-	public void updateBook(Book book, String oldTn);
+	public void updateBook(String userId, Book book, String oldTn);
 	public void updateBooksFilesReceived(String tnList);
 	public void updateBooksSkipScan(String tnList);
 	public void updateBooksSkipScanAndProcess(String tnList);
@@ -232,8 +234,8 @@ public interface BookService {
 	public void checkCompleteAllMetadata(String checker);
 	public String sendToScanSelectedMetadata(List<String> tnList, String sender);
 	public String sendToScanAllMetadata(String sender);
-	public String sendToDoUpdateSelectedMetadata(List<String> tnList, String sender);
-	public String sendToDoUpdateAllMetadata(String sender);
+	public String sendToDoUpdateSelectedMetadata(String userId, List<String> tnList, String sender);
+	public String sendToDoUpdateAllMetadata(String userId, String sender);
 	public String sendToScanSelectedInternetArchiveMetadata(List<String> tnList, String sender);
 	public String sendToScanAllInternetArchiveMetadata(String sender);
 	public void migrateInternetArchiveMetadataToBookInsert( String tnList );
@@ -247,11 +249,11 @@ public interface BookService {
 	public BookMetadata getBookMetadataFromBookTable(String tn);//decided to get from BOOK tab instead so metadata table can be trimmed etc..
 	public List<String> getAllTnsMetadata();
 	 
-	public List<String> getMetadataCompleteAndSent();
+	public List<String> getMetadataCompleteAndSent(String userId);
  
 	public void updateBookMetadata(BookMetadata book);
 	//use this when tn also is updated
-	public void updateBatchMetatdataUpdates(String tableName, String[] columns, List<List> rows);
+	public void updateBatchMetatdataUpdates(String userId, String tableName, String[] columns, List<List> rows);
 	public void updateBookMetadata(BookMetadata book, String oldTn);
  
 	public List<List> getInternetArchiveMetadataSendToScanTnsInfo();
@@ -321,7 +323,7 @@ public interface BookService {
 	//misc
 	public List<String> getAllBookColumnNames();
 	public List<List> getAllTnsAndColumn(String col, String tnList);
-	public void saveUpdatedColumnValue(String tnList, String columnName, String value);
+	public void saveUpdatedColumnValue(String userId, List<String> tnList1, String tnList, String columnName, String value);
 	public String markStartedOcr(List<String> tnList, String principal);
 	public String markCompleteOcr(List<String> tnList);
 	public String markCompletePdfDownload(List<String> tnList, String principal);
