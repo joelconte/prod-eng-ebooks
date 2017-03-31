@@ -1,0 +1,13 @@
+
+
+
+
+DROP TABLE bookaudit;
+
+
+CREATE TABLE bookaudit
+(  
+userid varchar(255), updatedate timestamp(6) , tn varchar(255),  text varchar(3024));
+
+
+
