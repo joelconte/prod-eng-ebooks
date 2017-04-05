@@ -1,0 +1,258 @@
+2017-03-25 09:15:36:000000565  AWT-EventQueue-0
+STARTING LIMB OUTPUT PROCESSING
+2017-03-25 09:15:47:000000729  SwingWorker-pool-2-thread-1
+Thread starting. ID SwingWorker-pool-2-thread-1
+2017-03-25 09:15:47:000000730  SwingWorker-pool-2-thread-2
+Thread starting. ID SwingWorker-pool-2-thread-2
+2017-03-25 09:15:47:000000733  SwingWorker-pool-2-thread-2
+Thread got NULL tn to process
+2017-03-25 09:15:47:000000734  SwingWorker-pool-2-thread-1
+SE-1769599 started pdf check for errors - 1k 
+2017-03-25 09:15:47:000000734  SwingWorker-pool-2-thread-2
+Thread done. ID SwingWorker-pool-2-thread-2
+2017-03-25 09:15:47:000000735  SwingWorker-pool-2-thread-2
+Threads still running = 1
+2017-03-25 09:15:47:000000735  SwingWorker-pool-2-thread-1
+SE-1769599 completed pdf check for errors - 1k 
+2017-03-25 09:15:47:000000736  SwingWorker-pool-2-thread-1
+SE-1769599 started tfdb ocr-complete update
+2017-03-25 09:15:48:000000023  SwingWorker-pool-2-thread-1
+SE-1769599 completed tfdb ocr-complete update
+2017-03-25 09:15:48:000000024  SwingWorker-pool-2-thread-1
+SE-1769599 DONE
+2017-03-25 09:15:48:000000025  SwingWorker-pool-2-thread-1
+Thread got NULL tn to process
+2017-03-25 09:15:48:000000026  SwingWorker-pool-2-thread-1
+Thread done. ID SwingWorker-pool-2-thread-1
+2017-03-25 09:15:48:000000026  SwingWorker-pool-2-thread-1
+Threads still running = 0
+2017-03-25 09:17:50:000000768  AWT-EventQueue-0
+STARTING LIMB OUTPUT PROCESSING
+2017-03-25 09:18:05:000000302  SwingWorker-pool-2-thread-2
+Thread starting. ID SwingWorker-pool-2-thread-2
+2017-03-25 09:18:05:000000303  SwingWorker-pool-2-thread-1
+Thread starting. ID SwingWorker-pool-2-thread-1
+2017-03-25 09:18:08:000000419  SwingWorker-pool-2-thread-2
+SE-1769599 started pdf check for errors - 1k 
+2017-03-25 09:18:09:000000122  SwingWorker-pool-2-thread-1
+Thread got NULL tn to process
+2017-03-25 09:18:09:000000124  SwingWorker-pool-2-thread-1
+Thread done. ID SwingWorker-pool-2-thread-1
+2017-03-25 09:18:09:000000124  SwingWorker-pool-2-thread-1
+Threads still running = 1
+2017-03-25 09:18:09:000000125  SwingWorker-pool-2-thread-2
+SE-1769599 completed pdf check for errors - 1k 
+2017-03-25 09:18:18:000000847  SwingWorker-pool-2-thread-2
+SE-1769599 started tfdb ocr-complete update
+2017-03-25 09:18:42:000000202  SwingWorker-pool-2-thread-2
+SE-1769599 completed tfdb ocr-complete update
+2017-03-25 09:18:42:000000204  SwingWorker-pool-2-thread-2
+SE-1769599 DONE
+2017-03-25 09:18:43:000000899  SwingWorker-pool-2-thread-2
+Thread got NULL tn to process
+2017-03-25 09:18:43:000000901  SwingWorker-pool-2-thread-2
+Thread done. ID SwingWorker-pool-2-thread-2
+2017-03-25 09:18:43:000000902  SwingWorker-pool-2-thread-2
+Threads still running = 0
+2017-03-25 09:19:01:000000002  AWT-EventQueue-0
+STARTING LIMB OUTPUT PROCESSING
+2017-03-25 09:19:16:000000789  SwingWorker-pool-2-thread-3
+Thread starting. ID SwingWorker-pool-2-thread-3
+2017-03-25 09:19:16:000000791  SwingWorker-pool-2-thread-4
+Thread starting. ID SwingWorker-pool-2-thread-4
+2017-03-25 09:19:18:000000652  SwingWorker-pool-2-thread-3
+SE-1769599 started pdf check for errors - 1k 
+2017-03-25 09:19:19:000000249  SwingWorker-pool-2-thread-4
+Thread got NULL tn to process
+2017-03-25 09:19:19:000000253  SwingWorker-pool-2-thread-4
+Thread done. ID SwingWorker-pool-2-thread-4
+2017-03-25 09:19:19:000000255  SwingWorker-pool-2-thread-4
+Threads still running = 1
+2017-03-25 09:19:19:000000257  SwingWorker-pool-2-thread-3
+SE-1769599 completed pdf check for errors - 1k 
+2017-03-25 09:19:22:000000624  SwingWorker-pool-2-thread-3
+SE-1769599 started tfdb ocr-complete update
+2017-03-25 09:20:04:000000875  SwingWorker-pool-2-thread-3
+SE-1769599 completed tfdb ocr-complete update
+2017-03-25 09:20:04:000000876  SwingWorker-pool-2-thread-3
+SE-1769599 DONE
+2017-03-25 09:20:05:000000522  SwingWorker-pool-2-thread-3
+Thread got NULL tn to process
+2017-03-25 09:20:05:000000523  SwingWorker-pool-2-thread-3
+Thread done. ID SwingWorker-pool-2-thread-3
+2017-03-25 09:20:05:000000524  SwingWorker-pool-2-thread-3
+Threads still running = 0
+2017-03-25 09:20:49:000000883  AWT-EventQueue-0
+STARTING LIMB OUTPUT PROCESSING
+2017-03-25 09:21:00:000000845  SwingWorker-pool-2-thread-5
+Thread starting. ID SwingWorker-pool-2-thread-5
+2017-03-25 09:21:00:000000851  SwingWorker-pool-2-thread-6
+Thread starting. ID SwingWorker-pool-2-thread-6
+2017-03-25 09:21:01:000000932  SwingWorker-pool-2-thread-5
+SE-1769599 started pdf check for errors - 1k 
+2017-03-25 09:21:02:000000650  SwingWorker-pool-2-thread-6
+Thread got NULL tn to process
+2017-03-25 09:21:02:000000652  SwingWorker-pool-2-thread-6
+Thread done. ID SwingWorker-pool-2-thread-6
+2017-03-25 09:21:02:000000656  SwingWorker-pool-2-thread-6
+Threads still running = 1
+2017-03-25 09:21:02:000000660  SwingWorker-pool-2-thread-5
+SE-1769599 completed pdf check for errors - 1k 
+2017-03-25 09:21:02:000000922  SwingWorker-pool-2-thread-5
+SE-1769599 started tfdb ocr-complete update
+2017-03-25 09:21:03:000000261  SwingWorker-pool-2-thread-5
+SE-1769599 completed tfdb ocr-complete update
+2017-03-25 09:21:03:000000263  SwingWorker-pool-2-thread-5
+SE-1769599 DONE
+2017-03-25 09:21:03:000000485  SwingWorker-pool-2-thread-5
+Thread got NULL tn to process
+2017-03-25 09:21:03:000000486  SwingWorker-pool-2-thread-5
+Thread done. ID SwingWorker-pool-2-thread-5
+2017-03-25 09:21:03:000000487  SwingWorker-pool-2-thread-5
+Threads still running = 0
+2017-03-26 16:32:53:000000716  AWT-EventQueue-0
+STARTING LIMB OUTPUT PROCESSING
+2017-03-26 16:32:58:000000711  SwingWorker-pool-2-thread-1
+Thread starting. ID SwingWorker-pool-2-thread-1
+2017-03-26 16:32:58:000000712  SwingWorker-pool-2-thread-2
+Thread starting. ID SwingWorker-pool-2-thread-2
+2017-03-26 16:32:58:000000714  SwingWorker-pool-2-thread-1
+CP_TN-265917 started pdf check for errors - 1k 
+2017-03-26 16:32:58:000000716  SwingWorker-pool-2-thread-2
+Thread got NULL tn to process
+2017-03-26 16:32:58:000000717  SwingWorker-pool-2-thread-2
+Thread done. ID SwingWorker-pool-2-thread-2
+2017-03-26 16:32:58:000000719  SwingWorker-pool-2-thread-2
+Threads still running = 1
+2017-03-26 16:32:58:000000721  SwingWorker-pool-2-thread-1
+CP_TN-265917 completed pdf check for errors - 1k 
+2017-03-26 16:32:58:000000722  SwingWorker-pool-2-thread-1
+CP_TN-265917 started pdf transfer
+2017-03-26 16:33:05:000000959  SwingWorker-pool-2-thread-1
+CP_TN-265917 completed pdf transfer
+2017-03-26 16:33:05:000000960  SwingWorker-pool-2-thread-1
+CP_TN-265917 started tiff zip
+2017-03-26 16:33:06:000000901  SwingWorker-pool-2-thread-1
+CP_TN-265917 completed tiff zip
+2017-03-26 16:33:06:000000901  SwingWorker-pool-2-thread-1
+CP_TN-265917 started tiff transfer
+2017-03-26 16:34:22:000000899  SwingWorker-pool-2-thread-1
+CP_TN-265917 completed tiff transfer
+2017-03-26 16:34:22:000000901  SwingWorker-pool-2-thread-1
+CP_TN-265917 started jpeg zip
+2017-03-26 16:34:23:000000148  SwingWorker-pool-2-thread-1
+CP_TN-265917 completed jpeg zip
+2017-03-26 16:34:23:000000148  SwingWorker-pool-2-thread-1
+CP_TN-265917 started jpeg transfer
+2017-03-26 16:35:39:000000516  SwingWorker-pool-2-thread-1
+CP_TN-265917 completed jpeg transfer
+2017-03-26 16:35:39:000000517  SwingWorker-pool-2-thread-1
+CP_TN-265917 started alto zip
+2017-03-26 16:35:40:000000052  SwingWorker-pool-2-thread-1
+CP_TN-265917 completed alto zip
+2017-03-26 16:35:40:000000053  SwingWorker-pool-2-thread-1
+CP_TN-265917 started alto transfer
+2017-03-26 16:36:23:000000890  SwingWorker-pool-2-thread-1
+CP_TN-265917 completed alto transfer
+2017-03-26 16:36:23:000000891  SwingWorker-pool-2-thread-1
+CP_TN-265917 started pdf transfer to PDFComplete
+2017-03-26 16:36:23:000000896  SwingWorker-pool-2-thread-1
+CP_TN-265917 completed pdf transfer to PDFComplete
+2017-03-26 16:36:23:000000896  SwingWorker-pool-2-thread-1
+CP_TN-265917 started preprocess-tiff zip
+2017-03-26 16:36:23:000000898  SwingWorker-pool-2-thread-1
+Error: directory does not exist: C:\Bookscan/HOT_Eng_Fr_Sp_Ger\CP_TN-265917
+2017-03-26 16:36:23:000000898  SwingWorker-pool-2-thread-1
+Thread got NULL tn to process
+2017-03-26 16:36:23:000000899  SwingWorker-pool-2-thread-1
+Thread done. ID SwingWorker-pool-2-thread-1
+2017-03-26 16:36:23:000000900  SwingWorker-pool-2-thread-1
+Threads still running = 0
+2017-03-26 16:43:58:000000269  AWT-EventQueue-0
+STARTING LIMB OUTPUT PROCESSING
+2017-03-26 16:44:02:000000958  SwingWorker-pool-2-thread-3
+Thread starting. ID SwingWorker-pool-2-thread-3
+2017-03-26 16:44:02:000000970  SwingWorker-pool-2-thread-4
+Thread starting. ID SwingWorker-pool-2-thread-4
+2017-03-26 16:44:02:000000973  SwingWorker-pool-2-thread-3
+CP_TN-265917 started pdf check for errors - 1k 
+2017-03-26 16:44:02:000000974  SwingWorker-pool-2-thread-4
+Thread got NULL tn to process
+2017-03-26 16:44:02:000000975  SwingWorker-pool-2-thread-4
+Thread done. ID SwingWorker-pool-2-thread-4
+2017-03-26 16:44:02:000000976  SwingWorker-pool-2-thread-4
+Threads still running = 1
+2017-03-26 16:44:02:000000977  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed pdf check for errors - 1k 
+2017-03-26 16:44:02:000000977  SwingWorker-pool-2-thread-3
+CP_TN-265917 started pdf transfer
+2017-03-26 16:44:04:000000873  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed pdf transfer
+2017-03-26 16:44:04:000000874  SwingWorker-pool-2-thread-3
+CP_TN-265917 started tiff zip
+2017-03-26 16:44:05:000000787  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed tiff zip
+2017-03-26 16:44:05:000000788  SwingWorker-pool-2-thread-3
+CP_TN-265917 started tiff transfer
+2017-03-26 16:44:55:000000030  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed tiff transfer
+2017-03-26 16:44:55:000000030  SwingWorker-pool-2-thread-3
+CP_TN-265917 started jpeg zip
+2017-03-26 16:44:55:000000310  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed jpeg zip
+2017-03-26 16:44:55:000000310  SwingWorker-pool-2-thread-3
+CP_TN-265917 started jpeg transfer
+2017-03-26 16:45:47:000000034  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed jpeg transfer
+2017-03-26 16:45:47:000000035  SwingWorker-pool-2-thread-3
+CP_TN-265917 started alto zip
+2017-03-26 16:45:47:000000611  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed alto zip
+2017-03-26 16:45:47:000000612  SwingWorker-pool-2-thread-3
+CP_TN-265917 started alto transfer
+2017-03-26 16:46:15:000000189  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed alto transfer
+2017-03-26 16:46:15:000000190  SwingWorker-pool-2-thread-3
+CP_TN-265917 started pdf transfer to PDFComplete
+2017-03-26 16:46:15:000000194  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed pdf transfer to PDFComplete
+2017-03-26 16:46:15:000000194  SwingWorker-pool-2-thread-3
+CP_TN-265917 started preprocess-tiff zip
+2017-03-26 16:46:16:000000102  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed preprocess-tiff zip
+2017-03-26 16:46:16:000000102  SwingWorker-pool-2-thread-3
+CP_TN-265917 started preprocess-tiff transfer
+2017-03-26 16:47:01:000000555  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed preprocess-tiff transfer
+2017-03-26 16:47:01:000000556  SwingWorker-pool-2-thread-3
+CP_TN-265917 started tfdb ocr-complete update
+2017-03-26 16:47:01:000000676  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed tfdb ocr-complete update
+2017-03-26 16:47:01:000000676  SwingWorker-pool-2-thread-3
+CP_TN-265917 started pdf delete
+2017-03-26 16:47:01:000000678  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed pdf delete
+2017-03-26 16:47:01:000000679  SwingWorker-pool-2-thread-3
+CP_TN-265917 started tiff delete
+2017-03-26 16:47:01:000000683  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed tiff delete
+2017-03-26 16:47:01:000000684  SwingWorker-pool-2-thread-3
+CP_TN-265917 started jpeg delete
+2017-03-26 16:47:01:000000693  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed jpeg delete
+2017-03-26 16:47:01:000000694  SwingWorker-pool-2-thread-3
+CP_TN-265917 started alto delete
+2017-03-26 16:47:01:000000740  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed alto delete
+2017-03-26 16:47:01:000000741  SwingWorker-pool-2-thread-3
+CP_TN-265917 started preprocess-tiff delete
+2017-03-26 16:47:01:000000744  SwingWorker-pool-2-thread-3
+CP_TN-265917 completed preprocess-tiff delete
+2017-03-26 16:47:01:000000745  SwingWorker-pool-2-thread-3
+CP_TN-265917 DONE
+2017-03-26 16:47:01:000000745  SwingWorker-pool-2-thread-3
+Thread got NULL tn to process
+2017-03-26 16:47:01:000000746  SwingWorker-pool-2-thread-3
+Thread done. ID SwingWorker-pool-2-thread-3
+2017-03-26 16:47:01:000000746  SwingWorker-pool-2-thread-3
+Threads still running = 0
