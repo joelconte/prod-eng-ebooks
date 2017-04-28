@@ -267,7 +267,7 @@ $(function() {
 		ctx.fillStyle="blue";
 		ctx.fillRect(20,10,70,2);
 		ctx.font = "16px Arial";
-		ctx.fillText("Actual",20,30);
+		ctx.fillText("Publish",20,30);
 		
 		
 		$("#start_date").datepicker();
@@ -308,6 +308,13 @@ $(function() {
 			 <button value="load" name="load" id="load">Refresh</button>
 			</th>
 		</tr>
+		
+		<c:set value="dummy;" var="siteSelectedDisplay"/>
+		<c:if test="${site!='All Sites' && site!=''}">
+			<c:set value="none;" var="siteSelectedDisplay"/>
+		</c:if>
+
+		
 		</table>
 		
 		
@@ -316,8 +323,8 @@ $(function() {
 			<table class="mainRowHeader">
 		 		<tr>
 		 			<td>
-		 				<h4 style="text-align:center; margin-bottom: 0px;">Production</h4>
-   		          		<h5  style="text-align:center; margin-top: 0px;">Family History Centers &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+		 				<h4 style="text-align:center; margin-bottom: 8px;">Production</h4>
+   		          		<h5  style="text-align:center; margin-top: 0px; display: <c:out value='${siteSelectedDisplay}'/>">Family History Centers &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 		 										Partner Institutions</h5>
 		 			</td>
               	</tr>
@@ -328,10 +335,10 @@ $(function() {
 				<td align="center" class="secondaryTd">Actual</td>
 				<td align="center" class="secondaryTd">Trend</td>
 				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595; &nbsp;</span></td>
-				<td></td>
-				<td align="center" class="secondaryTd">Actual</td>
-				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595;  &nbsp;</span></td>
+				<td style="display: <c:out value='${siteSelectedDisplay}'/>"></td>
+				<td align="center" class="secondaryTd" style="display: <c:out value='${siteSelectedDisplay}'/>">Actual</td>
+				<td align="center" class="secondaryTd" style="display: <c:out value='${siteSelectedDisplay}'/>">Trend</td>
+				<td align="center" class="arrowTdHeader" style="display: <c:out value='${siteSelectedDisplay}'/>"><span class="gArrow">&#8593;</span><span class="rArrow">&#8595;  &nbsp;</span></td>
 			</tr>
 			
 			<tr>
@@ -343,10 +350,10 @@ $(function() {
 				<c:if test="${a3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
-			<td class="bodyTd"  width='177'>${g0}</td>
-			<td class="bodyTd"  width='80'>${g1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassG"></span> </td>
-			<td class="arrowTd" ><c:if test="${g3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+			<td class="bodyTd"  width='177' style="display: <c:out value='${siteSelectedDisplay}'/>">${g0}</td>
+			<td class="bodyTd"  width='80' style="display: <c:out value='${siteSelectedDisplay}'/>">${g1} </td>
+			<td  class="bodyTd" align="center" style="display: <c:out value='${siteSelectedDisplay}'/>"><span class="fhcSparkClassG"></span> </td>
+			<td class="arrowTd" style="display: <c:out value='${siteSelectedDisplay}'/>"><c:if test="${g3=='up'}"><span class="gArrow">&#8593;</span></c:if>
 				<c:if test="${g3=='down'}"><span class="rArrow">&#8595;</span></c:if>
 				<c:if test="${g3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
@@ -362,10 +369,10 @@ $(function() {
 				<c:if test="${b3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
-			<td class="bodyTd" >${h0}</td>
-			<td class="bodyTd" >${h1} </td>
-			<td  class="bodyTd" align="center"> <span class="fhcSparkClassH"></span> </td>
-			<td class="arrowTd"  ><c:if test="${h3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${h0}</td>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${h1} </td>
+			<td  class="bodyTd" align="center"style="display: <c:out value='${siteSelectedDisplay}'/>"> <span class="fhcSparkClassH"></span> </td>
+			<td class="arrowTd" style="display: <c:out value='${siteSelectedDisplay}'/>" ><c:if test="${h3=='up'}"><span class="gArrow">&#8593;</span></c:if>
 				<c:if test="${h3=='down'}"><span class="rArrow">&#8595;</span></c:if>
 				<c:if test="${h3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
@@ -380,10 +387,10 @@ $(function() {
 					<c:if test="${c3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			 
-			<td class="bodyTd" >${i0} </td>
-			<td class="bodyTd" >${i1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassI"></span></td>
-			<td class="arrowTd" ><c:if test="${i3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${i0} </td>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${i1} </td>
+			<td  class="bodyTd" align="center"style="display: <c:out value='${siteSelectedDisplay}'/>"><span class="fhcSparkClassI"></span></td>
+			<td class="arrowTd" style="display: <c:out value='${siteSelectedDisplay}'/>"><c:if test="${i3=='up'}"><span class="gArrow">&#8593;</span></c:if>
 					<c:if test="${i3=='down'}"><span class="rArrow">&#8595;</span></c:if>
 					<c:if test="${i3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
@@ -399,10 +406,10 @@ $(function() {
 					<c:if test="${d3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			 
-			<td class="bodyTd" >${j0}</td>
-			<td class="bodyTd" >${j1} </td>
-			<td  class="bodyTd" align="center"> <span class="fhcSparkClassJ"></span> </td>
-			<td class="arrowTd" ><c:if test="${j3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${j0}</td>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${j1} </td>
+			<td  class="bodyTd" align="center" style="display: <c:out value='${siteSelectedDisplay}'/>"> <span class="fhcSparkClassJ"></span> </td>
+			<td class="arrowTd" style="display: <c:out value='${siteSelectedDisplay}'/>"><c:if test="${j3=='up'}"><span class="gArrow">&#8593;</span></c:if>
 					<c:if test="${j3=='down'}"><span class="rArrow">&#8595;</span></c:if>
 					<c:if test="${j3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
@@ -418,10 +425,10 @@ $(function() {
 					<c:if test="${e3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
 			 
-			<td class="bodyTd" >${k0}</td>
-			<td class="bodyTd" >${k1} </td>
-			<td class="bodyTd"  align="center"> <span class="fhcSparkClassK"></span> </td>
-			<td class="arrowTd" ><c:if test="${k3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${k0}</td>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${k1} </td>
+			<td class="bodyTd"  align="center" style="display: <c:out value='${siteSelectedDisplay}'/>"> <span class="fhcSparkClassK"></span> </td>
+			<td class="arrowTd" style="display: <c:out value='${siteSelectedDisplay}'/>"><c:if test="${k3=='up'}"><span class="gArrow">&#8593;</span></c:if>
 					<c:if test="${k3=='down'}"><span class="rArrow">&#8595;</span></c:if>
 					<c:if test="${k3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
@@ -439,10 +446,10 @@ $(function() {
 				
 						
 		 
-			<td class="bodyTd" >${l0}</td>
-			<td class="bodyTd" >${l1} </td>
-			<td  class="bodyTd" align="center"> <span class="fhcSparkClassL"></span> </td>
-			<td class="arrowTd" ><c:if test="${l3=='up'}"><span class="gArrow">&#8593;</span></c:if>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${l0}</td>
+			<td class="bodyTd" style="display: <c:out value='${siteSelectedDisplay}'/>">${l1} </td>
+			<td  class="bodyTd" align="center" style="display: <c:out value='${siteSelectedDisplay}'/>"> <span class="fhcSparkClassL"></span> </td>
+			<td class="arrowTd" style="display: <c:out value='${siteSelectedDisplay}'/>"><c:if test="${l3=='up'}"><span class="gArrow">&#8593;</span></c:if>
 					<c:if test="${l3=='down'}"><span class="rArrow">&#8595;</span></c:if>
 					<c:if test="${l3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 				</td>
@@ -457,8 +464,8 @@ $(function() {
 			<table  class="mainRowHeader" >
 			<tr>
 		 		<td>
-		 				<h4 style="text-align:center; margin-bottom: 0px;">Quality</h4>
-   		          		<h5  style="text-align:center; margin-top: 0px;">Family History Centers &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+		 				<h4 style="text-align:center; margin-bottom: 8px;">Quality</h4>
+   		          		<h5  style="text-align:center; margin-top: 0px; display: <c:out value='${siteSelectedDisplay}'/>"  >Family History Centers &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 		 										Partner Institutions</h5>
 		 			</td>
               	</tr>
@@ -471,9 +478,9 @@ $(function() {
 				<td align="center" class="secondaryTd">Trend</td>
 				<td align="center" class="arrowTdHeader"><span class="rArrow">&#8593;</span><span class="gArrow">&#8595; &nbsp;</span></td>
 				<td></td>
-				<td align="center" class="secondaryTd">Actual</td>
-				<td align="center" class="secondaryTd">Trend</td>
-				<td align="center" class="arrowTdHeader"><span class="rArrow">&#8593;</span><span class="gArrow">&#8595;  &nbsp;</span></td>
+				<td align="center" class="secondaryTd" style="display: <c:out value='${siteSelectedDisplay}'/>">Actual</td>
+				<td align="center" class="secondaryTd" style="display: <c:out value='${siteSelectedDisplay}'/>">Trend</td>
+				<td align="center" class="arrowTdHeader" style="display: <c:out value='${siteSelectedDisplay}'/>"><span class="rArrow">&#8593;</span><span class="gArrow">&#8595;  &nbsp;</span></td>
 			</tr>
 			
 			<tr>
@@ -485,10 +492,10 @@ $(function() {
 					<c:if test="${quala3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
-			<td class="bodyTd"  width='177'>${quald0}</td>
-			<td class="bodyTd"  width='80'>${quald1} </td>
-			<td  class="bodyTd" align="center"><span class="fhcSparkClassQualD"></span> </td>
-			<td class="arrowTd" ><c:if test="${quald3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+			<td class="bodyTd"  width='177' style="display: <c:out value='${siteSelectedDisplay}'/>">${quald0}</td>
+			<td class="bodyTd"  width='80' style="display: <c:out value='${siteSelectedDisplay}'/>">${quald1} </td>
+			<td  class="bodyTd" align="center" style="display: <c:out value='${siteSelectedDisplay}'/>"><span class="fhcSparkClassQualD"></span> </td>
+			<td class="arrowTd" style="display: <c:out value='${siteSelectedDisplay}'/>"><c:if test="${quald3=='up'}"><span class="rArrow">&#8593;</span></c:if>
 					<c:if test="${quald3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${quald3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
@@ -503,10 +510,10 @@ $(function() {
 					<c:if test="${qualb3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
-			<td class="bodyTd"  width='177'>${quale0}</td>
-			<td class="bodyTd"  width='80'>${quale1} </td>
-			<td class="bodyTd" align="center"><span class="fhcSparkClassQualE"></span> </td>
-			<td class="arrowTd" ><c:if test="${quale3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+			<td class="bodyTd"  width='177' style="display: <c:out value='${siteSelectedDisplay}'/>">${quale0}</td>
+			<td class="bodyTd"  width='80' style="display: <c:out value='${siteSelectedDisplay}'/>">${quale1} </td>
+			<td class="bodyTd" align="center" style="display: <c:out value='${siteSelectedDisplay}'/>"><span class="fhcSparkClassQualE"></span> </td>
+			<td class="arrowTd" style="display: <c:out value='${siteSelectedDisplay}'/>" ><c:if test="${quale3=='up'}"><span class="rArrow">&#8593;</span></c:if>
 					<c:if test="${quale3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${quale3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
@@ -521,10 +528,10 @@ $(function() {
 					<c:if test="${qualc3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>
 			 
-			<td class="bodyTd"  width='177'>${qualf0}</td>
-			<td class="bodyTd"  width='80'>${qualf1} </td>
-			<td class="bodyTd" align="center"><span class="fhcSparkClassQualF"></span> </td>
-			<td class="arrowTd" ><c:if test="${qualf3=='up'}"><span class="rArrow">&#8593;</span></c:if>
+			<td class="bodyTd"  width='177' style="display: <c:out value='${siteSelectedDisplay}'/>">${qualf0}</td>
+			<td class="bodyTd"  width='80' style="display: <c:out value='${siteSelectedDisplay}'/>">${qualf1} </td>
+			<td class="bodyTd" align="center" style="display: <c:out value='${siteSelectedDisplay}'/>"><span class="fhcSparkClassQualF"></span> </td>
+			<td class="arrowTd" style="display: <c:out value='${siteSelectedDisplay}'/>" ><c:if test="${qualf3=='up'}"><span class="rArrow">&#8593;</span></c:if>
 					<c:if test="${qualf3=='down'}"><span class="gArrow">&#8595;</span></c:if>
 					<c:if test="${qualf3=='equal'}"><span class="gDash">&#8669;</span></c:if>
 			</td>

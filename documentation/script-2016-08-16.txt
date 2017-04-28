@@ -1,0 +1,90 @@
+
+
+DROP TABLE NonBOOK
+ cascade;
+
+
+CREATE TABLE NonBOOK
+(
+  DN  varchar(255   ),
+  
+ 
+TITLE   varchar(2047   ),
+ 
+AUTHOR  varchar(255   ),
+
+MEDIA_TYPE                  varchar(255   ),
+ 
+LANGUAGE                    varchar(255   ),
+  
+REMARKS_FROM_SCAN_CENTER    varchar(2047   ),
+  
+REMARKS_ABOUT_BOOK          varchar(2047   ),
+  
+REQUESTING_LOCATION         varchar(255   ),
+  
+OWNING_INSTITUTION          varchar(255   ),
+ 
+SCANNED_BY     varchar(255   ),
+  
+SCAN_OPERATOR               varchar(255   ),
+  
+SCAN_MACHINE_ID             varchar(255   ),
+    
+SCAN_START_DATE             TIMESTAMP(6),
+  
+SCAN_COMPLETE_DATE          TIMESTAMP(6),
+  
+SCAN_IMAGE_AUDITOR          varchar(255   ),
+    
+SCAN_IA_START_DATE          TIMESTAMP(6),
+  
+SCAN_IA_COMPLETE_DATE       TIMESTAMP(6),
+  
+SCAN_NUM_OF_PAGES           integer,
+FILENAME                    varchar(255   ));
+
+
+
+ALTER TABLE NonBOOK
+ ADD 
+  CONSTRAINT ID_pknb
+  PRIMARY KEY
+  (DN);  
+ALTER TABLE NonBOOK
+ ADD 
+  CONSTRAINT FK_LANG_BOOKSnb 
+  FOREIGN KEY (LANGUAGE) 
+  REFERENCES LANGUAGES (ID);
+
+ALTER TABLE NonBOOK
+ ADD 
+  CONSTRAINT FK_MEDIA_BOOKnb 
+  FOREIGN KEY (MEDIA_TYPE) 
+  REFERENCES MEDIA (ID)
+   ;
+
+
+
+ALTER TABLE NonBOOK
+ ADD 
+  CONSTRAINT FK_SITE_BOOKnb2 
+  FOREIGN KEY (SCANNED_BY) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE NonBOOK
+ ADD 
+  CONSTRAINT FK_SITE_BOOKSnb3 
+  FOREIGN KEY (REQUESTING_LOCATION) 
+  REFERENCES SITE (ID)
+   ;
+
+ALTER TABLE NonBOOK
+ ADD 
+  CONSTRAINT FK_SITE_BOOKSnb4 
+  FOREIGN KEY (OWNING_INSTITUTION) 
+  REFERENCES SITE (ID)
+   ;
+
+

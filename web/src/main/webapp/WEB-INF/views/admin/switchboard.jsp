@@ -22,6 +22,9 @@
 			<a href="adminProblems" id="a2">${messages['admin.problems']}</a>
 			</td></tr>
 			<tr><td>
+			<a href="catalogProblems" id="a2">${messages['catalog.problems']}</a>
+			</td></tr>
+			<tr><td>
 			<a href="receivedNotes" id="a3">${messages['admin.received']}</a>
 			</td></tr>
 			<tr><td>
@@ -40,13 +43,13 @@
 			<a href="batchUpdateAdmin" id="a8">${messages['admin.batchUpdateAdmin']}</a>
 			</td></tr>
 			<tr><td>
-			<a href="metadataAdmin" id="a9">${messages['admin.metadataAdmin']}</a>
-			</td></tr>
-			<tr><td>
 			<a href="backupAdmin" id="a10">${messages['admin.backupAdmin']}</a>
 			</td></tr>
 			<tr><td>
-			<a href="viewingReports" id="a11">${messages['admin.addViewingReport']}</a>
+			<a href="jacobsTool" id="a11">${messages['admin.jacobsTool']}</a>
+			</td></tr>
+			<tr><td>
+			<a href="viewingReports" id="a12">${messages['admin.addViewingReport']}</a>
 			</td></tr>
 			</table>
 		</form>

@@ -23,7 +23,7 @@ function fetchBook(selectId, mode){
 	var tn = sel.options[sel.selectedIndex].text;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
@@ -37,19 +37,21 @@ function fetchBook2(textId, mode){
 	var tn = sel.value;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	var url = "trackingForm?" + mode+ "&tn=" + tn; //mode read,update,create
 	window.location.href=url;
 }
     
+
+
 function fetchAllTns(textId, mode){
 	var sel= document.getElementById(textId);
 	var tn = sel.value;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
@@ -65,7 +67,7 @@ function fetchAllTnsMetadata(textId, mode){
 	var tn = sel.value;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
@@ -83,7 +85,7 @@ function fetchBookMetadata(selectId, mode){
 	var tn = sel.options[sel.selectedIndex].text;
 
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
@@ -97,7 +99,7 @@ function fetchBook2Metadata(textId, mode){
 	var tn = sel.value;
 	
 	//replace & with %26
-	if(tn.contains("&")){
+	if(tn.indexOf("&") != -1){
 		tn = tn.replace("&", "%26");
 	}
 	
@@ -160,6 +162,7 @@ function goBackToInternetArchiveMetadata( ){
 
 //update action on form formId with mode and page url - (use to update url on form right before button click submits it) 
 function updateUrl2(formId, page, mode){
+	 	
 	//var el = document.getElementById(selectId);
 	//var tn = el.options[el.selectedIndex].text;//select box tn
 	var f = document.getElementById(formId); //form
@@ -168,8 +171,11 @@ function updateUrl2(formId, page, mode){
 		url = url + "&returnTo=" + getUrlParm("returnTo");
 	f.action = url;
 }
+  
  
-
+	
+	
+	
 //update action on form formId with mode and page url - (use to update url on form right before button click submits it)  and udate target attr for new/same window
 function updateUrlAndTarget(formId, page, mode, target){
 	updateUrl2(formId, page, mode);
@@ -304,6 +310,17 @@ function setValueInDom(id, value){
    " box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);  " +
    " outline: 0 none;   " ;
 };
+/*
+function highlightInDom(id){
+	var elem = document.getElementById(id);
+	
+	//elem.className += " flickerText"; have to add inline to override other css
+	elem.style.cssText="color: blue; border-color: red;  xfont-weight:bold; " +
+   " box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);  " +
+   " outline: 0 none;   " ;
+};*/
+ 
+
 
 function processBookState(){
 	//get url (state) + user and then auto-populate and highlight text
@@ -326,8 +343,8 @@ function processBookState(){
 			//setValueInDom("scan_start_date", getCurrentTimestamp());
 			setValueInDom("scan_start_date", "");
 			setValueInDom("scanned_by", scannedBy);//Cathy req
-			setValueInDom("pull_date", "");//102014
-		
+			setValueInDom("scan_machine", "");	
+			setValueInDom("scan_num_of_pages", "");	
 			break;
 		case "/scan/scanInProgress":
 	 
@@ -335,14 +352,28 @@ function processBookState(){
 			setValueInDom("scan_complete_date", "");
 			break;
 		case "/scan/auditReady":
-			setValueInDom("scanImageAuditor", user);
-			//setValueInDom("scan_ia_start_date", getCurrentTimestamp());
-			setValueInDom("scan_ia_start_date", "");
+
+			
+			var scanIaStart1 = document.getElementById("scan_ia_start_date").value;
+			if(scanIaStart1==null || scanIaStart1==''){
+				setValueInDom("scanImageAuditor", user);
+				//setValueInDom("scan_ia_start_date", getCurrentTimestamp());
+				setValueInDom("scan_ia_start_date", "");
+			}else{
+				setValueInDom("scan_ia_complete_date", "");
+			}
+			
 			break;
 		case "/scan/auditInProgress":
 			//setValueInDom("scanImageAuditor", user);
 			//setValueInDom("scan_ia_complete_date", getCurrentTimestamp());
-			setValueInDom("scan_ia_complete_date", "");
+			var scanIaStart2 = document.getElementById("scan_ia_start_date2").value;
+			if(scanIaStart2==null || scanIaStart2==''){
+				setValueInDom("scanImageAuditor2", user);
+				setValueInDom("scan_ia_start_date2", "");
+			}else{
+				setValueInDom("scan_ia_complete_date2", "");
+			}
 			break;
 		case "/scan/scanProblems":
 			break;
@@ -389,6 +420,7 @@ function processBookState(){
 			break;
 	}
 }
+
 
 function doubleCheckDelete(){
 	var deleteit = confirm("Are you sure you want to DELETE this book?");
@@ -518,4 +550,21 @@ function validateDateData(event){
 	 	elem.click();
 	 	 
 	}
+};
+
+
+function validateFormData(){
+	//if scan date is not null then scannedby must not be null - Jeri request
+	var scanSite = $('#scanned_by').val();
+	var scanStartDate = $('#scan_start_date').val();
+	var scanEndDate = $('#scan_complete_date').val();
+	
+	if(scanStartDate != '' || scanEndDate != ''  ){
+		if( scanSite == ''){
+			alert("You must enter a 'Scanned by Site' value because Scan Date or Scan Complete Date have a value.");
+			return false;
+		}
+	}
+	
+	return true;//valid data
 };

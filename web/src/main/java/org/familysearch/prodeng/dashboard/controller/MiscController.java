@@ -63,9 +63,13 @@ public class MiscController implements MessageSourceAware{
 			startDate = dateFormat.format(cal.getTime());
 		}
 		model.addAttribute("pageTitle", messageSource.getMessage("dashboard.dashboardPageTitle", null, locale));
-		List<String> sites =  bookService.getAllSites();
+		List<String> sites =  bookService.getAllScanSites();
+		sites.add(0, "All Sites");
 		model.addAttribute("allLocations",sites);
 		String site = req.getParameter("site");
+		if(site==null) {
+			site = "All Sites";
+		}
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("endDate", endDate);
 		model.addAttribute("site", site);

@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import javax.validation.Validator;
 import org.apache.commons.io.FileUtils;
 import org.familysearch.prodeng.model.Book;
 import org.familysearch.prodeng.model.BookMetadata;
+import org.familysearch.prodeng.model.NonBook;
 import org.familysearch.prodeng.model.Problem;
 import org.familysearch.prodeng.model.Search;
 import org.familysearch.prodeng.model.Site;
@@ -102,7 +104,14 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public List<String> getBooksByWildcard(String searchBy) {
 		 
-		List<String> tnList = getJdbcTemplate().query("select tn from BOOK where tn like '"+searchBy+"%'", new StringRowMapper());
+		List<String> tnList = getJdbcTemplate().query("select tn from BOOK where tn like '"+searchBy+"%' order by tn", new StringRowMapper());
+		List<String> tnList2 = getJdbcTemplate().query("select tn from BOOK where secondary_identifier like '"+searchBy+"%' order by tn", new StringRowMapper());
+		for(String s : tnList2) {
+			if(!tnList.contains(s)) {
+				tnList.add(s);
+			}
+		}
+		
 		//nList.add(0, " ");//dummy since spring mvc puts '[' at first and ']' at end if not using spring form
 		//tnList.add("");//empty selection for null value
 		//tnList.add(" ");//dummy
@@ -114,9 +123,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanScanReadyTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select a.tn,  a.partner_Lib_Call_#,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.sent_to_scan, 'mm/dd/yyyy')  from s_01_ready_scan a left outer join bookmetadata b on  a.tn=b.titleno where  a.tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn,  a.partner_Lib_Call_num,  a.record_number,  a.title,  a.scan_num_of_Pages,  b.owning_institution, a.requesting_location,  a.scanned_by,  to_char(b.scan_metadata_complete, 'mm/dd/yyyy')  from s_01_ready_scan a left outer join book b on  a.tn=b.tn where  a.tn not in (select tn from s_tf_problems) ", new StringX9RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select  a.tn,  a.partner_Lib_Call_#,  a.record_number,  a.title,  a.scan_num_of_Pages,  a.requesting_location,  a.scanned_by,  to_char(b.sent_to_scan, 'mm/dd/yyyy')  from s_01_ready_scan a  left outer join bookmetadata b on  a.tn=b.titleno  where  a.requesting_location = ? and  a.tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select  a.tn,  a.partner_Lib_Call_num,  a.record_number,  a.title,  a.scan_num_of_Pages,  b.owning_institution, a.requesting_location,  a.scanned_by,  to_char(b.scan_metadata_complete, 'mm/dd/yyyy')  from s_01_ready_scan a  left outer join book b on  a.tn=b.tn  where  a.requesting_location = ? and  a.tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX9RowMapper());
 		
 		return tnList;
 	}
@@ -125,9 +134,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanScanInProgressTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scanned_by from s_01B_scan_in_prog  where tn not in (select tn from s_tf_problems)", new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by from s_01B_scan_in_prog  where tn not in (select tn from s_tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scanned_by from s_01B_scan_in_prog where  scanned_by = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by from s_01B_scan_in_prog where  scanned_by = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX6RowMapper());
 		
 		return tnList;
 	}
@@ -136,19 +145,19 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanAuditReadyTnsInfo(String location) {
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scanned_by from s_02_ready_image_audit where tn not in (select tn from s_tf_problems)", new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by, scan_image_auditor, scan_ia_start_date from s_02_ready_image_audit where tn not in (select tn from s_tf_problems)", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scanned_by from s_02_ready_image_audit  where  scanned_by = ?  and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX6RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by, scan_image_auditor, scan_ia_start_date from s_02_ready_image_audit  where  scanned_by = ?  and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringXRowMapper());
 		return tnList;
 	}
 
 	@Override
-	public List<List> getScanAuditInProgressTnsInfo(String location){
+	public List<List> getScanAuditReadyTnsInfo2(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scan_ia_start_date, scan_image_auditor, scanned_by from s_03_image_auditing_in_prog  where tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by , scan_image_auditor, scan_ia_complete_date,  scan_image_auditor2, scan_ia_start_date2 from s_03_ready_image_audit2  where tn not in (select tn from s_tf_problems) ", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_#, record_number, title, scan_num_of_Pages, scan_ia_start_date, scan_image_auditor, scanned_by from s_03_image_auditing_in_prog  where scanned_by  = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn, partner_Lib_Call_num, record_number, title, scan_num_of_Pages, scanned_by ,scan_image_auditor, scan_ia_complete_date,  scan_image_auditor2, scan_ia_start_date2  from s_03_ready_image_audit2   where scanned_by  = ? and tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringXRowMapper());
 		return tnList;
 	}
 	
@@ -156,19 +165,20 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getScanProcessedReadyForOremTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn,  partner_Lib_Call_#, record_number, title, scan_num_of_Pages,  files_sent_to_orem, remarks_from_scan_center, scanned_by from s_04_processed_ready_orem  where tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  partner_Lib_Call_num, record_number, title, scan_num_of_Pages,  files_sent_to_orem, remarks_from_scan_center, scanned_by from s_04_processed_ready_orem  where tn not in (select tn from s_tf_problems) ", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,  partner_Lib_Call_#, record_number, title, scan_num_of_Pages,  files_sent_to_orem, remarks_from_scan_center, scanned_by from s_04_processed_ready_orem   where scanned_by  = ? and    tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  partner_Lib_Call_num, record_number, title, scan_num_of_Pages,  files_sent_to_orem, remarks_from_scan_center, scanned_by from s_04_processed_ready_orem   where scanned_by  = ? and    tn not in (select tn from s_tf_problems)", new Object[]{location}, new StringX8RowMapper());
 		return tnList;
 	}
 	
 	@Override
 	public List<List> getScanProblemTnsInfo(String location){	
 		List tnList;
-		if(location == null || location.equals("") || location.equals("All Problems"))
-			tnList = getJdbcTemplate().query("select a.tn, q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, scanned_by, a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX10RowMapper());
+		 
+		if(location == null || location.equals("") || location.equals("All Sites"))
+			tnList = getJdbcTemplate().query("select a.tn, q.step,  a.status,  problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num, a.scanned_by,  b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn  inner join book b on a.tn=b.tn ", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select a.tn, q.step, status, problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#, scanned_by  , a.solution_owner from TF_AllProblems  a , TFALL_0x_All_queues q  where a.solution_owner = ? and a.tn = q.tn", new Object[]{location},  new StringX10RowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, q.step, a.status, a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num, a.scanned_by  , b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn  inner join book b on a.tn=b.tn where  a.solution_owner = ? ", new Object[]{location},  new StringXRowMapper());
 		return tnList;
 	}
 	
@@ -180,9 +190,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessWaitingForFilesTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, num_of_pages, scanned_by, TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where tn not in (select tn from tf_problems)", new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select tn, num_of_pages,  site, scanned_by, TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where tn not in (select tn from tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, num_of_pages, scanned_by,  TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where scanned_by  = ? and   tn not in (select tn from tf_problems)", new Object[]{location},  new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by,  TO_CHAR(files_sent_to_orem, 'mm/dd/yyyy') , TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_1_waiting_for_files  where scanned_by  = ? and   tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		return tnList;
 	}
 	
@@ -191,9 +201,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessTitleCheckTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, num_of_pages, scanned_by,location, TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_2_ready_to_title_check where tn not in (select tn from tf_problems)", new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by,location, TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_2_ready_to_title_check where tn not in (select tn from tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, num_of_pages, scanned_by, location, TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_2_ready_to_title_check  where scanned_by  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select  tn, num_of_pages,  site, scanned_by, location, TO_CHAR(files_received_by_orem, 'mm/dd/yyyy') from tf_2_ready_to_title_check  where site  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		
 		return tnList;
 	}
@@ -202,9 +212,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessTitleCheckInProgressTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn,  scanned_by, image_audit,TO_CHAR(ia_start_date, 'mm/dd/yyyy'), num_of_pages from tf_3_title_check_in_process where tn not in (select tn from tf_problems) ", new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,   site, scanned_by, image_audit,TO_CHAR(ia_start_date, 'mm/dd/yyyy'), num_of_pages from tf_3_title_check_in_process where tn not in (select tn from tf_problems) ", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,  scanned_by, image_audit,TO_CHAR(ia_start_date, 'mm/dd/yyyy'), num_of_pages from tf_3_title_check_in_process  where scanned_by  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,   site, scanned_by, image_audit,TO_CHAR(ia_start_date, 'mm/dd/yyyy'), num_of_pages from tf_3_title_check_in_process  where site  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		
 		return tnList;
 	}
@@ -213,9 +223,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessOcrReadyTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4_Ready_to_OCR where tn not in (select tn from tf_problems)", new StringX7RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4_Ready_to_OCR where tn not in (select tn from tf_problems)", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4_Ready_to_OCR  where scanned_by  = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX7RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4_Ready_to_OCR  where site  = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX8RowMapper());
 		
 		return tnList;
 	}
@@ -223,9 +233,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessOcrInProgressTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4a_OCR where tn not in (select tn from tf_problems) ", new StringX7RowMapper());
+			tnList = getJdbcTemplate().query("select tn,   site, scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4a_OCR where tn not in (select tn from tf_problems) ", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4a_OCR  where scanned_by  = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX7RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from  TF_4a_OCR  where site = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX8RowMapper());
 		
 		return tnList;
 	}
@@ -234,9 +244,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessPdfDownloadTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_4b_pdf_download where tn not in (select tn from tf_problems)", new StringX7RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_4b_pdf_download where tn not in (select tn from tf_problems)", new StringX8RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_4b_pdf_download  where scanned_by  = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX7RowMapper());
+			tnList = getJdbcTemplate().query("select tn,  site,  scanned_by, filename, tiff_orem_drive_name, num_of_pages, OCR_by, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_4b_pdf_download  where site = ? and tn not in (select tn from tf_problems)", new Object[]{location},  new StringX8RowMapper());
 		
 		return tnList;
 	}
@@ -246,9 +256,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessPdfTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn,   num_of_pages, scanned_by, filename, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_5_ready_to_pdfreview where tn not in (select tn from tf_problems)", new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,   num_of_pages,  site,  scanned_by, filename, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_5_ready_to_pdfreview where tn not in (select tn from tf_problems)", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn,   num_of_pages, scanned_by, filename, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_5_ready_to_pdfreview  where scanned_by  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,   num_of_pages,  site,  scanned_by, filename, TO_CHAR(OCR_complete_date, 'mm/dd/yyyy') from tf_5_ready_to_pdfreview  where site  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		
 		return tnList;
 	}
@@ -257,9 +267,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessPdfInProgressTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals(""))
-			tnList = getJdbcTemplate().query("select tn, scanned_by,  pdfreview_by, TO_CHAR(pdfreview_start_date, 'mm/dd/yyyy'), num_of_pages from tf_6_pdfreview_in_process where tn not in (select tn from tf_problems) ", new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,  site,  scanned_by,  pdfreview_by, TO_CHAR(pdfreview_start_date, 'mm/dd/yyyy'), num_of_pages from tf_6_pdfreview_in_process where tn not in (select tn from tf_problems) ", new StringX6RowMapper());
 		else
-			tnList = getJdbcTemplate().query("select tn, scanned_by,  pdfreview_by, TO_CHAR(pdfreview_start_date, 'mm/dd/yyyy'), num_of_pages from tf_6_pdfreview_in_process where scanned_by  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX5RowMapper());
+			tnList = getJdbcTemplate().query("select  tn,  site, scanned_by,  pdfreview_by, TO_CHAR(pdfreview_start_date, 'mm/dd/yyyy'), num_of_pages from tf_6_pdfreview_in_process where site  = ? and  tn not in (select tn from tf_problems)", new Object[]{location},  new StringX6RowMapper());
 		
 		return tnList;
 	}
@@ -268,9 +278,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessProblemTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals("") || location.equals("All Sites"))
-			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_# , a.solution_owner from TF_AllProblems a , TFALL_0x_All_queues q where a.tn = q.tn ", new StringX10RowMapper());
+			tnList = getJdbcTemplate().query("select   a.tn, q.step, a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,  b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn inner join book b on a.tn=b.tn ", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select a.tn, q.step, scanned_by, status, problem_reason, problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_# ,  a.solution_owner from TF_AllProblems a, TFALL_0x_All_queues q where a.tn = q.tn and a.solution_owner = ?", new Object[]{location},  new StringX10RowMapper());
+			tnList = getJdbcTemplate().query("select   a.tn, q.step, a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,   b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a  left outer join TFALL_0x_All_queues q on  a.tn = q.tn inner join book b on a.tn=b.tn where  a.solution_owner = ?", new Object[]{location},  new StringXRowMapper());
 		
 		return tnList;
 	}
@@ -279,7 +289,14 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override
 	public List<List> getAdminProblemTnsInfo(){
-		List tnList = getJdbcTemplate().query("select a.tn,   q.step,  status,  problem_reason,  problem_text,  TO_CHAR(problem_date, 'mm/dd/yyyy'), problem_initials, call_#,  a.solution_owner from tf_allproblems a, TFALL_0x_All_queues q where a.tn = q.tn ", new StringX9RowMapper());
+		//paul todo???
+		List tnList = getJdbcTemplate().query("select a.tn,   coalesce(q.step, 'Complete'),  a.status,  a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num,  b.scanned_by, b.scan_complete_date, b.files_sent_to_orem, a.solution_owner  from tf_allproblems a  left outer join TFALL_0x_All_queues q on  a.tn = q.tn  inner join book b on a.tn=b.tn ", new StringXRowMapper());
+		return tnList;
+	}
+
+	@Override
+	public List<List> getCatalogProblemTnsInfo(){
+		List tnList = getJdbcTemplate().query("select a.tn,   coalesce(q.step, 'Complete'),  a.status,  a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'),  a.problem_initials, a.call_num,  b.scanned_by  , b.scan_complete_date, b.files_sent_to_orem, a.solution_owner  from tf_allproblems a  left outer join TFALL_0x_All_queues q on a.tn=q.tn inner join book b on a.tn=b.tn where a.solution_owner = 'Publishing' ", new StringXRowMapper());
 		return tnList;
 	}
 	
@@ -448,7 +465,21 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		List<String> sList = getJdbcTemplate().query("select id from SITE where is_scan_site = 'T' and  ( is_inactive_site !='T' or is_inactive_site is null)  order by id", new StringRowMapper());
 		return sList;
 	}
-	
+	@Override
+	public List<String> getAllScanSitesIncludingInactive() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE where is_scan_site = 'T'    order by id", new StringRowMapper());
+		return sList;
+	}
+	@Override
+	public List<String> getAllOcrSites() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE where is_process_site = 'T' and  ( is_inactive_site !='T' or is_inactive_site is null)  order by id", new StringRowMapper());
+		return sList;
+	}
+	@Override
+	public List<String> getAllOcrSitesIncludingInactive() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE where is_process_site = 'T'    order by id", new StringRowMapper());
+		return sList;
+	}
 	
 	@Override
 	public List<String> getAllPropertyRights() {
@@ -502,8 +533,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setPropertyRight(rs.getString("PROPERTY_RIGHT"));
 			book.setPublicationType(rs.getString("PUBLICATION_TYPE"));
 			book.setFilename(rs.getString("FILENAME"));
-			book.setCallNumber(rs.getString("CALL_#"));
-			book.setPartnerLibCallNumber(rs.getString("PARTNER_LIB_CALL_#"));
+			book.setCallNumber(rs.getString("CALL_num"));
+			book.setPartnerLibCallNumber(rs.getString("PARTNER_LIB_CALL_num"));
 			book.setPriorityItem(rs.getString("PRIORITY_ITEM"));
 			book.setWithdrawn(rs.getString("WITHDRAWN"));
 			book.setDigitalCopyOnly(rs.getString("DIGITAL_COPY_ONLY"));
@@ -525,6 +556,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setScanCompleteDate(rs.getTimestamp("SCAN_COMPLETE_DATE"));
 			book.setScanImageAuditor(rs.getString("SCAN_IMAGE_AUDITOR"));
 			book.setScanIaStartDate(rs.getTimestamp("SCAN_IA_START_DATE"));
+			book.setScanIaCompleteDate2(rs.getTimestamp("SCAN_IA_COMPLETE_DATE2"));
+			book.setScanImageAuditor2(rs.getString("SCAN_IMAGE_AUDITOR2"));
+			book.setScanIaStartDate2(rs.getTimestamp("SCAN_IA_START_DATE2"));
 			book.setScanIaCompleteDate(rs.getTimestamp("SCAN_IA_COMPLETE_DATE"));
 			book.setFilesSentToOrem(rs.getTimestamp("FILES_SENT_TO_OREM"));
 			book.setScanNumOfPages(rs.getString("SCAN_NUM_OF_PAGES"));
@@ -550,16 +584,16 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setDnpDeletedOffLine(rs.getString("DNP_DELETED_OFF_LINE"));
 			book.setTnChangeHistory(rs.getString("TN_CHANGE_HISTORY"));
 			book.setPdfOremArchivedDate(rs.getTimestamp("PDF_OREM_ARCHIVED_DATE"));
-			book.setPdfOremDriveSerialNumber(rs.getString("PDF_OREM_DRIVE_SERIAL_#"));
+			book.setPdfOremDriveSerialNumber(rs.getString("PDF_OREM_DRIVE_SERIAL_num"));
 			book.setPdfOremDriveName(rs.getString("PDF_OREM_DRIVE_NAME"));
 			book.setPdfCopy2ArchivedDate(rs.getTimestamp("PDF_COPY2_ARCHIVED_DATE"));
-			book.setPdfCopy2DriveSerialNumber(rs.getString("PDF_COPY2_DRIVE_SERIAL_#"));
+			book.setPdfCopy2DriveSerialNumber(rs.getString("PDF_COPY2_DRIVE_SERIAL_num"));
 			book.setPdfCopy2DriveName(rs.getString("PDF_COPY2_DRIVE_NAME"));
 			book.setTiffOremArchivedDate(rs.getTimestamp("TIFF_OREM_ARCHIVED_DATE"));
-			book.setTiffOremDriveSerialNumber(rs.getString("TIFF_OREM_DRIVE_SERIAL_#"));
+			book.setTiffOremDriveSerialNumber(rs.getString("TIFF_OREM_DRIVE_SERIAL_num"));
 			book.setTiffOremDriveName(rs.getString("TIFF_OREM_DRIVE_NAME"));
 			book.setTiffCopy2ArchivedDate(rs.getTimestamp("TIFF_COPY2_ARCHIVED_DATE"));
-			book.setTiffCopy2DriveSerialNumber(rs.getString("TIFF_COPY2_DRIVE_SERIAL_#"));
+			book.setTiffCopy2DriveSerialNumber(rs.getString("TIFF_COPY2_DRIVE_SERIAL_num"));
 			book.setTiffCopy2DriveName(rs.getString("TIFF_COPY2_DRIVE_NAME"));
 			book.setPdfSentToLoad(rs.getTimestamp("PDF_SENT_TO_LOAD"));
 			book.setSite(rs.getString("SITE"));
@@ -579,6 +613,34 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setPullDate(rs.getTimestamp("pull_date"));
 
 			return book;
+		}
+	}
+
+	private static class NonBookRowMapper implements RowMapper<NonBook> {
+		@Override
+		public NonBook mapRow(ResultSet rs, int rowNum) throws SQLException {
+			NonBook nonBook = new NonBook();
+			nonBook.setDn(rs.getString("DN"));
+			nonBook.setTitle(rs.getString("TITLE"));
+			nonBook.setAuthor(rs.getString("AUTHOR"));
+			nonBook.setFilename(rs.getString("FILENAME"));
+			nonBook.setMediaType(rs.getString("MEDIA_TYPE"));
+			nonBook.setLanguage(rs.getString("LANGUAGE"));
+			nonBook.setRemarksFromScanCenter(rs.getString("REMARKS_FROM_SCAN_CENTER"));
+			nonBook.setRemarksAboutBook(rs.getString("REMARKS_ABOUT_BOOK"));
+			nonBook.setRequestingLocation(rs.getString("REQUESTING_LOCATION"));
+			nonBook.setOwningInstitution(rs.getString("OWNING_INSTITUTION"));
+			nonBook.setScannedBy(rs.getString("SCANNED_BY"));
+			nonBook.setScanOperator(rs.getString("SCAN_OPERATOR"));
+			nonBook.setScanMachineId(rs.getString("SCAN_MACHINE_ID"));
+			nonBook.setScanStartDate(rs.getTimestamp("SCAN_START_DATE"));
+			nonBook.setScanCompleteDate(rs.getTimestamp("SCAN_COMPLETE_DATE"));
+			nonBook.setScanImageAuditor(rs.getString("SCAN_IMAGE_AUDITOR"));
+			nonBook.setScanIaStartDate(rs.getTimestamp("SCAN_IA_START_DATE"));
+			nonBook.setScanIaCompleteDate(rs.getTimestamp("SCAN_IA_COMPLETE_DATE"));
+			nonBook.setScanNumOfPages(rs.getString("SCAN_NUM_OF_PAGES"));
+
+			return nonBook;
 		}
 	}
 	
@@ -613,6 +675,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if(sList.size() > 0)
 			b.setBatchClass(sList.get(0));
 
+		
+		//call to set dates if need to skip due to new limb process of not needing titlecheck etc
+		if (b.getSite().equals("LIMB Server - SLC")){
+			autoUpdateSkipStepsEtc(b, "OCR_end_date");
+		}
 		return b;
 	}
 
@@ -668,15 +735,17 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		int iRow = 0;
 		for (List<String> row : rows) {
 			int iCol = 0;
-			for (String val : row) {
+			for (Object val : row) {
 				if(colTypes[iCol] == Types.TIMESTAMP && val != null){
 					//if "current_timestamp" then already hardcoded it above as value
 					if(!val.equals("current_timestamp"))
-						params.put(columnNames[iCol], tsConvert.textToTimestamp(val));//only put in value if not current_timestamp
-				}else if(colTypes[iCol] == Types.DATE && val != null){
-					//if "current_timestamp" then already hardcoded it above as value
-					if(!val.equals("current_timestamp"))
-						params.put(columnNames[iCol], tsConvert.textToDate(val));//only put in value if not current_timestamp
+						params.put(columnNames[iCol], tsConvert.textToTimestamp((String)val));//only put in value if not current_timestamp
+				}else if(colTypes[iCol] == Types.NUMERIC && val != null){
+					val = Double.parseDouble((String)val);
+					params.put(columnNames[iCol], val);
+				}else if(colTypes[iCol] == Types.INTEGER && val != null){
+					val = Integer.parseInt((String)val);
+					params.put(columnNames[iCol], val);
 				}else {
 					params.put(columnNames[iCol], val);
 				}
@@ -689,7 +758,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 
 	@Override
-	public void updateBatchMetatdataUpdates(String tableName, String[] columnNames,  List<List> rows) {
+	public void updateBatchMetatdataUpdates(String userId, String tableName, String[] columnNames,  List<List> rows) {
 		int colCount = columnNames.length;//rows.get(0).size(); //actual data, which may be a subset of columns in table
 		int rowCount = rows.size();
 		 
@@ -771,7 +840,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				b.setFilename(val);
 			} 
 		 
-			updateBook(b);
+			updateBook(userId, b);
 		}
 
 	}
@@ -786,7 +855,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updateReceivedImages() {
 		//this moves notes from TF_Received_Images_entry table to Book table
-		String sql = "UPDATE (select a.Remarks_from_scan_center old, b.Notes_from_Site new from book a, TF_Received_Images_entry b  where a.tn = b.tn)   set  old = new ";
+		//String sql = "UPDATE (select a.Remarks_from_scan_center old, b.Notes_from_Site new from book a, TF_Received_Images_entry b  where a.tn = b.tn)   set  old = new ";
+		String sql = "UPDATE book as a set Remarks_from_scan_center = b.Notes_from_Site   from  TF_Received_Images_entry b  where a.tn = b.tn";
 		getJdbcTemplate().update(sql);
 	}
 	
@@ -799,8 +869,10 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updateTiffArchivingCopy1() {
 		//this moves notes from x table to Book table
-		String sql = "UPDATE (select a.TIFF_OREM_ARCHIVED_DATE old1, a.TIFF_OREM_DRIVE_SERIAL_# old2, a.TIFF_OREM_DRIVE_NAME old3, b.TIFF_OREM_ARCHIVED_DATE new1, b.TIFF_OREM_SERIAL_# new2, b.TIFF_OREM_DRIVE_NAME new3 from book a, TIFF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
-		 
+		//apparantly is not used since sql does not work, probably since we are archivine on amazon cloud
+		//String sql = "UPDATE (select a.TIFF_OREM_ARCHIVED_DATE old1, a.TIFF_OREM_DRIVE_SERIAL_num old2, a.TIFF_OREM_DRIVE_NAME old3, b.TIFF_OREM_ARCHIVED_DATE new1, b.TIFF_OREM_SERIAL_num new2, b.TIFF_OREM_DRIVE_NAME new3 from book a, TIFF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		String sql = "UPDATE book as a set  TIFF_OREM_ARCHIVED_DATE = b.TIFF_OREM_ARCHIVED_DATE, TIFF_OREM_drive_SERIAL_num = b.TIFF_OREM_SERIAL_num, TIFF_OREM_DRIVE_NAME = b.TIFF_OREM_DRIVE_NAME from TIFF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn";
+		
 		getJdbcTemplate().update(sql);
 	}
 	 
@@ -813,7 +885,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updatePdfArchivingCopy1() {
 		//this moves notes from x table to Book table
-		String sql = "UPDATE (select a.PDF_OREM_ARCHIVED_DATE old1, a.PDF_OREM_DRIVE_SERIAL_# old2, a.PDF_OREM_DRIVE_NAME old3, b.PDF_OREM_ARCHIVED_DATE new1, b.PDF_OREM_SERIAL_# new2, b.PDF_OREM_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		 
+		//String sql = "UPDATE (select a.PDF_OREM_ARCHIVED_DATE old1, a.PDF_OREM_DRIVE_SERIAL_num old2, a.PDF_OREM_DRIVE_NAME old3, b.PDF_OREM_ARCHIVED_DATE new1, b.PDF_OREM_SERIAL_num new2, b.PDF_OREM_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		String sql = "UPDATE book as a set PDF_OREM_ARCHIVED_DATE = b.PDF_OREM_ARCHIVED_DATE, PDF_OREM_DRIVE_SERIAL_num = b.PDF_OREM_SERIAL_num , PDF_OREM_DRIVE_NAME = b.PDF_OREM_DRIVE_NAME from PDF_ARCHIVING_COPY1_ENTRY b  where a.tn = b.tn";
 		 
 		getJdbcTemplate().update(sql);
 	}
@@ -827,7 +901,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updatePdfArchivingCopy2() {
 		//this moves notes from x table to Book table
-		String sql = "UPDATE (select a.PDF_COPY2_ARCHIVED_DATE old1, a.PDF_COPY2_DRIVE_SERIAL_# old2, a.PDF_COPY2_DRIVE_NAME old3, b.PDF_COPY2_ARCHIVED_DATE new1, b.PDF_COPY2_SERIAL_# new2, b.PDF_COPY2_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY2_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		//String sql = "UPDATE (select a.PDF_COPY2_ARCHIVED_DATE old1, a.PDF_COPY2_DRIVE_SERIAL_num old2, a.PDF_COPY2_DRIVE_NAME old3, b.PDF_COPY2_ARCHIVED_DATE new1, b.PDF_COPY2_SERIAL_num new2, b.PDF_COPY2_DRIVE_NAME new3 from book a, PDF_ARCHIVING_COPY2_ENTRY b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3  ";
+		String sql = "UPDATE book as a set .PDF_COPY2_ARCHIVED_DATE = b.PDF_COPY2_ARCHIVED_DATE, PDF_COPY2_DRIVE_SERIAL_num = b.PDF_COPY2_SERIAL_num, PDF_COPY2_DRIVE_NAME = b.PDF_COPY2_DRIVE_NAME from  PDF_ARCHIVING_COPY2_ENTRY b  where a.tn = b.tn ";
 		 
 		getJdbcTemplate().update(sql);
 	}
@@ -843,8 +918,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		//validate date exists
 		
-	    sql = "UPDATE (select a.Collection old1, a.date_loaded old2, a.loaded_by old3, a.pages_online old4, a.url old5, a.pid old6,  b.collection new1, b.date_loaded new2, b.Loaded_by new3, b.pages_online new4, b.url new5, b.pid new6 from book a, TF_Loading_entry b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3,  old4 = new4,  old5 = new5,  old6 = new6  ";
-				
+	   
+		sql = "UPDATE book as a set Collection  = b.Collection , date_loaded = b.date_loaded , pages_online =  cast(b.pages_online as integer) , url = b.url , pid =b.pid  from  TF_Loading_entry b  where a.tn = b.tn";
+		//sql = "UPDATE (select a.Collection old1, a.date_loaded old2, a.loaded_by old3, a.pages_online old4, a.url old5, a.pid old6,  b.collection new1, b.date_loaded new2, b.Loaded_by new3, b.pages_online new4, b.url new5, b.pid new6 from book a, TF_Loading_entry b  where a.tn = b.tn)   set  old1 = new1,  old2 = new2,  old3 = new3,  old4 = new4,  old5 = new5,  old6 = new6  ";		
 	    getJdbcTemplate().update(sql);
 	    return null;
 	}
@@ -858,8 +934,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public void updateReleaseEntry() {
 		//this moves notes from x table to Book table
-		String sql = "UPDATE (select a.date_released old1,  b.date_released new1 from book a, TF_Released_entry b  where a.tn = b.tn)  set  old1 = new1  ";
-				
+		//String sql = "UPDATE (select a.date_released old1,  b.date_released new1 from book a, TF_Released_entry b  where a.tn = b.tn)  set  old1 = new1  ";
+		String sql = "UPDATE book as a set date_released = b.date_released  from  TF_Released_entry b  where a.tn = b.tn";
 	    getJdbcTemplate().update(sql);
 	}
 	
@@ -962,14 +1038,15 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 	
 	@Override
-	public void updateBook(Book book) {
-		updateBook(book, book.getTn());
+	public void updateBook(String userId, Book book) {
+		updateBook(userId, book, book.getTn());
 	}
 	
 	@Override
-	public void updateBook(Book book, String oldTn) {
+	public void updateBook(String userId, Book book, String oldTn) {
 		// TODO add some data validation and display nice error message (ie dup tn and secondaryIdentifier
-		
+
+
 		//check for problems
 		boolean hasProblems = false;
 		String newTempTn = "";
@@ -998,23 +1075,23 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		if (book.isSecondaryIdentifierSet()) {
 			sql += "secondary_identifier =  :secondaryIdentifier, ";
-			params.put("secondaryIdentifier", book.getSecondaryIdentifier());
+			params.put("secondaryIdentifier",  book.getSecondaryIdentifier()==""?null: book.getSecondaryIdentifier());
 		}
 		if (book.isOclcNumberSet()) {
 			sql += "OCLC_NUMBER =  :oclcNumber, ";
-			params.put("oclcNumber", book.getOclcNumber());
+			params.put("oclcNumber",  book.getOclcNumber()==""?null: book.getOclcNumber());
 		}
 		if (book.isIsbnIssnSet()) {
 			sql += "ISBN_ISSN =  :isbnIssn, ";
-			params.put("isbnIssn", book.getIsbnIssn());
+			params.put("isbnIssn", book.getIsbnIssn()==""?null: book.getIsbnIssn());
 		}
 		if (book.isTitleSet()) {
 			sql += "title =  :title, ";
-			params.put("title", book.getTitle());
+			params.put("title",  book.getTitle()==""?null: book.getTitle());
 		}
 		if (book.isAuthorSet()) {
 			sql += "author = :author, ";
-			params.put("author", book.getAuthor());
+			params.put("author",  book.getAuthor()==""?null: book.getAuthor());
 		}
 		if (book.isPropertyRightSet()) {
 			sql += "property_right = :property_right, ";
@@ -1031,31 +1108,31 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		if (book.isScanningSiteNotesSet()) {
 			sql += "scanning_Site_Notes = :scanningSiteNotes, ";
-			params.put("scanningSiteNotes", book.getScanningSiteNotes());
+			params.put("scanningSiteNotes",  book.getScanningSiteNotes()==""?null: book.getScanningSiteNotes());
 		}
 		if (book.isCallNumberSet()) {
-			sql += "call_# = :callNumber, ";
-			params.put("callNumber", book.getCallNumber());
+			sql += "call_num = :callNumber, ";
+			params.put("callNumber", book.getCallNumber()==""?null: book.getCallNumber());
 		}
 		if (book.isPartnerLibCallNumberSet()) {
-			sql += "partner_lib_call_# = :partnerLibCallNumber, ";
-			params.put("partnerLibCallNumber", book.getPartnerLibCallNumber());
+			sql += "partner_lib_call_num = :partnerLibCallNumber, ";
+			params.put("partnerLibCallNumber", book.getPartnerLibCallNumber()==""?null:  book.getPartnerLibCallNumber());
 		}
 		if (book.isPriorityItemSet()) {
 			sql += "priority_Item = :priorityItem, ";
-			params.put("priorityItem", book.getPriorityItem());
+			params.put("priorityItem",  book.getPriorityItem()==""?null: book.getPriorityItem());
 		}
 		if (book.isWithdrawnSet()) {
 			sql += "withdrawn = :withdrawn, ";
-			params.put("withdrawn", book.getWithdrawn());
+			params.put("withdrawn",  book.getWithdrawn()==""?null: book.getWithdrawn());
 		}
 		if (book.isDigitalCopyOnlySet()) {
 			sql += "digital_Copy_Only = :digitalCopyOnly, ";
-			params.put("digitalCopyOnly", book.getDigitalCopyOnly());
+			params.put("digitalCopyOnly", book.getDigitalCopyOnly()==""?null: book.getDigitalCopyOnly());
 		}
 		if (book.isMediaTypeSet()) {
 			sql += "media_Type = :mediaType, ";
-			params.put("mediaType", book.getMediaType());
+			params.put("mediaType", book.getMediaType()==""?null:  book.getMediaType());
 		}
 		if (book.isMetaDataCompleteSet()) {
 			sql += "metadata_Complete = :metadataComplete, ";
@@ -1063,7 +1140,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isBatchClassSet()) {
 			sql += "batch_Class = :batchClass, ";
-			params.put("batchClass", book.getBatchClass());
+			params.put("batchClass",  book.getBatchClass()==""?null: book.getBatchClass());
 		}
 		if (book.isLanguageSet()) {
 			sql += "language = :language, ";
@@ -1072,11 +1149,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isRemarksFromScanCenterSet()) {
 			sql += "remarks_From_Scan_Center = :remarksFromScanCenter, ";
-			params.put("remarksFromScanCenter", book.getRemarksFromScanCenter());
+			params.put("remarksFromScanCenter", book.getRemarksFromScanCenter()==""?null:  book.getRemarksFromScanCenter());
 		}
 		if (book.isRemarksAboutBookSet()) {
 			sql += "remarks_About_Book = :remarksAboutBook, ";
-			params.put("remarksAboutBook", book.getRemarksAboutBook());
+			params.put("remarksAboutBook", book.getRemarksAboutBook()==""?null: book.getRemarksAboutBook());
 		}
 		if (book.isRequestingLocationSet()) {
 			sql += "requesting_Location = :requestingLocation, ";
@@ -1084,7 +1161,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isRecordNumberSet()) {
 			sql += "record_number = :recordNumber, ";
-			params.put("recordNumber", book.getRecordNumber());
+			params.put("recordNumber",  book.getRecordNumber()==""?null: book.getRecordNumber());
 		}
 		if (book.isOwningInstitutionSet()) {
 			sql += "owning_institution = :owningInstitution, ";
@@ -1096,11 +1173,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isScanOperatorSet()) {
 			sql += "scan_Operator = :scanOperator, ";
-			params.put("scanOperator", book.getScanOperator());
+			params.put("scanOperator",  book.getScanOperator()==""?null: book.getScanOperator());
 		}
 		if (book.isScanMachineIdSet()) {
 			sql += "scan_Machine_Id = :scanMachineId, ";
-			params.put("scanMachineId", book.getScanMachineId());
+			params.put("scanMachineId",  book.getScanMachineId()==""?null: book.getScanMachineId());
 		}
 		if (book.isScanMetadataCompleteSet()) {
 			sql += "scan_Metadata_Complete = :scanMetadataComplete, ";
@@ -1108,7 +1185,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isLocationSet()) {
 			sql += "location = :location, ";
-			params.put("location", book.getLocation());
+			params.put("location",  book.getLocation()==""?null: book.getLocation());
 		}
 		if (book.isScanStartDateSet()) {
 			sql += "scan_Start_Date = :scanStartDate, ";
@@ -1121,7 +1198,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isScanImageAuditorSet()) {
 			sql += "scan_Image_Auditor = :scanImageAuditor, ";
-			params.put("scanImageAuditor", book.getScanImageAuditor());
+			params.put("scanImageAuditor", book.getScanImageAuditor()==""?null:  book.getScanImageAuditor());
 		}
 		if (book.isScanIaStartDateSet()) {
 			sql += "scan_Ia_Start_Date = :scanIaStartDate, ";
@@ -1131,17 +1208,31 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			sql += "scan_Ia_Complete_Date = :scanIaCompleteDate, ";
 			params.put("scanIaCompleteDate", book.getScanIaCompleteDate());
 		}
+
+		if (book.isScanImageAuditor2Set()) {
+			sql += "scan_Image_Auditor2 = :scanImageAuditor2, ";
+			params.put("scanImageAuditor2", book.getScanImageAuditor2()==""?null:  book.getScanImageAuditor2());
+		}
+		if (book.isScanIaStartDate2Set()) {
+			sql += "scan_Ia_Start_Date2 = :scanIaStartDate2, ";
+			params.put("scanIaStartDate2", book.getScanIaStartDate2());
+		}
+		if (book.isScanIaCompleteDate2Set()) {
+			sql += "scan_Ia_Complete_Date2 = :scanIaCompleteDate2, ";
+			params.put("scanIaCompleteDate2", book.getScanIaCompleteDate2());
+		}
+		
 		if (book.isFilesSentToOremSet()) {
 			sql += "files_Sent_To_Orem = :filesSentToOrem, ";
 			params.put("filesSentToOrem", book.getFilesSentToOrem());
 		}
 		if (book.isScanNumOfPagesSet()) {
 			sql += "scan_Num_Of_Pages = :scanNumOfPages, ";
-			params.put("scanNumOfPages", book.getScanNumOfPages());
+			params.put("scanNumOfPages", (book.getScanNumOfPages()=="" || book.getScanNumOfPages()==null)?null:  Double.parseDouble( book.getScanNumOfPages()));
 		}
 		if (book.isNumOfPagesSet()) {
 			sql += "num_Of_Pages = :numOfPages, ";
-			params.put("numOfPages", book.getNumOfPages());
+			params.put("numOfPages",  (book.getNumOfPages()=="" || book.getNumOfPages()==null)?null: Double.parseDouble(book.getNumOfPages()));
 		}
 		if (book.isFilesReceivedByOremSet()) {
 			sql += "files_Received_By_Orem = :filesReceivedByOrem, ";
@@ -1150,7 +1241,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		if (book.isImageAuditSet()) {
 			sql += "image_Audit = :imageAudit, ";
-			params.put("imageAudit", book.getImageAudit());
+			params.put("imageAudit",  book.getImageAudit()==""?null: book.getImageAudit());
 		}
 		if (book.isIaStartDateSet()) {
 			sql += "ia_Start_Date = :iaStartDate, ";
@@ -1162,7 +1253,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isOcrBySet()) {
 			sql += "OCR_by = :ocrBy, ";
-			params.put("ocrBy", book.getOcrBy());
+			params.put("ocrBy",  book.getOcrBy()==""?null: book.getOcrBy());
 		}
 		if (book.isOcrStartDateSet()) {
 			sql += "OCR_start_date = :ocrStartDate, ";
@@ -1174,7 +1265,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isPdfDownloadBySet()) {
 			sql += "pdf_download_by = :pdfDownloadBy, ";
-			params.put("pdfDownloadBy", book.getPdfDownloadBy());
+			params.put("pdfDownloadBy",  book.getPdfDownloadBy()==""?null: book.getPdfDownloadBy());
 		}
 		if (book.isPdfDownloadDateSet()) {
 			sql += "pdf_download_date = :pdfDownloadDate, ";
@@ -1182,7 +1273,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isPdfreviewBySet()) {
 			sql += "Pdfreview_By = :pdfreviewBy, ";
-			params.put("pdfreviewBy", book.getPdfreviewBy());
+			params.put("pdfreviewBy",  book.getPdfreviewBy()==""?null:  book.getPdfreviewBy());
 		}
 		if (book.isPdfreviewStartDateSet()) {
 			sql += "Pdfreview_Start_Date = :pdfreviewStartDate, ";
@@ -1198,11 +1289,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isCompressionCodeSet()) {
 			sql += "compression_Code = :compressionCode, ";
-			params.put("compressionCode", book.getCompressionCode());
+			params.put("compressionCode", book.getCompressionCode()==""?null: book.getCompressionCode());
 		}
 		if (book.isLoadedBySet()) {
 			sql += "loaded_By = :loadedBy, ";
-			params.put("loadedBy", book.getLoadedBy());
+			params.put("loadedBy", book.getLoadedBy()==""?null:  book.getLoadedBy());
 		}
 		if (book.isDateLoadedSet()) {
 			sql += "date_Loaded = :dateLoaded, ";
@@ -1214,67 +1305,67 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isDnpSet()) {
 			sql += "dnp = :dnp, ";
-			params.put("dnp", book.getDnp());
+			params.put("dnp",  book.getDnp()==""?null:  book.getDnp());
 		}
 		if (book.isDnpDeletedOffLineSet()) {
 			sql += "dnp_Deleted_Off_Line = :dnpDeletedOffLine, ";
-			params.put("dnpDeletedOffLine", book.getDnpDeletedOffLine());
+			params.put("dnpDeletedOffLine",  book.getDnpDeletedOffLine()==""?null: book.getDnpDeletedOffLine());
 		}
 		if (book.isTnChangeHistorySet()) {
 			sql += "tn_Change_History = :tnChangeHistory, ";
-			params.put("tnChangeHistory", book.getTnChangeHistory());
+			params.put("tnChangeHistory",  book.getTnChangeHistory()==""?null: book.getTnChangeHistory());
 		}
 		if (book.isPdfOremArchivedDateSet()) {
 			sql += "pdf_Orem_Archived_Date = :pdfOremArchivedDate, ";
 			params.put("pdfOremArchivedDate", book.getPdfOremArchivedDate());
 		}
 		if (book.isPdfOremDriveSerialNumberSet()) {
-			sql += "pdf_Orem_Drive_Serial_# = :pdfOremDriveSerialNumber, ";
+			sql += "pdf_Orem_Drive_Serial_num = :pdfOremDriveSerialNumber, ";
 			params.put("pdfOremDriveSerialNumber",
-					book.getPdfOremDriveSerialNumber());
+					book.getPdfOremDriveSerialNumber()==""?null: book.getPdfOremDriveSerialNumber());
 		}
 		if (book.isPdfOremDriveNameSet()) {
 			sql += "pdf_Orem_Drive_Name = :pdfOremDriveName, ";
-			params.put("pdfOremDriveName", book.getPdfOremDriveName());
+			params.put("pdfOremDriveName",  book.getPdfOremDriveName()==""?null: book.getPdfOremDriveName());
 		}
 		if (book.isPdfCopy2ArchivedDateSet()) {
 			sql += "pdf_Copy2_Archived_Date = :pdfCopy2ArchivedDate, ";
 			params.put("pdfCopy2ArchivedDate", book.getPdfCopy2ArchivedDate());
 		}
 		if (book.isPdfCopy2DriveSerialNumberSet()) {
-			sql += "pdf_Copy2_Drive_Serial_# = :pdfCopy2DriveSerialNumber, ";
+			sql += "pdf_Copy2_Drive_Serial_num = :pdfCopy2DriveSerialNumber, ";
 			params.put("pdfCopy2DriveSerialNumber",
-					book.getPdfCopy2DriveSerialNumber());
+					 book.getPdfCopy2DriveSerialNumber()==""?null: book.getPdfCopy2DriveSerialNumber());
 		}
 		if (book.isPdfCopy2DriveNameSet()) {
 			sql += "pdf_Copy2_Drive_Name = :pdfCopy2DriveName, ";
-			params.put("pdfCopy2DriveName", book.getPdfCopy2DriveName());
+			params.put("pdfCopy2DriveName",  book.getPdfCopy2DriveName()==""?null: book.getPdfCopy2DriveName());
 		}
 		if (book.isTiffOremArchivedDateSet()) {
 			sql += "tiff_Orem_Archived_Date = :tiffOremArchivedDate, ";
 			params.put("tiffOremArchivedDate", book.getTiffOremArchivedDate());
 		}
 		if (book.isTiffOremDriveSerialNumberSet()) {
-			sql += "tiff_Orem_Drive_Serial_# = :tiffOremDriveSerialNumber, ";
+			sql += "tiff_Orem_Drive_Serial_num = :tiffOremDriveSerialNumber, ";
 			params.put("tiffOremDriveSerialNumber",
-					book.getTiffOremDriveSerialNumber());
+					 book.getTiffOremDriveSerialNumber()==""?null: book.getTiffOremDriveSerialNumber());
 		}
 		if (book.isTiffOremDriveNameSet()) {
 			sql += "tiff_Orem_Drive_Name = :tiffOremDriveName, ";
-			params.put("tiffOremDriveName", book.getTiffOremDriveName());
+			params.put("tiffOremDriveName",  book.getTiffOremDriveName()==""?null: book.getTiffOremDriveName());
 		}
 		if (book.isTiffCopy2ArchivedDateSet()) {
 			sql += "tiff_Copy2_Archived_Date = :tiffCopy2ArchivedDate, ";
 			params.put("tiffCopy2ArchivedDate", book.getTiffCopy2ArchivedDate());
 		}
 		if (book.isTiffCopy2DriveSerialNumberSet()) {
-			sql += "tiff_Copy2_Drive_Serial_# = :tiffCopy2DriveSerialNumber, ";
+			sql += "tiff_Copy2_Drive_Serial_num = :tiffCopy2DriveSerialNumber, ";
 			params.put("tiffCopy2DriveSerialNumber",
-					book.getTiffCopy2DriveSerialNumber());
+					 book.getTiffCopy2DriveSerialNumber()==""?null: book.getTiffCopy2DriveSerialNumber());
 		}
 		if (book.isTiffCopy2DriveNameSet()) {
 			sql += "tiff_Copy2_Drive_Name = :tiffCopy2DriveName, ";
-			params.put("tiffCopy2DriveName", book.getTiffCopy2DriveName());
+			params.put("tiffCopy2DriveName", book.getTiffCopy2DriveName()==""?null: book.getTiffCopy2DriveName());
 		}
 		if (book.isPdfSentToLoadSet()) {
 			sql += "pdf_Sent_To_Load = :pdfSentToLoad, ";
@@ -1286,35 +1377,35 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isUrlSet()) {
 			sql += "url = :url, ";
-			params.put("url", book.getUrl());
+			params.put("url",  book.getUrl()==""?null: book.getUrl());
 		}
 		if (book.isPidSet()) {
 			sql += "pid = :pid, ";
-			params.put("pid", book.getPid());
+			params.put("pid",  book.getPid()==""?null: book.getPid());
 		}
 		if (book.isPagesOnlineSet()) {
 			sql += "pages_Online = :pagesOnline, ";
-			params.put("pagesOnline", book.getPagesOnline());
+			params.put("pagesOnline", (book.getPagesOnline()=="" || book.getPagesOnline()==null)?null:  Double.parseDouble(book.getPagesOnline()));
 		}		
 		if (book.isSubjectSet()) {
 			sql += "subject = :subject, ";
-			params.put("subject", book.getSubject());
+			params.put("subject",  book.getSubject()==""?null:  book.getSubject());
 		}
 		if (book.isFilmnoSet()) {
 			sql += "filmno = :filmno, ";
-			params.put("filmno", book.getFilmno());
+			params.put("filmno", book.getFilmno()==""?null: book.getFilmno());
 		}
 		if (book.isPagesPhysicalDescriptionSet()) {
 			sql += "pages_Physical_Description = :pagesPhysicalDescription, ";
-			params.put("pagesPhysicalDescription", book.getPagesPhysicalDescription());
+			params.put("pagesPhysicalDescription", book.getPagesPhysicalDescription()==""?null: book.getPagesPhysicalDescription());
 		}
 		if (book.isSummarySet()) {
 			sql += "summary = :summary, ";
-			params.put("summary", book.getSummary());
+			params.put("summary",  book.getSummary()==""?null:  book.getSummary());
 		}
 		if (book.isDgsnoSet()) {
 			sql += "dgsno = :dgsno, ";
-			params.put("dgsno", book.getDgsno());
+			params.put("dgsno", book.getDgsno()==""?null:  book.getDgsno());
 		}
 		if (book.isDateOriginalSet()) {
 			sql += "date_Original = :dateOriginal, ";
@@ -1322,15 +1413,15 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		}
 		if (book.isPublisherOriginalSet()) {
 			sql += "publisher_Original = :publisherOriginal, ";
-			params.put("publisherOriginal", book.getPublisherOriginal());
+			params.put("publisherOriginal",  book.getPublisherOriginal()==""?null: book.getPublisherOriginal());
 		}
 		if (book.isFhcTitleSet()) {
 			sql += "fhc_title = :fhcTitle, ";
-			params.put("fhcTitle", book.getFhcTitle());
+			params.put("fhcTitle",  book.getFhcTitle()==""?null: book.getFhcTitle());
 		}
 		if (book.isFhcTnSet()) {
 			sql += "fhc_tn = :fhcTn, ";
-			params.put("fhcTn", book.getFhcTn());
+			params.put("fhcTn",  book.getFhcTn()==""?null: book.getFhcTn());
 		}
 		if (book.isDateRepublishedSet()) {
 			sql += "date_republished = :dateRepublished, ";
@@ -1352,21 +1443,42 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		 
 		getNamedParameterJdbcTemplate().update(sql, params);
-	 
 		
 		//check for problems
 		if(oldTn.equals(book.getTn()) == false) {
 			 
 			if(hasProblems == true) {
-				sql = "UPDATE tf_notes set tn = '" + book.getTn() + "' where tn = '" + newTempTn + "'";
-				getJdbcTemplate().update(sql);
+				String sql2 = "UPDATE tf_notes set tn = '" + book.getTn() + "' where tn = '" + newTempTn + "'";
+				getJdbcTemplate().update(sql2);
 				    
-				sql = "DELETE FROM book where tn = '" + newTempTn + "'";
-			    getJdbcTemplate().update(sql);
-				
-			  
+				sql2 = "DELETE FROM book where tn = '" + newTempTn + "'";
+			    getJdbcTemplate().update(sql2);
 				
 			}
+		}
+		
+		Set<String> keys = params.keySet();
+		String sqlStr = "";
+		for(String k : keys) {
+			sqlStr += " " + k + "=" + params.get(k);
+		}
+		sqlStr = " params-->" + sqlStr;
+		
+		doBookAudit(userId, tn, sqlStr);
+	}
+	
+	@Override
+	public void doBookAudit(String userId, String tn, String sql) {
+		try {
+			if(sql.length() > 3023)
+				sql = sql.substring(0,  3022);
+			
+			sql = sql.replaceAll("'", "\\'");
+			String auditSql = "insert into bookaudit values ( '" + userId + "', current_timestamp, '" + tn + "', '" + sql + "')";
+			
+		    getJdbcTemplate().update(auditSql);
+		}catch(Exception e) {
+			System.out.println(e);
 		}
 	}
 	
@@ -1400,7 +1512,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	////user admin start////
 	public List<String> getAllUserIds() {
-		List<String> userIdList = getJdbcTemplate().query("select id from USERS", new StringRowMapper());	
+		List<String> userIdList = getJdbcTemplate().query("select id from USERS order by id", new StringRowMapper());	
 		return userIdList;
 	}
 	
@@ -1917,12 +2029,17 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		//set site goals
 		if (site.isIsGoalsSet()) {	
-			List<List<String>> goals = site.getGoals();
+			List<List> goals = site.getGoals();
 			for(List<String> goal : goals) {
-				String year = goal.get(0);
-				String imageCount = goal.get(1);
-				sql = "insert into site_goal (site, year, goal_images_yearly) values(?, ?, ?) ";
-				getJdbcTemplate().update(sql, site, year, imageCount);
+			 
+				String year = goal.get(1);
+				String imageCount = goal.get(2);
+				sql = "insert into site_goal (site, year, goal_images_yearly) values(:site, :year, :goal_image_yearly) ";
+				params = new HashMap<String, Object>();
+				params.put("site", site.getSiteId());
+				params.put("year", year);
+				params.put("goal_image_yearly", Integer.parseInt(imageCount));
+				getNamedParameterJdbcTemplate().update(sql, params);
 			}
 		}
 	}
@@ -1947,66 +2064,61 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			//update all books, metadata, and user fields that have this site
 			String newId = site.getSiteId();
 		
-			String sql = "update book set  Book.site = '"+newId+"' where site = '" + oldId +"'";
+			String sql = "update book set  site = '"+newId+"' where site = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
-			sql = "update book set  Book.owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
+			sql = "update book set   owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
-			sql = "update book set  Book.Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-		
-			sql = "update book set  Book.Scanned_by = '"+newId+"' where Scanned_by = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			
-			
-			sql = "update iaBookmetadata set  iaBookmetadata.site = '"+newId+"' where site = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			sql = "update iaBookmetadata set  iaBookmetadata.owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			sql = "update iaBookmetadata set  iaBookmetadata.Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
+			sql = "update book set   Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 		
-			sql = "update iaBookmetadata set  iaBookmetadata.Scanned_by = '"+newId+"' where Scanned_by = '" + oldId +"'";
+			sql = "update book set  Scanned_by = '"+newId+"' where Scanned_by = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
 			
 			
-			sql = "update Bookmetadata set  Bookmetadata.scanning_location = '"+newId+"' where scanning_location  = '" + oldId +"'";
+			sql = "update iaBookmetadata set  site = '"+newId+"' where site = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
-			sql = "update Bookmetadata set  Bookmetadata.Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
+			sql = "update iaBookmetadata set  owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
-			sql = "update Bookmetadata set  Bookmetadata.owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
+			sql = "update iaBookmetadata set  Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
-			
-			
-			
-			sql = "update Bookmetadataupdate set  Bookmetadataupdate.scanning_location = '"+newId+"' where scanning_location  = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			sql = "update Bookmetadataupdate set  Bookmetadataupdate.Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			sql = "update Bookmetadataupdate set  Bookmetadataupdate.owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
-			getJdbcTemplate().update(sql);
-			
-			
-			sql = "update site_goal set  site_goal.site = '"+newId+"' where site = '" + oldId +"'";
+		
+			sql = "update iaBookmetadata set  Scanned_by = '"+newId+"' where Scanned_by = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
 			
 			
-			sql = "update users set  users.primary_Location = '"+newId+"' where primary_Location = '" + oldId +"'";
+			sql = "update Bookmetadata set  scanning_location = '"+newId+"' where scanning_location  = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update Bookmetadata set  Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update Bookmetadata set  owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			
+			
+			sql = "update Bookmetadataupdate set  scanning_location = '"+newId+"' where scanning_location  = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update Bookmetadataupdate set  Requesting_Location = '"+newId+"' where Requesting_Location = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update Bookmetadataupdate set  owning_institution = '"+newId+"' where owning_institution = '" + oldId +"'";
+			getJdbcTemplate().update(sql);
+			
+			sql = "update users set  primary_Location = '"+newId+"' where primary_Location = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 			
 			sql = "update tf_notes set solution_owner = '"+newId+"' where solution_owner = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 		
+			deleteSiteGoals(oldId);
 			deleteSite(oldId);
 		}else {
 			//id is not changed..normal update
@@ -2081,12 +2193,16 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				
 				//set site goals
 				if (site.isIsGoalsSet()) {	
-					List<List<String>> goals = site.getGoals();
+					List<List> goals = site.getGoals();
 					for(List<String> goal : goals) {
-						String year = goal.get(0);
-						String imageCount = goal.get(1);
-						sql = "insert into site_goal (site, year, goal_images_yearly) values(?, ?, ?) ";
-						getJdbcTemplate().update(sql, site, year, imageCount);
+						String year = goal.get(1);
+						String imageCount = goal.get(2);
+						sql = "insert into site_goal (site, year, goal_images_yearly) values(:site, :year, :goal_image_yearly) ";
+						params = new HashMap<String, Object>();
+						params.put("site", site.getSiteId());
+						params.put("year", year);
+						params.put("goal_image_yearly", Integer.parseInt(imageCount));
+						getNamedParameterJdbcTemplate().update(sql, params);
 					}
 				}
 			}catch(Exception e) {
@@ -2105,12 +2221,18 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override 
 	public Site getSite(String id) {
+		Site s = null;
 		try {
-			return getJdbcTemplate().queryForObject("select * from site where id=?", new SiteRowMapper(), id);
+			s = getJdbcTemplate().queryForObject("select * from site where id=?", new SiteRowMapper(), id);
+			List<List> g =  getSiteGoals(id);
+			if(g != null) {
+				s.setGoals(g);
+			}
 		}catch(EmptyResultDataAccessException e) 
 		{ 
 			return new Site(); //empty for backing bean
 		}
+		return s;
 	}
 
 	@Override 
@@ -2180,12 +2302,12 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public List<List> getSiteGoals(String site) {
 		List list;
-		if(site == null || site.equals("")) {
+		if(site == null || site.equals("")  || site.equals("")) {
 			list = getJdbcTemplate().query("select site, year, goal_images_yearly from SITE_GOAL ", new StringX3RowMapper());
 		}else {
 			list = getJdbcTemplate().query("select site, year, goal_images_yearly from SITE_GOAL where site = ? ", new StringX3RowMapper(), site);
 		}
-			
+		
 		return list;
 	}
 	
@@ -2518,7 +2640,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		//always insert id
 		colList += "id, ";
 		valList += ":pn, ";
-		params.put("pn", problem.getPn());
+		params.put("pn", new Integer(problem.getPn()));
 		
 		 
 			colList += "tn, ";
@@ -2587,7 +2709,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override 
 	public Problem getProblem(String tn, String pn) {
 		try {
-			Problem p = getJdbcTemplate().queryForObject("select * from tf_notes where ID=? and tn=?", new ProblemRowMapper(), pn, tn);
+			Problem p = getJdbcTemplate().queryForObject("select * from tf_notes where ID=? and tn=?", new ProblemRowMapper(), new Integer(pn), tn);
 			return p;
 		}catch(EmptyResultDataAccessException e) 
 		{
@@ -2781,12 +2903,12 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override 
 	public List<List> getInternetArchiveMetadataSendToScanTnsInfo() {
-		List tnList = getJdbcTemplate().query("select tn, title, author, call_#, priority_Item, withdrawn, digital_Copy_Only, media_Type, metadata_Complete, batch_Class, language, remarks_From_Scan_Center, remarks_About_Book, "
+		List tnList = getJdbcTemplate().query("select tn, title, author, call_num, priority_Item, withdrawn, digital_Copy_Only, media_Type, metadata_Complete, batch_Class, language, remarks_From_Scan_Center, remarks_About_Book, "
 				+ " scanned_By, location, scan_Complete_Date, num_of_pages, files_Received_By_Orem, image_Audit, ia_Start_Date, ia_Complete_Date, OCR_by, OCR_complete_date, Pdfreview_By, Pdfreview_Start_Date, pdf_Ready, date_Released, compression_Code, "
-				+ " loaded_By, date_Loaded, collection, dnp, tn_Change_History, pdf_Orem_Archived_Date, pdf_Orem_Drive_Serial_#, pdf_Orem_Drive_Name, pdf_Copy2_Archived_Date, pdf_Copy2_Drive_Serial_#, pdf_Copy2_Drive_Name, tiff_Orem_Archived_Date, "
-				+ " tiff_Orem_Drive_Serial_#, tiff_Orem_Drive_Name, tiff_Copy2_Archived_Date, tiff_Copy2_Drive_Serial_#, tiff_Copy2_Drive_Name, pdf_Sent_to_Load, site, url, pid, pages_Online, secondary_Identifier, oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original " 
+				+ " loaded_By, date_Loaded, collection, dnp, tn_Change_History, pdf_Orem_Archived_Date, pdf_Orem_Drive_Serial_num, pdf_Orem_Drive_Name, pdf_Copy2_Archived_Date, pdf_Copy2_Drive_Serial_num, pdf_Copy2_Drive_Name, tiff_Orem_Archived_Date, "
+				+ " tiff_Orem_Drive_Serial_num, tiff_Orem_Drive_Name, tiff_Copy2_Archived_Date, tiff_Copy2_Drive_Serial_num, tiff_Copy2_Drive_Name, pdf_Sent_to_Load, site, url, pid, pages_Online, secondary_Identifier, oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right " 
 				+ " from  iabookmetadata " 
-				+ " where sent_to_scan is null ", new StringXRowMapper() );//56 columns
+				+ " where sent_to_scan is null ", new StringXRowMapper() );//57 columns
 
 		return tnList;
 	}
@@ -2907,7 +3029,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 	
 	@Override 
-	public List<String> getMetadataCompleteAndSent(){
+	public List<String> getMetadataCompleteAndSent(String userId){
+		doBookAudit(userId, "query all metadata", "select all from bookmetadata");
 		List tnList = getJdbcTemplate().query("select title, author, subject, titleno, callno, partner_lib_callno, filmno, pages, summary, dgsno, language, owning_institution, requesting_location, scanning_location, record_number, date_original, publisher_original, filename, sent_to_scan  from  bookmetadata " 
 				+ " where check_complete is not null ", new StringX19RowMapper() );
 		return tnList;
@@ -3003,7 +3126,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 
 	@Override
-	public String sendToDoUpdateSelectedMetadata(List<String> allTnList, String sender) {
+	public String sendToDoUpdateSelectedMetadata(String userId, List<String> allTnList, String sender) {
 		 
 		 	String[] columnNames = {"title", "author", "subject", "titleno", "callno", "partner_lib_callno", "filmno", "pages", "summary", "dgsno", "language", "owning_institution", "requesting_location", "scanning_location", "record_number", "date_original", "publisher_original", "filename", "current_timestamp_date_added", "metadata_adder"};
 
@@ -3011,7 +3134,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		 	List<List> allMd = getMetadataUpdateTnsInfo(tnList);
 			//next update timestamp in metadata table								
 			 
-		 	updateBatchMetatdataUpdates("bookmetadataupdate", columnNames, allMd);
+		 	updateBatchMetatdataUpdates(userId, "bookmetadataupdate", columnNames, allMd);
 		 	deleteSelectedMetadataForUpdate(tnList);
 			return "";
  
@@ -3029,8 +3152,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		String inClause1 = generateInClause("a.titleno", allTnListStr);
 		String inClause = generateInClause("titleno", allTnListStr);
 		 
-		List tnList = getJdbcTemplate().query("select a.titleno, a.title, a.author, a.requesting_location, a.owning_institution, a.scanning_location, a.pages, b.scan_complete_date, b.files_received_by_orem, b.url from BOOKmetadata a " 
-							+ " left outer join book b on a.titleno = b.tn  where  " + inClause1 , new StringX10RowMapper());
+		List tnList = getJdbcTemplate().query("select a.titleno, a.title, a.author, a.callno, a.partner_lib_callno, a.requesting_location, a.owning_institution, a.scanning_location, a.pages, b.scan_complete_date, b.files_received_by_orem, b.url from BOOKmetadata a " 
+							+ " left outer join book b on a.titleno = b.tn  where  " + inClause1 , new StringX12RowMapper());
 		List emailList = getJdbcTemplate().query("select id, send_scan_notice, email, primary_location from users where send_scan_notice = 'T' and primary_location in ( select distinct(requesting_location) from bookmetadata where " + inClause + " union select distinct(owning_institution) from BOOKmetadata  where " + inClause + ")", new StringX4RowMapper());
 		List emailList2 = getJdbcTemplate().query("select id, send_scan_notice, email, 'ALLSITES' from users where send_scan_notice = 'T' and primary_location is null", new StringX4RowMapper());
 
@@ -3048,8 +3171,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override 
 	public Object[] getReportForSendToScanSelectedMetadataAll(){
   
-		List tnList = getJdbcTemplate().query("select a.titleno, a.title, a.author, a.requesting_location, a.owning_institution, a.scanning_location, a.pages, b.scan_complete_date, b.files_received_by_orem, b.url  " 
-										+ " from BOOKmetadata a left outer join book b on a.titleno = b.tn  where a.titleno in (select c.titleno from BookMetadata c where c.sent_to_scan is null)", new StringX10RowMapper());
+		List tnList = getJdbcTemplate().query("select a.titleno, a.title, a.author, a.callno, a.partner_lib_callno, a.requesting_location, a.owning_institution, a.scanning_location, a.pages, b.scan_complete_date, b.files_received_by_orem, b.url  " 
+										+ " from BOOKmetadata a left outer join book b on a.titleno = b.tn  where a.titleno in (select c.titleno from BookMetadata c where c.sent_to_scan is null)", new StringX12RowMapper());
 		List emailList = getJdbcTemplate().query("select id, send_scan_notice, email, primary_location from users where send_scan_notice = 'T' and primary_location " 
 				+ " in ( select distinct (requesting_location) from bookmetadata where  titleno "
 				+ " in (select titleno from BookMetadata where sent_to_scan is null ) "
@@ -3094,14 +3217,14 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	}
 
 	@Override 
-	public String sendToDoUpdateAllMetadata(String sender){
+	public String sendToDoUpdateAllMetadata(String userId, String sender){
 
 	 	String[] columnNames = {"title", "author", "subject", "titleno", "callno", "partner_lib_callno", "filmno", "pages", "summary", "dgsno", "language", "owning_institution", "requesting_location", "scanning_location", "record_number", "date_original", "publisher_original", "filename", "current_timestamp_date_added", "metadata_adder"};
 	 	 
 	 	List<List> allMd = getMetadataUpdateTnsInfo( );
 		//next update timestamp in metadata table								
 		 
-	 	updateBatchMetatdataUpdates("bookmetadataupdate", columnNames, allMd);
+	 	updateBatchMetatdataUpdates(userId, "bookmetadataupdate", columnNames, allMd);
 
 	 	deleteAllUpdateMetadata();
 	 	
@@ -3186,10 +3309,38 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				+ "     THEN 'Copyright Protected' "
 				+ "   ELSE  'Public Domain' "
 				+ "   END where tn IN  ( " + tnList + " )";	  
+		
+		//update ocr site for two temp sites for LIMB
+		String sql3 = "UPDATE book " 
+				+ " SET site = "
+				+ "  CASE "
+				+ "   WHEN owning_institution = 'Arizona State Library, Archives and Public Records' "
+				+ "     THEN 'LIMB Server - SLC' "
+				+ "   ELSE  'Orem Digital Processing Center' "
+				+ "   END where tn IN  ( " + tnList + " )";	  
 		 
 	    getJdbcTemplate().update(sql1);
 	    getJdbcTemplate().update(sql2);
+	    getJdbcTemplate().update(sql3);
 	}
+	
+
+	@Override 
+	public void autoUpdateSkipStepsEtc(Book b, String skipTo) {
+		if(skipTo.equals("OCR_end_date")) {
+			/* fields from views that need to be set to dummy date
+			book.files_received_by_orem IS NOT NULL
+			book.ia_start_date IS NOT NULL
+			book.ia_complete_date IS NOT NULL
+			book.ocr_start_date IS NOT NULL*/
+			b.setFilesReceivedByOrem(b.getFilesSentToOrem());
+			b.setIaStartDate(b.getFilesSentToOrem());
+			b.setIaCompleteDate(b.getFilesSentToOrem());
+			b.setOcrStartDate(b.getFilesSentToOrem());
+		}
+	  
+	}
+	
 	
 	public List<String> filterOutUpdateTns(List<String> tnList, List<String> dupList) {
 		List<String> insertTns = new ArrayList();
@@ -3236,7 +3387,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			return;
 		//move metadata table data to book table.  (scan_metadata_complete is now set when book enters scan)
 		String inClause = generateInClause("titleno", tnList);
-		String sql = "INSERT into book (tn, oclc_number, isbn_issn, title, author, call_#,  partner_lib_call_#, language, owning_institution, requesting_location, scanned_by, record_number, subject, filmno, pages_Physical_Description, summary, dgsno, date_Original, publisher_Original, filename,  priority_item, withdrawn, digital_copy_only, media_type, scan_metadata_complete, location,  site) " +
+		String sql = "INSERT into book (tn, oclc_number, isbn_issn, title, author, call_num,  partner_lib_call_num, language, owning_institution, requesting_location, scanned_by, record_number, subject, filmno, pages_Physical_Description, summary, dgsno, date_Original, publisher_Original, filename,  priority_item, withdrawn, digital_copy_only, media_type, scan_metadata_complete, location,  site) " +
 				"select titleno, oclc_number, isbn_issn,  title, author, callno, partner_lib_callno, language, owning_institution,  requesting_location, scanning_location, record_number, subject, filmno, pages, summary, dgsno, date_Original, publisher_Original, filename,   'F', 'F', 'F', 'Book', current_timestamp, '02 Tiffs', 'Orem Digital Processing Center' from bookmetadata where " + inClause;
 	    getJdbcTemplate().update(sql);
 	    
@@ -3252,7 +3403,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		String sql = " UPDATE   (select " +
 				" a.title old1,  " +
 				" a.author old2,  " +
-				" a.call_# old3,  " +
+				" a.call_num old3,  " +
 				" a.language old4,  " +
 				" a.requesting_location old5,  " +
 				" a.scanned_by old6,  " +
@@ -3264,7 +3415,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				" a.scan_metadata_complete old12, " +
 				" a.location old13, " +
 				" a.site old14, " +
-				" a.partner_lib_call_# old15, " +
+				" a.partner_lib_call_num old15, " +
 				" a.subject old16, " +
 				" a.filmno old17, " +
 				" a.pages_Physical_Description old18, " +
@@ -3332,18 +3483,18 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			return;
 		//move metadata table data to book table.  (scan_metadata_complete is now set when book enters scan)
 		String inClause = generateInClause("tn", tnList);
-		String sql =  "INSERT into book ( tn ,  title ,  author ,  call_# ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
+		String sql =  "INSERT into book ( tn ,  title ,  author ,  call_num ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
 					+" language ,  remarks_From_Scan_Center ,  remarks_About_Book ,  scanned_By ,  location ,  scan_Complete_Date ,  num_of_pages ,  files_Received_By_Orem ,  image_Audit ,  ia_Start_Date , "
 					+"  ia_Complete_Date ,  OCR_by ,  OCR_complete_date ,  Pdfreview_By ,  Pdfreview_Start_Date ,  pdf_Ready ,  date_Released ,  compression_Code ,  loaded_By ,  date_Loaded , "
-					+"  collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_# ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_# ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
-					+"  tiff_Orem_Drive_Serial_# ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_# ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
-					+"  secondary_Identifier ,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original) " 
-				    + " select  tn ,  title ,  author ,  call_# ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
+					+"  collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_num ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_num ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
+					+"  tiff_Orem_Drive_Serial_num ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_num ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
+					+"  secondary_Identifier ,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right, scan_ia_complete_date) " 
+				    + " select  tn ,  title ,  author ,  call_num ,  priority_Item ,  withdrawn ,  digital_Copy_Only ,  media_Type ,  metadata_Complete ,  batch_Class , "
 					+ " language ,  remarks_From_Scan_Center ,  remarks_About_Book ,  scanned_By ,  location ,  scan_Complete_Date ,  num_of_pages ,  files_Received_By_Orem ,  image_Audit ,  ia_Start_Date , "
 					+ " ia_Complete_Date ,  OCR_by ,  OCR_complete_date ,  Pdfreview_By ,  Pdfreview_Start_Date ,  pdf_Ready ,  date_Released ,  compression_Code ,  loaded_By ,  date_Loaded , "
-					+ " collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_# ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_# ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
-					+ " tiff_Orem_Drive_Serial_# ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_# ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
-					+ " secondary_Identifier,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original from iaBookmetadata where " + inClause;
+					+ " collection ,  dnp ,  tn_Change_History ,  pdf_Orem_Archived_Date ,  pdf_Orem_Drive_Serial_num ,  pdf_Orem_Drive_Name ,  pdf_Copy2_Archived_Date ,  pdf_Copy2_Drive_Serial_num ,  pdf_Copy2_Drive_Name ,  tiff_Orem_Archived_Date , "
+					+ " tiff_Orem_Drive_Serial_num ,  tiff_Orem_Drive_Name ,  tiff_Copy2_Archived_Date ,  tiff_Copy2_Drive_Serial_num ,  tiff_Copy2_Drive_Name ,  pdf_Sent_to_Load ,  site ,  url ,  pid ,  pages_Online , "
+					+ " secondary_Identifier,  oclc_Number, fhc_title, fhc_tn, owning_institution, publisher_original, property_right, current_timestamp from iaBookmetadata where " + inClause;
 	    getJdbcTemplate().update(sql);
 	    
 	}
@@ -3353,76 +3504,18 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			return;
 		//move metadata table data to book table.  (scan_metadata_complete is now set when book enters scan)
 		String inClause = generateInClause("b.tn", tnList);
-		String sql = " UPDATE (select " +
-				"a.tn old1 , a.title old2 , a.author old3 , a.call_# old4 , a.priority_Item old5 , a.withdrawn old6 , a.digital_Copy_Only old7 , a.media_Type old8 , a.metadata_Complete old9 , a.batch_Class old10 ,  " +
-				"a.language old11 , a.remarks_From_Scan_Center old12 , a.remarks_About_Book old13 , a.scanned_By old14 , a.location old15 , a.scan_Complete_Date old16 , a.num_of_pages old17 , a.files_Received_By_Orem old18 , a.image_Audit old19 , a.ia_Start_Date old20 ,  " +
-				"a.ia_Complete_Date old21 , a.OCR_by old22 , a.OCR_complete_date old23 , a.Pdfreview_By old24 , a.Pdfreview_Start_Date old25 , a.pdf_Ready old26 , a.date_Released old27 , a.compression_Code old28 , a.loaded_By old29 , a.date_Loaded old30 ,  " +
-				"a.collection old31 , a.dnp old32 , a.tn_Change_History old33 , a.pdf_Orem_Archived_Date old34 , a.pdf_Orem_Drive_Serial_# old35 , a.pdf_Orem_Drive_Name old36 , a.pdf_Copy2_Archived_Date old37 , a.pdf_Copy2_Drive_Serial_# old38 , a.pdf_Copy2_Drive_Name old39 , a.tiff_Orem_Archived_Date old40 ,  " +
-				"a.tiff_Orem_Drive_Serial_# old41 , a.tiff_Orem_Drive_Name old42 , a.tiff_Copy2_Archived_Date old43 , a.tiff_Copy2_Drive_Serial_# old44 , a.tiff_Copy2_Drive_Name old45 , a.pdf_Sent_to_Load old46 , a.site old47 , a.url old48 , a.pid old49 , a.pages_Online old50 ,  " +
-				"a.secondary_Identifier old51 , a.oclc_Number old52, a.fhc_title old53, a.fhc_tn old54, a.owning_institution old55, a.publisher_original old56, " +
-				"b.tn new1 , b.title new2 , b.author new3 , b.call_# new4 , b.priority_Item new5 , b.withdrawn new6 , b.digital_Copy_Only new7 , b.media_Type new8 , b.metadata_Complete new9 , b.batch_Class new10 ,  " +
-				"b.language new11 , b.remarks_From_Scan_Center new12 , b.remarks_About_Book new13 , b.scanned_By new14 , b.location new15 , b.scan_Complete_Date new16 , b.num_of_pages new17 , b.files_Received_By_Orem new18 , b.image_Audit new19 , b.ia_Start_Date new20 ,  " +
-				"b.ia_Complete_Date new21 , b.OCR_by new22 , b.OCR_complete_date new23 , b.Pdfreview_By new24 , b.Pdfreview_Start_Date new25 , b.pdf_Ready new26 , b.date_Released new27 , b.compression_Code new28 , b.loaded_By new29 , b.date_Loaded new30 ,  " +
-				"b.collection new31 , b.dnp new32 , b.tn_Change_History new33 , b.pdf_Orem_Archived_Date new34 , b.pdf_Orem_Drive_Serial_# new35 , b.pdf_Orem_Drive_Name new36 , b.pdf_Copy2_Archived_Date new37 , b.pdf_Copy2_Drive_Serial_# new38 , b.pdf_Copy2_Drive_Name new39 , b.tiff_Orem_Archived_Date new40 ,  " +
-				"b.tiff_Orem_Drive_Serial_# new41 , b.tiff_Orem_Drive_Name new42 , b.tiff_Copy2_Archived_Date new43 , b.tiff_Copy2_Drive_Serial_# new44 , b.tiff_Copy2_Drive_Name new45 , b.pdf_Sent_to_Load new46 , b.site new47 , b.url new48 , b.pid new49 , b.pages_Online new50 ,  " +
-				"b.secondary_Identifier new51 , b.oclc_Number new52,  b.fhc_title new53,  b.fhc_tn new54,  b.owning_institution new55, b.publisher_original new56 " +
-				" from book a, iaBookmetadata b where a.tn=b.tn and " + inClause + " ) " +
-				" set old1 = new1,  " +
-				" old2 = new2, " +
-				" old3 = new3, " +
-				" old4 = new4, " +
-				" old5 = new5, " +
-				" old6 = new6, " +
-				" old7 = new7, " +
-				" old8 = new8, " +
-				" old9 = new9, " +
-				" old10 = new10, " +
-				" old11 = new11, " +
-				" old12 = new12, " +
-				" old13 = new13, " +
-				" old14 = new14, " +
-				" old15 = new15, " +
-				" old16 = new16, " +
-				" old17 = new17, " +
-				" old18 = new18, " +
-				" old19 = new19, " +
-				" old20 = new20, " +
-				" old21 = new21,  " +
-				" old22 = new22, " +
-				" old23 = new23, " +
-				" old24 = new24, " +
-				" old25 = new25, " +
-				" old26 = new26, " +
-				" old27 = new27, " +
-				" old28 = new28, " +
-				" old29 = new29, " +
-				" old30 = new30, " +
-				" old31 = new31,  " +
-				" old32 = new32, " +
-				" old33 = new33, " +
-				" old34 = new34, " +
-				" old35 = new35, " +
-				" old36 = new36, " +
-				" old37 = new37, " +
-				" old38 = new38, " +
-				" old39 = new39, " +
-				" old40 = new40, " +
-				" old41 = new41, " +
-				" old42 = new42, " +
-				" old43 = new43, " +
-				" old44 = new44, " +
-				" old45 = new45, " +
-				" old46 = new46, " +
-				" old47 = new47, " +
-				" old48 = new48, " +
-				" old49 = new49, " +
-				" old50 = new50, " +
-				" old51 = new51, " +
-				" old52 = new52, " +
-				" old53 = new53, " +
-				" old54 = new54, " +
-				" old55 = new55, " +
-				" old56 = new56 ";
+		String sql = "UPDATE book AS a "
+				+ "set tn = b.tn  , title =b.title    , author  = b.author  , call_num =b.call_num   , priority_Item =b.priority_Item   , "
+				+ "withdrawn  =b.withdrawn  , digital_Copy_Only  =b.digital_Copy_Only   , media_Type =b.media_Type   , metadata_Complete  =b.metadata_Complete   , batch_Class =b.batch_Class ,  language  =b.language  , remarks_From_Scan_Center  =b.remarks_From_Scan_Center  ,  "
+				+ "remarks_About_Book  =b.remarks_About_Book   , scanned_By  =b.scanned_By  , location =b.location   , scan_Complete_Date =b.scan_Complete_Date   , num_of_pages  =b.num_of_pages  , files_Received_By_Orem  =b.files_Received_By_Orem  , image_Audit  =b.image_Audit   , "
+				+ "ia_Start_Date =b.ia_Start_Date    ,  ia_Complete_Date  =b.ia_Complete_Date  , OCR_by =b.OCR_by   , OCR_complete_date  =b.OCR_complete_date  , Pdfreview_By  =b.Pdfreview_By   , Pdfreview_Start_Date  =b.Pdfreview_Start_Date  , pdf_Ready =b.pdf_Ready   , date_Released  =b.date_Released   , "
+				+ "compression_Code =b.compression_Code   , loaded_By  =b.loaded_By  , date_Loaded  =b.date_Loaded  ,  collection  =b.collection  , dnp =b.dnp   , tn_Change_History  =b.tn_Change_History  , pdf_Orem_Archived_Date  =b.pdf_Orem_Archived_Date  , "
+				+ "PDF_OREM_DRIVE_SERIAL_NUM  =b.PDF_OREM_DRIVE_SERIAL_NUM  , pdf_Orem_Drive_Name  =b.pdf_Orem_Drive_Name  , pdf_Copy2_Archived_Date  =b.pdf_Copy2_Archived_Date  , pdf_Copy2_Drive_Serial_NUM  =b.pdf_Copy2_Drive_Serial_NUM   , pdf_Copy2_Drive_Name =b.pdf_Copy2_Drive_Name   , "
+				+ "tiff_Orem_Archived_Date  =b.tiff_Orem_Archived_Date   ,  tiff_Orem_Drive_Serial_NUM =b.tiff_Orem_Drive_Serial_NUM   , tiff_Orem_Drive_Name  =b.tiff_Orem_Drive_Name  , tiff_Copy2_Archived_Date  =b.tiff_Copy2_Archived_Date  , tiff_Copy2_Drive_Serial_NUM  =b.tiff_Copy2_Drive_Serial_NUM  , "
+				+ "tiff_Copy2_Drive_Name  =b.tiff_Copy2_Drive_Name  , pdf_Sent_to_Load  =b.pdf_Sent_to_Load  , site  =b.site  , url  =b.url  , pid  =b.pid  , pages_Online =b.pages_Online   ,  secondary_Identifier  =b.secondary_Identifier  , oclc_Number =b.oclc_Number  ,  fhc_title =b.fhc_title, fhc_tn =b.fhc_tn   , "
+				+ "owning_institution =b.owning_institution  , publisher_original =b.publisher_original, property_right=b.property_right   from iaBookmetadata b where a.tn=b.tn and " + inClause;
+		 
+
 	
 	    getJdbcTemplate().update(sql);
 	}
@@ -3475,7 +3568,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override 
 	public BookMetadata getBookMetadataFromBookTable(String tn) {
 		try {
-			return getJdbcTemplate().queryForObject("select title, author, subject, tn, oclc_number, isbn_issn, call_#, partner_lib_call_#, filmno, pages_physical_description, summary, dgsno, language, owning_institution, requesting_location, scanned_by, record_number,date_original, publisher_original, filename from BOOK where tn=?", new BookMetadataFromBookTableRowMapper(), tn);
+			return getJdbcTemplate().queryForObject("select title, author, subject, tn, oclc_number, isbn_issn, call_num, partner_lib_call_num, filmno, pages_physical_description, summary, dgsno, language, owning_institution, requesting_location, scanned_by, record_number,date_original, publisher_original, filename from BOOK where tn=?", new BookMetadataFromBookTableRowMapper(), tn);
 		}catch(EmptyResultDataAccessException e) 
 		{ 
 			return new BookMetadata(); //empty for backing bean
@@ -3506,8 +3599,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setTitleno(rs.getString("tn"));
 			book.setOclcNumber(rs.getString("OCLC_NUMBER"));
 			book.setIsbnIssn(rs.getString("ISBN_ISSN"));
-			book.setCallno(rs.getString("call_#"));
-			book.setPartnerLibCallno(rs.getString("partner_lib_call_#"));
+			book.setCallno(rs.getString("call_num"));
+			book.setPartnerLibCallno(rs.getString("partner_lib_call_num"));
 			book.setFilmno(rs.getString("FILMNO"));
 			book.setPages(rs.getString("pages_physical_description"));
 			book.setSummary(rs.getString("SUMMARY"));
@@ -3871,7 +3964,21 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
  
 	@Override
 	public List<String> getAllYears(){
-		List sList = getJdbcTemplate().query("select year from stats_years", new StringRowMapper());
+		List sList = new ArrayList(); 		//getJdbcTemplate().query("select year from stats_years", new StringRowMapper());
+		sList.add("2009");
+		sList.add("2010");
+		sList.add("2011");
+		sList.add("2012");
+		sList.add("2013");
+		sList.add("2014");
+		sList.add("2015");
+		sList.add("2016");
+		sList.add("2017");
+		sList.add("2018");
+		sList.add("2019");
+		sList.add("2020");
+		sList.add("2021");
+		sList.add("2022");
 		return sList;	
 	}
 	///reports end///
@@ -3950,7 +4057,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	@Override
 	public void unlockOldLocks() {
 		//delete older than 24 hours
-		String sql = "DELETE FROM book_lock where   time_locked  < current_timestamp -1  ";
+		String sql = "DELETE FROM book_lock where   time_locked  < CURRENT_TIMESTAMP - INTERVAL '1 day'  ";
 	    getJdbcTemplate().update(sql);
 	}
 	///locking end///
@@ -3960,8 +4067,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	@Override
 	public boolean queryXmlMetadataOracle( String tn, String[][] mdValues, String[][] recordValues){
 		try{
-			//ResultSet rs = s.executeQuery("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_#, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'");
-			List tnList = getJdbcTemplate().query("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_#, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'", new StringXRowMapper() );
+			//ResultSet rs = s.executeQuery("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_num, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'");
+			List tnList = getJdbcTemplate().query("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_num, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'", new StringXRowMapper() );
 			
 			String dateStamp = "";
 			String softwareList = "Tesseract; SIP 12.3.0, Rosetta 2.2.1";
@@ -4008,7 +4115,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				}
 
 				mdValues[14][0] = "dcterms:isPartOf"; mdValues[14][1] = isPartOf;
-				mdValues[15][0] = "dc:rightsHolder"; mdValues[15][1] = "Refer to document for copyright information";
+				mdValues[15][0] = "dcterms:rightsHolder"; mdValues[15][1] = "Refer to document for copyright information";
 				mdValues[16][0] = "dc:type"; mdValues[16][1] = "text";
 				mdValues[17][0] = "dc:format"; mdValues[17][1] = "text/pdf";
 				mdValues[18][0] = "ldsterms:callno"; mdValues[18][1] = row.get(9);
@@ -4085,6 +4192,66 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}
 
 	}
+	
+
+	@Override
+	public boolean queryXmlCatalogingData( String secondaryId, String[][] mdValues){
+		try{
+			List tnList = getJdbcTemplate().query("select TN, SECONDARY_IDENTIFIER, OCLC_NUMBER, TITLE, AUTHOR, BATCH_CLASS, LANGUAGE from book where BATCH_CLASS = 'Internet Archives (IA)' and URL is not null and secondary_identifier = '"+secondaryId+"'", new StringXRowMapper() );
+			
+			String dateStamp = "";
+			 
+			if(tnList.size()>0){
+				List<String> row = (List<String>) tnList.get(0);
+				//mdValues = new String[37][2];
+				//recordValues = new String[8][2];			//put in id attr names and key inner-html in this array
+				mdValues[0][0] = "tn"; mdValues[0][1] = row.get(0);
+				mdValues[1][0] = "SECONDARY_IDENTIFIER"; mdValues[1][1] = row.get(1);
+				mdValues[2][0] = "OCLC_NUMBER"; mdValues[2][1] = row.get(2);
+				mdValues[3][0] = "TITLE"; mdValues[3][1] = row.get(3);
+				mdValues[4][0] = "AUTHOR"; mdValues[4][1] =  row.get(4);
+				mdValues[5][0] = "BATCH_CLASS"; mdValues[5][1] = row.get(5);
+				mdValues[6][0] = "LANGUAGE"; mdValues[6][1] = row.get(6);
+				return true;
+				 
+			}else{
+				return false;//not in oracle
+			}
+			
+		}catch(Exception e){
+			System.out.println(e);
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	@Override
+	public boolean queryGetXmlIACountTotal(String[][] mdValues) {
+		try{
+			List tnList = getJdbcTemplate().query("select count(*) from book where BATCH_CLASS = 'Internet Archives (IA)' and URL is not null", new StringXRowMapper() );
+
+			String dateStamp = "";
+
+			if(tnList.size()>0){
+				List<String> row = (List<String>) tnList.get(0);
+				//mdValues = new String[37][2];
+				//recordValues = new String[8][2];			//put in id attr names and key inner-html in this array
+				mdValues[0][0] = "count"; mdValues[0][1] = row.get(0);
+				return true;
+
+			}else{
+				return false;//not in oracle
+			}
+
+		}catch(Exception e){
+			System.out.println(e);
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+	
 	///xml metadata end//
 	private static class ExtractorWithColumnHeaders implements ResultSetExtractor<List<List<String>>> {
 		  @Override
@@ -4120,66 +4287,157 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
 	
 	////viewingreport////
+	@Override
+	public void insertBookViewingStats(String year, String month, String totalViews, String numUniqueViews) {
+		String sql = "insert into bookviewingstats values ( " + totalViews + " , " + numUniqueViews + ", '" + year + "', '" + month + "' )";
+	    getJdbcTemplate().update(sql);
+	}
+
+	
 	@Override 
-	public String getDuplicatesInViewingReport(List<String> pidList, List<String> dateList){
-		String sqlWhere = "";
-		for(int x = 0; x < pidList.size(); x++) {
-			sqlWhere += " (pid = '" + pidList.get(x) + "' and report_date = to_date('" + dateList.get(x) + "', 'MM/dd/yyyy')) or ";
-		}
-		
-		if(sqlWhere.length()>2)
-			sqlWhere = sqlWhere.substring(0,  sqlWhere.length()-3);
+	public boolean getDuplicatesInViewingReport(String year, String month){
+		 
+		List<List> dupeList = getJdbcTemplate().query("select month, year from bookviewingstats where month = ? and year = ? ", new StringXRowMapper(), Integer.parseInt(month), Integer.parseInt(year));
+		if(dupeList!= null && dupeList.size()>0)
+			return true;
+		else
+			return false;
 	 
-		List<List> pidDupeList = getJdbcTemplate().query("select pid, report_date from bookviewingstats where " + sqlWhere, new StringXRowMapper() );
-		String pidListStr = "";
-		for(List<String> r: pidDupeList) {
-			String pid = r.get(0);
-			pidListStr += ", '" + pid + "'";
-		}
-		if(pidListStr != "")
-			pidListStr = pidListStr.substring(2);
-		return pidListStr;
 	}
 
 	@Override 
-	public List<List> getViewingReports(String year, String month){
-		if(month.length()==1)
-			month = "0" + month;
-		List viewingReportList = getJdbcTemplate().query("select  PID, NUM_OF_VIEWS, TITLE, ACCESS_RIGHTS, COLLECTION, TN, PUBLISHER, OWNING_INSTITUTION, IE_URL, REPORT_DATE " 
-				+ " from  bookviewingstats where to_char(report_date, 'yyyy') = '" +year + "' and to_char(report_date, 'MM') = '"+ month + "'", new StringXRowMapper() );
+	public List<List> getViewingReports( ){
+	 
+		List viewingReportList = getJdbcTemplate().query("select year, month, num_of_views, num_of_book_views " 
+				+ " from  bookviewingstats", new StringXRowMapper() );
 
 		return viewingReportList;
 	}
 	
 	
 	@Override 
-	public void deleteSelectedViewingReports(List<String> pidList, List<String> dateList) {
-		//String inClause = generateInClause("titleno", pidList);
-		String sqlWhere = "";
-		int maxLen = pidList.size();
-		int index = 0;
-		while (index < maxLen) {
-			sqlWhere = "";
-			try {
-				for (int x = index; x < index + 999; x++) {
-					sqlWhere += " (pid = '" + pidList.get(x)
-							+ "' and report_date = to_date('" + dateList.get(x)
-							+ "-01', 'yyyy-MM-dd')) or ";
-				}
-			} catch (Exception e) {
-			}
-			index +=999;
-			//report_date = to_date( '2010-01-01', 'yyyy-MM-dd'))
-			
-			//remove final "or"
-			if(sqlWhere.length() > 1)
-				sqlWhere = sqlWhere.substring(0, sqlWhere.length() - 4);
-			
-			String sql = "DELETE FROM bookviewingstats  where " + sqlWhere;
-		    getJdbcTemplate().update(sql);
+	public void deleteSelectedViewingReports(List<String> yearList, List<String> monthList) {
+		 
+		int mIndex = 0;
+		for(String y: yearList) {
+			String m = monthList.get(mIndex++);
+			int yy = Integer.parseInt(y);
+			int mm = Integer.parseInt(m);
+			String sql = "DELETE FROM bookviewingstats  where year = ? and month = ? ";
+		    getJdbcTemplate().update(sql, yy, mm);
 		    
 		}
 	}
+	
+	@Override 
+	public List<List> getViewingStats5Years(int startingYear){
+		
+		List viewingReportList = getJdbcTemplate().query("select year, month, num_of_views, num_of_book_views " 
+				+ " from  bookviewingstats where year >= ? and year < ? order by year, month", new StringXRowMapper(), startingYear, startingYear+5 );
+
+		return viewingReportList;
+	}
+	
+	@Override
+	public List<List> getPast12MonthViews(){
+		//return 3 lists 1- month lables, 2- total views,  3- unique book views
+		
+		Calendar c = Calendar.getInstance();
+		int month = c.get(Calendar.MONTH) + 1;//1 based
+		int year = c.get(Calendar.YEAR);
+
+		List<List> viewingReportList = getJdbcTemplate().query("select year, month, num_of_views, num_of_book_views " 
+				+ " from  bookviewingstats where (year = ? and month >= ?) or (year = ? and month <= ?) order by year, month", new StringXRowMapper(), year - 1, month, year, month);
+
+		List<List> ret = new ArrayList();
+		List months = new ArrayList();
+		List totals = new ArrayList();
+		List uniques = new ArrayList();
+		int m = month;
+		int y = year - 1;
+		
+		Iterator<List> i = viewingReportList.iterator();
+		//iterate 13 times ie jan2015 - jan2016
+		boolean gotoNext = true;
+		List r = null;
+		for(int x=0; x<13 ; x++) {
+			//set month labels
+			if(m == 1)
+				months.add("Jan " + String.valueOf(y).substring(2));
+			else if(m == 2)
+				months.add("Feb " + String.valueOf(y).substring(2));
+			else if(m == 3)
+				months.add("Mar " + String.valueOf(y).substring(2));
+			else if(m == 4)
+				months.add("Apr " + String.valueOf(y).substring(2));
+			else if(m == 5)
+				months.add("May " + String.valueOf(y).substring(2));
+			else if(m == 6)
+				months.add("Jun " + String.valueOf(y).substring(2));
+			else if(m == 7)
+				months.add("Jul " + String.valueOf(y).substring(2));
+			else if(m == 8)
+				months.add("Aug " + String.valueOf(y).substring(2));
+			else if(m == 9)
+				months.add("Sep " + String.valueOf(y).substring(2));
+			else if(m == 10)
+				months.add("Oct " + String.valueOf(y).substring(2));
+			else if(m == 11)
+				months.add("Nov " + String.valueOf(y).substring(2));
+			else if(m == 12)
+				months.add("Dec " + String.valueOf(y).substring(2));
+				
+			if(gotoNext) {
+				if(i.hasNext())
+					r = i.next();
+				else
+					r = null;
+			}
+			
+			int queryY = -1;//month year not in query result and at end of query results
+			int queryM = -1;
+			if(r!=null){
+				queryY = Integer.parseInt((String)r.get(0));
+				queryM = Integer.parseInt((String)r.get(1));
+			}
+			
+			if(queryY == y && queryM == m) {
+					//found in query ..add to list
+					totals.add(r.get(2));
+					uniques.add(r.get(3));
+					gotoNext = true;
+			}else {
+					totals.add("0");
+					uniques.add("0");
+					gotoNext = false;
+			}
+			if(m==12)
+				m = 1;
+			else
+				m++;
+			
+			if(m == 1)
+				y++;//move to next year
+			 
+		}
+		
+		
+		ret.add(months);
+		ret.add(totals);
+		ret.add(uniques);
+		
+		return ret;
+		
+	}
+	
+	public List<List> XgetViewingStats5Years(int currentYear){
+		List viewingReportList = getJdbcTemplate().query("select year, month, num_of_views, num_of_book_views " 
+				+ " from  bookviewingstats", new StringXRowMapper() );
+
+		return viewingReportList;
+	}
+	
+	
 	////viewingreport end////
 	
 	
@@ -4225,7 +4483,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			 if(extraDays >= x)
 				 calStart.add(Calendar.DATE,  1); //add 1 extra day in this slice
 			 
-			 if(width == x)
+			 //if width==daysBetween then don't add another since it already was added above 
+			 if(width == x && (width != daysBetween))
 				 calStart.add(Calendar.DATE,  1); //add 1 extra day in this slice for last sql query (make last date exclusive)
 
 			 retList.add( dateFormat.format(calStart.getTime()));
@@ -4338,7 +4597,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[12][4];//6 fhc and 6 partner libs
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("")|| site.equals("All Sites"))
 		{
 			
 
@@ -4427,7 +4686,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			ret[11][3] = ret[5][3];
 			 
 		}
-		
+		//test ret[0][2]="[4,3,11,4,3,6,3,6,3,11,2,0,1,2,11,4,3,11,4,3,6,3,6,3,11,2,0,1,2,44,4,3,11,4,3,6,3,6,3,11,2,0,1,2,11]";
 		return ret;
 	}
 	
@@ -4486,7 +4745,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[6][4];//6 fhc and 6 partner libs
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("") || site.equals("All Sites"))
 		{
 			
 	
@@ -4602,7 +4861,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[12][4];//6 fhc and 6 partner libs
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("") || site.equals("All Sites"))
 		{			
 
 			//1/////////////////////////////////////////////////
@@ -4682,7 +4941,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[6][4]; 
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("") || site.equals("All Sites"))
 		{
 			runQueryForTopDashboard(daysBetween, dates, startDateYearFirst, endDateYearFirst, "all", extraDays, reduction, ret);
 		}else {
@@ -4745,7 +5004,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[5][4]; 
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("") || site.equals("All Sites"))
 		{
 	
 			//1/////////////////////////////////////////////////
@@ -4865,7 +5124,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		String[][] ret = new String[5][4]; 
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null || site.equals("") || site.equals("All Sites"))
 		{
 	
 			//1/////////////////////////////////////////////////
@@ -4985,10 +5244,10 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		double reduction = 1.0 - x;
 		//next get date slices (10 for now) make sure even number for start/end matching
 		List<String> dates = getDateSlicesByMonthly(yS, mS, dS, yE, mE, dE); //daysBetween is inclusive, but returned dates will contain ending date exclusive (bumped up to the next month)
-		String[][] ret = new String[1][3];//labels, goals, actuals (monthly)
+		String[][] ret = new String[1][4];//labels, goals,  scan(monthly), publish
 		
 		//allFhc allPartnerLibs
-		if(site == null || site.equals("All Sites"))
+		if(site == null  || site.equals("")|| site.equals("All Sites"))
 		{			
 			//1/////////////////////////////////////////////////
 			runQueryForGoals(dates, startDateYearFirst, endDateYearFirst, "all", ret, 0);
@@ -5002,7 +5261,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		//in meeting decided to make chart a comulative graph.  (ie goal is a diagonal line from 0 to x and results will "s" around the diagonal line)
 		ret[0][1] =  makeComulitive(ret[0][1]);
 		ret[0][2] =  makeComulitive(ret[0][2]);
-		 
+		ret[0][3] =  makeComulitive(ret[0][3]);
 		return ret;
 	}
 	
@@ -5025,6 +5284,278 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}
 		newArray = newArray.substring(0, newArray.length() - 1) + "]";
 		return newArray;
+	}
+	
+  
+	@Override 
+	public String[][] getDashboarDataYTDScanPublish( String startDate, String endDate, String site, int daysDiff){
+
+		String startDateYearFirst, endDateYearFirst;
+		
+
+		//order for alphabetical ordering of strings
+		//startDate
+		String yS, mS, dS;
+		int i1 = startDate.indexOf("/");
+		mS = startDate.substring(0, i1);
+		String rem = startDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dS = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yS = rem;
+		if(dS.length()==1)
+			dS = "0" + dS;
+		if(mS.length()==1)
+			mS = "0" + mS;
+
+		startDateYearFirst = yS + "/"+ mS + "/" + dS;
+
+
+		//order for alphabetical ordering of strings
+		//endDate
+		String yE, mE, dE;
+		i1 = endDate.indexOf("/");
+		mE = endDate.substring(0, i1);
+		rem = endDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		endDateYearFirst = yE + "/"+ mE + "/" + dE;
+ 
+		List<String> dates = getDateSlicesByMonthly(yS, mS, dS, yE, mE, dE); //slices are 1 month long  
+		String[][] ret =  new String[13][4]; //12 months and labels - size 13
+		
+		//allFhc allPartnerLibs
+		if(site == null  || site.equals("") || site.equals("All Sites"))
+		{			
+			//1/////////////////////////////////////////////////
+			runQueryForYTDByMonth(dates, startDateYearFirst, endDateYearFirst, "all", ret);
+
+		}else {
+			
+			//1/////////////////////////////////////////////////
+			runQueryForYTDByMonth(dates, startDateYearFirst, endDateYearFirst, site, ret);
+		}
+		 
+		return ret;
+	}
+
+	@Override 
+	public String[] getDashboarDataTotalYTDScanPublish(String startDate, String endDate, String fomStartDate, String fomStartDateCurrentMonth, String fomEndDate, String site) {
+
+		String fomStartDateYearFirst, fomStartDateCurrentMonthYearFirst, fomEndDateYearFirst;
+		String startDateYearFirst, endDateYearFirst;
+		
+
+		//order for alphabetical ordering of strings
+		//fomStartDate
+		String yS, mS, dS;
+		int i1 = fomStartDate.indexOf("/");
+		mS = fomStartDate.substring(0, i1);
+		String rem = fomStartDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dS = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yS = rem;
+		if(dS.length()==1)
+			dS = "0" + dS;
+		if(mS.length()==1)
+			mS = "0" + mS;
+
+		fomStartDateYearFirst = yS + "/"+ mS + "/" + dS;
+		
+
+
+		//StartDate
+		i1 = startDate.indexOf("/");
+		mS = startDate.substring(0, i1);
+		rem = startDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dS = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yS = rem;
+		if(dS.length()==1)
+			dS = "0" + dS;
+		if(mS.length()==1)
+			mS = "0" + mS;
+		startDateYearFirst = yS + "/"+ mS + "/" + dS;
+		
+		
+		String yE, mE, dE;
+/*
+		//order for alphabetical ordering of strings
+		//first day of current month
+		String yE, mE, dE;
+		i1 = fomStartDateCurrentMonth.indexOf("/");
+		mE = fomStartDateCurrentMonth.substring(0, i1);
+		rem = fomStartDateCurrentMonth.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		fomStartDateCurrentMonthYearFirst = yE + "/"+ mE + "/" + dE;  
+		*/
+		
+
+		//order for alphabetical ordering of strings
+		//fomEndDate
+		i1 = fomEndDate.indexOf("/");
+		mE = fomEndDate.substring(0, i1);
+		rem = fomEndDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		fomEndDateYearFirst = yE + "/"+ mE + "/" + dE;
+		
+		//fomEndDate
+		i1 = endDate.indexOf("/");
+		mE = endDate.substring(0, i1);
+		rem = endDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		endDateYearFirst = yE + "/"+ mE + "/" + dE;
+		 
+				
+				
+		 
+		String retValScanDateRange;
+		String retValPublishDateRange;
+		String retValScanYTD;
+		String retValPublishYTD;
+		
+		if(site.equals("All Sites")) {
+			List<List> vals= getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper());
+			retValScanDateRange = vals.get(0).get(0) + ", " + vals.get(0).get(1);
+		 	
+			//vals= getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateCurrentMonthYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "' and scanned_by in ('Internet Archives (RT)')", new StringX2RowMapper());
+			//String retValScanIaRtMTD = vals.get(0).get(0) + " " + vals.get(0).get(1); //only ia-rt site
+			
+		 	vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'", new StringX2RowMapper()); 
+			retValPublishDateRange = vals.get(0).get(0) + ", " + vals.get(0).get(1);
+			
+			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "'", new StringX2RowMapper());
+		 	retValScanYTD = vals.get(0).get(0) + ", " + vals.get(0).get(1);//wo ia-rt site
+		 	
+		 	//vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "' and scanned_by in ('Internet Archives (RT)')", new StringX2RowMapper());
+		 	//String retValScanIaRtYTD = vals.get(0).get(0) + " " + vals.get(0).get(1); //only ia-rt site
+		 
+			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "'", new StringX2RowMapper()); 
+			retValPublishYTD = vals.get(0).get(0) + ", " + vals.get(0).get(1);
+		}else {
+			List<List> vals= getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper());
+			retValScanDateRange = vals.get(0).get(0) + ", " + vals.get(0).get(1);
+		 	
+			//vals= getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateCurrentMonthYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "' and scanned_by in ('Internet Archives (RT)')", new StringX2RowMapper());
+			//String retValScanIaRtMTD = vals.get(0).get(0) + " " + vals.get(0).get(1); //only ia-rt site
+			
+		 	vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper()); 
+			retValPublishDateRange = vals.get(0).get(0) + ", " + vals.get(0).get(1);
+			
+			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper());
+		 	retValScanYTD = vals.get(0).get(0) + ", " + vals.get(0).get(1);//wo ia-rt site
+		 	
+		 	//vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0)  from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "' and scanned_by in ('Internet Archives (RT)')", new StringX2RowMapper());
+		 	//String retValScanIaRtYTD = vals.get(0).get(0) + " " + vals.get(0).get(1); //only ia-rt site
+		 
+			vals = getJdbcTemplate().query("SELECT count(tn), coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy/mm/dd') >= '" + fomStartDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + fomEndDateYearFirst + "'  and scanned_by in ('" + site + "')", new StringX2RowMapper()); 
+			retValPublishYTD = vals.get(0).get(0) + ", " + vals.get(0).get(1);
+		}
+		String[] ret = new String[6];
+		ret[0] = retValScanDateRange;
+		//ret[1] = retValScanIaRtMTD;
+		ret[1] = retValPublishDateRange;
+		ret[2] = retValScanYTD;
+		//ret[4] = retValScanIaRtYTD;
+		ret[3] = retValPublishYTD;
+		
+		return ret;
+	}
+
+	//method not used anymore
+	@Override 
+	public String[][] XgetDashboardByMonthDataScanProcessPublish( String startDate, String endDate, String site, int daysDiff){
+		//model.addAttribute("goalsLabels", "[ \"3/4\", \"February\", \"March\", \"April\", \"May\", \"une\", \"July\" ]");
+				//model.addAttribute("goals","[ 65, 59, 90, 81, 56, 55, 40 ]");
+				//model.addAttribute("actuals","[ 23, 59, 10, 81, 56, 5, 40 ]");
+		String startDateYearFirst, endDateYearFirst;
+		
+
+		//order for alphabetical ordering of strings
+		//startDate
+		String yS, mS, dS;
+		int i1 = startDate.indexOf("/");
+		mS = startDate.substring(0, i1);
+		String rem = startDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dS = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yS = rem;
+		if(dS.length()==1)
+			dS = "0" + dS;
+		if(mS.length()==1)
+			mS = "0" + mS;
+
+		startDateYearFirst = yS + "/"+ mS + "/" + dS;
+
+
+		//order for alphabetical ordering of strings
+		//endDate
+		String yE, mE, dE;
+		i1 = endDate.indexOf("/");
+		mE = endDate.substring(0, i1);
+		rem = endDate.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		endDateYearFirst = yE + "/"+ mE + "/" + dE;
+
+		List<String> dates = getDateSlices(yS, mS, dS, daysDiff, daysDiff); //slices are 1 day long - daysDiff is inclusive, but returned dates will contain ending date exclusive
+		String[][] ret = new String[1][4];//labels, actuals (monthly)
+		
+		//allFhc allPartnerLibs
+		if(site == null  || site.equals("") || site.equals("All Sites"))
+		{			
+			//1/////////////////////////////////////////////////
+			xrunQueryForScanByMonth(dates, startDateYearFirst, endDateYearFirst, "all", ret, 0, daysDiff);
+
+		}else {
+			
+			//1/////////////////////////////////////////////////
+			xrunQueryForScanByMonth(dates, startDateYearFirst, endDateYearFirst, site, ret, 0, daysDiff);
+		}
+		 
+		return ret;
+	}
+	
+	@Override
+	public List<List> getDashboardOpenIssues(){
+		List tnList = getJdbcTemplate().query("select solution_owner, count(solution_owner) as issueCounts from TF_NOTES where status = 'Problem' or status = 'Solution Found' group by solution_owner union select solution_owner, count(solution_owner) as issueCounts from TF_NOTES where solution_owner is null and (status = 'Problem' or status = 'Solution Found' ) group by solution_owner  order by issueCounts ", new StringX2RowMapper());
+		return tnList;
 	}
 	
 	public String addStringArrays(String a0, String a1, String a2, String a3) {
@@ -6062,7 +6593,14 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		for(int x = 0 ; x < 5; x++) {
 			for(int y = 0 ; y < 10; y++) { //ten date range queries
 				//get chart array here..
-				List<String> row = (List<String>) iter.next();
+				List<String> row;
+				if(iter.hasNext()) {
+					row = (List<String>) iter.next();
+				}else {
+					//for date range less than X
+					row = new ArrayList();
+					row.add("0");
+				}
 				//calculate and reduction (averaging) if needed
 				String tnCountStr = (String)row.get(0);
 			 
@@ -6094,6 +6632,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 
 	}
 
+	//not used anymore
 	public void runQueryForAgedDashboard(int daysBetween, List<String> dates, String startDateYearFirst, String endDateYearFirst, String table, String XcolName1, String colName2,  String site, int extraDays, double reduction, String[][] ret, int arrayIndex) {
 		
 		List<List> vals = null;
@@ -6203,7 +6742,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		 double avg = 0;
 		 if(tnCountTotalAll != 0)
 			 avg = ((double)daysBetween)/((double)tnCountTotalAll);
-		 	 avg = avg*24*60;//get minutes
+		 avg = avg*24*60;//get minutes
 		 ret[arrayIndex][1] = (String) String.format("%.3f", avg);//avg
 		 ret[arrayIndex][2] = arrayStrTns;
 		 ret[arrayIndex][3] = calculateSlope(firstPeriodTNCount, lastPeriodTNCount);
@@ -6239,22 +6778,22 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		//generate string array for chart
 		int reductionCount = 1;
 		String allSql = "";
-		if(site.equals("all")) {
+		if(site.equals("all")  ) {
 			if(colName2.equalsIgnoreCase("sent_to_scan")) {
 				//metadata
-				vals = getJdbcTemplate().query("SELECT titleno, 0, (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "' and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper());	
+				vals = getJdbcTemplate().query("SELECT titleno, 0, (" + colName2 + " - " + colName1 + ") as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "' and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper());	
 			}else if(colName2.equalsIgnoreCase("scan_ia_complete_date") || colName2.equalsIgnoreCase("date_released") || colName2.equalsIgnoreCase("date_loaded")) {
 				//scan, ocr processing, publish load, and total	
-				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper());
+				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ") as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper());
 			}
 		}else{
  
 			if(colName2.equalsIgnoreCase("sent_to_scan")) {
 				//metadata
-				vals = getJdbcTemplate().query("SELECT titleno, 0 , (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.requesting_location = ?  and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper(), site);	
+				vals = getJdbcTemplate().query("SELECT titleno, 0 , (" + colName2 + " - " + colName1 + ")  as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd') from bookmetadata a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.requesting_location = ?  and " + colName1 + " is not null and " + colName2 + " is not null order by "+colName2, new StringX4RowMapper(), site);	
 			}else if(colName2.equalsIgnoreCase("scan_ia_complete_date") || colName2.equalsIgnoreCase("date_released") || colName2.equalsIgnoreCase("date_loaded")) {
 				//scan, ocr processing, publish load, and total
-				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ")*24*60 as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.scanned_by = ?  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper(), site);
+				vals = getJdbcTemplate().query("SELECT tn, "+pagesColumn+", (" + colName2 + " - " + colName1 + ") as minutesDiff, to_char("+colName2+ ", 'yyyy/mm/dd')  from book a where to_char(" + colName2 + ", 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(" + colName2 + ", 'yyyy/mm/dd') < '" + endDateYearFirst + "'  and a.scanned_by = ?  and " + colName1 + " is not null and " + colName2 + " is not null  order by "+colName2, new StringX4RowMapper(), site);
 			}
 		}
 		Iterator<List> rows = vals.iterator();
@@ -6266,6 +6805,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		i.next();//ok to skip first since it is covered in the query
 		int tnCountTotalAll = 0;
 		double minutesTotalAll = 0;
+		int nonZeroTimeCount = 0;
 		while(i.hasNext()) {
 			String queryE = (String)i.next(); 
 			int pageCountTotal = 0;
@@ -6286,10 +6826,20 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 					if(pageCountStr == null)
 						pageCountStr = "0";
 					tnCountTotal += 1;
-					String minutes = row.get(2);
-					minutes = minutes.substring(0, minutes.indexOf(" "));
-					minutesTotal += Integer.valueOf(minutes);
-					minutesTotal = (minutesTotal / 24) / 60;//change back into days ..easier than parsing from sql return value
+					String interval = row.get(2);//postgres x day(s) hh:mm:ss  or hh:mm:ss
+					String days = interval.indexOf("day") == -1 ? "0" : interval.substring(0, interval.indexOf("day"));
+					String hours = "0";
+					String minutes = "0";
+					if(interval.indexOf(":") != -1) {
+						hours = interval.substring(interval.indexOf(":")-2, interval.indexOf(":"));
+						minutes =  interval.substring( interval.indexOf(":")+1, interval.indexOf(":") + 3);
+					}
+					int hoursI = Integer.valueOf(hours);
+					int daysI =  Integer.valueOf(days.trim());
+					int minutesI =  Integer.valueOf(minutes);
+					minutesI = (daysI * 24 * 60) + (hoursI * 60) + minutesI;
+					minutesTotal += minutesI;
+					//minutesTotal = (minutesTotal / 24) / 60;//change back into days ..easier than parsing from sql return value
 					int pageCount = Integer.valueOf(pageCountStr);
 					pageCountTotal += pageCount;
 				}else {
@@ -6305,8 +6855,16 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			
 			tnCountTotalAll += tnCountTotal;
 			tnCountStr = String.valueOf(tnCountTotal);	
-			minutesTotalAll += minutesTotal;
-			minutesStr = String.valueOf(minutesTotal);	
+			minutesTotal = ((minutesTotal /60)/24); //change to days
+			if(tnCountTotal != 0) {
+				minutesTotalAll += (minutesTotal/tnCountTotal);//add up averages for each timeslice
+				minutesStr = String.valueOf(minutesTotal/tnCountTotal);//get average for that timeslice
+			}else {
+				minutesStr = "0";
+			}
+			if (minutesTotal != 0.0)
+				nonZeroTimeCount++;
+			
 			//if tnCount is 1, then don't bother averaging, or it averages to 0
 			/*???needed for time?
 			if((reductionCount <= extraDays) && (tnCountTotal !=1) ) {
@@ -6324,14 +6882,15 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			
 			lastPeriodMinutes = minutesStr;//just always set it each time around
 		}
-		
+ 
 		arrayStrTurnaroundTime = arrayStrTurnaroundTime.substring(0,arrayStrTurnaroundTime.length()-2) + "]";//remove comma and finalize array string
  
  	 
 		 double avg = 0;
-		 if(minutesTotalAll != 0)
-			 avg = ((double)minutesTotalAll)/((double)tnCountTotalAll);
-		 	 //already in minutes avg = avg*24*60;//get minutes
+		 if(nonZeroTimeCount != 0) {
+			 avg = ((double)minutesTotalAll)/((double)nonZeroTimeCount);
+		 }
+		 	 
 		 ret[arrayIndex][1] = (String) String.format("%.3f", avg);//avg
 		 ret[arrayIndex][2] = arrayStrTurnaroundTime;
 		 ret[arrayIndex][3] = calculateSlope(firstPeriodMinutes, lastPeriodMinutes);
@@ -6466,7 +7025,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		List<List> vals = null;
 		String arrayStrLabels = "[";
 		String arrayStrGoals = "[";
-		String arrayStrActuals = "[";
+		String arrayStrPublish = "[";
+		String arrayStrScan = "[";
 	  
 		
 		String firstPeriodTNCount = null;
@@ -6551,14 +7111,15 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			arrayStrGoals = arrayStrGoals.substring(0,arrayStrGoals.length()-2) + "]";//remove comma and finalize array string
 		}
 	
-		//actual results
+		
+		// scan results
 		allSql = "";
 		startDateYearFirst = dates.get(0);
 		endDateYearFirst = dates.get(dates.size()-1);
 		if (site.equals("all")) {
-			allSql += "SELECT tn, pages_online, to_char(date_loaded, 'yyyy/mm/dd') from book a  where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') < '" + endDateYearFirst + "' order by date_loaded ";
+			allSql += "SELECT tn, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') < '" + endDateYearFirst + "' order by scan_ia_complete_date ";
 		}else{
-			allSql += "SELECT tn, pages_online, to_char(date_loaded, 'yyyy/mm/dd') from book a  where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') < '" + endDateYearFirst + "' and scanned_by = '" + site + "' order by date_loaded ";
+			allSql += "SELECT tn, num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') < '" + endDateYearFirst + "' and scanned_by = '" + site + "' order by scan_ia_complete_date ";
 		}
 		vals = getJdbcTemplate().query(allSql, new StringX3RowMapper());
 		Iterator<List> rows = vals.iterator();
@@ -6603,12 +7164,67 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			tnCountTotalAll += tnCountTotal;
 			tnCountStr = String.valueOf(tnCountTotal);	
   
-			arrayStrActuals += pageCountTotal + ", ";
+			arrayStrScan += pageCountTotal + ", ";
 		}
+		arrayStrScan = arrayStrScan.substring(0,arrayStrScan.length()-2) + "]";//remove comma and finalize array string
 		
+				
+		
+		//actual publish results
+		allSql = "";
+		startDateYearFirst = dates.get(0);
+		endDateYearFirst = dates.get(dates.size()-1);
+		if (site.equals("all")) {
+			allSql += "SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a  where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') < '" + endDateYearFirst + "' order by date_loaded ";
+		}else{
+			allSql += "SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a  where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') < '" + endDateYearFirst + "' and scanned_by = '" + site + "' order by date_loaded ";
+		}
+		vals = getJdbcTemplate().query(allSql, new StringX3RowMapper());
+		rows = vals.iterator();
+		row = null;
+		if(rows.hasNext())
+			row = rows.next();
+		
+		i = dates.iterator();
+		i.next();//ok to skip first since it is covered in the query
+		tnCountTotalAll = 0;
+		while(i.hasNext()) {
+			String queryE = (String)i.next(); 
+			int pageCountTotal = 0;
+			int tnCountTotal = 0;
 
-		
-		arrayStrActuals = arrayStrActuals.substring(0,arrayStrActuals.length()-2) + "]";//remove comma and finalize array string
+			String tnCountStr = null;
+			//for(List<String> row: vals) {
+			do {
+				
+				if(row != null && row.get(2).compareTo(queryE) < 0) {
+					//matched in this time slice
+					//get chart array here..
+					//calculate and reduction (averaging) if needed
+					String tn = (String)row.get(0);
+					String pageCountStr = (String)row.get(1);
+					if(pageCountStr == null)
+						pageCountStr = "0";
+					tnCountTotal += 1;
+					int pageCount = Integer.valueOf(pageCountStr);
+					pageCountTotal += pageCount;
+				}else {
+					break;
+				}
+				
+				if(rows.hasNext())
+					row = rows.next();
+				else
+					row = null;
+				
+			}while(rows.hasNext());
+			
+			tnCountTotalAll += tnCountTotal;
+			tnCountStr = String.valueOf(tnCountTotal);	
+  
+			arrayStrPublish += pageCountTotal + ", ";
+		}
+		arrayStrPublish = arrayStrPublish.substring(0,arrayStrPublish.length()-2) + "]";//remove comma and finalize array string
 		
 		
 		for(String d : dates) {
@@ -6648,7 +7264,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		
 		ret[0][0] = arrayStrLabels;
 		ret[0][1] = arrayStrGoals;
-		ret[0][2] = arrayStrActuals;		 
+		ret[0][2] = arrayStrScan;
+		ret[0][3] = arrayStrPublish;		 
 	}
 	
 
@@ -6815,6 +7432,691 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		ret[0][2] = arrayStrActuals;		 
 	}
 	
+
+	public void runQueryForYTDByMonth(List<String> dates, String startDateYearFirst, String endDateYearFirst, String site, String[][] retArray) {
+		String monthlyGoal = String.valueOf(getGoalBySite(startDateYearFirst.substring(0, 4), site) / 12);
+		
+		List<List> vals = null;
+		 
+		//labels are dummy labels and not showen on page, but needed for chart library
+		retArray[0][0] = "'Month'";
+		retArray[0][1] = "'Scan'";
+		retArray[0][2] = "'Publish'";
+		retArray[0][3] = "'Goal'";
+	
+		/*generate string array for chart of scanned */
+		String allSql = "";
+
+		if(site.equals("allFhc")) {
+			vals = getJdbcTemplate().query("SELECT tn,  scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}else if (site.equals("allPartnerLibs")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}else if (site.equals("allInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' and a.scanned_by not in ('Internet Archives (RT)') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}else if (site.equals("rtInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('Internet Archives (RT)') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}else if (site.equals("gmrv")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('GMRV') order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper());
+		}/*else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}*/
+		else {
+			//specific site 
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, coalesce( coalesce(scan_num_of_pages, num_of_pages), 0), to_char(scan_ia_complete_date, 'yyyy/mm/dd')  from book where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX4RowMapper(), site);
+		}
+		
+		Iterator<List> rows = vals.iterator();
+		List<String> row = null;
+		if(rows.hasNext())
+			row = rows.next();
+		
+		Iterator i = dates.iterator();
+		i.next();//ok to skip first since it is covered in the query
+		int tnCountTotalAll = 0;//total for all time slices
+		int imgCountTotalAll = 0;//total for all time slices
+		int monthIndex = 0;
+		while(i.hasNext()) {
+			monthIndex++;//remember that 0 contains labels, so start off at 1
+			String queryE = (String)i.next(); 
+			int imgCountTotal = 0;//total per time slice
+			int tnCountTotal = 0;//total per time slice
+
+			  
+			do {
+				if(row != null && row.get(3).compareTo(queryE) < 0) {
+					//matched in this time slice
+					//get chart array here..
+					//calculate and reduction (averaging) if needed
+					String tn = (String)row.get(0);
+					//use scanpagecount or pagecount if it is null or 0
+					//String scanPageCountStr = (String)row.get(1);
+					String pageCountStr = (String)row.get(2);
+					//if(scanPageCountStr == null || scanPageCountStr.equals("0"))
+						//scanPageCountStr = pageCountStr;
+					if(pageCountStr == null)
+						pageCountStr = "0";
+					tnCountTotal += 1;
+					int pageCount = Integer.valueOf(pageCountStr);
+					imgCountTotal += pageCount;
+				}else {
+					break;
+				}
+				
+				if(rows.hasNext())
+					row = rows.next();
+				else
+					row = null;
+				
+			}while(row!=null);
+			retArray[monthIndex][0] = String.valueOf(monthIndex);
+			String imgCountStr = String.valueOf(imgCountTotal);	
+			retArray[monthIndex][1] = imgCountStr;//elem 1 is scan page counts
+			retArray[monthIndex][3] = monthlyGoal;//3 is goal monthly
+		}
+		
+ 
+
+		/*generate string array for chart of published */
+		allSql = "";
+		
+		if(site.equals("allFhc")) {
+			vals = getJdbcTemplate().query("SELECT tn,    coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allPartnerLibs")) {
+			vals = getJdbcTemplate().query("SELECT tn,   coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn,   coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%'  and a.scanned_by not in ('Internet Archives (RT)') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("rtInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn,  coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('Internet Archives (RT)') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("gmrv")) {
+			vals = getJdbcTemplate().query("SELECT tn,  coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and a.scanned_by in ('GMRV') order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}
+	/*else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}*/
+		else {
+			//specific site
+			vals = getJdbcTemplate().query("SELECT tn,  coalesce(num_of_pages, 0), to_char(date_loaded, 'yyyy/mm/dd')  from book where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper(), site);
+		}
+		
+		rows = vals.iterator();
+		row = null;
+		if(rows.hasNext())
+			row = rows.next();
+		
+		i = dates.iterator();
+		i.next();//ok to skip first since it is covered in the query
+		tnCountTotalAll = 0;//total for all time slices
+		imgCountTotalAll = 0;//total for all time slices
+		monthIndex = 0;
+		while(i.hasNext()) {
+			monthIndex++;//remember that 0 contains labels, so start off at 1
+			String queryE = (String)i.next(); 
+			int imgCountTotal = 0;//total per time slice
+			int tnCountTotal = 0;//total per time slice
+		
+			  
+			do {
+				if(row != null && row.get(2).compareTo(queryE) < 0) {
+					//matched in this time slice
+					//get chart array here..
+					//calculate and reduction (averaging) if needed
+					String tn = (String)row.get(0);
+				 
+					String pageCountStr = (String)row.get(1);
+			
+					if(pageCountStr == null)
+						pageCountStr = "0";
+					tnCountTotal += 1;
+					int pageCount = Integer.valueOf(pageCountStr);
+					imgCountTotal += pageCount;
+				}else {
+					break;
+				}
+				
+				if(rows.hasNext())
+					row = rows.next();
+				else
+					row = null;
+				
+			}while(row!=null);
+			
+			String imgCountStr = String.valueOf(imgCountTotal);	
+			retArray[monthIndex][2] = imgCountStr;//elem 2 is publish page counts
+		}
+ 
+	 
+		return;// retArray;
+	
+	}
+
+	/*
+	 * 
+	 * Gets goals for: Site, "all sites", "allFhc", "allPartnerLibs", "allInternetArchives" "rtInternetArchives" "gmrv" "
+	 */
+	public int getGoalBySite(String year, String site) {
+		 
+		if(site == null || site.equalsIgnoreCase("") || site.equalsIgnoreCase("all sites")) {
+			site = "all";
+		}
+		String allSql = "";
+		ArrayList returnList = new ArrayList<String>();   
+
+		//get goals
+		if ("all".equals(site)) {
+			allSql += "SELECT goal_images_yearly, year from site_goal  where year = '" + year + "' and site = 'All Sites'"; 
+		}else if ("allFhc".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.is_fhc = 'T' and year = '" + year + "'";
+		}else if ("allPartnerLibs".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.is_partner_institution = 'T' and year = '" + year + "'";
+		}else if ("allInternetArchives".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.id like 'Internet%' and b.id != 'Internet Archives (RT)' and year = '" + year + "'";
+		}else if ("rtInternetArchives".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site  and b.id = 'Internet Archives (RT)' and year = '" + year + "'";
+		}else if ("gmrv".equals(site)){
+			allSql += "SELECT sum(goal_images_yearly) from site_goal a, site b where b.id = a.site and b.id = 'GMRV' and year = '" + year + "'";
+		}else {
+			allSql += "SELECT goal_images_yearly, year from site_goal  where year = '" + year + "' and site = '" + site + "'";
+		}
+		 
+		List<List> vals = getJdbcTemplate().query(allSql, new StringX1RowMapper());
+		if(vals.size() != 0 && vals.get(0).get(0) != null) {
+			return Integer.parseInt((String)vals.get(0).get(0));
+		}else {
+			return 0;
+		}
+	}
+	
+
+	public void xrunQueryForScanByMonth(List<String> dates, String startDateYearFirst, String endDateYearFirst, String site, String[][] ret,  int arrayIndex, int daysDiff) {
+	
+		List<List> vals = null;
+		String arrayStrLabels = "[";
+		//String arrayStrGoals = "[";
+		String arrayStrActualsScan = "[";
+		String arrayStrActualsProcess = "[";
+		String arrayStrActualsPublish = "[";
+	  		
+		String firstPeriodTNCount = null;
+		String lastPeriodTNCount = null;
+		String firstPeriodImgCount = null;
+		String lastPeriodImgCount = null;
+ 
+	
+		/*generate string array for chart of scanned */
+		String allSql = "";
+
+		if(site.equals("allFhc")) {
+			vals = getJdbcTemplate().query("SELECT tn,  scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allPartnerLibs")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a, site b where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd') from book a  where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else {
+			//specific site
+			vals = getJdbcTemplate().query("SELECT tn, scan_num_of_pages, to_char(scan_ia_complete_date, 'yyyy/mm/dd')  from book where to_char(scan_ia_complete_date, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(scan_ia_complete_date, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(scan_ia_complete_date, 'yyyy/mm/dd')", new StringX3RowMapper(), site);
+		}
+		
+		Iterator<List> rows = vals.iterator();
+		List<String> row = null;
+		if(rows.hasNext())
+			row = rows.next();
+		
+		Iterator i = dates.iterator();
+		i.next();//ok to skip first since it is covered in the query
+		int tnCountTotalAll = 0;//total for all time slices
+		int imgCountTotalAll = 0;//total for all time slices
+		while(i.hasNext()) {
+			String queryE = (String)i.next(); 
+			int imgCountTotal = 0;//total per time slice
+			int tnCountTotal = 0;//total per time slice
+
+			  
+			do {
+				if(row != null && row.get(2).compareTo(queryE) < 0) {
+					//matched in this time slice
+					//get chart array here..
+					//calculate and reduction (averaging) if needed
+					String tn = (String)row.get(0);
+					String pageCountStr = (String)row.get(1);
+					if(pageCountStr == null)
+						pageCountStr = "0";
+					tnCountTotal += 1;
+					int pageCount = Integer.valueOf(pageCountStr);
+					imgCountTotal += pageCount;
+				}else {
+					break;
+				}
+				
+				if(rows.hasNext())
+					row = rows.next();
+				else
+					row = null;
+				
+			}while(row!=null);
+			
+			
+			
+			
+			
+			//tnCountTotalAll += tnCountTotal;
+			//String tnCountStr = String.valueOf(tnCountTotal);	
+			imgCountTotalAll += imgCountTotal;
+			String imgCountStr = String.valueOf(imgCountTotal);	
+			arrayStrActualsScan += imgCountStr + ", ";
+		}
+		
+
+		arrayStrActualsScan = arrayStrActualsScan.substring(0,arrayStrActualsScan.length()-2) + "]";//remove comma and finalize array string
+		
+
+		/*generate string array for chart of processed */
+		allSql = "";
+
+		if(site.equals("allFhc")) {
+			vals = getJdbcTemplate().query("SELECT tn,  num_of_pages, to_char(date_released, 'yyyy/mm/dd') from book a, site b where to_char(date_released, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_released, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(date_released, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allPartnerLibs")) {
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_released, 'yyyy/mm/dd') from book a, site b where to_char(date_released, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_released, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(date_released, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_released, 'yyyy/mm/dd') from book a, site b where to_char(date_released, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_released, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' order by to_char(date_released, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_released, 'yyyy/mm/dd') from book a  where to_char(date_released, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_released, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(date_released, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else {
+			//specific site
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_released, 'yyyy/mm/dd')  from book where to_char(date_released, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_released, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(date_released, 'yyyy/mm/dd')", new StringX3RowMapper(), site);
+		}
+		
+		rows = vals.iterator();
+		row = null;
+		if(rows.hasNext())
+			row = rows.next();
+		
+		i = dates.iterator();
+		i.next();//ok to skip first since it is covered in the query
+		tnCountTotalAll = 0;//total for all time slices
+		imgCountTotalAll = 0;//total for all time slices
+		while(i.hasNext()) {
+			String queryE = (String)i.next(); 
+			int imgCountTotal = 0;//total per time slice
+			int tnCountTotal = 0;//total per time slice
+
+			  
+			do {
+				if(row != null && row.get(2).compareTo(queryE) < 0) {
+					//matched in this time slice
+					//get chart array here..
+					//calculate and reduction (averaging) if needed
+					String tn = (String)row.get(0);
+					String pageCountStr = (String)row.get(1);
+					if(pageCountStr == null)
+						pageCountStr = "0";
+					tnCountTotal += 1;
+					int pageCount = Integer.valueOf(pageCountStr);
+					imgCountTotal += pageCount;
+				}else {
+					break;
+				}
+				
+				if(rows.hasNext())
+					row = rows.next();
+				else
+					row = null;
+				
+			}while(row!=null);
+			
+			
+			
+			
+			
+			//tnCountTotalAll += tnCountTotal;
+			//String tnCountStr = String.valueOf(tnCountTotal);	
+			imgCountTotalAll += imgCountTotal;
+			String imgCountStr = String.valueOf(imgCountTotal);	
+  
+			arrayStrActualsProcess += imgCountStr + ", ";
+		}
+		arrayStrActualsProcess = arrayStrActualsProcess.substring(0,arrayStrActualsProcess.length()-2) + "]";//remove comma and finalize array string
+		
+		
+
+		/*generate string array for chart of published */
+		 
+		allSql = "";
+
+		if(site.equals("allFhc")) {
+			vals = getJdbcTemplate().query("SELECT tn,  num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_fhc = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allPartnerLibs")) {
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.is_partner_institution = 'T' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equals("allInternetArchives")) {
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a, site b where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "' and b.id = a.scanned_by and b.id like 'Internet%' order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else if (site.equalsIgnoreCase("all") || site.equalsIgnoreCase("all sites") || site.equals("")) {
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd') from book a  where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper());
+		}else {
+			//specific site
+			vals = getJdbcTemplate().query("SELECT tn, num_of_pages, to_char(date_loaded, 'yyyy/mm/dd')  from book where to_char(date_loaded, 'yyyy/mm/dd') >= '" + startDateYearFirst + "' and  to_char(date_loaded, 'yyyy/mm/dd') <= '" + endDateYearFirst + "'  and scanned_by = ? order by to_char(date_loaded, 'yyyy/mm/dd')", new StringX3RowMapper(), site);
+		}
+		
+		rows = vals.iterator();
+		row = null;
+		if(rows.hasNext())
+			row = rows.next();
+		
+		i = dates.iterator();
+		i.next();//ok to skip first since it is covered in the query
+		tnCountTotalAll = 0;//total for all time slices
+		imgCountTotalAll = 0;//total for all time slices
+		while(i.hasNext()) {
+			String queryE = (String)i.next(); 
+			int imgCountTotal = 0;//total per time slice
+			int tnCountTotal = 0;//total per time slice
+
+			  
+			do {
+				if(row != null && row.get(2).compareTo(queryE) < 0) {
+					//matched in this time slice
+					//get chart array here..
+					//calculate and reduction (averaging) if needed
+					String tn = (String)row.get(0);
+					String pageCountStr = (String)row.get(1);
+					if(pageCountStr == null)
+						pageCountStr = "0";
+					tnCountTotal += 1;
+					int pageCount = Integer.valueOf(pageCountStr);
+					imgCountTotal += pageCount;
+				}else {
+					break;
+				}
+				
+				if(rows.hasNext())
+					row = rows.next();
+				else
+					row = null;
+				
+			}while(row!=null);
+			
+			imgCountTotalAll += imgCountTotal;
+			String imgCountStr = String.valueOf(imgCountTotal);
+  
+			arrayStrActualsPublish += imgCountStr + ", ";
+		}
+		arrayStrActualsPublish = arrayStrActualsPublish.substring(0,arrayStrActualsPublish.length()-2) + "]";//remove comma and finalize array string
+		
+		
+		/*labels next */
+		for(int x = 1; x<= daysDiff; x++) {
+			if(x % 10 == 1) {
+				arrayStrLabels += "\"" + x + "\", ";
+			}else {
+				arrayStrLabels += "\"\", ";
+			}
+		}
+		 		
+		arrayStrLabels = arrayStrLabels.substring(0,arrayStrLabels.length()-2) + "]";//remove comma and finalize array string
+		
+		
+		ret[0][0] = arrayStrLabels;
+		ret[0][1] = arrayStrActualsScan;
+		ret[0][2] = arrayStrActualsProcess;
+		ret[0][3] = arrayStrActualsPublish;
+	
+	}
+
+	
+	
+
+	//return list of rows(site,YTDGoal,scanYTD,scanYTDTodo,publishYTD,publishYTDTodo) 
+	@Override
+	public List<List> getGoalsAndActuals(String year, int endMonthInt, String endDate, String site) {
+		
+		//returns 
+		if(site == null || site.equalsIgnoreCase("") || site.equalsIgnoreCase("all sites")) {
+			site = "All Sites";
+		}
+		String allSql = "";
+		ArrayList returnList = new ArrayList<String>(); 
+
+		if ("All Sites".equals(site)) {
+			//get goals- all sites that are active and leftouterjoin with goals if exist or 0 if not
+			allSql += "SELECT  a.id, COALESCE (b.goal_images_yearly, 0) from site a left outer join site_goal b on a.id=b.site and b.year = '" + year + "'  where   (a.is_inactive_site != 'T' or a.is_inactive_site is null) and a.id not in ( 'DNP', 'All Sites') order by a.id";
+		}else {
+			allSql += "SELECT  a.id, COALESCE (b.goal_images_yearly, 0) from site a left outer join site_goal b on a.id=b.site and b.year = '" + year + "'  where   (a.is_inactive_site != 'T' or a.is_inactive_site is null) and a.id = '" +site+ "' order by a.id";
+		}
+			
+		List<List> vals = getJdbcTemplate().query(allSql, new StringX2RowMapper());
+		/*List nullSite = new ArrayList(); //since some books are processed with no site by accident add null value site also so total numbers jive
+		nullSite.add(null);
+		nullSite.add("0");
+		
+		vals.add(nullSite);*/
+		if(vals.size() != 0 && vals.get(0).get(0) != null) {
+			String allGoal = "0";
+
+			for(List g : vals) {
+				if("All Sites".equals(g.get(0))) {
+					allGoal = (String) g.get(1);
+				}
+				if(!g.get(1).equals("0")) {
+					int goalInt = Integer.valueOf( (String) g.get(1));
+					int goalMonthInt = (goalInt * endMonthInt) / 12;
+					g.set(1, String.valueOf(goalMonthInt));
+				}
+			}
+		}
+			/*
+			//for now, if no goal, then just set it to total goal so piechart will print
+			for(List g : goalVals) {
+				int goal = (Integer) g.get(1);
+				if(goal == 0) {
+					g.set(1, allGoal);
+				}
+			}*/
+			
+	
+		//actual results scan for THIS YEAR ONLY through month selected
+		allSql = "";
+		if ("All Sites".equals(site)) {
+			allSql += "SELECT scanned_by, coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0) from book a where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "'  group by scanned_by order by scanned_by";
+ 		}else{
+			allSql += "SELECT scanned_by, coalesce(sum( coalesce(scan_num_of_pages, num_of_pages) ), 0) from book a  where to_char(scan_ia_complete_date, 'yyyy') = '" + year + "' and to_char(scan_ia_complete_date, 'yyyy/MM/dd') <= '" + endDate + "' " + " and scanned_by = '" + site + "'  group by scanned_by";
+		}
+		List<List> valsScan = getJdbcTemplate().query(allSql, new StringX2RowMapper());
+		
+		//put in map for quicker retrieval and since some goal sites may not be in result site resultset 
+		Map<String, String> scanMap = new HashMap();
+		for(List s : valsScan) {
+			scanMap.put((String)s.get(0), (String)s.get(1));//scansite and scancomplete
+		}
+		for(List ret : vals) {
+			 
+				String scanCount = scanMap.get(ret.get(0));
+				
+				if(scanCount != null) {
+					ret.add(2, scanCount);//insert SCAN results into vals List
+					Integer goalInt = Integer.parseInt((String)ret.get(1));
+					Integer scanInt = Integer.parseInt(scanCount);
+					if(goalInt<scanInt)
+						ret.add(3, "0");//0 left
+					else
+						ret.add(3, String.valueOf(goalInt - scanInt));//value left todo
+				}else {
+					ret.add(2, "0");//if scanresult site not in scanresult list
+					Integer goalInt = Integer.parseInt((String)ret.get(1));
+					ret.add(3, String.valueOf(goalInt - 0));//value left todo
+				}
+		 
+		}
+
+		
+		//actual results publish for THIS YEAR ONLY through month selected
+		allSql = "";
+		if ("All Sites".equals(site)) {
+			allSql += "SELECT scanned_by, coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy') = '" + year + "' and to_char(date_loaded, 'yyyy/MM/dd') <= '" + endDate + "'  group by scanned_by order by scanned_by";
+ 		}else{
+			allSql += "SELECT scanned_by, coalesce(sum(num_of_pages), 0) from book a where to_char(date_loaded, 'yyyy') = '" + year + "' and to_char(date_loaded, 'yyyy/MM/dd') <= '" + endDate + "' " + " and scanned_by = '" + site + "'  group by scanned_by";
+		}
+		List<List> valsPublish = getJdbcTemplate().query(allSql, new StringX2RowMapper());
+		
+		//put in map for quicker retrieval
+		Map<String, String> publishMap = new HashMap();
+		for(List p : valsPublish) {
+			publishMap.put((String)p.get(0), (String)p.get(1));
+		}
+		for(List ret : vals) {
+		 
+				String publishCount = publishMap.get(ret.get(0));
+				if(publishCount != null) {
+					ret.add(4, publishCount);//insert PUB results into vals List
+					Integer goalInt = Integer.parseInt((String)ret.get(1));
+					Integer publishInt = Integer.parseInt(publishCount);
+					if(goalInt<publishInt)
+						ret.add(5, "0");//0 left
+					else
+						ret.add(5, String.valueOf(goalInt - publishInt));//value left todo
+				}else {
+					ret.add(4, "0");//insert PUB results into result List
+					Integer goalInt = Integer.parseInt((String)ret.get(1));
+					ret.add(5, String.valueOf(goalInt - 0));//value left todo
+				}
+			
+		}
+		
+	 
+		//remove rows with all 0 counts
+		//and calculate totals
+		int goalTotal = 0;
+		int scanTotal = 0;
+		int scanLeft = 0;
+		int publishTotal = 0;
+		int publishLeft = 0;
+		Iterator<List> i = vals.iterator();
+		while(i.hasNext()) {
+			List n = i.next();
+			if(n.get(1).equals("0") && n.get(2).equals("0") && n.get(3).equals("0") && n.get(4).equals("0") && n.get(5).equals("0")) {
+				i.remove();
+			}else {
+				goalTotal += Integer.parseInt((String)n.get(1));
+				scanTotal += Integer.parseInt((String)n.get(2));
+				scanLeft += Integer.parseInt((String)n.get(3));
+				publishTotal += Integer.parseInt((String)n.get(4));
+				publishLeft += Integer.parseInt((String)n.get(5));
+			}
+		}
+		if("All Sites".equals(site) && ( goalTotal > 0 ||  scanTotal > 0 ||  scanLeft > 0 ||  publishTotal > 0 ||  publishLeft > 0)) {
+			List<String> totals = new ArrayList<String>();
+			totals.add("All Sites");
+			totals.add(String.valueOf(goalTotal));
+			totals.add(String.valueOf(scanTotal));
+			totals.add(String.valueOf(scanLeft));
+			totals.add(String.valueOf(publishTotal));
+			totals.add(String.valueOf(publishLeft));
+			vals.add(0, totals);//put totals pie at top
+		}
+		
+
+		if (!"All Sites".equals(site)) {
+			return vals;//just 1 site, no need to combine
+		}else {
+			/////////////Group into 6 groups (allsites, fhl, partners, ia, ia-rt, gmrv)
+			List<List> combinedVals = new ArrayList();
+			List<String> group1 = new ArrayList<String>();
+			group1.add("All Sites");
+			for(int x=0; x<5; x++) {
+				group1.add("0");//initialize to 0
+			}
+			List<String> group2 = new ArrayList<String>();
+			group2.add("FHCs and FHLs");
+			for(int x=0; x<5; x++) {
+				group2.add("0");//initialize to 0
+			}
+			List<String> group3 = new ArrayList<String>();
+			group3.add("Partner Libraries");
+			for(int x=0; x<5; x++) {
+				group3.add("0");//initialize to 0
+			}
+			List<String> group4 = new ArrayList<String>();
+			group4.add("Internet Archive (w/o RT)");
+			for(int x=0; x<5; x++) {
+				group4.add("0");//initialize to 0
+			}
+			List<String> group5 = new ArrayList<String>();
+			group5.add("Internet Archive (RT)");
+			for(int x=0; x<5; x++) {
+				group5.add("0");//initialize to 0
+			}
+			List<String> group6 = new ArrayList<String>();
+			group6.add("GMRV");
+			for(int x=0; x<5; x++) {
+				group6.add("0");//initialize to 0
+			}
+			
+			combinedVals.add(group1);
+			combinedVals.add(group2);
+			combinedVals.add(group3);
+			combinedVals.add(group4);
+			combinedVals.add(group5);
+			combinedVals.add(group6);
+			
+			allSql = "SELECT  a.id, a.is_fhc, a.is_partner_institution   from site a order by a.id";
+			
+			List<List> sites = getJdbcTemplate().query(allSql, new StringX3RowMapper());
+			Map<String, List> sitesMap = new HashMap<String, List>();
+			
+			for(List r : sites) {
+				sitesMap.put((String)r.get(0), r);
+			}
+			
+			for(List r : vals) {
+				String siteName = (String)r.get(0);
+			
+				Object isFhlStr = sitesMap.get(siteName).get(1);
+				boolean isFhl = (isFhlStr!=null && isFhlStr.equals("T")) ? true : false;
+				Object isPartnerStr = sitesMap.get(siteName).get(2);
+				boolean isPartner = (isPartnerStr!=null && isPartnerStr.equals("T")) ? true : false;
+				
+				int groupIndex = 0;
+				if(siteName.equals("All Sites")) { 
+					groupIndex = 0;
+				}else if(siteName.contains("Internet") && !siteName.equals("Internet Archives (RT)")) {
+					groupIndex = 3;
+				}else if(siteName.equals("Internet Archives (RT)")) {
+					groupIndex = 4;
+				}else if(siteName.equals("GMRV")) {
+					groupIndex = 5;
+				}else if(isFhl) {
+					groupIndex = 1;
+				}else if(isPartner) {
+					groupIndex = 2;
+				}
+				
+					
+				goalTotal = Integer.parseInt((String)r.get(1));
+				scanTotal = Integer.parseInt((String)r.get(2));
+				scanLeft = Integer.parseInt((String)r.get(3));
+				publishTotal = Integer.parseInt((String)r.get(4));
+				publishLeft = Integer.parseInt((String)r.get(5));
+				
+				List combinedRow = combinedVals.get(groupIndex);
+				
+				int goalTotalAll = Integer.parseInt((String)combinedRow.get(1));
+				int scanTotalAll = Integer.parseInt((String)combinedRow.get(2));
+				int scanLeftAll = Integer.parseInt((String)combinedRow.get(3));
+				int publishTotalAll = Integer.parseInt((String)combinedRow.get(4));
+				int publishLeftAll = Integer.parseInt((String)combinedRow.get(5));
+	
+				combinedRow.set(1, String.valueOf(goalTotal + goalTotalAll));
+				combinedRow.set(2, String.valueOf(scanTotal + scanTotalAll));
+				combinedRow.set(3, String.valueOf(scanLeft + scanLeftAll));
+				combinedRow.set(4, String.valueOf(publishTotal + publishTotalAll));
+				combinedRow.set(5, String.valueOf(publishLeft + publishLeftAll));
+				 
+			}
+			return combinedVals;
+		}
+		
+		
+	}
+	
 	
 	////end dashboard/////
 	///misc
@@ -6847,6 +8149,9 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				"SCAN_IMAGE_AUDITOR", 
 				"SCAN_IA_START_DATE", 
 				"SCAN_IA_COMPLETE_DATE", 
+				"SCAN_IMAGE_AUDITOR2", 
+				"SCAN_IA_START_DATE2", 
+				"SCAN_IA_COMPLETE_DATE2",		
 				"FILES_SENT_TO_OREM", 
 				"SCAN_NUM_OF_PAGES", 
 				"NUM_OF_PAGES", 
@@ -6869,16 +8174,16 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				"DNP_DELETED_OFF_LINE", 
 				"TN_CHANGE_HISTORY", 
 				"PDF_OREM_ARCHIVED_DATE", 
-				"PDF_OREM_DRIVE_SERIAL_#", 
+				"PDF_OREM_DRIVE_SERIAL_num", 
 				"PDF_OREM_DRIVE_NAME", 
 				"PDF_COPY2_ARCHIVED_DATE", 
-				"PDF_COPY2_DRIVE_SERIAL_#", 
+				"PDF_COPY2_DRIVE_SERIAL_num", 
 				"PDF_COPY2_DRIVE_NAME", 
 				"TIFF_OREM_ARCHIVED_DATE", 
-				"TIFF_OREM_DRIVE_SERIAL_#", 
+				"TIFF_OREM_DRIVE_SERIAL_num", 
 				"TIFF_OREM_DRIVE_NAME", 
 				"TIFF_COPY2_ARCHIVED_DATE", 
-				"TIFF_COPY2_DRIVE_SERIAL_#", 
+				"TIFF_COPY2_DRIVE_SERIAL_num", 
 				"TIFF_COPY2_DRIVE_NAME", 
 				"PDF_SENT_TO_LOAD", 
 				"SITE", 
@@ -6918,9 +8223,14 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		
 	}
 	
-	public void saveUpdatedColumnValue(String tnList, String columnName, String newValue){
+	public void saveUpdatedColumnValue(String userId, List<String> tnList1, String tnList, String columnName, String newValue){
 		String inClause = generateInClause("tn", tnList);
+		
 		String sql1 = "UPDATE book SET " + columnName + " = '" + newValue + "' where " + inClause;
+		if(newValue.equals("")) {
+			sql1 = "UPDATE book SET " + columnName + " = null where " + inClause;
+		}
+		 
 		try {
 			getJdbcTemplate().update(sql1);
 		}catch(Exception e) {
@@ -6928,6 +8238,32 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			sql1 = "UPDATE book SET " + columnName + " = to_date('" + newValue + "', 'MM/DD/YYYY') where " + inClause;
 			getJdbcTemplate().update(sql1);
 		}
+		 
+		
+
+		//next insert a row for each tn in audit table
+		List<List<String>> insertData = new ArrayList();
+		if(sql1.length() > 3023)
+			sql1 = sql1.substring(0, 1022);
+		for(String tn : tnList1) {
+		 
+			 
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Calendar cal = Calendar.getInstance();
+			//cal.add(Calendar.DATE, 1); 
+			String formatted = dateFormat.format(cal.getTime());
+			//String d = dateFormat.format(cal);
+			List<String> row = new ArrayList();
+			row.add(userId);
+			row.add(formatted); //"2021-11-12 20:22:23"); //current_timestamp");//d);;;;
+			row.add(tn);
+			row.add(sql1);
+			insertData.add(row);
+				 
+		}
+		  
+	    insertBatch("bookaudit", new String[]{"userid", "updatedate", "tn", "text"}, new int[] {Types.VARCHAR,  Types.TIMESTAMP, Types.VARCHAR, Types.VARCHAR}, insertData); 
+
 	}
 	
 	
@@ -7008,8 +8344,196 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			return null;
 		}
 	}
+
+	
+	public List<List<Object>> stringsToTypes(int[] colType, List<List<String>> rows){
+		List<List<Object>> rowsObj = (List) rows;//cast to object contents instead of string
+		//List<List<Object>> ret = new ArrayList<List<Object>>();
+		for(List<Object> row : rowsObj) {
+			for(int x = 0; x<colType.length; x++) {
+				 if(colType[x] == Types.NUMERIC) {
+					 if(row.get(x) == null || "".equals(row.get(x)))
+						 row.set(x, null);
+					 else
+						 row.set(x, Double.parseDouble((String)row.get(x)));
+				 }
+			 }
+		 }
+		
+		return rowsObj;
+	}
 	
 	///end misc
+	
+	//non book sql start
+
+	/* (non-Javadoc)
+	 * @see org.familysearch.prodeng.service.BookService#createBook(org.familysearch.prodeng.model.Book)
+	 */
+	@Override
+	@Transactional
+	public void createNonBook(NonBook nonBook) throws ConstraintViolationException {
+		try {
+		String sql = "insert into nonBook (dn) values ( '" + nonBook.getDn() + "' )";
+	    getJdbcTemplate().update(sql);
+	    
+	    this.updateNonBook(nonBook);
+		}catch(Exception e) {
+			String sql = "delete from nonBook where dn = '" + nonBook.getDn() + "'";
+		    getJdbcTemplate().update(sql);
+		}
+	} 
+	
+	@Override
+	public List<String> getAllDns() {
+		List<String> dnList = getJdbcTemplate().query("select dn from NONBOOK", new StringRowMapper());
+		return dnList;
+	}
+	
+
+	@Override
+	public NonBook getNonBook(String dn) {
+		try {
+			return getJdbcTemplate().queryForObject("select * from NONBOOK where DN=?", new NonBookRowMapper(), dn);
+		}catch(EmptyResultDataAccessException e) 
+		{ 
+			return new NonBook(); //empty for backing bean
+		}
+	} 
+	
+
+	@Override
+	public List<String> getNonBooksByWildcard(String searchBy) {
+		 
+		List<String> dnList = getJdbcTemplate().query("select dn from NonBOOK where dn like '"+searchBy+"%' order by dn", new StringRowMapper());
+		
+		//nList.add(0, " ");//dummy since spring mvc puts '[' at first and ']' at end if not using spring form
+		//tnList.add("");//empty selection for null value
+		//tnList.add(" ");//dummy
+	
+		return dnList;
+	}
+
+	@Override
+	public void updateNonBook(NonBook book) {
+		updateNonBook(book, book.getDn());
+	}
+	
+	@Override
+	public void updateNonBook(NonBook book, String oldDn) {
+		// TODO add some data validation and display nice error message (ie dup tn and secondaryIdentifier
+		
+		 		
+		String sql = "update nonbook set ";
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		//tn will always updated even if not change to simplify sql generation		
+		sql += "dn = :dn, ";
+		params.put("dn", book.getDn());
+		 
+		if (book.isTitleSet()) {
+			sql += "title =  :title, ";
+			params.put("title",  book.getTitle()==""?null: book.getTitle());
+		}
+		if (book.isAuthorSet()) {
+			sql += "author = :author, ";
+			params.put("author",  book.getAuthor()==""?null: book.getAuthor());
+		} 
+		if (book.isFilenameSet()) {
+			sql += "filename = :filename, ";
+			params.put("filename", book.getFilename()==""?null:book.getFilename());  //dropdown select "" change to null
+		}
+		 
+		if (book.isMediaTypeSet()) {
+			sql += "media_Type = :mediaType, ";
+			params.put("mediaType", book.getMediaType()==""?null:  book.getMediaType());
+		}
+		 
+		if (book.isLanguageSet()) {
+			sql += "language = :language, ";
+			params.put("language", book.getLanguage()==""?null:book.getLanguage());  //dropdown select "" change to null
+			
+		}
+		if (book.isRemarksFromScanCenterSet()) {
+			sql += "remarks_From_Scan_Center = :remarksFromScanCenter, ";
+			params.put("remarksFromScanCenter", book.getRemarksFromScanCenter()==""?null:  book.getRemarksFromScanCenter());
+		}
+		if (book.isRemarksAboutBookSet()) {
+			sql += "remarks_About_Book = :remarksAboutBook, ";
+			params.put("remarksAboutBook", book.getRemarksAboutBook()==""?null: book.getRemarksAboutBook());
+		}
+		if (book.isRequestingLocationSet()) {
+			sql += "requesting_Location = :requestingLocation, ";
+			params.put("requestingLocation", book.getRequestingLocation()==""?null:book.getRequestingLocation());  //dropdown select "" change to null
+		}
+		 
+		if (book.isOwningInstitutionSet()) {
+			sql += "owning_institution = :owningInstitution, ";
+			params.put("owningInstitution", book.getOwningInstitution()==""?null:book.getOwningInstitution());  //dropdown select "" change to null
+		}
+		if (book.isScannedBySet()) {
+			sql += "scanned_By = :scannedBy, ";
+			params.put("scannedBy", book.getScannedBy()==""?null:book.getScannedBy());  //dropdown select "" change to null
+		}
+		if (book.isScanOperatorSet()) {
+			sql += "scan_Operator = :scanOperator, ";
+			params.put("scanOperator",  book.getScanOperator()==""?null: book.getScanOperator());
+		}
+		if (book.isScanMachineIdSet()) {
+			sql += "scan_Machine_Id = :scanMachineId, ";
+			params.put("scanMachineId",  book.getScanMachineId()==""?null: book.getScanMachineId());
+		} 
+		
+		if (book.isScanStartDateSet()) {
+			sql += "scan_Start_Date = :scanStartDate, ";
+			params.put("scanStartDate", book.getScanStartDate());
+		}
+		
+		if (book.isScanCompleteDateSet()) {
+			sql += "scan_Complete_Date = :scanCompleteDate, ";
+			params.put("scanCompleteDate", book.getScanCompleteDate());
+		}
+		if (book.isScanImageAuditorSet()) {
+			sql += "scan_Image_Auditor = :scanImageAuditor, ";
+			params.put("scanImageAuditor", book.getScanImageAuditor()==""?null:  book.getScanImageAuditor());
+		}
+		if (book.isScanIaStartDateSet()) {
+			sql += "scan_Ia_Start_Date = :scanIaStartDate, ";
+			params.put("scanIaStartDate", book.getScanIaStartDate());
+		}
+		if (book.isScanIaCompleteDateSet()) {
+			sql += "scan_Ia_Complete_Date = :scanIaCompleteDate, ";
+			params.put("scanIaCompleteDate", book.getScanIaCompleteDate());
+		}
+  
+		if (book.isScanNumOfPagesSet()) {
+			sql += "scan_Num_Of_Pages = :scanNumOfPages, ";
+			params.put("scanNumOfPages", (book.getScanNumOfPages()=="" || book.getScanNumOfPages()==null)?null:  Double.parseDouble( book.getScanNumOfPages()));
+		} 
+		     
+		String dn;
+		if(oldDn != null)
+			dn = oldDn;
+		else
+			dn = book.getDn();
+		//remove final comma
+		sql = sql.substring(0, sql.length() - 2) + " where dn = '" + dn + "'";
+			 
+		getNamedParameterJdbcTemplate().update(sql, params);
+	 
+	}
+	
+	@Override
+	public void deleteNonBook(String dn) {
+		String sql = "DELETE FROM NONBOOK where dn = ?";
+	    getJdbcTemplate().update(sql, dn);
+	}
+	
+	//non book sql end
+	
+	
+	
 	private static class StringRowMapper implements RowMapper<String> {
 		@Override
 		public String mapRow(ResultSet rs, int rowNum) throws SQLException {

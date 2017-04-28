@@ -102,6 +102,8 @@ public class TrackingFormController implements MessageSourceAware{
 		model.addAttribute("mode", "update"); 
 		model.addAttribute("book", bookService.getBook(tn)); 
 		model.addAttribute("allSites", bookService.getAllSites()); 
+		model.addAttribute("allScanSitesIncludingInactive", bookService.getAllScanSitesIncludingInactive());
+		model.addAttribute("ocrSites", bookService.getAllOcrSites()); 
 		model.addAttribute("allPropertyRights", bookService.getAllPropertyRights()); 
 		model.addAttribute("allPublicationTypes", bookService.getAllPublicationTypes()); 
 		model.addAttribute("allLanguages", bookService.getAllLanguageIds()); 
@@ -149,7 +151,7 @@ public class TrackingFormController implements MessageSourceAware{
 			
 		}
 		
-		bookService.updateBook(book);
+		bookService.updateBook(principal.getName(), book);
 	 
 		if(returnTo != null && returnTo != "") 
 			return "redirect:" + returnTo;
@@ -198,7 +200,7 @@ public class TrackingFormController implements MessageSourceAware{
 			
 		}
 		
-		bookService.updateBook(book);
+		bookService.updateBook(principal.getName(), book);
 	 
 		//tn in url cannot contain &
 		if(tn.contains("&")) {

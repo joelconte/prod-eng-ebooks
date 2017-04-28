@@ -48,25 +48,39 @@
 	<stack-db:transaction-manager />
 
 
-	<jee:jndi-lookup id="dataSource" jndi-name="jdbc/default/DataSource" resource-ref="true"/>
+
+
+	<jee:jndi-lookup id="dataSourceOLD" jndi-name="jdbc/default/DataSource" resource-ref="true"/>
 	<jee:jndi-lookup id="dataSource2" jndi-name="jdbc/kofax/DataSource" resource-ref="true"/>
-	<jee:jndi-lookup id="dataSourcePG" jndi-name="jdbc/myPostgres/DataSource" resource-ref="true"/>
+	<jee:jndi-lookup id="dataSource" jndi-name="jdbc/myPostgres/DataSource" resource-ref="true"/>
+	<jee:jndi-lookup id="dataSourceQuery" jndi-name="jdbc/myPostgresQuery/DataSource" resource-ref="true"/>
 
 	<context:mbean-export default-domain="org.familysearch.prodeng.BookScan"/>
+	
+	<!-- Spring Configuration needed to avoid URI using dots to be truncated --> 
+      <!-- no, this allows for ambiguous params  <bean id="handlerMapping" class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="useSuffixPatternMatch" value="false"/>
+    </bean> 
+  <bean
+        class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="useDefaultSuffixPattern" value="false" />
+    </bean>  -->
+	
 
 	<!-- Bean to parse MANIFEST.MF providing useful project information -->
 	<bean id="manifestBean" class="org.lds.stack.system.spring.SpringManifestBean" lazy-init="false"/>
 	<!-- Bean to provide context information to JMX -->
 	<bean id="contextMBean" class="org.lds.stack.system.spring.SpringContextMBean" lazy-init="false"/> 
-
+<!-- 
 	<bean id="hostName" class="org.lds.stack.system.canary.info.HostName"/>
+
 
 	<stack-canary:resource-checks jmx-domain="org.familysearch.prodeng.BookScan">
 		<stack-canary:project-information ref="manifestBean"/>
  		<stack-canary:project-information ref="hostName"/>
  		<stack-canary:numeric-database-check name="BookScan Database Check" show-query="true" show-return-value="ALWAYS" />
 	</stack-canary:resource-checks>
-	
+	 -->
 
 	<sec:authentication-manager>
 		<sec:authentication-provider ref="ldsAccountAuthenticationProvider" />
@@ -89,6 +103,8 @@
 		<sec:logout invalidate-session="true" />
 		<sec:intercept-url requires-channel="http" pattern="/spring_security_login" access="permitAll" />
 		<sec:intercept-url pattern="/xmlMetadata/getTn/**" access="permitAll"/>
+		<sec:intercept-url pattern="/xmlMetadata/getCatalogingBySecondaryId/**" access="permitAll"/> 
+		<sec:intercept-url pattern="/xmlMetadata/getIACountTotal/**" access="permitAll"/>
 		<sec:intercept-url pattern="/**" access="isAuthenticated() and hasAnyRole( 'admin', 'supervisor', 'scan', 'process', 'metadata', 'search')" />
   		<sec:http-basic/>
 	

@@ -50,6 +50,7 @@ public class MiscController implements MessageSourceAware{
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("filesSentToOrem", null, locale));
 		labels.add(messageSource.getMessage("imagesReceived", null, locale));
@@ -137,17 +138,18 @@ public class MiscController implements MessageSourceAware{
 	 
 	 
 	@RequestMapping(value="process/titleCheck", method=RequestMethod.GET)
-	public String getTitleCheck( HttpServletRequest req, Model model,  Locale locale) {
+	public String getTitleCheck( Principal principal, HttpServletRequest req, Model model,  Locale locale) {
 		model.addAttribute("returnTo", req.getServletPath());
 		
 		String location = req.getParameter("site"); //from dropdown on page
-		/*if(location == null)
-			location = bookService.getUser(principal.getName()).getPrimaryLocation();*/
+		if(location == null)
+			location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		model.addAttribute("location", location);
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("location", null, locale));
 		labels.add(messageSource.getMessage("imagesReceived", null, locale));
@@ -169,16 +171,17 @@ public class MiscController implements MessageSourceAware{
 	
 	 
 	@RequestMapping(value="process/titleCheckInProgress", method=RequestMethod.GET)
-	public String getTitleCheckInProgress( HttpServletRequest req, Model model,  Locale locale) {
+	public String getTitleCheckInProgress(Principal principal,  HttpServletRequest req, Model model,  Locale locale) {
 		model.addAttribute("returnTo", req.getServletPath());
 		
 		String location = req.getParameter("site"); //from dropdown on page
-		/*if(location == null)
-			location = bookService.getUser(principal.getName()).getPrimaryLocation();*/
+		if(location == null)
+			location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		model.addAttribute("location", location);
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("auditingBy", null, locale));
 		labels.add(messageSource.getMessage("startDate", null, locale));
@@ -200,16 +203,17 @@ public class MiscController implements MessageSourceAware{
 	}
 
 	@RequestMapping(value="process/ocrReady", method=RequestMethod.GET)
-	public String getOcrReady( HttpServletRequest req, Model model,  Locale locale) {
+	public String getOcrReady(Principal principal,  HttpServletRequest req, Model model,  Locale locale) {
 		model.addAttribute("returnTo", req.getServletPath());
 		
 		String location = req.getParameter("site"); //from dropdown on page
-		/*if(location == null)
-			location = bookService.getUser(principal.getName()).getPrimaryLocation();*/
+		if(location == null)
+			location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		model.addAttribute("location", location);
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("fileName", null, locale));
 		labels.add(messageSource.getMessage("backupHardrive", null, locale));
@@ -256,22 +260,23 @@ public class MiscController implements MessageSourceAware{
 			}
 			 
 		}
-		return getOcrReady(req, model, locale);
+		return getOcrReady(principal, req, model, locale);
 		//return "redirect:ocrReady";
 	}
 	
 
 	@RequestMapping(value="process/ocrInProgress", method=RequestMethod.GET)
-	public String getOcrInProgress( HttpServletRequest req, Model model,  Locale locale) {
+	public String getOcrInProgress( Principal principal, HttpServletRequest req, Model model,  Locale locale) {
 		model.addAttribute("returnTo", req.getServletPath());
 		
 		String location = req.getParameter("site"); //from dropdown on page
-		/*if(location == null)
-			location = bookService.getUser(principal.getName()).getPrimaryLocation();*/
+		if(location == null)
+			location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		model.addAttribute("location", location);
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("fileName", null, locale));
 		labels.add(messageSource.getMessage("backupHardrive", null, locale));
@@ -319,21 +324,22 @@ public class MiscController implements MessageSourceAware{
 			}
 			 
 		}
-		return getOcrInProgress(req, model, locale);
+		return getOcrInProgress(principal, req, model, locale);
 		//return "redirect:ocrInProgress";
 	}
 	
 	@RequestMapping(value="process/pdfDownload", method=RequestMethod.GET)
-	public String getPdfDownload( HttpServletRequest req, Model model,  Locale locale) {
+	public String getPdfDownload( Principal principal, HttpServletRequest req, Model model,  Locale locale) {
 		model.addAttribute("returnTo", req.getServletPath());
 		
 		String location = req.getParameter("site"); //from dropdown on page
-		/*if(location == null)
-			location = bookService.getUser(principal.getName()).getPrimaryLocation();*/
+		if(location == null)
+			location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		model.addAttribute("location", location);
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("fileName", null, locale));
 		labels.add(messageSource.getMessage("backupHardrive", null, locale));
@@ -381,22 +387,23 @@ public class MiscController implements MessageSourceAware{
 			}
 			 
 		}
-		return getPdfDownload(req, model, locale);
+		return getPdfDownload(principal, req, model, locale);
 		//return "redirect:pdfDownload";
 	}
 
 	@RequestMapping(value="process/ocrPdf", method=RequestMethod.GET)
-	public String getOcrPdf( HttpServletRequest req, Model model,  Locale locale) {
+	public String getOcrPdf( Principal principal, HttpServletRequest req, Model model,  Locale locale) {
 		model.addAttribute("returnTo", req.getServletPath());
 		
 		String location = req.getParameter("site"); //from dropdown on page
-		/*if(location == null)
-			location = bookService.getUser(principal.getName()).getPrimaryLocation();*/
+		if(location == null)
+			location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		model.addAttribute("location", location);
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("fileName", null, locale));
 		labels.add(messageSource.getMessage("dateImported", null, locale));
@@ -418,16 +425,17 @@ public class MiscController implements MessageSourceAware{
 
 
 	@RequestMapping(value="process/ocrPdfInProgress", method=RequestMethod.GET)
-	public String getOcrPdfInProgress( HttpServletRequest req, Model model,  Locale locale) {
+	public String getOcrPdfInProgress( Principal principal, HttpServletRequest req, Model model,  Locale locale) {
 		model.addAttribute("returnTo", req.getServletPath());
 		
 		String location = req.getParameter("site"); //from dropdown on page
-		/*if(location == null)
-			location = bookService.getUser(principal.getName()).getPrimaryLocation();*/
+		if(location == null)
+			location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		model.addAttribute("location", location);
 		
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("processingBy", null, locale));
 		labels.add(messageSource.getMessage("startDate", null, locale));
@@ -453,14 +461,15 @@ public class MiscController implements MessageSourceAware{
 		model.addAttribute("returnTo", req.getServletPath());
 		
 		String location = req.getParameter("site"); //from dropdown on page
-		/*if(location == null)
-			location = bookService.getUser(principal.getName()).getPrimaryLocation();*/
+		if(location == null)
+			location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		model.addAttribute("location", location);
 		
 		//String location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
 		labels.add(messageSource.getMessage("step", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
 		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("problemStatus", null, locale));
 		labels.add(messageSource.getMessage("problemReason", null, locale));
@@ -468,6 +477,8 @@ public class MiscController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("problemDate", null, locale));
 		labels.add(messageSource.getMessage("problemInitials", null, locale));		
 		labels.add(messageSource.getMessage("callNumber", null, locale));
+		labels.add(messageSource.getMessage("scanDate", null, locale));
+		labels.add(messageSource.getMessage("sentToOcr", null, locale));
 		labels.add(messageSource.getMessage("solutionOwner", null, locale));
 		model.addAttribute("pageTitle", messageSource.getMessage("process.pageTitle.problems", null, locale) + " (" + ((location==null||location=="")?"All Locations":location) + ")");
 		model.addAttribute("colLabels", labels);

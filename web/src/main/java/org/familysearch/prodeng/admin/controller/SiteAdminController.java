@@ -5,6 +5,7 @@
 package org.familysearch.prodeng.admin.controller;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Locale;
 
 import org.familysearch.prodeng.model.Site;
@@ -65,10 +66,12 @@ public class SiteAdminController implements MessageSourceAware{
 	//do update/create
 	@RequestMapping(value="admin/siteAdmin", params="save", method=RequestMethod.POST)
 	public String doSiteSave(Site site, String siteIdNew, String siteIdOriginal, String doCreate, Model model) {
-		  
+		List<List> goals = null;
 		site.setSiteId(siteIdNew);
 		
 		if(doCreate == null) {
+			goals = bookService.getSiteGoals(siteIdOriginal); //goals get lost when returned back from page
+			site.setGoals(goals);
 			String failMsg = bookService.updateSite(site, siteIdOriginal); //userId can be changed
 		 
 			if(failMsg != null) {

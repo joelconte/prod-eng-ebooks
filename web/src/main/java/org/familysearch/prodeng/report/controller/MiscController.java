@@ -45,7 +45,7 @@ public class MiscController implements MessageSourceAware{
 		model.addAttribute("site", scannedBy); 
 		
 		model.addAttribute("allYears", bookService.getAllYears()); 
-		model.addAttribute("allSites", bookService.getAllSites()); 
+		model.addAttribute("allSites", bookService.getAllScanSites()); 
 		String titles_scanned = "0";
 		String pages_scanned = "0";
 		String titles_kofaxed = "0";

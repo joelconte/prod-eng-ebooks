@@ -201,7 +201,7 @@ $( "#tiff_copy2_archived_date" ).blur( validateDateData );
 						<c:if test="${isReadOnly == false}">
 							<sf:select path="site" >
 								<sf:option value=""/>
-								<sf:options items="${allSites}" />
+								<sf:options items="${ocrSites}" />
 							</sf:select>
 						</c:if>
 					</td>

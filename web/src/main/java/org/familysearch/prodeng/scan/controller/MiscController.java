@@ -58,6 +58,7 @@ public class MiscController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("recordNumber", null, locale));
 		labels.add(messageSource.getMessage("title", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
+		labels.add(messageSource.getMessage("owningInstitution", null, locale));
 		labels.add(messageSource.getMessage("requestingLocation", null, locale));
 		labels.add(messageSource.getMessage("scanningLocation", null, locale));
 		labels.add(messageSource.getMessage("dateEntered", null, locale));
@@ -137,7 +138,7 @@ public class MiscController implements MessageSourceAware{
 						
 					}
 				
-					bookService.updateBook(book);
+					bookService.updateBook(principal.getName(), book);
 				}
 				
 				bookService.updateBooksSkipScan(inTnList);//sets file_sent_to_orem as flag to move on to processing
@@ -221,7 +222,7 @@ public class MiscController implements MessageSourceAware{
 						
 					}
 				
-					bookService.updateBook(book);
+					bookService.updateBook(principal.getName(), book);
 				}
 				
 				bookService.updateBooksSkipScanAndProcess(inTnList);//sets file_sent_to_orem as flag to move on to processing
@@ -278,6 +279,8 @@ public class MiscController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("title", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
 		labels.add(messageSource.getMessage("scanningLocation", null, locale));
+		labels.add(messageSource.getMessage("scanImageAuditor1", null, locale));
+		labels.add(messageSource.getMessage("scanIaStartDate1", null, locale));
 		model.addAttribute("pageTitle", messageSource.getMessage("scan.pageTitle.auditReady", null, locale) + " (" + ((location==null||location=="")?"All Locations":location) + ")");
 		model.addAttribute("colLabels", labels);
 		model.addAttribute("allTnsInfo", bookService.getScanAuditReadyTnsInfo(location)); 
@@ -309,12 +312,14 @@ public class MiscController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("recordNumber", null, locale));
 		labels.add(messageSource.getMessage("title", null, locale));
 		labels.add(messageSource.getMessage("numImages", null, locale));
-		labels.add(messageSource.getMessage("startDate", null, locale));
-		labels.add(messageSource.getMessage("auditingBy", null, locale));
 		labels.add(messageSource.getMessage("scanningLocation", null, locale));
+		labels.add(messageSource.getMessage("auditingBy1", null, locale));
+		labels.add(messageSource.getMessage("scanIaEndDate1", null, locale));
+		labels.add(messageSource.getMessage("auditingBy2", null, locale));
+		labels.add(messageSource.getMessage("scanIaStartDate2", null, locale));
 		model.addAttribute("pageTitle", messageSource.getMessage("scan.pageTitle.auditInProgress", null, locale) + " (" + ((location==null||location=="")?"All Locations":location) + ")");
 		model.addAttribute("colLabels", labels);
-		model.addAttribute("allTnsInfo", bookService.getScanAuditInProgressTnsInfo(location)); 
+		model.addAttribute("allTnsInfo", bookService.getScanAuditReadyTnsInfo2(location)); 
 		model.addAttribute("allLocations", bookService.getAllSites());
 		
 		//buttons
@@ -347,6 +352,8 @@ public class MiscController implements MessageSourceAware{
 		labels.add(messageSource.getMessage("problemInitials", null, locale));		
 		labels.add(messageSource.getMessage("callNumber", null, locale));
 		labels.add(messageSource.getMessage("scanningLocation", null, locale));
+		labels.add(messageSource.getMessage("scanDate", null, locale));
+		labels.add(messageSource.getMessage("sentToOcr", null, locale));
 		labels.add(messageSource.getMessage("solutionOwner", null, locale));
 		model.addAttribute("pageTitle", messageSource.getMessage("scan.pageTitle.problems", null, locale) + " (" + ((location==null||location=="")?"All Locations":location) + ")");
 		model.addAttribute("colLabels", labels);

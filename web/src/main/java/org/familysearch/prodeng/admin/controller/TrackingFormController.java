@@ -95,6 +95,8 @@ public class TrackingFormController implements MessageSourceAware{
 		model.addAttribute("mode", "update"); 
 		model.addAttribute("book", bookService.getBook(tn)); 
 		model.addAttribute("allSites", bookService.getAllSites()); 
+		model.addAttribute("ocrSites", bookService.getAllOcrSites()); 
+		model.addAttribute("allScanSitesIncludingInactive", bookService.getAllScanSitesIncludingInactive());
 		model.addAttribute("allPropertyRights", bookService.getAllPropertyRights()); 
 		model.addAttribute("allPublicationTypes", bookService.getAllPublicationTypes()); 
 		model.addAttribute("allLanguages", bookService.getAllLanguageIds()); 
@@ -124,7 +126,7 @@ public class TrackingFormController implements MessageSourceAware{
 		
 		//save book object which was linked in displayBookUpdatePost and form modelAttribute attr
 
-		bookService.updateBook(book, tnOriginal); //tn param can be updated in admin also
+		bookService.updateBook(principal.getName(), book, tnOriginal); //tn param can be updated in admin also
 		//tn in url cannot contain &
 		if(tn.contains("&")) {
 			tn = tn.replace("&", "%26");
@@ -145,7 +147,7 @@ public class TrackingFormController implements MessageSourceAware{
 		
 		//save book object which was linked in displayBookUpdatePost and form modelAttribute attr
 
-		bookService.updateBook(book, tnOriginal); //tn param can be updated in admin also
+		bookService.updateBook(principal.getName(), book, tnOriginal); //tn param can be updated in admin also
 		
 		//tn in url cannot contain &
 		if(tn.contains("&")) {

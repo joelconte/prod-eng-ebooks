@@ -50,7 +50,10 @@ public class Problem implements Serializable {
 		return status;
 	}
 	public String getProblemReason() {
-		return problemReason;
+		if(problemReason == null || problemReason.equals(""))
+			return null;
+		else
+			return problemReason;
 	}
 	public String getProblemText() {
 		return problemText;

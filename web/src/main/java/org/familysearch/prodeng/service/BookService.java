@@ -11,6 +11,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.familysearch.prodeng.model.Book;
 import org.familysearch.prodeng.model.BookMetadata;
+import org.familysearch.prodeng.model.NonBook;
 import org.familysearch.prodeng.model.Problem;
 import org.familysearch.prodeng.model.Search;
 import org.familysearch.prodeng.model.Site;
@@ -35,7 +36,7 @@ public interface BookService {
 	public List<List> getScanScanReadyTnsInfo(String location);
 	public List<List> getScanScanInProgressTnsInfo(String location);
 	public List<List> getScanAuditReadyTnsInfo(String location);
-	public List<List> getScanAuditInProgressTnsInfo(String location);
+	public List<List> getScanAuditReadyTnsInfo2(String location);
 	public List<List> getScanProcessedReadyForOremTnsInfo(String location);
 	public List<List> getScanProblemTnsInfo(String location);
 	
@@ -49,6 +50,7 @@ public interface BookService {
 	public List<List> getProcessPdfInProgressTnsInfo(String location);
 	public List<List> getProcessProblemTnsInfo(String location);
 	
+	public List<List> getCatalogProblemTnsInfo();
 	public List<List> getAdminProblemTnsInfo();
 	public List<List> getAdminPdfDateNoReleaseDateTnsInfo();
 	public List<List> getAdminReceivedNotesTnsInfo();
@@ -80,6 +82,9 @@ public interface BookService {
 	public List<String> getAllSitesIncludingInactive();
 	public List<String> getAllSites();
 	public List<String> getAllScanSites();
+	public List<String> getAllScanSitesIncludingInactive();
+	public List<String> getAllOcrSites();
+	public List<String> getAllOcrSitesIncludingInactive();
 	public List<String> getAllPropertyRights();
 	public List<String> getAllPublicationTypes();
 	public List<List> getAllBatchClasses();
@@ -109,10 +114,12 @@ public interface BookService {
 	public List<String> parseExcelDataCol1(String tnData);
 	public List<List<String>>  parseExcelData(String tnData, int colCount);
 	
-	public void updateBook(Book book);
+	public void updateBook(String userId, Book book);
+	
+	public void doBookAudit(String userId, String tn, String sql);
 	
 	//use this when tn also is updated
-	public void updateBook(Book book, String oldTn);
+	public void updateBook(String userId, Book book, String oldTn);
 	public void updateBooksFilesReceived(String tnList);
 	public void updateBooksSkipScan(String tnList);
 	public void updateBooksSkipScanAndProcess(String tnList);
@@ -227,13 +234,14 @@ public interface BookService {
 	public void checkCompleteAllMetadata(String checker);
 	public String sendToScanSelectedMetadata(List<String> tnList, String sender);
 	public String sendToScanAllMetadata(String sender);
-	public String sendToDoUpdateSelectedMetadata(List<String> tnList, String sender);
-	public String sendToDoUpdateAllMetadata(String sender);
+	public String sendToDoUpdateSelectedMetadata(String userId, List<String> tnList, String sender);
+	public String sendToDoUpdateAllMetadata(String userId, String sender);
 	public String sendToScanSelectedInternetArchiveMetadata(List<String> tnList, String sender);
 	public String sendToScanAllInternetArchiveMetadata(String sender);
 	public void migrateInternetArchiveMetadataToBookInsert( String tnList );
 	public void migrateInternetArchiveMetadataToBookUpdate( String tnList );
 	public void autoUpdateCopyrightSerialEtc(String tnList);
+	public void autoUpdateSkipStepsEtc(Book b, String skipTo);
 	public String getDuplicateTnsInMetadata(String tnList);
 	public String getDuplicateTnsInBook(String tnList);
 	public List<String> getDuplicateTnsInBookList(String tnList);
@@ -241,11 +249,11 @@ public interface BookService {
 	public BookMetadata getBookMetadataFromBookTable(String tn);//decided to get from BOOK tab instead so metadata table can be trimmed etc..
 	public List<String> getAllTnsMetadata();
 	 
-	public List<String> getMetadataCompleteAndSent();
+	public List<String> getMetadataCompleteAndSent(String userId);
  
 	public void updateBookMetadata(BookMetadata book);
 	//use this when tn also is updated
-	public void updateBatchMetatdataUpdates(String tableName, String[] columns, List<List> rows);
+	public void updateBatchMetatdataUpdates(String userId, String tableName, String[] columns, List<List> rows);
 	public void updateBookMetadata(BookMetadata book, String oldTn);
  
 	public List<List> getInternetArchiveMetadataSendToScanTnsInfo();
@@ -260,9 +268,13 @@ public interface BookService {
 	///metadata end///
 	
 	////viewingreport////
-	public String getDuplicatesInViewingReport(List<String> pidList, List<String> dateList);
-	public List<List> getViewingReports(String year, String month);
-	public void deleteSelectedViewingReports(List<String> pidList, List<String> dateList);
+	public void insertBookViewingStats(String year, String month, String totalViews, String numUniqueViews);
+	public boolean getDuplicatesInViewingReport(String year, String month);
+	public List<List> getViewingReports( );
+	public void deleteSelectedViewingReports(List<String> yearList, List<String> monthList);
+	public List<List> getViewingStats5Years(int currentYear);
+	public List<List> getPast12MonthViews();
+	//public List<List> getViewingStats5YearsX(int currentYear);
 	////viewingreport end////
 		
 	///reports///
@@ -296,18 +308,38 @@ public interface BookService {
 	public String[][] getDashboardAgedAverages(String startDate, String endDate, String site);
 	public String[][] getDashboardTurnaroundAverages(String startDate, String endDate, String site);
 	public String[][] getDashboardGoalData( String startDate, String endDate, String site);
+	public String[][] XgetDashboardByMonthDataScanProcessPublish( String startDate, String endDate, String site, int daysDiff);
+	public List<List> getDashboardOpenIssues();
+	public List<List> getGoalsAndActuals(String year, int endMonthInt, String endDate, String site);
+	public String[][] getDashboarDataYTDScanPublish( String startDate, String endDate, String site, int daysDiff);
+	public String[] getDashboarDataTotalYTDScanPublish(String startDate, String endDate, String fomStartDate, String fomStartDateCurrentMonth, String fomEndDate, String site);
 	
 	////end dashboard/////
 	//xml medatdata//
 	public boolean queryXmlMetadataOracle( String tn, String[][] mdValues, String[][] recordValues);
+	public boolean queryXmlCatalogingData( String secondaryId, String[][] mdValues);
+	public boolean queryGetXmlIACountTotal(String[][] mdValues);
 	//xml medatdata end//
 	//misc
 	public List<String> getAllBookColumnNames();
 	public List<List> getAllTnsAndColumn(String col, String tnList);
-	public void saveUpdatedColumnValue(String tnList, String columnName, String value);
+	public void saveUpdatedColumnValue(String userId, List<String> tnList1, String tnList, String columnName, String value);
 	public String markStartedOcr(List<String> tnList, String principal);
 	public String markCompleteOcr(List<String> tnList);
 	public String markCompletePdfDownload(List<String> tnList, String principal);
+	
+
+	List<List<Object>> stringsToTypes(int[] colType, List<List<String>> rows);
 	//misc end
  
+	//start nonbook docs
+	public void createNonBook(NonBook book) throws ConstraintViolationException;
+	public List<String> getAllDns();
+	public NonBook getNonBook(String dn);
+	public List<String> getNonBooksByWildcard(String searchBy);
+	public void updateNonBook(NonBook book);
+	public void updateNonBook(NonBook book, String oldDn);
+	public void deleteNonBook(String dn);
+	//start nonbook docs
+	
 }

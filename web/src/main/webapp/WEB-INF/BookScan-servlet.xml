@@ -44,6 +44,7 @@
 		<property name="suffix" value=".jsp"/>
 		<property name="redirectHttp10Compatible" value="false"/>
 	</bean>
+	<mvc:resources mapping="/jacobsTool/**" location="/WEB-INF/jacobsTool/" /><!-- for file download-->
 
 	<bean id="messageSource" class="org.lds.stack.web.spring.i18n.message.PseudoMessageSourceFacade">
 		<constructor-arg ref="enumeratableMessageSource" />

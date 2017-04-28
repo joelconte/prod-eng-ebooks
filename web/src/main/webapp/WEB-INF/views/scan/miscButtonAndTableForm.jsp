@@ -95,7 +95,7 @@ function showDupeMsgAfterPasteNewDataPost(){
 				
 					<c:set var="encodedTN" value="${tn.get(0)}"/>
 				 	<c:if test="${encodedTN.contains('&')}">
-				 		<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 		<c:set var="encodedTN" value="${fn:replace(encodedTN,'&','&#37;26')}"/>
 				 	</c:if>
 				 
 					<td><a href="trackingForm?update&tn=${encodedTN}&returnTo=${returnTo}" ><c:out value="${tn.get(i)}"/></a></td>

@@ -3,7 +3,6 @@
  * This notice may not be removed.
  */
 package org.familysearch.prodeng.metadata.controller;
-import java.io.ByteArrayOutputStream;
 import java.security.Principal;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -367,10 +366,10 @@ public class MiscController implements MessageSourceAware{
 			}
 		}
 		
-        int numCols = 10;
+        int numCols = 12;
         String csvColumns = "";
 		  
-        String[] columns = {"TN", "Title", "Author", "Requesting_location", "Owning_institution", "Scanning_location", "Num_of_pages", "scan_complete_date", "files_received_by_orem", "URL"};
+        String[] columns = {"TN", "Title", "Author", "Call_Num", "Partner_Lib_Call_Num", "Requesting_location", "Owning_institution", "Scanning_location", "Num_of_pages", "scan_complete_date", "files_received_by_orem", "URL"};
         for (int x = 0; x < numCols; x++) {
             csvColumns += columns[x] + ", ";
         }
@@ -384,7 +383,7 @@ public class MiscController implements MessageSourceAware{
         	String csvStr = "";
         	for (List<String> r : tnData) {
         		//check if requesting or owning matches site
-        		if("ALLSITES".equals(site) || site.equals(r.get(3) + " - " + r.get(4))) {
+        		if("ALLSITES".equals(site) || site.equals(r.get(5) + " - " + r.get(6))) {
         			doThisSite = true;
 
         			for (int t = 0; t < numCols; t++) {
@@ -451,110 +450,7 @@ public class MiscController implements MessageSourceAware{
 		}
         return map;
 	}
-
-	public void sendEmails(Map<String, String> dataList, List<List> emailList) {
-		//"books@ldschurch.org", "pauldev@ldschurch.org", "FamilySearch BookScan Metadata", "Hello,\nNew books have been sent to your location to scan.  \nPlease see attached report.\n\n" + msg, principal.getName());
-	    //2=email 3=site
-		
-		for(List<String> row : emailList) {
-			String toEmailAddr = row.get(2);
-			if(toEmailAddr == null || toEmailAddr.equals(""))
-				continue;
-			String toSite = row.get(3);
-			String fromEmailAddr = "books@ldschurch.org";
-			String subject =  "FamilySearch BookScan Metadata - " + toSite;
-			String body = "Hello,\n\n\nNew books have been sent to your location (Requesting_location or Owning_institution) to scan.  \nPlease see attached report.\n\n";
-			body = body + dataList.get(toSite);//append text report
-System.out.println("EMAIL: 			" + toEmailAddr + "  " + toSite);
-			MimeMessage message = new MimeMessage(Session.getDefaultInstance(new Properties()));
-			try {
-				// the "from" address may be set in code, or set in the
-				// config file under "mail.from" ; here, the latter style is used
-				message.setFrom(new InternetAddress(fromEmailAddr));
-				message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmailAddr));
-				message.setSubject(subject);
-				message.setText(body);
-								
-				Transport.send(message);
-			} catch (MessagingException ex) {
-				/*if("pauldev".equals(username)) {
-				throw ex;
-			}*/
-				System.err.println("Cannot send email. " + ex);
-			} 
-		}
-	}
-	
-
-
-	public void sendEmailsWithAttachment(Map<String, Workbook> wb, List<List> emailList) {
-		//"books@ldschurch.org", "pauldev@ldschurch.org", "FamilySearch BookScan Metadata", "Hello,\nNew books have been sent to your location to scan.  \nPlease see attached report.\n\n" + msg, principal.getName());
-	    //2=email 3=site
-		
-		for(List<String> row : emailList) {
-			String toEmailAddr = row.get(2);
-			if(toEmailAddr == null || toEmailAddr.equals(""))
-				continue;
-			String toSite = row.get(3);
-			String fromEmailAddr = "books@ldschurch.org";
-			String subject =  "FamilySearch BookScan Metadata - " + toSite;
-			String body = "Hello,\n\n\nNew books have been sent to your location (Requesting_location or Owning_institution) to scan.  \nPlease see attached report.\n\n";
-			
-			// Here, no Authenticator argument is used (it is null).
-			// Authenticators are used to prompt the user for user
-			// name and password.
-			//Session session = Session.getDefaultInstance(fMailServerConfig, null);
-			MimeMessage message = new MimeMessage(Session.getDefaultInstance(new Properties()));
-			try {
-				// the "from" address may be set in code, or set in the
-				// config file under "mail.from" ; here, the latter style is used
-				message.setFrom(new InternetAddress(fromEmailAddr));
-				message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmailAddr));
-				message.setSubject(subject);
-				//set below message.setText(body);
-				Workbook w = wb.get(toSite);//attach w to email
-	System.out.println("EMAILEXCEL: 			" + toEmailAddr + "  " + toSite);			
-				/////////
-				try {
-				    Multipart mp = new MimeMultipart();
-			        MimeBodyPart htmlPart = new MimeBodyPart();        
-			        htmlPart.setContent(body, "text/html");
-			        mp.addBodyPart(htmlPart);
-			
-			        MimeBodyPart attachment = new MimeBodyPart();
-			        String filename = "BookScan MD-" + toSite + ".xlsx";
-			        filename = filename.replace(" ",  "_");
-			        attachment.setFileName(filename);
-			        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    w.write(baos);
-                    byte[] poiBytes = baos.toByteArray();  
-			        attachment.setContent(poiBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");//"application/vnd.ms-excel");              
-			        mp.addBodyPart(attachment);
-			
-			        message.setContent(mp);
-			       ////////////////
-				 
-				
-					/*test write to file
-					 OutputStream os = new FileOutputStream(new File("c:/temp/excelfile.xlsx"));
-	                 w.write(os);
-	                 os.close();
-	                 
-	                 */
-				}catch(Exception e) {
-					System.out.println(e);
-				}
-				
-				Transport.send(message);
-			} catch (MessagingException ex) {
-				/*if("pauldev".equals(username)) {
-				throw ex;
-			}*/
-				System.err.println("Cannot send email. " + ex);
-			} 
-		}
-	}
-
+ 
 	public void sendEmailsWithCsvAttachment(Map<String, byte[]>  csvMap, List<List> emailList ) {
  
 		Set<String> allSites = csvMap.keySet();//some may be null reports
@@ -571,7 +467,7 @@ System.out.println("EMAIL: 			" + toEmailAddr + "  " + toSite);
 					if(toEmailAddr == null || toEmailAddr.equals(""))
 						continue;
 
-					String fromEmailAddr = "books@ldschurch.org";
+					String fromEmailAddr = "bookscanadmin@ldschurch.org";
 					String subject = "FamilySearch BookScan Metadata - " + site;
 					String body = "Hello,\n\n\nNew books have been sent to your location (Requesting_location or Owning_institution) to scan.  \nPlease see attached report.\n\n";
 
@@ -628,140 +524,7 @@ System.out.println("EMAIL: 			" + toEmailAddr + "  " + toSite);
 			}
 		}
 	}
-	public void oldsendEmailsWithCsvAttachment(Map<String, byte[]>  csvMap, List<List> emailList ) {
-		 
-		for(List<String> row : emailList) {
-			String toEmailAddr = row.get(2);
-			if(toEmailAddr == null || toEmailAddr.equals(""))
-				continue;
-			String toSite = row.get(3);
-			String fromEmailAddr = "books@ldschurch.org";
-			String subject = "FamilySearch BookScan Metadata - " + toSite;
-			String body = "Hello,\n\n\nNew books have been sent to your location (Requesting_location or Owning_institution) to scan.  \nPlease see attached report.\n\n";
-			
-			// Here, no Authenticator argument is used (it is null).
-			// Authenticators are used to prompt the user for user
-			// name and password.
-			//Session session = Session.getDefaultInstance(fMailServerConfig, null);
-			MimeMessage message = new MimeMessage(Session.getDefaultInstance(new Properties()));
-			try {
-				// the "from" address may be set in code, or set in the
-				// config file under "mail.from" ; here, the latter style is used
-				message.setFrom(new InternetAddress(fromEmailAddr));
-				message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmailAddr));
-				message.setSubject(subject);
-				//set below message.setText(body);
-				byte[] csvBytes = csvMap.get(toSite);//attach w to email
-	System.out.println("EMAILCSV: 			" + toEmailAddr + "  " + toSite);			
-				/////////
-				try {
-				    Multipart mp = new MimeMultipart();
-			        MimeBodyPart htmlPart = new MimeBodyPart();        
-			        htmlPart.setContent(body, "text/html");
-			        mp.addBodyPart(htmlPart);
-			
-			        MimeBodyPart attachment = new MimeBodyPart();
-			        String filename = "BookScan MD-" + toSite + ".csv";
-			        filename = filename.replace(" ",  "_");
-			        attachment.setFileName(filename);
-			         
-                    byte[] poiBytes = csvBytes; 
-			        attachment.setContent(poiBytes, "text/csv");//"application/vnd.ms-excel");              
-			        mp.addBodyPart(attachment);
-			
-			        message.setContent(mp);
-			       ////////////////
-				 
-				
-					/*test write to file
-					 OutputStream os = new FileOutputStream(new File("c:/temp/excelfile.xlsx"));
-	                 w.write(os);
-	                 os.close();
-	                 
-	                 */
-				}catch(Exception e) {
-					System.out.println(e);
-				}
-				
-				Transport.send(message);
-			} catch (MessagingException ex) {
-				/*if("pauldev".equals(username)) {
-				throw ex;
-			}*/
-				System.err.println("Cannot send email. " + ex);
-			} 
-		}
-	}
-	public void xsendEmail(String aFromEmailAddr, String aToEmailAddr, String aSubject, String aBody, String username) {
-		
-		// Here, no Authenticator argument is used (it is null).
-		// Authenticators are used to prompt the user for user
-		// name and password.
-		//Session session = Session.getDefaultInstance(fMailServerConfig, null);
-		MimeMessage message = new MimeMessage(Session.getDefaultInstance(new Properties()));
-		try {
-			// the "from" address may be set in code, or set in the
-			// config file under "mail.from" ; here, the latter style is used
-			message.setFrom(new InternetAddress(aFromEmailAddr));
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(aToEmailAddr));
-			message.setSubject(aSubject);
-			message.setText(aBody);
-			Transport.send(message);
-		} catch (MessagingException ex) {
-			/*if("pauldev".equals(username)) {
-				throw ex;
-			}*/
-			System.err.println("Cannot send email. " + ex);
-		} 
-		
-		/*broken old gmail code
-		final String username = "pauldevibm@gmail.com";
-		final String password = "googlepass";
  
-		Properties props = new Properties();
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-		props.put("mail.smtp.host", "smtp.gmail.com");
-		props.put("mail.smtp.port", "465");// "587");
- ///
-
-props.put("mail.smtp.user", "pauldevibm@gmail.com");
- 
-props.put("mail.smtp.debug", "true");
- 
-props.put("mail.smtp.socketFactory.port", "465");
-props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-props.put("mail.smtp.socketFactory.fallback", "false");
-
-///
-
-
-		Session session = Session.getInstance(props,
-		  new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		  });
- 
-		try {
- 
-			Message message = new MimeMessage(session);
-			message.setFrom(new InternetAddress("pauldevibm@gmail.com"));
-			message.setRecipients(Message.RecipientType.TO,
-				InternetAddress.parse("pauldev@ldschurch.org"));
-			message.setSubject("Testing Subject");
-			message.setText("Dear Mail Crawler,"
-				+ "\n\n No spam to my email, please!");
- 
-			Transport.send(message);
- 
-			System.out.println("Done");
- 
-		} catch (MessagingException e) {
-			throw new RuntimeException(e);
-		}
-	*/
-	}
 	
 	
 	//do insert of pasted tn data for use in this page
@@ -1006,12 +769,12 @@ props.put("mail.smtp.socketFactory.fallback", "false");
 			} 
 
 			 
-			String dupListStr = bookService.sendToDoUpdateSelectedMetadata(tnList, principal.getName());
+			String dupListStr = bookService.sendToDoUpdateSelectedMetadata(principal.getName(), tnList, principal.getName());
 		 
 			return "redirect:metadataUpdateBooks"; //redirect get - guard against refresh-multi-updates and also update displayed url
 		}else if(button.equals("allMetadataDoUpdate")) {
 			 
-			String dupListStr = bookService.sendToDoUpdateAllMetadata(principal.getName());
+			String dupListStr = bookService.sendToDoUpdateAllMetadata(principal.getName(),principal.getName());
 			
 			return "redirect:metadataUpdateBooks"; //redirect get - guard against refresh-multi-updates and also update displayed url
 		} 
@@ -1025,7 +788,7 @@ props.put("mail.smtp.socketFactory.fallback", "false");
 	
 	///////////metadata complete and sent start/////////////
 	@RequestMapping(value="metadata/metadataCompleteAndSent", method=RequestMethod.GET)
-	public String getMetadataCompleteAndSentPost(  Model model, Locale locale) {
+	public String getMetadataCompleteAndSentPost(  Model model, Locale locale, Principal principal) {
  
 		
 		//title and table labels
@@ -1053,7 +816,7 @@ props.put("mail.smtp.socketFactory.fallback", "false");
 		
 		model.addAttribute("pageTitle", messageSource.getMessage("metadata.pageTitle.metadataCompleteAndSent", null, locale));
 		model.addAttribute("colLabels", labels); 
-		model.addAttribute("allTnsInfo", bookService.getMetadataCompleteAndSent()); 
+		model.addAttribute("allTnsInfo", bookService.getMetadataCompleteAndSent(principal.getName())); 
 		model.addAttribute("keyCol", 3);//use col 3 for request on TN 
 		return "metadata/miscBookList";
 	}

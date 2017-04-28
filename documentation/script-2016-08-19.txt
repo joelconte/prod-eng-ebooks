@@ -1,0 +1,20 @@
+
+
+
+
+DROP TABLE bookviewingstats;
+
+
+CREATE TABLE bookviewingstats
+(  
+num_of_views integer,   
+num_of_book_views integer,   year integer, month integer );
+
+
+
+alter table bookviewingstats 
+ add CONSTRAINT pk1 PRIMARY KEY 
+  (
+   year, month
+  )
+   ; 

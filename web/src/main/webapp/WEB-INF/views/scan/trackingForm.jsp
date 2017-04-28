@@ -49,22 +49,44 @@ $( "#scan_start_date" ).datepicker();
 $( "#scan_complete_date" ).datepicker();
 $( "#scan_ia_start_date" ).datepicker();
 $( "#scan_ia_complete_date" ).datepicker();
+$( "#scan_ia_start_date2" ).datepicker();
+$( "#scan_ia_complete_date2" ).datepicker();
 $( "#metadata_complete" ).datepicker();
 $( "#files_sent_to_orem" ).datepicker();
-$( "#pull_date" ).datepicker();
+
 
 $( "#scan_start_date" ).blur( validateDateData );
 $( "#scan_complete_date" ).blur( validateDateData );
 $( "#scan_ia_start_date" ).blur( validateDateData );
 $( "#scan_ia_complete_date" ).blur( validateDateData );
+$( "#scan_ia_start_date2" ).blur( validateDateData );
+$( "#scan_ia_complete_date2" ).blur( validateDateData );
 $( "#metadata_complete" ).blur( validateDateData );
 $( "#files_sent_to_orem" ).blur( validateDateData );
-$( "#pull_date" ).blur( validateDateData );
+
 setTimeout(processBookState, 100);
 displayBookNotFoundMsg();
 });
 
- 
+
+//later remove validateFormData since it is in project.js...after browsers' cache has chance to refresh
+function validateFormData(){
+	//if scan date is not null then scannedby must not be null - Jeri request
+	var scanSite = $('#scanned_by').val();
+	var scanStartDate = $('#scan_start_date').val();
+	var scanEndDate = $('#scan_complete_date').val();
+	
+	if(scanStartDate != '' || scanEndDate != ''  ){
+		if( scanSite == ''){
+			alert("You must enter a 'Scanned by Site' value because Scan Date or Scan Complete Date have a value.");
+			return false;
+		}
+	}
+	
+	return true;//valid data
+};
+
+
 </script>
 
 
@@ -88,8 +110,8 @@ displayBookNotFoundMsg();
 					<td></td>
 					<c:choose>
 					<c:when test="${mode=='update'}">
-					<td><button id="saveAndClose" name="saveAndClose" value="saveAndClose" onclick="updateUrl2('f1', 'trackingForm', 'saveAndClose' );">${messages['saveAndClose']}</button></td>
-					<td><button id="save" name="save" value="save" onclick="updateUrl2('f1', 'trackingForm', 'save' );">${messages['save']}</button></td>
+					<td><button id="saveAndClose" name="saveAndClose" value="saveAndClose" onclick="if(validateFormData()==false)return false;  updateUrl2('f1', 'trackingForm', 'saveAndClose' );">${messages['saveAndClose']}</button></td>
+					<td><button id="save" name="save" value="save" onclick="if(validateFormData()==false)return false; updateUrl2('f1', 'trackingForm', 'save' );">${messages['save']}</button></td>
 					<td><button id="cancel" name="cancel" value="cancel" onclick="updateUrl2('f1', 'trackingForm', 'cancel' );">${messages['cancel']}</button></td>
 					</c:when>
 					<c:when test="${mode=='read' && book.tn != ''}">
@@ -159,7 +181,7 @@ displayBookNotFoundMsg();
 						<c:if test="${book.tn != ''}">
 							<c:set var="encodedTN" value="${book.tn}"/>
 				 			<c:if test="${encodedTN.contains('&')}">
-				 				<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 				<c:set var="encodedTN" value="${fn:replace(encodedTN,'&','&#37;26')}"/>
 				 			</c:if>
 							
 							<c:if test="${isReadOnly==false}">
@@ -189,7 +211,7 @@ displayBookNotFoundMsg();
 							
 						<c:set var="encodedTN" value="${book.tn}"/>
 				 		<c:if test="${encodedTN.contains('&')}">
-				 				<c:set var="encodedTN" value='${encodedTN.replace("&", "%26")}'/>
+				 				<c:set var="encodedTN" value="${fn:replace(encodedTN,'&','&#37;26')}"/>
 				 		</c:if>
 				 			
 						<c:forEach var="prob" items="${problemClosedList}">
@@ -283,12 +305,11 @@ displayBookNotFoundMsg();
 					<tr>
 					<td>${messages['trackingForm.ocrSite']}</td>
 					<td>
-						<!-- readonly in scan -->
-						<c:if test="${true}"><sf:input  path="site"  readonly="true"   /></c:if>
-						<c:if test="${false}">
+						<c:if test="${isReadOnly == true}"><sf:input  path="site"  readonly="${isReadOnly}"   /></c:if>
+						<c:if test="${isReadOnly == false}">
 							<sf:select path="site" >
 								<sf:option value=""/>
-								<sf:options items="${allSites}" />
+								<sf:options items="${ocrSites}" />
 							</sf:select>
 						</c:if>
 					</td>
@@ -303,12 +324,6 @@ displayBookNotFoundMsg();
 				
 				<td id="col2" class="colPadding" style="vertical-align: top;">
 					<table>
-					<tr>
-					<td>${messages['trackingForm.pullDate']}</td>
-					<td><sf:input id="pull_date" path="pullDate" readonly="${isReadOnly}" />
-						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('pull_date'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
-					</td>
-					</tr>
 					<tr>
 					<td>${messages['trackingForm.requestingLocation']}</td>
 					<td>
@@ -328,7 +343,7 @@ displayBookNotFoundMsg();
 						<c:if test="${isReadOnly == false}">
 							<sf:select id="scanned_by" path="scannedBy" >
 								<sf:option value=""/>
-								<sf:options items="${allSites}" />
+								<sf:options items="${allScanSitesIncludingInactive}" />
 							</sf:select>
 						</c:if>
 						<input id="scannedByHidden" value="${userLocation}"  type="hidden" />
@@ -340,7 +355,7 @@ displayBookNotFoundMsg();
 					</tr>
 					<tr>
 					<td>${messages['trackingForm.scanMachineId']}</td>
-					<td><sf:input path="scanMachineId" readonly="${isReadOnly}" /></td>
+					<td><sf:input id="scan_machine" path="scanMachineId" readonly="${isReadOnly}" /></td>
 					</tr>
 					<tr>
 					<td>${messages['trackingForm.scanDate']}</td>
@@ -357,7 +372,7 @@ displayBookNotFoundMsg();
 					<tr><td class="rowSpace"></td></tr>
 					<tr>
 					<td>${messages['trackingForm.scanNumOfPages']}</td>
-					<td><sf:input  path="scanNumOfPages" readonly="${isReadOnly}" /></td>
+					<td><sf:input id="scan_num_of_pages" path="scanNumOfPages" readonly="${isReadOnly}" /></td>
 					</tr>
 					<tr><td class="rowSpace"></td></tr>
 					<tr>
@@ -376,6 +391,25 @@ displayBookNotFoundMsg();
 						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('scan_ia_complete_date'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
 					</td>
 					</tr>
+					<tr><td class="rowSpace"></td></tr>
+					
+					<tr>
+					<td>${messages['trackingForm.scanImageAuditor2']}</td>
+					<td><sf:input path="scanImageAuditor2" readonly="${isReadOnly}" /></td>
+					</tr>
+					<tr>
+					<td>${messages['trackingForm.scanAuditDate2']}</td>
+					<td><sf:input id="scan_ia_start_date2" path="scanIaStartDate2" readonly="${isReadOnly}" />
+						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('scan_ia_start_date2'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
+					</td>
+					</tr>
+					<tr>
+					<td>${messages['trackingForm.scanAuditCompleteDate2']}</td>
+					<td><sf:input id="scan_ia_complete_date2" path="scanIaCompleteDate2" readonly="${isReadOnly}" />
+						<c:if test="${isReadOnly == false}"><button  class="dtUp" onclick="js:currentTimestamp('scan_ia_complete_date2'); return false;">&larr;&nbsp; ${messages['now']}</button></c:if>
+					</td>
+					</tr>
+					
 					<tr><td class="rowSpace"></td></tr>
 					<tr>
 					<td>${messages['trackingForm.filesSentToOrem']}</td>

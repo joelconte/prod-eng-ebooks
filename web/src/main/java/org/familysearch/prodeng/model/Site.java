@@ -25,7 +25,7 @@ public class Site implements Serializable {
     private String isProcessSite = "F";
     private String isPhysicalBookSite = "F"; 
     private String isInactiveSite = "F"; 
-    private List<List<String>> goals = null;
+    private List<List> goals = null;
       
     private boolean siteIdSet = false;
     private boolean publishNameSet = false;
@@ -77,7 +77,7 @@ public class Site implements Serializable {
 	public String getIsInactiveSite() {
 		return isInactiveSite;
 	}
-	public List<List<String>> getGoals() {
+	public List<List> getGoals() {
 		return goals;
 	}
 	
@@ -139,7 +139,7 @@ public class Site implements Serializable {
 		this.isInactiveSiteSet = true;
 	}
 
-	public void setGoals( List<List<String>> goals) {
+	public void setGoals( List<List> goals) {
 		this.goals = goals;
 		this.isGoalsSet = true;
 	}
