@@ -7935,10 +7935,10 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 					ret.add(2, scanCount);//insert SCAN results into vals List
 					Integer goalInt = Integer.parseInt((String)ret.get(1));
 					Integer scanInt = Integer.parseInt(scanCount);
-					if(goalInt<scanInt)
-						ret.add(3, "0");//0 left
-					else
-						ret.add(3, String.valueOf(goalInt - scanInt));//value left todo
+					//if(goalInt<scanInt)
+					//	ret.add(3, "0");//0 left
+					//else
+						ret.add(3, String.valueOf(goalInt - scanInt));//value left todo (can be negative)
 				}else {
 					ret.add(2, "0");//if scanresult site not in scanresult list
 					Integer goalInt = Integer.parseInt((String)ret.get(1));
@@ -7969,10 +7969,10 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 					ret.add(4, publishCount);//insert PUB results into vals List
 					Integer goalInt = Integer.parseInt((String)ret.get(1));
 					Integer publishInt = Integer.parseInt(publishCount);
-					if(goalInt<publishInt)
-						ret.add(5, "0");//0 left
-					else
-						ret.add(5, String.valueOf(goalInt - publishInt));//value left todo
+					//if(goalInt<publishInt)
+					//	ret.add(5, "0");//0 left
+					//else
+						ret.add(5, String.valueOf(goalInt - publishInt));//value left todo (can be negative)
 				}else {
 					ret.add(4, "0");//insert PUB results into result List
 					Integer goalInt = Integer.parseInt((String)ret.get(1));
@@ -7998,6 +7998,9 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				goalTotal += Integer.parseInt((String)n.get(1));
 				scanTotal += Integer.parseInt((String)n.get(2));
 				scanLeft += Integer.parseInt((String)n.get(3));
+				//if(goalTotal - scanTotal != scanLeft) {
+					//System.out.println("xxxxxxxxxxx");
+				//}
 				publishTotal += Integer.parseInt((String)n.get(4));
 				publishLeft += Integer.parseInt((String)n.get(5));
 			}
@@ -8111,6 +8114,17 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				combinedRow.set(5, String.valueOf(publishLeft + publishLeftAll));
 				 
 			}
+			
+			//finally remove negatives for final 5 pie charts
+			for(List<String> r : combinedVals) {
+				if(Integer.parseInt(r.get(3)) < 0)
+					r.set(3, "0");
+				
+				if(Integer.parseInt(r.get(5)) < 0)
+					r.set(5, "0");
+					
+			}
+			
 			return combinedVals;
 		}
 		
