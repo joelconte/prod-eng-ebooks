@@ -221,7 +221,7 @@ public class MiscInternetArchiveController implements MessageSourceAware{
 			
 			bookService.deleteSelectedInternetArchiveMetadata(tnList);
 			if(button.equals("deleteSelected2"))
-				return  getMetadataInternetArchiveNewBooksPost("checkTns", request, principal, model, locale);//fake redirect, since this is a post of when a button "checkTns" is pressed, not a get
+				return  getMetadataInternetArchiveNewBooksPost("checkTns", request, principal, model, locale);
 		}else if("selectedMetadataSendToScan".equals(button)) {
 			Map<String, String[]> parameters = request.getParameterMap();
 			Set<String> keys = parameters.keySet();

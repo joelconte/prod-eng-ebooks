@@ -157,7 +157,7 @@ public class MiscController2 implements MessageSourceAware{
 			//month = String.valueOf(monthInt);
 		}
 		
-		model.addAttribute("pageTitle", messageSource.getMessage("dashboard.dashboardPageTitle", null, locale) + " - through " + endingMonthLabel );
+		model.addAttribute("pageTitle", messageSource.getMessage("dashboard.dashboardPageTitle", null, locale) + " - YTD through " + endingMonthLabel );
 		List<String> sites =  bookService.getAllScanSites();
 		sites.add(0, "All Sites");
 		model.addAttribute("allScanLocations",sites);

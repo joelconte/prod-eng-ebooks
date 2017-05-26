@@ -2872,13 +2872,16 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	@Override 
 	public List<List> getMetadataNewBooksAlreadyInTrackingFormDatabaseTnsInfo() {
-		List tnList = getJdbcTemplate().query("select a.titleno, a.title, a.author,  a.pages, a.requesting_location, a.scanning_location from  bookmetadata a, book b where a.titleno = b.tn and check_complete is null ", new StringX6RowMapper() );
+		//check both TN and secondary_identifier since they change initial 
+		List tnList = getJdbcTemplate().query("select distinct a.titleno, a.title, a.author,  a.pages, a.requesting_location, a.scanning_location from  bookmetadata a, book b where (a.titleno = b.tn or a.titleno = b.secondary_identifier)  and check_complete is null ", new StringX6RowMapper() );
 		return tnList;
 	}
 
 	@Override 
 	public List<List> getIAMetadataNewBooksAlreadyInTrackingFormDatabaseTnsInfo() {
-		List tnList = getJdbcTemplate().query("select a.tn, a.title, a.author,  a.num_of_pages, a.requesting_location, a.scanned_by from  IAbookmetadata a, book b where a.tn = b.tn and sent_to_scan is null ", new StringX6RowMapper() );
+		//check both TN and secondary_identifier since they change initial IA tn later after initially added
+		List tnList = getJdbcTemplate().query("select distinct a.tn, a.title, a.author,  a.num_of_pages, a.requesting_location, a.scanned_by from  IAbookmetadata a, book b where (a.tn = b.tn or a.tn = b.secondary_identifier) and sent_to_scan is null ", new StringX6RowMapper() );
+		 
 		return tnList;
 	}
 
