@@ -7869,6 +7869,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
 
 	//return list of rows(site,YTDGoal,scanYTD,scanYTDTodo,publishYTD,publishYTDTodo) 
+	//pie charts data
 	@Override
 	public List<List> getGoalsAndActuals(String year, int endMonthInt, String endDate, String site) {
 		//returns 
@@ -8027,6 +8028,17 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		
 
 		if (!"All Sites".equals(site)) {
+
+			//finally remove negatives for final 5 pie charts
+			for(List<String> r : vals) {
+				if(Integer.parseInt(r.get(3)) < 0)
+					r.set(3, "0");
+				
+				if(Integer.parseInt(r.get(5)) < 0)
+					r.set(5, "0");
+					
+			}
+			
 			return vals;//just 1 site, no need to combine
 		}else {
 			/////////////Group into 6 groups (allsites, fhl, partners, ia, ia-rt, gmrv)
