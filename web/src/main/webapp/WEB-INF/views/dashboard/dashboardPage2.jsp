@@ -525,7 +525,7 @@ $(function() {
 	   		<th>${messages['startDate']}</th>
 			<th><input id="start_date" name="startDate" value="${startDate}"/>
 			</th>
-			<th>&nbsp;&nbsp; ${messages['endDate']} (Used for YTD)</th>
+			<th>&nbsp;&nbsp; ${messages['endDate']}</th>
 			<th><input id="end_date" name="endDate"  value="${endDate}"/>
 			</th>
 		 

@@ -7871,7 +7871,6 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	//return list of rows(site,YTDGoal,scanYTD,scanYTDTodo,publishYTD,publishYTDTodo) 
 	@Override
 	public List<List> getGoalsAndActuals(String year, int endMonthInt, String endDate, String site) {
-		
 		//returns 
 		if(site == null || site.equalsIgnoreCase("") || site.equalsIgnoreCase("all sites")) {
 			site = "All Sites";
@@ -7887,11 +7886,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}
 			
 		List<List> vals = getJdbcTemplate().query(allSql, new StringX2RowMapper());
-		/*List nullSite = new ArrayList(); //since some books are processed with no site by accident add null value site also so total numbers jive
-		nullSite.add(null);
+		List nullSite = new ArrayList(); //since some books are processed with no site by accident add null value site also so total numbers jive
+		nullSite.add(" ");
 		nullSite.add("0");
+		vals.add(nullSite);
 		
-		vals.add(nullSite);*/
 		if(vals.size() != 0 && vals.get(0).get(0) != null) {
 			String allGoal = "0";
 
@@ -7928,7 +7927,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		//put in map for quicker retrieval and since some goal sites may not be in result site resultset 
 		Map<String, String> scanMap = new HashMap();
 		for(List s : valsScan) {
-			scanMap.put((String)s.get(0), (String)s.get(1));//scansite and scancomplete
+			String siteName = (String)s.get(0);
+			if(siteName == null || siteName.equals(""))
+				siteName = " ";
+			scanMap.put(siteName, (String)s.get(1));//scansite and scancomplete
+			 
 		}
 		for(List ret : vals) {
 			 
@@ -7963,7 +7966,10 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		//put in map for quicker retrieval
 		Map<String, String> publishMap = new HashMap();
 		for(List p : valsPublish) {
-			publishMap.put((String)p.get(0), (String)p.get(1));
+			String siteName = (String)p.get(0);
+			if(siteName == null || siteName.equals(""))
+				siteName = " ";
+			publishMap.put(siteName, (String)p.get(1));
 		}
 		for(List ret : vals) {
 		 
@@ -8067,7 +8073,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			
 			List<List> sites = getJdbcTemplate().query(allSql, new StringX3RowMapper());
 			Map<String, List> sitesMap = new HashMap<String, List>();
-			
+			List nullSite2 = new ArrayList(); //since some books are processed with no site by accident add null value site also so total numbers jive
+			nullSite2.add(" ");
+			nullSite2.add("F");
+			nullSite2.add("F");
+			sitesMap.put(" ", nullSite2);
 			for(List r : sites) {
 				sitesMap.put((String)r.get(0), r);
 			}
@@ -8080,7 +8090,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				Object isPartnerStr = sitesMap.get(siteName).get(2);
 				boolean isPartner = (isPartnerStr!=null && isPartnerStr.equals("T")) ? true : false;
 				
-				int groupIndex = 0;
+				int groupIndex = -1;
 				if(siteName.equals("All Sites")) { 
 					groupIndex = 0;
 				}else if(siteName.contains("Internet") && !siteName.equals("Internet Archives (RT)")) {
@@ -8094,28 +8104,30 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				}else if(isPartner) {
 					groupIndex = 2;
 				}
-				
+			    //all sites total is already added above, so need to ignor (orem site or others that are not one of the 5/6 categories
+			
+				if(groupIndex != -1) {
 					
-				goalTotal = Integer.parseInt((String)r.get(1));
-				scanTotal = Integer.parseInt((String)r.get(2));
-				scanLeft = Integer.parseInt((String)r.get(3));
-				publishTotal = Integer.parseInt((String)r.get(4));
-				publishLeft = Integer.parseInt((String)r.get(5));
-				
-				List combinedRow = combinedVals.get(groupIndex);
-				
-				int goalTotalAll = Integer.parseInt((String)combinedRow.get(1));
-				int scanTotalAll = Integer.parseInt((String)combinedRow.get(2));
-				int scanLeftAll = Integer.parseInt((String)combinedRow.get(3));
-				int publishTotalAll = Integer.parseInt((String)combinedRow.get(4));
-				int publishLeftAll = Integer.parseInt((String)combinedRow.get(5));
-	
-				combinedRow.set(1, String.valueOf(goalTotal + goalTotalAll));
-				combinedRow.set(2, String.valueOf(scanTotal + scanTotalAll));
-				combinedRow.set(3, String.valueOf(scanLeft + scanLeftAll));
-				combinedRow.set(4, String.valueOf(publishTotal + publishTotalAll));
-				combinedRow.set(5, String.valueOf(publishLeft + publishLeftAll));
-				 
+					goalTotal = Integer.parseInt((String)r.get(1));
+					scanTotal = Integer.parseInt((String)r.get(2));
+					scanLeft = Integer.parseInt((String)r.get(3));
+					publishTotal = Integer.parseInt((String)r.get(4));
+					publishLeft = Integer.parseInt((String)r.get(5));
+					
+					List combinedRow = combinedVals.get(groupIndex);
+					
+					int goalTotalAll = Integer.parseInt((String)combinedRow.get(1));
+					int scanTotalAll = Integer.parseInt((String)combinedRow.get(2));
+					int scanLeftAll = Integer.parseInt((String)combinedRow.get(3));
+					int publishTotalAll = Integer.parseInt((String)combinedRow.get(4));
+					int publishLeftAll = Integer.parseInt((String)combinedRow.get(5));
+		
+					combinedRow.set(1, String.valueOf(goalTotal + goalTotalAll));
+					combinedRow.set(2, String.valueOf(scanTotal + scanTotalAll));
+					combinedRow.set(3, String.valueOf(scanLeft + scanLeftAll));
+					combinedRow.set(4, String.valueOf(publishTotal + publishTotalAll));
+					combinedRow.set(5, String.valueOf(publishLeft + publishLeftAll));
+				}
 			}
 			
 			//finally remove negatives for final 5 pie charts

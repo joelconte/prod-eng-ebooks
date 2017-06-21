@@ -46,6 +46,8 @@ public class MiscController2 implements MessageSourceAware{
 		String startDate = req.getParameter("startDate");//"year");
 		String endDate = req.getParameter("endDate");
 		String endDateYMD = null;
+		String endDateYTD = null;
+		String endDateYMDYTD = null;
 		
 		//if no dates passed in, then just use beginning of year and current date
 		if(startDate==null || startDate == "") {
@@ -65,6 +67,15 @@ public class MiscController2 implements MessageSourceAware{
 			int dayInt = cal.get(Calendar.DAY_OF_MONTH);
 			endDate = monthInt + "/" + dayInt + "/" + yearInt;
 		}
+		if(endDateYTD==null || endDateYTD == "") {
+			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+			   //get current date time  
+			Calendar cal = Calendar.getInstance();
+			int yearInt = cal.get(Calendar.YEAR);
+			int monthInt = cal.get(Calendar.MONTH) + 1;
+			int dayInt = cal.get(Calendar.DAY_OF_MONTH);
+			endDateYTD = monthInt + "/" + dayInt + "/" + yearInt;
+		}
 		
 		//fomEndDate  (actually next month -1)
 		int i1 = endDate.indexOf("/");
@@ -83,11 +94,29 @@ public class MiscController2 implements MessageSourceAware{
 		int endMonthIntPieChart = Integer.parseInt(mE);
 				
 		
+		//fomEndDate  (actually next month -1)
+		i1 = endDateYTD.indexOf("/");
+		mE = endDateYTD.substring(0, i1);
+		rem = endDateYTD.substring(i1 + 1 );
+		i1 = rem.indexOf("/");
+		dE = rem.substring(0, i1);
+		rem = rem.substring(i1 + 1 );
+		yE = rem;
+		if(dE.length()==1)
+			dE = "0" + dE;
+		if(mE.length()==1)
+			mE = "0" + mE;
+		endDateYMDYTD = yE + "/"+ mE + "/" + dE;
+				
+		int endMonthIntPieChartYTD = Integer.parseInt(mE);
+		
+		
+		
 		String year = null;
-		if(endDate != null && endDate.length()>7) {
-			int i = endDate.indexOf("/");
-			i = endDate. indexOf( "/", i+1);
-			year = endDate.substring(i+1, i+5);//All YTD graphs based on this year
+		if(endDateYTD != null && endDateYTD.length()>7) {
+			int i = endDateYTD.indexOf("/");
+			i = endDateYTD. indexOf( "/", i+1);
+			year = endDateYTD.substring(i+1, i+5);//All YTD graphs based on this year
 		}
 		
 		//String month = req.getParameter("month");
@@ -177,7 +206,7 @@ public class MiscController2 implements MessageSourceAware{
 	
 
 		/////PIE charts - YTDGoal and YTDscan and YTDpublish Actual Pie Charts
-		List<List>  data = bookService.getGoalsAndActuals(year, endMonthIntPieChart, fomEndDateYMD, site);// list of rows(site,YTDGoal,scanYTD,scanYTDTodo,publishYTD,publishYTDTodo) 
+		List<List>  data = bookService.getGoalsAndActuals(year, endMonthIntPieChartYTD, fomEndDateYMD, site);// list of rows(site,YTDGoal,scanYTD,scanYTDTodo,publishYTD,publishYTDTodo) 
 	 	//convert List<List> to js 2-dim array string
 		String twoDimArrayStr = "[";
 		for(List r : data) {
