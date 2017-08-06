@@ -6,7 +6,12 @@
 package jacobstool;
  
 //import com.sun.org.apache.bcel.internal.generic.PUTFIELD;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,9 +25,14 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -39,12 +49,17 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 import javax.net.ssl.HttpsURLConnection;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -67,6 +82,9 @@ public class JacobsTool extends javax.swing.JFrame {
     private String limbTfdbPimil = null;
     private String s3Pimil = null;
             
+    private String identPimil = null;
+   
+    
     private boolean isNonIA = true;
     
     private int translationCount = 15; 
@@ -147,7 +165,7 @@ public class JacobsTool extends javax.swing.JFrame {
         }else if(tab.equals("2")){
             jTabbedPane1.setSelectedIndex(2);
         }else if(tab.equals("3")){
-            jTabbedPane1.setSelectedIndex(3);
+            //jTabbedPane1.setSelectedIndex(3);
         }
         System.out.println(tab);
         
@@ -187,6 +205,9 @@ public class JacobsTool extends javax.swing.JFrame {
         
         s3Pimil = p.getProperty("postLimb.s3Pimil");
         
+        
+        ////////////Internet Archive Search props
+        identPimil = p.getProperty("internetArchiveSearch.identPimil");
        // populateListBox(sourceLabel1, filesListBox1);
         //populateListBox(destinationLabel1, filesListBoxDest1);
         
@@ -242,6 +263,7 @@ public class JacobsTool extends javax.swing.JFrame {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         buttonGroup2 = new javax.swing.ButtonGroup();
+        buttonGroup3 = new javax.swing.ButtonGroup();
         srcPathLabel = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
@@ -263,8 +285,6 @@ public class JacobsTool extends javax.swing.JFrame {
         saveProperties = new javax.swing.JButton();
         radioNonIA = new javax.swing.JRadioButton();
         radioIA = new javax.swing.JRadioButton();
-        jPanel2 = new javax.swing.JPanel();
-        startSearch = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
@@ -278,7 +298,7 @@ public class JacobsTool extends javax.swing.JFrame {
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel6 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        setDirPostLimbSrcPdf = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbSrcPdf = new javax.swing.JButton();
         postLimbSourceJpeg = new javax.swing.JTextField();
         postLimbSourceTiff = new javax.swing.JTextField();
         openSourceFolderPostLimbPdf = new javax.swing.JButton();
@@ -294,25 +314,25 @@ public class JacobsTool extends javax.swing.JFrame {
         postLimbDestJpeg = new javax.swing.JTextField();
         postLimbDestPreProcessTiff = new javax.swing.JTextField();
         postLimbDestPdfComplete = new javax.swing.JTextField();
-        setDirPostLimbSrcTiff = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbSrcTiff = new javax.swing.JButton();
         openSourceFolderPostLimbTiff = new javax.swing.JButton();
-        setDirPostLimbSrcJpeg = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbSrcJpeg = new javax.swing.JButton();
         openSourceFolderPostLimbJpeg = new javax.swing.JButton();
-        setDirPostLimbSrcAltoXml = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbSrcAltoXml = new javax.swing.JButton();
         openSourceFolderPostLimbAltoXml = new javax.swing.JButton();
-        setDirPostLimbSrcPreProcessTiff = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbSrcPreProcessTiff = new javax.swing.JButton();
         openSourceFolderPostLimbPreProcessTiff = new javax.swing.JButton();
-        setDirPostLimbDestPdf = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbDestPdf = new javax.swing.JButton();
         openDestFolderPostLimbPdf = new javax.swing.JButton();
-        setDirPostLimbDestTiff = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbDestTiff = new javax.swing.JButton();
         openDestFolderPostLimbTiff = new javax.swing.JButton();
-        setDirPostLimbDestJpeg = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbDestJpeg = new javax.swing.JButton();
         openDestFolderPostLimbJpeg = new javax.swing.JButton();
-        setDirPostLimbDestAltoXml = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbDestAltoXml = new javax.swing.JButton();
         openDestFolderPostLimbAltoXml = new javax.swing.JButton();
-        setDirPostLimbDestPreProcessTiff = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbDestPreProcessTiff = new javax.swing.JButton();
         openDestFolderPostLimbPreProcessTiff = new javax.swing.JButton();
-        setDirPostLimbDestPdfComplete = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbDestPdfComplete = new javax.swing.JButton();
         openDestFolderPostLimbPdfComplete = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -330,7 +350,7 @@ public class JacobsTool extends javax.swing.JFrame {
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         postLimbDestPdfError = new javax.swing.JTextField();
-        setDirPostLimbDestPdfError = new javax.swing.JButton();
+        javax.swing.JButton setDirPostLimbDestPdfError = new javax.swing.JButton();
         openDestFolderPostLimbPdfError = new javax.swing.JButton();
         runButton2 = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
@@ -342,7 +362,7 @@ public class JacobsTool extends javax.swing.JFrame {
         jTabbedPane1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setText("Jacobs Tool IA and Non-IA Books - v2");
+        jLabel1.setText("Jacobs Tool IA and Non-IA Books - d7.31.17");
 
         openDestFolder.setText("Open Folder");
         openDestFolder.addActionListener(new java.awt.event.ActionListener() {
@@ -427,10 +447,6 @@ public class JacobsTool extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(319, 319, 319)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(64, 64, 64)
@@ -442,17 +458,24 @@ public class JacobsTool extends javax.swing.JFrame {
                                 .addComponent(setDir)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(openSourceFolder)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jScrollPane4)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 406, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 406, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(runButton)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(1, 1, 1)
                                 .addComponent(setDirDest)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(openDestFolder)))
-                        .addGap(20, 20, 20)))
+                        .addGap(20, 20, 20))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(319, 319, 319)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(37, 37, 37)
@@ -460,8 +483,7 @@ public class JacobsTool extends javax.swing.JFrame {
                             .addComponent(radioNonIA)
                             .addComponent(radioIA)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(runButton)
-                        .addGap(18, 18, 18)
+                        .addGap(73, 73, 73)
                         .addComponent(cancelButton))
                     .addComponent(saveProperties))
                 .addContainerGap())
@@ -470,66 +492,39 @@ public class JacobsTool extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(runButton)
-                        .addComponent(cancelButton))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(setDir)
-                                    .addComponent(openSourceFolder))
-                                .addGap(34, 34, 34)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(radioIA, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(radioNonIA)
-                                .addGap(48, 48, 48)
-                                .addComponent(saveProperties))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(setDirDest)
-                                    .addComponent(openDestFolder))
-                                .addGap(34, 34, 34)
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addComponent(cancelButton)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(setDir)
+                                .addComponent(openSourceFolder))
+                            .addGap(34, 34, 34)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(radioIA, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(radioNonIA)
+                            .addGap(48, 48, 48)
+                            .addComponent(saveProperties))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(setDirDest)
+                                .addComponent(openDestFolder))
+                            .addGap(34, 34, 34)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(runButton)))))
                 .addContainerGap(60, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Prep XML Metadata for Publish (Jacobs Tool)", jPanel1);
-
-        startSearch.setText("Start Search");
-        startSearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startSearchActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(349, 349, 349)
-                .addComponent(startSearch)
-                .addContainerGap(679, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(170, 170, 170)
-                .addComponent(startSearch)
-                .addContainerGap(510, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("Internet Archive Search", jPanel2);
 
         jButton1.setText("run test limbdb");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -575,7 +570,7 @@ public class JacobsTool extends javax.swing.JFrame {
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(120, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(160, 160, 160)
                 .addComponent(jButton1)
@@ -955,7 +950,7 @@ public class JacobsTool extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(postLimbDestPdfError)
-                            .addComponent(postLimbDestPreProcessTiff, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
+                            .addComponent(postLimbDestPreProcessTiff, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
                             .addComponent(postLimbDestAltoXml)
                             .addComponent(postLimbDestJpeg)
                             .addComponent(postLimbDestTiff)
@@ -1145,7 +1140,7 @@ public class JacobsTool extends javax.swing.JFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1104, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1193, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
@@ -1165,13 +1160,14 @@ public class JacobsTool extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(90, 90, 90)
-                .addComponent(srcPathLabel)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(90, 90, 90)
+                        .addComponent(srcPathLabel))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1229, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jTabbedPane1)
-                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1283,10 +1279,12 @@ public class JacobsTool extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Looking in: " + System.getProperty("user.dir"), "Error", JOptionPane.ERROR_MESSAGE);
         }
         
-         System.exit(0);
+         
+
+        System.exit(0);
     }
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
-       // TODO add your handling code here:
+       // add your handling code here:
         isNonIA = true;
         if(radioIA.isSelected())
             isNonIA = false;
@@ -1412,51 +1410,6 @@ public class JacobsTool extends javax.swing.JFrame {
             //cancel
         }
     }//GEN-LAST:event_setDirActionPerformed
-
-    private void startSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startSearchActionPerformed
-        // TODO add your handling code here:
-        /*
-        PLACE documentation
-        https://familysearch.org/developers/docs/api/resources#places
-and this: https://familysearch.org/int-std-ws-place/resource_WebServiceSearch.html
-and this is an example of the actual URL for the REST service (switch “stage” to “dev” or “prod” or “test” as needed): http://place-ws-stage.dev.fsglobal.org/int-std-ws-place/places/request?text=Calenardhon&limit=10000
-
-        */
-        
-        /*
-        try{
-            //https://familysearch.org/platform/places/search
-            //https://beta.familysearch.org/platform/places/search
-        String uri = "https://integration.familysearch.org/platform/places/search/";
- 
-        URL url = new URL(uri);
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Accept", "application/xml");
-
-        InputStream xml = connection.getInputStream();
-        Scanner s = new Scanner(xml);
-        System.out.println(uri);
-
-        String xmlStr = "";
-        while (s.hasNext()) {
-            xmlStr += s.nextLine() + "\r\n";
-        }
-
-        File f = new File("TN-" + tn + ".xml");
-        FileWriter fw = new FileWriter(f);
-        fw.write(xmlStr);
-        fw.close();
-        s.close();
-        xml.close();
-    }
-    catch (Exception e
-
-    
-        ) {
-					System.out.println(e);
-    */
-    }//GEN-LAST:event_startSearchActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -2092,6 +2045,7 @@ SELECT TOP 1000 [DbId]
                         
                         //Preprocess tiff, use temp location for zip files so they don't go inside of HOT folders
                         String preprocessTiffHotPath = null;
+                        java.sql.Timestamp limbStartDate = null;
                         java.sql.Timestamp limbCompleteDate = null;
                         String hotFolderZipPath = postLimbSourcePreProcessTiff.getText() + "/jt_zip_working_folder";
                         try{                        
@@ -2099,8 +2053,10 @@ SELECT TOP 1000 [DbId]
                             if(tmpF.exists()==false){
                                 tmpF.mkdir();
                             }
-                            preprocessTiffHotPath = postLimbSourcePreProcessTiff.getText() + "/" + util.getPdfList().get(tn)[0];//get hotfolder from map
-                            limbCompleteDate = (java.sql.Timestamp)util.getPdfList().get(tn)[1];
+                            preprocessTiffHotPath = postLimbSourcePreProcessTiff.getText() + "/" + tn;// no holdfolder now.  util.getPdfList().get(tn)[0];//get hotfolder from map
+                            limbStartDate = (java.sql.Timestamp)util.getPdfList().get(tn)[1];
+                            limbCompleteDate = (java.sql.Timestamp)util.getPdfList().get(tn)[2];
+                            
                         }catch(Exception e){
                              logLimbUploadMsg("Error in processing TN " + tn + " \nError getting or processing TM's data from limbdb...maybe null finishdate or hotfolderpath???\n " + e.toString());
                              continue;
@@ -2110,9 +2066,10 @@ SELECT TOP 1000 [DbId]
                         
                         //START LIMB POSTPROCESS STEPS
                         //check to see if the pdf is 1k size, which signifies a limb processing error
+                        util.setProperty(tn, util.STATE_PDF_ERRORCHECK);
                         publish(tn);
                         logLimbUploadMsg(tn + " started pdf check for errors - 1k ");
-                        String hadPdfError = util.doPdfErrorCheck(postLimbSourcePdf.getText(), tn);
+                        String hadPdfError = util.doPdfErrorCheck(  postLimbSourcePdf.getText(), tn);
                         if(hadPdfError != null && !hadPdfError.equals("1k size")){
                             logLimbUploadMsg(hadPdfError);//1k size - is not processing failure
                             continue;//done, get next book
@@ -2124,10 +2081,10 @@ SELECT TOP 1000 [DbId]
                         
                         if(hadPdfError != null){
                             
-                            
+                            util.setProperty(tn, util.STATE_PDF_ERROR_TRANSFERING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started pdf process errors - 1k");
-                            msg = util.doPdfErrorHandle(postLimbSourcePdf.getText(), postLimbDestPdfError.getText(), tn);
+                            msg = util.doPdfErrorHandle( postLimbSourcePdf.getText(), postLimbDestPdfError.getText(), tn);
                             
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
@@ -2141,10 +2098,10 @@ SELECT TOP 1000 [DbId]
                         }else if(hadPdfError == null){
 
                             
-                          
+                            util.setProperty(tn, util.STATE_PDF_TRANSFERING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started pdf transfer");
-                            msg = util.doPdfTransfer(postLimbSourcePdf.getText(), postLimbDestPdf.getText(), tn);
+                            msg = util.doPdfTransfer( postLimbSourcePdf.getText(), postLimbDestPdf.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2152,9 +2109,10 @@ SELECT TOP 1000 [DbId]
                                 logLimbUploadMsg(tn + " completed pdf transfer" );
                             }
 
+                            util.setProperty(tn, util.STATE_TIFF_ZIPPING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started tiff zip");
-                            msg = util.doZipTiff(postLimbSourceTiff.getText(), postLimbSourceTiff.getText(), tn);
+                            msg = util.doZipTiff( postLimbSourceTiff.getText(), postLimbSourceTiff.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2162,9 +2120,10 @@ SELECT TOP 1000 [DbId]
                                 logLimbUploadMsg(tn + " completed tiff zip");
                             }
 
+                            util.setProperty(tn, util.STATE_TIFF_TRANSFERING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started tiff transfer");
-                            msg = util.doTiffTransfer(postLimbSourceTiff.getText(), postLimbDestTiff.getText(), tn);
+                            msg = util.doTiffTransfer( postLimbSourceTiff.getText(), postLimbDestTiff.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2172,9 +2131,10 @@ SELECT TOP 1000 [DbId]
                                 logLimbUploadMsg(tn + " completed tiff transfer" );
                             }
 
+                            util.setProperty(tn, util.STATE_JPEG_ZIPPING);
                             publish(tn );
                             logLimbUploadMsg(tn + " started jpeg zip");
-                            msg = util.doZipJpeg(postLimbSourceJpeg.getText(), postLimbSourceJpeg.getText(), tn);
+                            msg = util.doZipJpeg( postLimbSourceJpeg.getText(), postLimbSourceJpeg.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2182,9 +2142,10 @@ SELECT TOP 1000 [DbId]
                                 logLimbUploadMsg(tn + " completed jpeg zip");
                             }
 
+                            util.setProperty(tn, util.STATE_JPEG_TRANSFERING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started jpeg transfer");
-                            msg = util.doJpegTransfer(postLimbSourceJpeg.getText(), postLimbDestJpeg.getText(), tn);
+                            msg = util.doJpegTransfer( postLimbSourceJpeg.getText(), postLimbDestJpeg.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2192,9 +2153,10 @@ SELECT TOP 1000 [DbId]
                                 logLimbUploadMsg(tn + " completed jpeg transfer" );
                             }
 
+                            util.setProperty(tn, util.STATE_ALTOXML_ZIPPING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started alto zip");
-                            msg = util.doZipAltoXml(postLimbSourceAltoXml.getText(), postLimbSourceAltoXml.getText(), tn);
+                            msg = util.doZipAltoXml( postLimbSourceAltoXml.getText(), postLimbSourceAltoXml.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2202,9 +2164,10 @@ SELECT TOP 1000 [DbId]
                                 logLimbUploadMsg(tn + " completed alto zip");
                             }
 
+                            util.setProperty(tn, util.STATE_ALTOXML_TRANSFERING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started alto transfer");
-                            msg = util.doAltoXmlTransfer(postLimbSourceAltoXml.getText(), postLimbDestAltoXml.getText(), tn);
+                            msg = util.doAltoXmlTransfer( postLimbSourceAltoXml.getText(), postLimbDestAltoXml.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2213,9 +2176,10 @@ SELECT TOP 1000 [DbId]
                             }
 
                             String trimtn = util.getPdfReadyList().get(tn);
+                            util.setProperty(tn, util.STATE_PDFCOMPLETE_TRANSFERING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started pdf transfer to PDFComplete");
-                            msg = util.doPdfTransferPdfComplete(postLimbSourcePdf.getText(), postLimbDestPdfComplete.getText(), tn, trimtn);
+                            msg = util.doPdfTransferPdfComplete( postLimbSourcePdf.getText(), postLimbDestPdfComplete.getText(), tn, trimtn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2225,9 +2189,10 @@ SELECT TOP 1000 [DbId]
                          
                             
                             //Preprocess tiff, use temp location for zip files so they don't go inside of HOT folders
+                            util.setProperty(tn, util.STATE_PREPROCESSTIFF_ZIPPING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started preprocess-tiff zip");
-                            msg = util.doZipPreprocessTiff(preprocessTiffHotPath, hotFolderZipPath, tn);
+                            msg = util.doZipPreprocessTiff( preprocessTiffHotPath, hotFolderZipPath, tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2235,9 +2200,10 @@ SELECT TOP 1000 [DbId]
                                 logLimbUploadMsg(tn + " completed preprocess-tiff zip");
                             }
 
+                            util.setProperty(tn, util.STATE_PREPROCESSTIFF_TRANSFERING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started preprocess-tiff transfer");
-                            msg = util.doPreprocessTiffTransfer(hotFolderZipPath, postLimbDestPreProcessTiff.getText(), tn);
+                            msg = util.doPreprocessTiffTransfer( hotFolderZipPath, postLimbDestPreProcessTiff.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2247,9 +2213,10 @@ SELECT TOP 1000 [DbId]
 
 
                             //update tfdb ocr complete datecomplete
-                            publish(tn);
+                            util.setProperty(tn, util.STATE_TFDB_UPDATE);
+                            this.publish(tn);
                             logLimbUploadMsg(tn + " started tfdb ocr-complete update");
-                            msg = util.doTfdbUpdate(tn, util.getPdfReadyList().get(tn), limbCompleteDate);//get trimmed tn, not use filenametn
+                            msg = util.doTfdbUpdate( tn, util.getPdfReadyList().get(tn), limbStartDate, limbCompleteDate);//get trimmed tn, not use filenametn
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2260,9 +2227,10 @@ SELECT TOP 1000 [DbId]
 
                             //////////////////////deletes  (if no pdf 1k filesize error)
     
+                            util.setProperty(tn, util.STATE_PDF_DELETING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started pdf delete");
-                            msg = util.doDeletePdf(postLimbSourcePdf.getText(), tn);
+                            msg = util.doDeletePdf( postLimbSourcePdf.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2270,9 +2238,10 @@ SELECT TOP 1000 [DbId]
                                 logLimbUploadMsg(tn + " completed pdf delete");
                             }
 
+                            util.setProperty(tn, util.STATE_TIFF_DELETING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started tiff delete");
-                            msg = util.doDeleteTiff(postLimbSourceTiff.getText(), tn);
+                            msg = util.doDeleteTiff( postLimbSourceTiff.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2280,9 +2249,10 @@ SELECT TOP 1000 [DbId]
                                 logLimbUploadMsg(tn + " completed tiff delete");
                             }
 
+                            util.setProperty(tn, util.STATE_JPEG_DELETING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started jpeg delete");
-                            msg = util.doDeleteJpeg(postLimbSourceJpeg.getText(), tn);
+                            msg = util.doDeleteJpeg( postLimbSourceJpeg.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2291,10 +2261,10 @@ SELECT TOP 1000 [DbId]
                             }  
                             
 
-
+                            util.setProperty(tn, util.STATE_ALTOXML_DELETING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started alto delete");
-                            msg = util.doDeleteAltoXml(postLimbSourceAltoXml.getText(), tn);
+                            msg = util.doDeleteAltoXml( postLimbSourceAltoXml.getText(), tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2304,9 +2274,10 @@ SELECT TOP 1000 [DbId]
 
 
                             //delete from hotfolders and corresponding zips   
+                            util.setProperty(tn, util.STATE_PREPROCESSTIFF_DELETING);
                             publish(tn);
                             logLimbUploadMsg(tn + " started preprocess-tiff delete");
-                            msg = util.doDeletePreprocessTiff(preprocessTiffHotPath, hotFolderZipPath, tn);
+                            msg = util.doDeletePreprocessTiff( preprocessTiffHotPath, hotFolderZipPath, tn);
                             if(msg!=null){
                                 logLimbUploadMsg(msg);
                                 continue;//done, get next book
@@ -2420,7 +2391,69 @@ SELECT TOP 1000 [DbId]
             //cancel
         }
     }//GEN-LAST:event_setDirPostLimbSrcPdfActionPerformed
+ 
+    
+    class iaSelectColorListRenderer extends DefaultListCellRenderer
+    {
+        //private HashMap theChosen = new HashMap();
+        List<List<String>> searchResults;
+  
+        //pass in searchresults matrix from other class
+        public iaSelectColorListRenderer( List<List<String>> searchResults )
+        {
+            this.searchResults = searchResults;
+        }
+ 
+    }
+   /*
+    
+    public void initIdJlist(){
+        JList list = idList;
+        list.setModel(new DefaultListModel());
+        list.setCellRenderer(new CheckboxListRenderer());
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+ 
+      // Add a mouse listener to handle changing selection
+ 
+        list.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent event) {
+                JList<CheckboxListItem> list
+                        = (JList<CheckboxListItem>) event.getSource();
 
+                // Get index of item clicked
+                Point p = event.getPoint();
+                int index = list.locationToIndex(event.getPoint());
+                if(p.x < 22){ 
+                    CheckboxListItem item = (CheckboxListItem) list.getModel()
+                        .getElementAt(index);
+                       // Toggle selected state
+                    item.setSelected(!item.isSelected());
+                    
+                }else{
+                    //query and display
+                     CheckboxListItem item = (CheckboxListItem) list.getModel()
+                        .getElementAt(index);
+                     String id = item.getLabel();
+                     String number = item.getNumber();
+                     List<String> row = iaProcessing.displaySelectedBookMetadata(number, id);
+                     
+                     tfTitle.setText(row.get(2));
+                     tfImageCount.setText(row.get(3));
+                     tfLanguage.setText(row.get(4));
+                     tfDate.setText(row.get(5));
+                     tfSubject.setText(row.get(6));
+                     tfDescription.setText(row.get(7));
+                }
+
+             
+
+                // Repaint cell
+                list.repaint(list.getCellBounds(index, index));
+            }
+        });
+
+    }  
+*/
     /**
      * @param args the command line arguments
      */
@@ -2454,7 +2487,12 @@ SELECT TOP 1000 [DbId]
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new JacobsTool().setVisible(true);
+                JacobsTool jt = new JacobsTool();
+                 
+              
+                
+                jt.setVisible(true);
+                
             }
         });
     }
@@ -2561,6 +2599,10 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
     //inDir //R:\Internet Archives\Elder Shaver Downloads\In Process\2016_04_28_IA_Florida_Mar_2016\airforceregiste1962wash_0 
     // outputDir R:\Internet Archives\Elder Shaver Downloads\In Process\2016_04_04_British Columbia_3_Mar_converted\
     private String processFile(File inDir, File outputDir)  {
+        boolean isPublicDomain = false;//temp hault of copy protected books...solution to just separate out into diff folder
+        File origCopyrightProtectedPdf = null;
+        File origCopyrightProtectedSip = null;  
+        
         String msgs = "";
         String inNameFolder = inDir.getName(); //name of book folder..use it to rename if files don't match
 
@@ -2568,75 +2610,75 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
         File pdfInputFile = null;
         
         if(isNonIA == false){
-        File[] fInFiles = inDir.listFiles();//pdf and meta.xml
-        //find xml
-        for (int x = 0; x < fInFiles.length; x++) {
-            if (fInFiles[x].getName().equalsIgnoreCase(inNameFolder + "_meta.xml")) {
-                metaInputFile = fInFiles[x];
-                break;
+            File[] fInFiles = inDir.listFiles();//pdf and meta.xml
+            //find xml
+            for (int x = 0; x < fInFiles.length; x++) {
+                if (fInFiles[x].getName().equalsIgnoreCase(inNameFolder + "_meta.xml")) {
+                    metaInputFile = fInFiles[x];
+                    break;
+                }
             }
-        }
-        
-        for (int x = 0; x < fInFiles.length; x++) {
-            if (fInFiles[x].getName().endsWith( "_text.pdf")) {
-                pdfInputFile = fInFiles[x];
-                msgs += "WARNING, no pdf, copying _text.pdf to: " + inDir.getAbsolutePath() + "\r\n";
-                break;
-            }  
-        }
 
-        if (pdfInputFile == null) {
             for (int x = 0; x < fInFiles.length; x++) {
-                if (fInFiles[x].getName().endsWith(".pdf")) {
-                    //Spence says that if folder contains .pdf_text, then just rename it and use it
-                    //File copy = new File(inDir.getAbsolutePath() + "/" + inNameFolder + ".pdf");//use folder as name model
-                    //try{
-                        
-                      //  this.copyFile(fInFiles[x], copy);
-                    //}catch(Exception e){
-                       // msgs += "Error copying pdf file " + fInFiles[x].getName() + " to " + copy.getName() + " " +  e.getMessage();  
-                    //}
+                if (fInFiles[x].getName().endsWith( "_text.pdf")) {
                     pdfInputFile = fInFiles[x];
+                    msgs += "WARNING, no pdf, copying _text.pdf to: " + inDir.getAbsolutePath() + "\r\n";
                     break;
+                }  
+            }
+
+            if (pdfInputFile == null) {
+                for (int x = 0; x < fInFiles.length; x++) {
+                    if (fInFiles[x].getName().endsWith(".pdf")) {
+                        //Spence says that if folder contains .pdf_text, then just rename it and use it
+                        //File copy = new File(inDir.getAbsolutePath() + "/" + inNameFolder + ".pdf");//use folder as name model
+                        //try{
+
+                          //  this.copyFile(fInFiles[x], copy);
+                        //}catch(Exception e){
+                           // msgs += "Error copying pdf file " + fInFiles[x].getName() + " to " + copy.getName() + " " +  e.getMessage();  
+                        //}
+                        pdfInputFile = fInFiles[x];
+                        break;
+                    }
                 }
             }
-        }
-         
-        //still no matching pdf, check pdf_text
-        if (pdfInputFile == null) {
-            for (int x = 0; x < fInFiles.length; x++) {
-                if (fInFiles[x].getName().endsWith(".pdf_text")) {
-                    //Spence says that if folder contains .pdf_text, then just rename it and use it
-                    //File copy = new File(inDir.getAbsolutePath() + "/" + inNameFolder + ".pdf");//use folder as name model
-                    //try{
-                        
-                      //  this.copyFile(fInFiles[x], copy);
-                    //}catch(Exception e){
-                       // msgs += "Error copying pdf file " + fInFiles[x].getName() + " to " + copy.getName() + " " +  e.getMessage();  
-                    //}
-                    pdfInputFile = fInFiles[x];
-                    msgs += "WARNING, no pdf, copying .pdf_text to: " + inDir.getAbsolutePath() + "\r\n";
-                    break;
+
+            //still no matching pdf, check pdf_text
+            if (pdfInputFile == null) {
+                for (int x = 0; x < fInFiles.length; x++) {
+                    if (fInFiles[x].getName().endsWith(".pdf_text")) {
+                        //Spence says that if folder contains .pdf_text, then just rename it and use it
+                        //File copy = new File(inDir.getAbsolutePath() + "/" + inNameFolder + ".pdf");//use folder as name model
+                        //try{
+
+                          //  this.copyFile(fInFiles[x], copy);
+                        //}catch(Exception e){
+                           // msgs += "Error copying pdf file " + fInFiles[x].getName() + " to " + copy.getName() + " " +  e.getMessage();  
+                        //}
+                        pdfInputFile = fInFiles[x];
+                        msgs += "WARNING, no pdf, copying .pdf_text to: " + inDir.getAbsolutePath() + "\r\n";
+                        break;
+                    }
                 }
             }
-        }
-        //still no pdf, lastly check for any pdf
-        if(pdfInputFile == null){
-             for(int x = 0; x< fInFiles.length; x++){
-                if(fInFiles[x].getName().endsWith(".pdf")){
-                    //Spence says that if folder contains .pdf_text, then just rename it and use it
-                    //File copy = new File(inDir.getAbsolutePath() + "/" + inNameFolder + ".pdf");//use folder as name model
-                    //try{
-                        //this.copyFile(fInFiles[x], copy);
-                    //}catch(Exception e){
-                      //  msgs += "Error copying pdf file " + fInFiles[x].getName() + " to " + copy.getName() + " " +  e.getMessage();
-                    //}
-                    pdfInputFile = fInFiles[x];
-                    msgs += "WARNING, no matching folder and pdf name, copying " + fInFiles[x].getName() + " to " + inDir.getAbsolutePath()+ "\r\n";
-                    break;
+            //still no pdf, lastly check for any pdf
+            if(pdfInputFile == null){
+                 for(int x = 0; x< fInFiles.length; x++){
+                    if(fInFiles[x].getName().endsWith(".pdf")){
+                        //Spence says that if folder contains .pdf_text, then just rename it and use it
+                        //File copy = new File(inDir.getAbsolutePath() + "/" + inNameFolder + ".pdf");//use folder as name model
+                        //try{
+                            //this.copyFile(fInFiles[x], copy);
+                        //}catch(Exception e){
+                          //  msgs += "Error copying pdf file " + fInFiles[x].getName() + " to " + copy.getName() + " " +  e.getMessage();
+                        //}
+                        pdfInputFile = fInFiles[x];
+                        msgs += "WARNING, no matching folder and pdf name, copying " + fInFiles[x].getName() + " to " + inDir.getAbsolutePath()+ "\r\n";
+                        break;
+                    }
                 }
             }
-        }
         }else{
             pdfInputFile = inDir;//pdf gets passed in instead of folder containing it
         }
@@ -2699,7 +2741,8 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
         }
       
         File pdfOutputFile = new File(pdfOutputDir.getAbsolutePath() + "/" + newPdfFileName +".pdf");
-       
+        origCopyrightProtectedPdf = pdfOutputFile;//save for possible move of file below
+        
         try{
             copyFile(pdfInputFile, pdfOutputFile);
         }catch(Exception e){
@@ -2740,14 +2783,27 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
                 addedTagsKeys[3][1] = fileSize; //{"ldsterms:filesize","20728.24 KB"}
                 addedTagsKeys[14][1] = dateStamp; //{"dc:date",""}
                 recordValues[3][1] = dateStamp; // {"eventDateTime",dateStamp},
-
-                /*rem 10.22.2016 String propertyRight = inTagsValues.get(translationKeys[7]);
-                if (propertyRight == null || "NOT_IN_COPYRIGHT".equalsIgnoreCase(propertyRight)) {
+            
+                //todo need to also get tag licenceurl and check it for "public".
+                //Then if neigher licenceurl or possible-copyright-status have "public", then it isPublicDomain=false
+        
+                //get licenseurl value
+                String licenseUrl = inTagsValues.get("licenseurl");
+                String propertyRight = inTagsValues.get(translationKeys[7]);
+                if (propertyRight != null && ("NOT_IN_COPYRIGHT".equalsIgnoreCase(propertyRight)  ||  propertyRight.toLowerCase().contains("public domain"))) {
                     inTagsValues.put(translationKeys[7], "Public");
-                } else {
-                    //just take what is passed in
-                }*/
-                inTagsValues.put(translationKeys[7], "Public");//10.22.2016
+                    isPublicDomain = true;
+                }else if(propertyRight == null && licenseUrl!=null && licenseUrl.toLowerCase().contains("public domain")){
+                    inTagsValues.put(translationKeys[7], "Public");
+                    isPublicDomain = true;
+                }else if(propertyRight == null && licenseUrl == null){
+                    inTagsValues.put(translationKeys[7], "Public");
+                    isPublicDomain = true;
+                }else{
+                    //have to use protected if we do not know
+                    inTagsValues.put(translationKeys[7], "Protected");
+                }
+                //rem 7.31.17 since found out some ia books are not public inTagsValues.put(translationKeys[7], "Public");//10.22.2016
 
                 if (pageCount > 0) {
                     //count from xml above
@@ -2777,9 +2833,12 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
 
                 //append addedTag hardcoded tags
                 for (int x = 0; x < addedTagsKeys.length; x++) {
-                    mdValues[mdIndex][0] = addedTagsKeys[x][0];
-                    mdValues[mdIndex][1] = addedTagsKeys[x][1];
-                    mdIndex++;
+                    if(false == arrayContains(mdValues, addedTagsKeys[x][0])){
+                        
+                        mdValues[mdIndex][0] = addedTagsKeys[x][0];
+                        mdValues[mdIndex][1] = addedTagsKeys[x][1];
+                        mdIndex++;
+                    }
                 }
 
             } catch (Exception e) {
@@ -2794,6 +2853,8 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
                // FileWriter fw = new FileWriter(sipOutputFile);
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 Result output = new StreamResult(sipOutputFile);
+                origCopyrightProtectedSip = sipOutputFile;//save for possible move of file below
+                
                 Source input = new DOMSource(doc);
 
                 transformer.transform(input, output);
@@ -2827,11 +2888,28 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
                 while ((output = br.readLine()) != null) {
                     sipFileContent += output;
                 }
-
+                
+                //have to parse xml from tfdb in order to get dcterms:accessRights
+                String determs_accessRights = "";
+                int accRiStart = sipFileContent.indexOf("<dcterms:accessRights>");
+                int accRiEnd = sipFileContent.indexOf("</dcterms:accessRights>");
+               // String ttt = sipFileContent.substring(accRiStart + 22, accRiEnd);
+                if(accRiStart != -1 && accRiStart != -1){
+                    if(sipFileContent.substring(accRiStart+22, accRiEnd).equalsIgnoreCase("public")){
+                        isPublicDomain = true;
+                    }
+                }
+                
+                //isPublicDomain = true;
+                 
+                
+                
                 conn.disconnect();
                 
                 //write to sip xml file
-               // FileWriter fw = new FileWriter(sipOutputFile);
+          
+                origCopyrightProtectedSip = sipOutputFile;//save for possible move of file below
+                
                 Writer fw = new BufferedWriter(new OutputStreamWriter(  new FileOutputStream(sipOutputFile), "UTF-8"));
                 
                 fw.write(sipFileContent);
@@ -2850,9 +2928,62 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
 
 	
         }
+        
+        try{
+            //move files if copy protected
+            if (isPublicDomain == false) {
+                Path pdfPath = origCopyrightProtectedPdf.toPath();
+                String pdfPathStr = origCopyrightProtectedPdf.getAbsolutePath();
+                Path sipPath = origCopyrightProtectedSip.toPath();
+                String sipPathStr = origCopyrightProtectedSip.getAbsolutePath();
+
+                pdfPathStr = pdfPathStr.replace("dcms", "dcms-copyprotected");
+                sipPathStr = sipPathStr.replace("dcms", "dcms-copyprotected");
+                File pdfDestFile = new File(pdfPathStr);
+                File sipDestFile = new File(sipPathStr);
+                File f1 = pdfDestFile.getParentFile();
+                f1.mkdirs();
+                File f2 = sipDestFile.getParentFile();
+                f2.mkdirs();
+              
+                Files.move(pdfPath, pdfDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Files.move(sipPath, sipDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+               
+                deleteFolder(new File(pdfPath.getParent().getParent().toFile().getAbsolutePath()));
+                deleteFolder(new File(sipPath.toFile().getAbsolutePath()));
+                 
+            }
+
+        } catch (Exception e){
+            return msgs +  "Error while moving copyprotected files to dcms-copyprotected directory - "
+                            + e.getMessage() + "\r\n";
+        }
         return msgs;
     }
 
+    
+    private void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
+    }
+    
+    private boolean arrayContains(String[][] mdValues, String v){
+        for(int x = 0; x< mdValues.length; x++){
+            if(v.equalsIgnoreCase(mdValues[x][0]))
+                return true;
+        }
+        return false;
+    }
+    
     private HashMap<String,String>  parseInputFile(File in) throws Exception{
       
         HashMap<String,String> inputKeyValues = new HashMap<String,String>();
@@ -3050,6 +3181,7 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.ButtonGroup buttonGroup3;
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton cancelButton1;
     private javax.swing.JTextField destinationLabel;
@@ -3075,7 +3207,6 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -3125,21 +3256,8 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
     private javax.swing.JButton runButton2;
     private javax.swing.JButton saveProperties;
     private javax.swing.JButton saveProperties1;
-    private javax.swing.JButton setDirPostLimbDestAltoXml;
-    private javax.swing.JButton setDirPostLimbDestJpeg;
-    private javax.swing.JButton setDirPostLimbDestPdf;
-    private javax.swing.JButton setDirPostLimbDestPdfComplete;
-    private javax.swing.JButton setDirPostLimbDestPdfError;
-    private javax.swing.JButton setDirPostLimbDestPreProcessTiff;
-    private javax.swing.JButton setDirPostLimbDestTiff;
-    private javax.swing.JButton setDirPostLimbSrcAltoXml;
-    private javax.swing.JButton setDirPostLimbSrcJpeg;
-    private javax.swing.JButton setDirPostLimbSrcPdf;
-    private javax.swing.JButton setDirPostLimbSrcPreProcessTiff;
-    private javax.swing.JButton setDirPostLimbSrcTiff;
     private javax.swing.JTextField sourceLabel;
     private javax.swing.JLabel srcPathLabel;
-    private javax.swing.JButton startSearch;
     private javax.swing.JTextArea statusAll;
     private javax.swing.JComboBox<String> threadCountDropdown;
     // End of variables declaration//GEN-END:variables

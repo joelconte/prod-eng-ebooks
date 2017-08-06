@@ -24,10 +24,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.*;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 
 
 
@@ -75,79 +78,79 @@ public class LimbOutputFileUtil {
     volatile private Map<String, String> pdfReadyList;
     
     //states of processing
-    private final String STATE_0 = "NotStarted";   
-    private final String STATE_NEXT = "CHOSEN NEXT";   
+    public final String STATE_0 = "NotStarted";   
+    public final String STATE_NEXT = "CHOSEN NEXT";   
     
-    private final String STATE_PDF_ERRORCHECK = "PDF-Error Checking";   
-    private final String STATE_PDF_ERROR_TRANSFERING = "PDF-Error Transfering";   
-    private final String STATE_PDF_ZIPPING = "PDF-Zipping";   
-    private final String STATE_PDF_TRANSFERING = "PDF-Transfering";   
-    private final String STATE_PDFCOMPLETE_TRANSFERING = "PDFCOMPLETE-Transfering";  
-    private final String STATE_PDF_DELETING = "PDF-Deleting";  
-    private final String STATE_JPEG_ZIPPING = "JPEG-Zipping";   
-    private final String STATE_JPEG_TRANSFERING = "JPEG-Transfering";  
-    private final String STATE_JPEG_DELETING = "JPEG-Deleting";
-    private final String STATE_TIFF_ZIPPING = "TIFF-Zipping";   
-    private final String STATE_TIFF_TRANSFERING = "TIFF-Transfering"; 
-    private final String STATE_TIFF_DELETING = "TIFF-Deleting";
-    private final String STATE_ALTOXML_ZIPPING = "ALTO-Zipping";   
-    private final String STATE_ALTOXML_TRANSFERING = "ALTO-Transfering";  
-    private final String STATE_ALTOXML_DELETING = "ALTO-Deleting";
-    private final String STATE_ARCHIVE_ZIPPING = "ARCHIVE-Zipping";   
-    private final String STATE_ARCHIVE_TRANSFERING = "ARCHIVE-Transfering";  
-    private final String STATE_ARCHIVE_DELETING = "ARCHIVE-Deleting"; 
-    private final String STATE_PREPROCESSTIFF_ZIPPING = "PREPROCESSTIFF-Zipping";   
-    private final String STATE_PREPROCESSTIFF_TRANSFERING = "PREPROCESSTIFF-Transfering";   
-    private final String STATE_PREPROCESSTIFF_DELETING = "PREPROCESSTIFF-Deleting";
-    private final String STATE_TFDB_UPDATE = "TFDB ocr_complete_date Updating";
+    public final String STATE_PDF_ERRORCHECK = "PDF-Error Checking";   
+    public final String STATE_PDF_ERROR_TRANSFERING = "PDF-Error Transfering";   
+    public final String STATE_PDF_ZIPPING = "PDF-Zipping";   
+    public final String STATE_PDF_TRANSFERING = "PDF-Transfering";   
+    public final String STATE_PDFCOMPLETE_TRANSFERING = "PDFCOMPLETE-Transfering";  
+    public final String STATE_PDF_DELETING = "PDF-Deleting";  
+    public final String STATE_JPEG_ZIPPING = "JPEG-Zipping";   
+    public final String STATE_JPEG_TRANSFERING = "JPEG-Transfering";  
+    public final String STATE_JPEG_DELETING = "JPEG-Deleting";
+    public final String STATE_TIFF_ZIPPING = "TIFF-Zipping";   
+    public final String STATE_TIFF_TRANSFERING = "TIFF-Transfering"; 
+    public final String STATE_TIFF_DELETING = "TIFF-Deleting";
+    public final String STATE_ALTOXML_ZIPPING = "ALTO-Zipping";   
+    public final String STATE_ALTOXML_TRANSFERING = "ALTO-Transfering";  
+    public final String STATE_ALTOXML_DELETING = "ALTO-Deleting";
+    public final String STATE_ARCHIVE_ZIPPING = "ARCHIVE-Zipping";   
+    public final String STATE_ARCHIVE_TRANSFERING = "ARCHIVE-Transfering";  
+    public final String STATE_ARCHIVE_DELETING = "ARCHIVE-Deleting"; 
+    public final String STATE_PREPROCESSTIFF_ZIPPING = "PREPROCESSTIFF-Zipping";   
+    public final String STATE_PREPROCESSTIFF_TRANSFERING = "PREPROCESSTIFF-Transfering";   
+    public final String STATE_PREPROCESSTIFF_DELETING = "PREPROCESSTIFF-Deleting";
+    public final String STATE_TFDB_UPDATE = "TFDB ocr_complete_date Updating";
     
-    private final String STATE_PDF_ERRORCHECK_COMPLETE = "PDF-Error Check COMPLETE";  
-    private final String STATE_PDF_ERROR_TRANSFERING_COMPLETE = "PDF-Error Transfering COMPLETE";   
-    private final String STATE_PDF_ZIPPING_COMPLETE = "PDF-Zipping COMPLETE";   
-    private final String STATE_PDF_TRANSFERING_COMPLETE = "PDF-Transfering COMPLETE";   
-    private final String STATE_PDFCOMPLETE_TRANSFERING_COMPLETE = "PDFCOMPLETE-Transfering COMPLETE";  
-    private final String STATE_PDF_DELETING_COMPLETE = "PDF-Deleting COMPLETE";   
-    private final String STATE_JPEG_ZIPPING_COMPLETE = "JPEG-Zipping COMPLETE";   
-    private final String STATE_JPEG_TRANSFERING_COMPLETE = "JPEG-Transfering COMPLETE";   
-    private final String STATE_JPEG_DELETING_COMPLETE = "JPEG-Deleting COMPLETE";  
-    private final String STATE_TIFF_ZIPPING_COMPLETE = "TIFF-Zipping COMPLETE";   
-    private final String STATE_TIFF_TRANSFERING_COMPLETE = "TIFF-Transfering COMPLETE";  
-    private final String STATE_TIFF_DELETING_COMPLETE = "TIFF-Deleting COMPLETE";  
-    private final String STATE_ALTOXML_ZIPPING_COMPLETE = "ALTO-Zipping COMPLETE";   
-    private final String STATE_ALTOXML_TRANSFERING_COMPLETE = "ALTO-Transfering COMPLETE";   
-    private final String STATE_ALTOXML_DELETING_COMPLETE = "ALTO-Deleting COMPLETE";
-    private final String STATE_ARCHIVE_ZIPPING_COMPLETE = "ARCHIVE-Zipping COMPLETE";   
-    private final String STATE_ARCHIVE_TRANSFERING_COMPLETE = "ARCHIVE-Transfering COMPLETE";   
-    private final String STATE_ARCHIVE_DELETING_COMPLETE = "ARCHIVE-Deleting COMPLETE"; 
-    private final String STATE_PREPROCESSTIFF_ZIPPING_COMPLETE = "PREPROCESSTIFF-Zipping COMPLETE";   
-    private final String STATE_PREPROCESSTIFF_TRANSFERING_COMPLETE = "PREPROCESSTIFF-Transfering COMPLETE";   
-    private final String STATE_PREPROCESSTIFF_DELETING_COMPLETE = "PREPROCESSTIFF-Deleting COMPLETE";   
-    private final String STATE_TFDB_UPDATE_COMPLETE = "TFDB ocr_complete_date COMPLETE";
+    public final String STATE_PDF_ERRORCHECK_COMPLETE = "PDF-Error Check COMPLETE";  
+    public final String STATE_PDF_ERROR_TRANSFERING_COMPLETE = "PDF-Error Transfering COMPLETE";   
+    public final String STATE_PDF_ZIPPING_COMPLETE = "PDF-Zipping COMPLETE";   
+    public final String STATE_PDF_TRANSFERING_COMPLETE = "PDF-Transfering COMPLETE";   
+    public final String STATE_PDFCOMPLETE_TRANSFERING_COMPLETE = "PDFCOMPLETE-Transfering COMPLETE";  
+    public final String STATE_PDF_DELETING_COMPLETE = "PDF-Deleting COMPLETE";   
+    public final String STATE_JPEG_ZIPPING_COMPLETE = "JPEG-Zipping COMPLETE";   
+    public final String STATE_JPEG_TRANSFERING_COMPLETE = "JPEG-Transfering COMPLETE";   
+    public final String STATE_JPEG_DELETING_COMPLETE = "JPEG-Deleting COMPLETE";  
+    public final String STATE_TIFF_ZIPPING_COMPLETE = "TIFF-Zipping COMPLETE";   
+    public final String STATE_TIFF_TRANSFERING_COMPLETE = "TIFF-Transfering COMPLETE";  
+    public final String STATE_TIFF_DELETING_COMPLETE = "TIFF-Deleting COMPLETE";  
+    public final String STATE_ALTOXML_ZIPPING_COMPLETE = "ALTO-Zipping COMPLETE";   
+    public final String STATE_ALTOXML_TRANSFERING_COMPLETE = "ALTO-Transfering COMPLETE";   
+    public final String STATE_ALTOXML_DELETING_COMPLETE = "ALTO-Deleting COMPLETE";
+    public final String STATE_ARCHIVE_ZIPPING_COMPLETE = "ARCHIVE-Zipping COMPLETE";   
+    public final String STATE_ARCHIVE_TRANSFERING_COMPLETE = "ARCHIVE-Transfering COMPLETE";   
+    public final String STATE_ARCHIVE_DELETING_COMPLETE = "ARCHIVE-Deleting COMPLETE"; 
+    public final String STATE_PREPROCESSTIFF_ZIPPING_COMPLETE = "PREPROCESSTIFF-Zipping COMPLETE";   
+    public final String STATE_PREPROCESSTIFF_TRANSFERING_COMPLETE = "PREPROCESSTIFF-Transfering COMPLETE";   
+    public final String STATE_PREPROCESSTIFF_DELETING_COMPLETE = "PREPROCESSTIFF-Deleting COMPLETE";   
+    public final String STATE_TFDB_UPDATE_COMPLETE = "TFDB ocr_complete_date COMPLETE";
     
-    private final String STATE_PDF_ERRORCHECK_FAILED = "PDF-Error Check FAILED - see log";  
-    private final String STATE_PDF_ERROR_TRANSFERING_FAILED = "PDF-Error Transfering FAILED - see log";  
-    private final String STATE_PDF_ZIPPING_FAILED = "PDF-Zipping FAILED - see log";   
-    private final String STATE_PDF_TRANSFERING_FAILED = "PDF-Transfering FAILED - see log";   
-    private final String STATE_PDFCOMPLETE_TRANSFERING_FAILED = "PDFCOMPLETE-Transfering FAILED - see log";   
-    private final String STATE_PDF_DELETING_FAILED = "PDF-Deleting FAILED - see log";  
-    private final String STATE_JPEG_ZIPPING_FAILED = "JPEG-Zipping FAILED - see log";   
-    private final String STATE_JPEG_TRANSFERING_FAILED = "JPEG-Transfering FAILED - see log";  
-    private final String STATE_JPEG_DELETING_FAILED = "JPEG-Deleting FAILED - see log";  
-    private final String STATE_TIFF_ZIPPING_FAILED = "TIFF-Zipping FAILED - see log";   
-    private final String STATE_TIFF_TRANSFERING_FAILED = "TIFF-Transfering FAILED - see log";  
-    private final String STATE_TIFF_DELETING_FAILED = "TIFF-Deleting FAILED - see log";  
-    private final String STATE_ALTOXML_ZIPPING_FAILED = "ALTO-Zipping FAILED - see log";   
-    private final String STATE_ALTOXML_TRANSFERING_FAILED = "ALTO-Transfering FAILED - see log";   
-    private final String STATE_ALTOXML_DELETING_FAILED = "ALTO-Deleting FAILED - see log";  
-    private final String STATE_ARCHIVE_ZIPPING_FAILED = "ARCHIVE-Zipping FAILED - see log";   
-    private final String STATE_ARCHIVE_TRANSFERING_FAILED = "ARCHIVE-Transfering FAILED - see log";   
-    private final String STATE_ARCHIVE_DELETING_FAILED = "ARCHIVE-Deleting FAILED - see log";  
-    private final String STATE_PREPROCESSTIFF_ZIPPING_FAILED = "PREPROCESSTIFF-Zipping FAILED - see log";   
-    private final String STATE_PREPROCESSTIFF_TRANSFERING_FAILED = "PREPROCESSTIFF-Transfering FAILED - see log";  
-    private final String STATE_PREPROCESSTIFF_DELETING_FAILED = "PREPROCESTIFF-Deleting FAILED - see log";  
-    private final String STATE_TFDB_UPDATE_FAILED = "TFDB ocr_complete_date FAILED - see log";
+    public final String STATE_PDF_ERRORCHECK_FAILED = "PDF-Error Check FAILED - see log";  
+    public final String STATE_PDF_ERROR_TRANSFERING_FAILED = "PDF-Error Transfering FAILED - see log";  
+    public final String STATE_PDF_ZIPPING_FAILED = "PDF-Zipping FAILED - see log";   
+    public final String STATE_PDF_TRANSFERING_FAILED = "PDF-Transfering FAILED - see log";   
+    public final String STATE_PDFCOMPLETE_TRANSFERING_FAILED = "PDFCOMPLETE-Transfering FAILED - see log";   
+    public final String STATE_PDF_DELETING_FAILED = "PDF-Deleting FAILED - see log";  
+    public final String STATE_JPEG_ZIPPING_FAILED = "JPEG-Zipping FAILED - see log";   
+    public final String STATE_JPEG_TRANSFERING_FAILED = "JPEG-Transfering FAILED - see log";  
+    public final String STATE_JPEG_DELETING_FAILED = "JPEG-Deleting FAILED - see log";  
+    public final String STATE_TIFF_ZIPPING_FAILED = "TIFF-Zipping FAILED - see log";   
+    public final String STATE_TIFF_TRANSFERING_FAILED = "TIFF-Transfering FAILED - see log";  
+    public final String STATE_TIFF_DELETING_FAILED = "TIFF-Deleting FAILED - see log";  
+    public final String STATE_ALTOXML_ZIPPING_FAILED = "ALTO-Zipping FAILED - see log";   
+    public final String STATE_ALTOXML_TRANSFERING_FAILED = "ALTO-Transfering FAILED - see log";   
+    public final String STATE_ALTOXML_DELETING_FAILED = "ALTO-Deleting FAILED - see log";  
+    public final String STATE_ARCHIVE_ZIPPING_FAILED = "ARCHIVE-Zipping FAILED - see log";   
+    public final String STATE_ARCHIVE_TRANSFERING_FAILED = "ARCHIVE-Transfering FAILED - see log";   
+    public final String STATE_ARCHIVE_DELETING_FAILED = "ARCHIVE-Deleting FAILED - see log";  
+    public final String STATE_PREPROCESSTIFF_ZIPPING_FAILED = "PREPROCESSTIFF-Zipping FAILED - see log";   
+    public final String STATE_PREPROCESSTIFF_TRANSFERING_FAILED = "PREPROCESSTIFF-Transfering FAILED - see log";  
+    public final String STATE_PREPROCESSTIFF_DELETING_FAILED = "PREPROCESTIFF-Deleting FAILED - see log";  
+    public final String STATE_TFDB_UPDATE_FAILED = "TFDB ocr_complete_date FAILED - see log";
     
-    private final String STATE_COMPLETE = "Done";   
+    public final String STATE_COMPLETE = "Done";   
   /*  private String ALTOXML = "ALTOXML";   
     private String TIFF = "TIFF";   
     private String PDF = "PDF";   
@@ -335,7 +338,7 @@ public class LimbOutputFileUtil {
         }
     }
      
-    private synchronized void  setProperty(String key, String val){
+    public synchronized void  setProperty(String key, String val){
         Properties p = new Properties();
         try{
             p.load(new FileReader("limbOutWorking.properties"));//put in same dir as executable jar or inside root project in netbeans
@@ -364,6 +367,7 @@ public class LimbOutputFileUtil {
    
     public String doPdfErrorCheck(String src, String tn){
         setProperty(tn, STATE_PDF_ERRORCHECK);
+    
         try{
             src = src + "/" + tn  + "/" + tn + ".pdf";
             if (src.indexOf("\\\\") == -1) {
@@ -388,6 +392,8 @@ public class LimbOutputFileUtil {
     
     public String doPdfErrorHandle(String src, String dest, String tn){
         setProperty(tn, STATE_PDF_ERROR_TRANSFERING);
+   
+        
         String ret = null;
         try{
             src = src + "/" + tn + "/" + tn + ".pdf";
@@ -423,6 +429,7 @@ public class LimbOutputFileUtil {
     
     public String doZipJpeg(String src, String dest, String tn){
         setProperty(tn, STATE_JPEG_ZIPPING);
+        
        
         String ret = doZipDir(src + "/" + tn, dest, tn);//doS3Transfer(src + "/" + tn, dest, tn + ".pdf");
         if(ret!=null){
@@ -436,6 +443,7 @@ public class LimbOutputFileUtil {
     
     public String doZipTiff(String src, String dest, String tn){
         setProperty(tn, STATE_TIFF_ZIPPING);
+        
        
         String ret = doZipDir(src + "/" + tn, dest, tn);//doS3Transfer(src + "/" + tn, dest, tn + ".pdf");
         if(ret!=null){
@@ -449,6 +457,7 @@ public class LimbOutputFileUtil {
     
     public String doZipAltoXml(String src, String dest, String tn){
         setProperty(tn, STATE_ALTOXML_ZIPPING);
+        
        
         String ret = doZipDir(src + "/" + tn, dest, tn);//doS3Transfer(src + "/" + tn, dest, tn + ".pdf");
         if(ret!=null){
@@ -463,7 +472,8 @@ public class LimbOutputFileUtil {
     
     public String doZipPreprocessTiff(String src, String dest, String tn){
         setProperty(tn, STATE_PREPROCESSTIFF_ZIPPING);
-       
+        
+        
         String ret = doZipDir(src, dest, tn);//doS3Transfer(src + "/" + tn, dest, tn + ".pdf");
         if(ret!=null){
             setProperty(tn, STATE_PREPROCESSTIFF_ZIPPING_FAILED);
@@ -477,6 +487,7 @@ public class LimbOutputFileUtil {
     public String doPdfTransfer(String src, String dest, String tn){
         setProperty(tn, STATE_PDF_TRANSFERING);
         
+        
         String ret = doS3Transfer(src + "/" + tn, dest, tn + ".pdf");
         if(ret!=null){
             setProperty(tn, STATE_PDF_TRANSFERING_FAILED);
@@ -488,6 +499,7 @@ public class LimbOutputFileUtil {
     
     public String doPdfTransferPdfComplete(String src, String dest, String tn, String trimtn){
         setProperty(tn, STATE_PDFCOMPLETE_TRANSFERING);
+        
         
         String ret = doCopyFile(src + "/" + tn + "/" + tn + ".pdf", dest + "/" + trimtn + ".pdf" );
         if(ret!=null){
@@ -501,6 +513,7 @@ public class LimbOutputFileUtil {
     public String doJpegTransfer(String src, String dest, String tn){
         setProperty(tn, STATE_JPEG_TRANSFERING);
         
+        
         String ret = doS3Transfer(src, dest, tn + ".zip");
         if(ret!=null){
             setProperty(tn, STATE_JPEG_TRANSFERING_FAILED);
@@ -513,6 +526,7 @@ public class LimbOutputFileUtil {
     public String doTiffTransfer(String src, String dest, String tn){
         setProperty(tn, STATE_TIFF_TRANSFERING);
         
+        
         String ret = doS3Transfer(src, dest, tn + ".zip");
         if(ret!=null){
             setProperty(tn, STATE_TIFF_TRANSFERING_FAILED);
@@ -524,6 +538,7 @@ public class LimbOutputFileUtil {
     
     public String doAltoXmlTransfer(String src, String dest, String tn){
         setProperty(tn, STATE_ALTOXML_TRANSFERING);
+        
         
         String ret = doS3Transfer(src, dest, tn + ".zip");
         if(ret!=null){
@@ -539,6 +554,7 @@ public class LimbOutputFileUtil {
     public String doPreprocessTiffTransfer(String src, String dest, String tn){
         setProperty(tn, STATE_PREPROCESSTIFF_TRANSFERING);
         
+        
         String ret = doS3Transfer(src, dest, tn + ".zip");
         if(ret!=null){
             setProperty(tn, STATE_PREPROCESSTIFF_TRANSFERING_FAILED);
@@ -550,6 +566,8 @@ public class LimbOutputFileUtil {
              
     public String doDeletePdf(String src, String tn){
         setProperty(tn, STATE_PDF_DELETING);
+        
+        
         
         String ret = doDeleteFile(src +  "/" + tn + "/" + tn + ".pdf");
         if(ret==null){
@@ -569,6 +587,7 @@ public class LimbOutputFileUtil {
     public String doDeleteJpeg(String src, String tn){
         setProperty(tn, STATE_JPEG_DELETING);
         
+        
         String ret = doDeleteFile(src + "/" + tn + ".zip");
         if(ret==null){
             ret = doDeleteFile(src + "/" + tn);//delete dir also
@@ -585,6 +604,7 @@ public class LimbOutputFileUtil {
              
     public String doDeleteTiff(String src, String tn){
         setProperty(tn, STATE_TIFF_DELETING);
+        
         
         String ret = doDeleteFile(src + "/" + tn + ".zip");
         if(ret==null){
@@ -659,15 +679,17 @@ public class LimbOutputFileUtil {
             return null;
     }
     
-    public String doTfdbUpdate(String tnFull, String tn, java.sql.Timestamp limbCompleteDate){
+    public String doTfdbUpdate(String tnFull, String tn, java.sql.Timestamp limbStartDate, java.sql.Timestamp limbCompleteDate){
         setProperty(tnFull, STATE_TFDB_UPDATE);
+        
         //OCR_complete_date this.tfdbC
         int updateCount = 0;
         try{
             
-            PreparedStatement ps = tfdbC.prepareStatement("update book set ocr_complete_date = ? where tn = ? ");
-            ps.setTimestamp(1, limbCompleteDate);
-            ps.setString(2, tn);
+            PreparedStatement ps = tfdbC.prepareStatement("update book set ocr_start_date = ? , ocr_complete_date = ?  where tn = ? ");
+            ps.setTimestamp(1, limbStartDate);
+            ps.setTimestamp(2, limbCompleteDate);
+            ps.setString(3, tn);
             updateCount = ps.executeUpdate();
             //tfdbC.commit();
             
@@ -821,20 +843,31 @@ public class LimbOutputFileUtil {
         File f = new File(postLimbSourcePdf);
         File[] pdfFiles = f.listFiles();
         
+        Map<String, Object[]> tnLimbList = new HashMap();//tn,hotfolderlocation
+                      
+        //tn,filename
+        Map<String, String> todoPdfReadyTns = new HashMap<>(); 
+        
         String inClause = " ( ";
         for(int x = 0; x < pdfFiles.length ; x++){
             inClause = inClause + "'" + pdfFiles[x].getName() + "', ";//these will be directory names - each pdf in own dir
+            
+            
+            /* remove code 5.22.2017
+           
+            Object[] xx = new Object[2];
+            xx[0] = pdfFiles[x].getName();
+            xx[1] = pdfFiles[x].getName();
+            tnLimbList.put( pdfFiles[x].getName(),  xx);  
+            todoPdfReadyTns.put(pdfFiles[x].getName(), getTnFromFileName(pdfFiles[x].getName()));//map of filename->tn
+             */
             
         }
         inClause = inClause.substring(0, inClause.length()-2) + ")";//trim ending", "
         if(inClause.equals(" )"))
             inClause = " ('') ";
-        Map<String, Object[]> tnLimbList = new HashMap();//tn,hotfolderlocation
-              
-        
-        
-        //tn,filename
-        Map<String, String> todoPdfReadyTns = new HashMap<>(); 
+       
+        /* no longer need to check if book is in ready but no release date. Instead just creat map of file->tn below
         try{
         //get from tfdb report "PDF Date but no Release date"
         
@@ -854,6 +887,7 @@ public class LimbOutputFileUtil {
             JacobsTool.logLimbUploadMsg(e.toString());
             e.printStackTrace();
         }
+        */
       
            
         Set<String> stillProcessing = new HashSet();
@@ -862,7 +896,7 @@ public class LimbOutputFileUtil {
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery("select [Finished], [relativefolder] as hotpath, [documentname] tn , CreationDate, FinishedDate"
                     + " from dbo.WorkflowKflows where [documentname] in " + inClause + " order by FinishedDate");//order by finishdate in case multiple ocrs run with different hotfolder locations get last one to finish
-                
+             /* todo undo commented code below 5.22.17   */
             while (rs.next()) {
                 
                 //what if tn is not in pdfReady list?
@@ -874,12 +908,14 @@ public class LimbOutputFileUtil {
                 java.sql.Timestamp finishDate = rs.getTimestamp(5);    
                 String fileTn = rs.getString(3);
                 if(finished.equals("1")){
-                    if(fileTn!= null && todoPdfReadyTns.containsKey(fileTn) == true){
-                        Object[] limbValues = new Object[2];
+                    if(fileTn!= null){// && todoPdfReadyTns.containsKey(fileTn) == true){
+                        Object[] limbValues = new Object[3];
                         limbValues[0] = hotFolderName;
-                        limbValues[1] = finishDate;
+                        limbValues[1] = createDate;
+                        limbValues[2] = finishDate;
                         
-                        tnLimbList.put(fileTn, limbValues);                    
+                        tnLimbList.put(fileTn, limbValues);  
+                        todoPdfReadyTns.put(fileTn, getTnFromFileName(fileTn));//map of filename->tn
                     } 
                 }else{
                     //still processing
@@ -893,6 +929,7 @@ public class LimbOutputFileUtil {
             for(String tn : stillProcessing){
                 tnLimbList.remove(tn);//remove if still processing
             }
+            
             
         }catch(Exception e){
             System.out.println(e);
@@ -923,6 +960,24 @@ public class LimbOutputFileUtil {
         //altoXmlTodoList = new ArrayList(Arrays.asList(todoTns.toArray()));
         //tiffTodoList = new ArrayList(Arrays.asList(todoTns.toArray()));
         pdfReadyList = pdfReadyTnList;
+    }
+    
+    //get tn without letters in front for copying to output for publishing
+    private String getTnFromFileName(String fileName){
+        int i = 0;
+        while (i < fileName.length() && !Character.isDigit(fileName.charAt(i))) {
+            i++;
+        }
+        int j = i;
+        while (j < fileName.length() && Character.isDigit(fileName.charAt(j))) {
+            j++;
+        }
+          
+        //System.out.println("xxx fileName=" + fileName + "  tn=" + fileName.substring(i, j));
+          
+        return fileName.substring(i, j); // might be an off-by-1 here
+      
+      
     }
     
     private String doZipDir(String sourceDir, String dest, String tn)
