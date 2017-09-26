@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -362,7 +364,7 @@ public class JacobsTool extends javax.swing.JFrame {
         jTabbedPane1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setText("Jacobs Tool IA and Non-IA Books - d7.31.17");
+        jLabel1.setText("Jacobs Tool IA and Non-IA Books - d9.26.17");
 
         openDestFolder.setText("Open Folder");
         openDestFolder.addActionListener(new java.awt.event.ActionListener() {
@@ -2595,7 +2597,7 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
 14thcensusofpopu1508unit	4/1/2016 17:13
 
      */
-
+    PDDocument doc = null;
     //inDir //R:\Internet Archives\Elder Shaver Downloads\In Process\2016_04_28_IA_Florida_Mar_2016\airforceregiste1962wash_0 
     // outputDir R:\Internet Archives\Elder Shaver Downloads\In Process\2016_04_04_British Columbia_3_Mar_converted\
     private String processFile(File inDir, File outputDir)  {
@@ -2696,12 +2698,38 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
         //http://pdfbox.apache.org/download.cgi#20x
         int pageCount = 0; 
         if(isNonIA == false){
+            
+         
             try{
                 //  PdfReader pdfr = new PdfReader(pdfInputFile.getAbsolutePath());
-          
-                PDDocument doc = PDDocument.load(pdfInputFile);
-                pageCount = doc.getNumberOfPages();
-                doc.close();
+                File ff = pdfInputFile;
+                TimerTask tt = new TimerTask() {
+                    @Override
+                    public void run() {
+                        try{
+                            doc = PDDocument.load(ff); 
+                        }catch(IOException ioe ){
+                            System.out.println("Error, ignore");
+                        }
+                    }
+                };
+                 
+                Timer timer = new Timer();
+                timer.schedule(tt, 0);//run now
+                try{
+                    Thread.sleep(10000);
+                }catch(InterruptedException e){
+                    //pageCount = x;// 
+                    timer.cancel();
+                }
+                //doc = PDDocument.load(pdfInputFile);
+                try{
+                    pageCount = doc.getNumberOfPages();//if not set (0), then code below will not use it and uses imagecount in xml instead
+                }catch(Exception e){
+                    
+                }
+                if(doc != null)
+                    doc.close();
             }catch(Exception e){
                 msgs += "WARNING, cannot get page count from pdf: " + pdfInputFile.getName() + ".  Using count in xml \r\n";             
             }
@@ -2929,6 +2957,7 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
 	
         }
         
+        /* this works in java 1.7 - changes for webapp on 1.6 temporarily
         try{
             //move files if copy protected
             if (isPublicDomain == false) {
@@ -2951,6 +2980,35 @@ Contains 2016_04_04_British Columbia_3_Mar_converted.txt of all books
                
                 deleteFolder(new File(pdfPath.getParent().getParent().toFile().getAbsolutePath()));
                 deleteFolder(new File(sipPath.toFile().getAbsolutePath()));
+                 
+            }
+
+        } catch (Exception e){
+            return msgs +  "Error while moving copyprotected files to dcms-copyprotected directory - "
+                            + e.getMessage() + "\r\n";
+        }*/
+         try{
+            //move files if copy protected
+            if (isPublicDomain == false) {
+                //Path pdfPath = origCopyrightProtectedPdf.toPath();
+                String pdfPathStr = origCopyrightProtectedPdf.getAbsolutePath();
+                //Path sipPath = origCopyrightProtectedSip.toPath();
+                String sipPathStr = origCopyrightProtectedSip.getAbsolutePath();
+
+                pdfPathStr = pdfPathStr.replace("dcms", "dcms-copyprotected");
+                sipPathStr = sipPathStr.replace("dcms", "dcms-copyprotected");
+                File pdfDestFile = new File(pdfPathStr);
+                File sipDestFile = new File(sipPathStr);
+                File f1 = pdfDestFile.getParentFile();
+                f1.mkdirs();
+                File f2 = sipDestFile.getParentFile();
+                f2.mkdirs();
+              
+                origCopyrightProtectedPdf.renameTo(new File(pdfPathStr));
+                origCopyrightProtectedSip.renameTo(new File(sipPathStr));
+                 
+                deleteFolder(new File(origCopyrightProtectedPdf.getParentFile().getParentFile().getAbsolutePath()));
+                deleteFolder(new File(origCopyrightProtectedSip.getAbsolutePath()));
                  
             }
 
