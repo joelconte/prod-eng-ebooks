@@ -1,0 +1,48 @@
+
+Insert into authority values ('ia');
+
+Insert into authority values ('ia_admin');
+
+
+
+DROP TABLE internetarchive_working cascade;
+
+
+CREATE TABLE internetarchive_working (
+  
+
+	IS_SELECTED varchar(1),
+        BIBCHECK varchar(1),
+        TITLE varchar(1024),
+        IMAGE_COUNT varchar(255),
+        LANGUAGE varchar(255),
+	PUBLISH_DATE varchar(255),
+        IDENTIFIER varchar(255),
+        SUBJECT varchar(1024),
+        DESCRIPTION varchar(90024),
+        PUBLISHER varchar(255),
+        LICENSEURL varchar(255),
+	RIGHTS varchar(255),
+        AUTHOR varchar(1024),
+	OCLC varchar(255),
+	TN varchar(255),
+	site varchar(255),
+ 	BATCH_NUMBER varchar(255),
+	OWNER_USERID varchar(255),
+	STATE VARCHAR(40),
+	STATE_ERROR varchar(1000),
+	START_DATE timestamp(6) without time zone,
+	END_DATE timestamp(6) without time zone,
+	FOLDER varchar(255),
+	COMPLETE_DATE timestamp(6) without time zone,
+	DNP varchar(1) );
+
+ 
+
+
+
+ALTER TABLE internetarchive_working ADD 
+  CONSTRAINT IAW_pk
+  PRIMARY KEY
+  (OWNER_USERID, BATCH_NUMBER, IDENTIFIER );   
+ 

@@ -568,3 +568,11 @@ function validateFormData(){
 	
 	return true;//valid data
 };
+
+function doPost(url){
+	var form= document.createElement('form');
+	form.method= 'post';
+    form.action= url;
+ 	document.body.appendChild(form);
+    form.submit();
+}

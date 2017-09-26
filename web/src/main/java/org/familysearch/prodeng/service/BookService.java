@@ -5,6 +5,7 @@
 package org.familysearch.prodeng.service;
  
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.ConstraintViolationException;
@@ -29,7 +30,7 @@ public interface BookService {
 	public void createBook(Book book) throws ConstraintViolationException; 
 
 	public String generateQuotedListString(List<String> l);
- 
+	public String generateQuotedListStringFromArray(String[] l);
 	
 	public List<String> getAllTns();
 	public List<String> getBooksByWildcard(String searchBy);
@@ -85,6 +86,7 @@ public interface BookService {
 	public List<String> getAllScanSitesIncludingInactive();
 	public List<String> getAllOcrSites();
 	public List<String> getAllOcrSitesIncludingInactive();
+	public List<String> getAllIaScanSites();
 	public List<String> getAllPropertyRights();
 	public List<String> getAllPublicationTypes();
 	public List<List> getAllBatchClasses();
@@ -156,6 +158,7 @@ public interface BookService {
 	////lang admin start////
 	public List<String> getAllLanguageIds();
 	public List<List>  getAllLanguageIdsAsRows();
+	public List<List>  getAllLanguages();
 	public void createLanguage(String id);
 	public void deleteLanguages(String idList);
 	////lang admin end////
@@ -332,6 +335,42 @@ public interface BookService {
 	List<List<Object>> stringsToTypes(int[] colType, List<List<String>> rows);
 	//misc end
  
+	
+	public Set<String> doBibcheck(String inClause);
+	public Set<String> getIneternetArchiveBooksInProcess(String inClause);
+	public void insertInternetArchiveSearchedBooks(List<List<String>> rows, String ownerUserId);
+	
+	public List<List> getInternetArchiveWorkingBooksStateSelectBooks(String userId);
+	public List<List> getInternetArchiveWorkingBooksStateVerifyBooks(String userId);
+	public List<List> getInternetArchiveWorkingBooksStatePreDownloadBooks(String userId);
+	public List<List> getInternetArchiveWorkingBooksStateDownloadNotStartedBooks(String userId);
+    public List<List> getInternetArchiveWorkingBooksStateAnyDownloadBooks(String userId);
+    public List<List> getInternetArchiveWorkingBooksStateAnyDownloadBooksExceptComplete(String userId);
+    public List<List> getInternetArchiveWorkingBooksStateInsertTfdb(String userId);
+	  
+	public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String user);
+	public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String user);
+	public String updateInternetArchiveWorkingBookToState(String bookId, String state);
+	
+	public void updateInternetArchiveWorkingBooksChangeStateVerifyBooks(String userId, String site);
+	public void updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(String userId);
+	public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooks(String userId);
+	public void updateInternetArchiveWorkingBooksChangeStateDownloadX(String bookId, String[] fromStates, String toState, String folder);
+	public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooksFromAnyDownloadingState(String userId);
+	public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooksFromAnyDownloadingStateExceptComplete(String userId);
+	public void updateInternetArchiveWorkingBooksChangeStateReadyInsertTfdbBooks(String userId);
+	public void updateInternetArchiveWorkingBooksChangeStateCompleteBooks(String userId, String driveName, String driveNumber, InternetArchiveService iaService); 
+	public void updateInternetArchiveWorkingBooksError(String bookId, String err);
+	public void updateInternetArchiveWorkingBooksStateDownloadNotStartedBooksErrorMsg(String msg);
+	
+	public void deleteInternetArchiveWorkingBooksAnyDownloadingState();
+    public void deleteInternetArchiveWorkingBooks(List<String> identifier);
+	public void deleteInternetArchiveWorkingBooksStateSelectBooks(String ownerUserId);
+	public void deleteInternetArchiveWorkingBooksStateVerifyBooks(String ownerUserId);
+	public void deleteInternetArchiveWorkingBooksStatePreDownloadBooks(String ownerUserId);
+	public void deleteInternetArchiveWorkingBooksStateDownloadCompleteBooks(String ownerUserId);
+	
+	
 	//start nonbook docs
 	public void createNonBook(NonBook book) throws ConstraintViolationException;
 	public List<String> getAllDns();

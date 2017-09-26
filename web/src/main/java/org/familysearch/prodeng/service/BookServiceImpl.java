@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -478,6 +479,11 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	@Override
 	public List<String> getAllOcrSitesIncludingInactive() {
 		List<String> sList = getJdbcTemplate().query("select id from SITE where is_process_site = 'T'    order by id", new StringRowMapper());
+		return sList;
+	}
+	@Override
+	public List<String> getAllIaScanSites() {
+		List<String> sList = getJdbcTemplate().query("select id from SITE where is_scan_site = 'T' and  ( is_inactive_site !='T' or is_inactive_site is null) and id like 'Internet Archiv%' order by id", new StringRowMapper());
 		return sList;
 	}
 	
@@ -1918,6 +1924,13 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<String>  getAllLanguageIds() {
 		//method returns list of lists for common miscButtonAndTableFormWithCheckBox
 		List sList = getJdbcTemplate().query("select id from languages", new StringRowMapper());
+		return sList;
+	}
+	
+	@Override 
+	public List<List>  getAllLanguages() {
+		//method returns list of lists for common miscButtonAndTableFormWithCheckBox
+		List sList = getJdbcTemplate().query("select id, publish_name from languages", new StringXRowMapper());
 		return sList;
 	}
 	
@@ -3384,6 +3397,22 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		
 		return tnListStr;
 	}
+	
+	@Override
+	public String generateQuotedListStringFromArray(String[] l) {
+		if(l==null)
+			return null;
+		String tnListStr = "";
+		for (String tn : l) {
+			tnListStr += ", '" + tn + "'";
+		}
+		if(tnListStr == "")
+			return "";
+		tnListStr = tnListStr.substring(2);
+		
+		return tnListStr;
+	}
+	 
 	 
 	public void migrateMetadataToBookInsert( String tnList ){
 		if(tnList.equals(""))
@@ -8405,7 +8434,704 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	}
 	
 	///end misc
+
+
+    public Set<String> doBibcheck(String inClause){
+       
+             
+            Set<String> dupeSet = new HashSet<String>();
+            
+            List<List> vals;
+    		vals = getJdbcTemplate().query("select tn from BOOK where tn in (" + inClause + ")", new StringX1RowMapper() );
+            for(List<String> r : vals) {
+                dupeSet.add(r.get(0));
+            }
+            
+            vals = getJdbcTemplate().query("select secondary_identifier from BOOK where secondary_identifier in (" + inClause + ")", new StringX1RowMapper() );
+            for(List<String> r : vals) {
+                dupeSet.add(r.get(0));
+            }
+
+            return dupeSet;
+    }
+
+   
+    public Set<String> getIneternetArchiveBooksInProcess(String inClause){
+		Set<String> dupeSet = new HashSet<String>();
+        List<List> vals;
+		vals = getJdbcTemplate().query("select identifier from internetarchive_working  where identifier in (" + inClause + ")", new StringX1RowMapper() );
+		 for(List<String> r : vals) {
+             dupeSet.add(r.get(0));
+         }
+        return dupeSet;
+    }
+    
+    public void insertInternetArchiveSearchedBooks(List<List<String>> rows, String ownerUserId) {
+ 
+    	/*
+    	 *  see parseJsonValues() for columns in rows list
+        attrList.add("F");//0
+        attrList.add("U");//1 T=ok F=dupe u=unknown
+        attrList.add(title);//2
+        attrList.add(imageCount);//3
+        attrList.add(language);//4
+        attrList.add(date);//5
+        attrList.add(identifier);//6
+        attrList.add(subject);//7
+        attrList.add(description);//8
+        attrList.add(publisher);//9
+        attrList.add(licenseurl);//10
+        attrList.add(rights);//11
+        attrList.add(creator);//12
+        attrList.add(tn);//13
+        attrList.add(oclc);//14
+        
+        
+        */
+    	
+	 
+		  
+		  
+		for(List<String> r : rows) {
+			
+			r.add("1");//batch_number
+			r.add(ownerUserId);	 //owner_userid
+			r.add("select books");//state
+			// replace special chars
+			int i = -1;
+			for(String x : r) {
+				i++;
+				//System.out.println(x);
+				if(x.contains("\n"))
+				{
+					x = x.replace("\n", " "); //was \\n and others, but they all just messed up the onclick js calling code
+					r.set(i, x);
+				}
+				if(x.contains("'"))
+				{
+					x = x.replace("'", "\\'");
+					r.set(i, x);
+				}
+				if(x.contains("\""))
+				{
+					x = x.replace("\"", "\\'");
+					r.set(i, x);
+				}
+			}
+		}
+		//List<List<String>> rowx = new ArrayList();
+		//rowx.add(rows.get(0));
+		//rows = rowx;
+	    insertBatch("internetarchive_working", new String[]{"is_selected",  "bibcheck", "title", "image_Count", "language", "publish_date", "identifier", "subject", "description", "publisher", "licenseurl", "rights", "author", "tn", "oclc", "batch_Number", "owner_userid", "state"}, new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR }, rows); 
+
+    }
+ 
+    public List<List> getInternetArchiveWorkingBooksStateSelectBooks(String userId){
+    	return getInternetArchiveWorkingBooks(userId, InternetArchiveService.statusSelectBooks);
+    	
+    }
+    public List<List> getInternetArchiveWorkingBooksStateVerifyBooks(String userId){
+    	return getInternetArchiveWorkingBooks2(userId, InternetArchiveService.statusVerifyBooks); 
+    	
+    }
+
+    public List<List> getInternetArchiveWorkingBooksStatePreDownloadBooks(String userId){
+    	return getInternetArchiveWorkingBooks2(userId, InternetArchiveService.statusPreDownloadBooks); 
+    	
+    }
+    public List<List> getInternetArchiveWorkingBooksStateDownloadNotStartedBooks(String userId){
+    	return getInternetArchiveWorkingBooks2(userId, InternetArchiveService.statusDownloadNotStartedBooks); 
+    }
+    public List<List> getInternetArchiveWorkingBooksStateAnyDownloadBooks(String userId){
+    	String allDownloadStates = "";
+    	for(String s : InternetArchiveService.allDownloadStates) {
+    		allDownloadStates += "'" + s + "', ";
+    	}
+    	
+    	allDownloadStates = allDownloadStates.substring(0, allDownloadStates.length()-2);
+    	
+    	return getInternetArchiveWorkingBooks4(userId, allDownloadStates); 
+    	
+    } 
+     
+    private List<List> getInternetArchiveWorkingBooks(String userId, String state){
+    	if(state.startsWith("'") == false) {
+    		state = "'" + state + "'";
+    	}
+    	 
+    	
+    	List<List> rows;
+    
+    	//if one of the download states, then get all rows in any of those states
+    	String extraColumns = "";
+    	/*if(state.contains(InternetArchiveService.allDownloadStates[0]) || state.contains(InternetArchiveService.statusInsertTfdb)) {//hack to see if a download state
+    			//not used anymoreextraColumns = " STATE, START_DATE, END_DATE, FOLDER, ";
+      	}else {
+      		extraColumns = "   ";
+      	}*/
+    	
+    	if(userId != null) {
+		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, DNP, u.name  from internetarchive_working, users u " +
+		   " where u.id = owner_userid and  owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}else {
+    		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, DNP, u.name   from internetarchive_working, users u  " +
+    				   " where  where u.id = owner_userid and   state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}
+		
+		//truncate for html page
+		/*for(List<String> r: rows) {
+			if(r.get(2).length() > 33) {
+				r.set(2, r.get(2).substring(0, 30) + "...");
+			}
+			if(r.get(3).length() > 33) {
+				r.set(3, r.get(3).substring(0, 30) + "...");
+			}
+			if(r.get(7).length() > 33) {
+				r.set(7, r.get(7).substring(0, 30) + "...");
+			}
+			if(r.get(8).length() > 33) {
+				r.set(8, r.get(8).substring(0, 30) + "...");
+			}
+			if(r.get(9).length() > 33) {
+				r.set(9, r.get(9).substring(0, 30) + "...");
+			}
+			if(r.get(11).length() > 33) {
+				r.set(11, r.get(11).substring(0, 30) + "...");
+			}
+		}*/
+		/* replace special chars
+		for(List<String> r : rows) {
+			int i = -1;
+			for(String x : r) {
+				i++;
+				System.out.println(x);
+				if(x.contains("\n"))
+				{
+					x = x.replace("\n", "\\n");
+					r.set(i, x);
+				}
+				if(x.contains("'"))
+				{
+					x = x.replace("'", "\\'");
+					r.set(i, x);
+				}
+				if(x.contains("\""))
+				{
+					x = x.replace("\"", "\\'");
+					r.set(i, x);
+				}
+			}
+		}
+		*/
+		return rows;
 	
+    }
+ 
+    //same as 1, but with extra column
+    private List<List> getInternetArchiveWorkingBooks2(String userId, String state){
+    	if(state.startsWith("'") == false) {
+    		state = "'" + state + "'";
+    	}
+    	 
+    	
+    	List<List> rows;
+    
+    	//if one of the download states, then get all rows in any of those states
+    	String extraColumns = "";
+    	if(state.contains(InternetArchiveService.allDownloadStates[0]) || state.contains(InternetArchiveService.statusInsertTfdb)) {//hack to see if a download state
+    			extraColumns = " STATE, START_DATE, END_DATE, FOLDER, ";
+      	}else {
+      		extraColumns = "  ";
+      	}
+    	
+    	if(userId != null) {
+		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name   from internetarchive_working, users u  " +
+		   " where  u.id = owner_userid and owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}else {
+    		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name   from internetarchive_working, users u  " +
+    				   " where u.id = owner_userid and  state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}
+		
+		//truncate for html page
+		/*for(List<String> r: rows) {
+			if(r.get(2).length() > 33) {
+				r.set(2, r.get(2).substring(0, 30) + "...");
+			}
+			if(r.get(3).length() > 33) {
+				r.set(3, r.get(3).substring(0, 30) + "...");
+			}
+			if(r.get(7).length() > 33) {
+				r.set(7, r.get(7).substring(0, 30) + "...");
+			}
+			if(r.get(8).length() > 33) {
+				r.set(8, r.get(8).substring(0, 30) + "...");
+			}
+			if(r.get(9).length() > 33) {
+				r.set(9, r.get(9).substring(0, 30) + "...");
+			}
+			if(r.get(11).length() > 33) {
+				r.set(11, r.get(11).substring(0, 30) + "...");
+			}
+		}*/
+		/* replace special chars
+		for(List<String> r : rows) {
+			int i = -1;
+			for(String x : r) {
+				i++;
+				System.out.println(x);
+				if(x.contains("\n"))
+				{
+					x = x.replace("\n", "\\n");
+					r.set(i, x);
+				}
+				if(x.contains("'"))
+				{
+					x = x.replace("'", "\\'");
+					r.set(i, x);
+				}
+				if(x.contains("\""))
+				{
+					x = x.replace("\"", "\\'");
+					r.set(i, x);
+				}
+			}
+		}
+		*/
+		return rows;
+	
+    }
+  //same as 2, but with extra column
+    private List<List> getInternetArchiveWorkingBooks3(String userId, String state){
+    	if(state.startsWith("'") == false) {
+    		state = "'" + state + "'";
+    	}
+    	 
+    	
+    	List<List> rows;
+    
+    	//if one of the download states, then get all rows in any of those states
+    	String extraColumns = " STATE, START_DATE, END_DATE, FOLDER, IS_SELECTED, ";
+    	
+    	if(userId != null) {
+		rows = getJdbcTemplate().query("select " + extraColumns + " BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name   from internetarchive_working, users u  " +
+		   " where  u.id = owner_userid and  owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}else {
+    		rows = getJdbcTemplate().query("select " + extraColumns + " BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name   from internetarchive_working, users u  " +
+    				   " where  u.id = owner_userid and state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}
+		
+		//truncate for html page
+		/*for(List<String> r: rows) {
+			if(r.get(2).length() > 33) {
+				r.set(2, r.get(2).substring(0, 30) + "...");
+			}
+			if(r.get(3).length() > 33) {
+				r.set(3, r.get(3).substring(0, 30) + "...");
+			}
+			if(r.get(7).length() > 33) {
+				r.set(7, r.get(7).substring(0, 30) + "...");
+			}
+			if(r.get(8).length() > 33) {
+				r.set(8, r.get(8).substring(0, 30) + "...");
+			}
+			if(r.get(9).length() > 33) {
+				r.set(9, r.get(9).substring(0, 30) + "...");
+			}
+			if(r.get(11).length() > 33) {
+				r.set(11, r.get(11).substring(0, 30) + "...");
+			}
+		}*/
+		/* replace special chars
+		for(List<String> r : rows) {
+			int i = -1;
+			for(String x : r) {
+				i++;
+				System.out.println(x);
+				if(x.contains("\n"))
+				{
+					x = x.replace("\n", "\\n");
+					r.set(i, x);
+				}
+				if(x.contains("'"))
+				{
+					x = x.replace("'", "\\'");
+					r.set(i, x);
+				}
+				if(x.contains("\""))
+				{
+					x = x.replace("\"", "\\'");
+					r.set(i, x);
+				}
+			}
+		}
+		*/
+		return rows;
+	
+    }
+
+    //same as 1, but with extra column
+    private List<List> getInternetArchiveWorkingBooks4(String userId, String state){
+    	if(state.startsWith("'") == false) {
+    		state = "'" + state + "'";
+    	}
+    	 
+    	
+    	List<List> rows;
+    
+    	//if one of the download states, then get all rows in any of those states
+    	String extraColumns = "";
+    	if(state.contains(InternetArchiveService.allDownloadStates[0]) || state.contains(InternetArchiveService.statusInsertTfdb)) {//hack to see if a download state
+    			extraColumns = " STATE, START_DATE, END_DATE, FOLDER, ";
+      	}else {
+      		extraColumns = "  ";
+      	}
+    	
+    	if(userId != null) {
+		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name, trim(state_error)   from internetarchive_working, users u  " +
+		   " where  u.id = owner_userid and owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}else {
+    		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name, trim(state_error)  from internetarchive_working, users u  " +
+    				   " where u.id = owner_userid and  state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}
+		
+		//truncate for html page
+		/*for(List<String> r: rows) {
+			if(r.get(2).length() > 33) {
+				r.set(2, r.get(2).substring(0, 30) + "...");
+			}
+			if(r.get(3).length() > 33) {
+				r.set(3, r.get(3).substring(0, 30) + "...");
+			}
+			if(r.get(7).length() > 33) {
+				r.set(7, r.get(7).substring(0, 30) + "...");
+			}
+			if(r.get(8).length() > 33) {
+				r.set(8, r.get(8).substring(0, 30) + "...");
+			}
+			if(r.get(9).length() > 33) {
+				r.set(9, r.get(9).substring(0, 30) + "...");
+			}
+			if(r.get(11).length() > 33) {
+				r.set(11, r.get(11).substring(0, 30) + "...");
+			}
+		}*/
+		/* replace special chars
+		for(List<String> r : rows) {
+			int i = -1;
+			for(String x : r) {
+				i++;
+				System.out.println(x);
+				if(x.contains("\n"))
+				{
+					x = x.replace("\n", "\\n");
+					r.set(i, x);
+				}
+				if(x.contains("'"))
+				{
+					x = x.replace("'", "\\'");
+					r.set(i, x);
+				}
+				if(x.contains("\""))
+				{
+					x = x.replace("\"", "\\'");
+					r.set(i, x);
+				}
+			}
+		}
+		*/
+		return rows;
+	
+    }
+
+    public List<List> getInternetArchiveWorkingBooksStateAnyDownloadBooksExceptComplete(String userId){
+    	String allDownloadStates = generateQuotedListStringFromArray(InternetArchiveService.allDownloadStatesExceptComplete);
+    	
+    	return getInternetArchiveWorkingBooks2(userId, allDownloadStates); 
+    }
+    
+    public List<List>  getInternetArchiveWorkingBooksStateInsertTfdb(String userId){
+    	return getInternetArchiveWorkingBooks3(userId, InternetArchiveService.statusInsertTfdb); 
+    }
+    
+    
+    
+    public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String user) {
+    	 
+    		
+    	//first do a dupe check
+    	List<List> dupe = getJdbcTemplate().query("select tn, oclc_number from book " +
+    			   " where  (tn = '" + tn + "' and tn != '') or (oclc_number = '" + oclc + "' and oclc_number != '') " ,  new StringXRowMapper());
+    	if(dupe.size()>0) {
+    		String dupeTn = (String) dupe.get(0).get(0);
+    		return "Error, book with same TN or OCLC already exists in TFDB: " + dupeTn;
+    	}
+    	
+    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ? where identifier = ?  ";
+    	if(addToFs.equals("true"))
+    		addToFs = "T";
+    	else
+    		addToFs = "F";
+    	
+    	if(dnp.equals("true"))
+    		dnp = "T";
+    	else
+    		dnp = "F";
+    	
+		int count = getJdbcTemplate().update(sql1, addToFs, oclc, tn, dnp, bookId);	
+
+		if(count != 1) {
+			return "Error, book identifier not found";
+		}
+		return null;
+    }
+
+    public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String user) {
+    	String sql1 = "UPDATE internetarchive_working SET is_selected = ? where identifier = ?  ";
+    	if(addToFs.equals("true"))
+    		addToFs = "T";
+    	else
+    		addToFs = "F";
+    	
+		int count = getJdbcTemplate().update(sql1, addToFs, bookId);	
+
+		if(count != 1) {
+			return "error, not found";
+		}
+		return null;
+    }
+    
+
+    public void deleteInternetArchiveWorkingBooks(List<String> identifier) {
+    	if(identifier.size()==0)
+    		return;
+    	String sql1; 
+    	int count = 0;
+    	String inClause = generateQuotedListString(identifier);
+     
+    	sql1 = "DELETE FROM internetarchive_working where identifier in ( " + inClause + " ) ";
+    	count = getJdbcTemplate().update(sql1);
+     
+    	 
+    	
+    }
+    
+    private void deleteInternetArchiveWorkingBooks(String state, String ownerUserId) {
+    	String sql1; 
+    	int count = 0;
+    	
+    	if(ownerUserId != null) {
+    		sql1 = "DELETE FROM internetarchive_working where state = ? and  OWNER_USERID = ? and IS_SELECTED != 'T' ";
+    		count = getJdbcTemplate().update(sql1, state, ownerUserId);
+    	}else {
+    		sql1 = "DELETE FROM internetarchive_working where state = ?  and IS_SELECTED != 'T' ";
+    		count = getJdbcTemplate().update(sql1, state);
+    	}
+    	 
+    	
+    }
+
+    public void deleteInternetArchiveWorkingBooksAnyDownloadingState( ) {
+    	String sql1; 
+    	int count = 0;
+    	
+    	String inClause = generateQuotedListStringFromArray(InternetArchiveService.allDownloadStates);
+
+    		sql1 = "DELETE FROM internetarchive_working where state in ( " + inClause +  " ) ";
+    		count = getJdbcTemplate().update(sql1);
+     
+    	 
+    	
+    }
+    
+    public void deleteInternetArchiveWorkingBooksStateSelectBooks(String ownerUserId) {
+    	deleteInternetArchiveWorkingBooks( InternetArchiveService.statusSelectBooks, ownerUserId);
+    }
+    public void deleteInternetArchiveWorkingBooksStateVerifyBooks(String ownerUserId) {
+    	deleteInternetArchiveWorkingBooks(InternetArchiveService.statusVerifyBooks, ownerUserId);
+    }
+    public void deleteInternetArchiveWorkingBooksStatePreDownloadBooks(String ownerUserId) {
+    	deleteInternetArchiveWorkingBooks(InternetArchiveService.statusPreDownloadBooks, ownerUserId);
+    }
+    public void deleteInternetArchiveWorkingBooksStateDownloadCompleteBooks(String ownerUserId) {
+    	deleteInternetArchiveWorkingBooks(InternetArchiveService.statusCompleteDownloadAndXml, ownerUserId);
+    }
+    
+    public void updateInternetArchiveWorkingBooksChangeStateVerifyBooks(String userId, String site){
+    	 updateInternetArchiveWorkingBooksChangeState2(InternetArchiveService.statusSelectBooks, InternetArchiveService.statusVerifyBooks, userId, site);
+    }
+    
+    public void updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(String userId){
+    	 updateInternetArchiveWorkingBooksChangeState(InternetArchiveService.statusVerifyBooks, InternetArchiveService.statusPreDownloadBooks, userId);
+    }
+    public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooks(String userId){
+    	updateInternetArchiveWorkingBooksChangeState( InternetArchiveService.statusPreDownloadBooks, InternetArchiveService.statusDownloadNotStartedBooks, userId);
+    }
+    
+    public String updateInternetArchiveWorkingBookToState(String bookId, String state) {
+
+  
+        String sql1; 
+       
+        	
+      
+    		sql1 = "UPDATE internetarchive_working SET state = ? where identifier = ? ";
+    		getJdbcTemplate().update(sql1, state, bookId);
+    		return null;
+    	     
+    }
+    
+    private void updateInternetArchiveWorkingBooksChangeState(String fromState, String toState, String userId){
+    	String sql1; 
+    	int count = 0;
+    	
+    	if(userId != null) {
+    		sql1 = "UPDATE internetarchive_working SET state = ? where state = ? and OWNER_USERID = ? and is_selected = ?";
+    		count = getJdbcTemplate().update(sql1, toState, fromState, userId, "T");
+    	}else {
+    		sql1 = "UPDATE internetarchive_working SET state = ? where state = ?   and is_selected = ?";
+    		count = getJdbcTemplate().update(sql1, toState, fromState,  "T");
+    	}
+    }
+    
+    private void updateInternetArchiveWorkingBooksChangeState2(String fromState, String toState, String userId, String site){
+    	String sql1; 
+    	int count = 0;
+    	
+    	if(userId != null) {
+    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ? where state = ? and OWNER_USERID = ? and is_selected = ?";
+    		count = getJdbcTemplate().update(sql1,  toState, site, fromState, userId, "T");
+    	}else {
+    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ? where state = ?   and is_selected = ?";
+    		count = getJdbcTemplate().update(sql1,  toState, site, fromState,  "T");
+    	}
+    }
+    
+    //change states while in process of downloading and xml generating etc
+    public void updateInternetArchiveWorkingBooksChangeStateDownloadX(String bookId, String[] fromStates, String toState, String folder){
+    	String sql1; 
+    	int count = 0;
+    	String inClause = generateQuotedListStringFromArray(fromStates);
+    	if(toState.equals(InternetArchiveService.statusDownloadStartedBooks)) {
+    		sql1 = "UPDATE internetarchive_working SET state = ?, start_date = current_timestamp, folder = ? where identifier = ? and state in ( " + inClause + " ) ";
+    		count = getJdbcTemplate().update(sql1, toState, folder, bookId );
+    	}else if(toState.equals(InternetArchiveService.statusCompleteDownloadAndXml)) {
+    		sql1 = "UPDATE internetarchive_working SET state = ?, end_date = current_timestamp, folder = ? where identifier = ? and state in ( " + inClause + " ) ";
+    		count = getJdbcTemplate().update(sql1, toState, folder, bookId  );
+    	}else {
+    		sql1 = "UPDATE internetarchive_working SET state = ?, folder = ? where identifier = ? and state in ( " + inClause + " ) ";
+    		count = getJdbcTemplate().update(sql1, toState, folder, bookId );
+    	}
+    }
+    public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooksFromAnyDownloadingState(String userId) {
+    	String inClause = generateQuotedListStringFromArray(InternetArchiveService.allDownloadStates);
+    	//update to not-yet-started if DNP=f
+    	 
+	   	String sql1 = "UPDATE internetarchive_working SET state = ?, start_date = null, end_date = null, folder = null where state in  ( " + inClause + " )  and (dnp != 'T' or dnp is null)  ";
+		getJdbcTemplate().update(sql1, InternetArchiveService.statusDownloadNotStartedBooks);
+
+		//update to complete if DNP=t
+	   	sql1 = "UPDATE internetarchive_working SET state = ?, start_date = null, end_date = null, folder = null where state in ( " + inClause + " )  and dnp = 'T' ";
+		getJdbcTemplate().update(sql1, InternetArchiveService.statusCompleteDownloadAndXml);
+
+		
+    }
+    
+
+    public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooksFromAnyDownloadingStateExceptComplete(String userId) {
+    	String inClause = generateQuotedListStringFromArray(InternetArchiveService.allDownloadStatesExceptComplete);
+    	//update to not-yet-started if DNP=f
+    	 
+	   	String sql1 = "UPDATE internetarchive_working SET state = ?, start_date = null, end_date = null, folder = null where state in  ( " + inClause + " )  and (dnp != 'T' or dnp is null)  ";
+		getJdbcTemplate().update(sql1, InternetArchiveService.statusDownloadNotStartedBooks);
+
+		//update to complete if DNP=t
+	   	sql1 = "UPDATE internetarchive_working SET state = ?, start_date = null, end_date = null, folder = null where state in ( " + inClause + " )  and dnp = 'T' ";
+		getJdbcTemplate().update(sql1, InternetArchiveService.statusCompleteDownloadAndXml);
+
+		
+    }
+    
+    public void updateInternetArchiveWorkingBooksChangeStateReadyInsertTfdbBooks(String userId) {
+    	updateInternetArchiveWorkingBooksChangeState( InternetArchiveService.statusCompleteDownloadAndXml, InternetArchiveService.statusInsertTfdb, userId);//ready to insert into tfdb
+    }
+    
+    @Override
+    public void updateInternetArchiveWorkingBooksChangeStateCompleteBooks(String userId, String driveName, String driveNumber, InternetArchiveService iaService) {
+    	//insert into tfdb books table
+    	//skip scan/process steps (done already via date_release!=null)
+    	//update state complete
+    	internetArchiveWorkingBooksInsertIntoTfdb( userId, driveName, driveNumber, iaService );//ready to insert into tfdb	
+    }
+    
+	public void updateInternetArchiveWorkingBooksError(String bookId, String err) {
+	 
+		err = err.replace("\n", "");
+		err = err.replace("\r", "");
+	   	String sql1 = "UPDATE internetarchive_working SET state_error = ?  where identifier = ? ";
+		getJdbcTemplate().update(sql1, err, bookId);
+
+	}
+	
+	public void updateInternetArchiveWorkingBooksStateDownloadNotStartedBooksErrorMsg(String msg) {
+		String sql1 = "UPDATE internetarchive_working SET state_error = ?  where state = ? ";
+		getJdbcTemplate().update(sql1, msg, InternetArchiveService.statusDownloadNotStartedBooks);
+	}
+	
+    private void internetArchiveWorkingBooksInsertIntoTfdb(String userId, String driveName, String driveNumber, InternetArchiveService iaService) {
+    
+		// next insert into trackingform db 
+       			  
+	    String sql = "INSERT into book ( tn, title, author, language , num_of_pages, publisher_original, " 
+	    		+ " priority_item, withdrawn, digital_copy_only, batch_class, scanned_by, pdf_ready, date_released, compression_code, "
+	    		+ " pdf_orem_archived_date, pdf_orem_drive_serial_num, pdf_orem_drive_name, site, secondary_identifier, oclc_number, owning_institution, property_right, "
+	    		+ "  scan_ia_complete_date, dnp ) "
+				+ " SELECT tn, title, author,  CASE WHEN language ='' THEN null ELSE language END , cast( CASE WHEN image_count='' THEN null ELSE image_count END as int), publisher, "
+	    		+ " 'F', 'F', 'F', 'Internet Archives (IA)', site, current_timestamp, current_timestamp, 'Iarchive',  "
+				+ " current_timestamp, ?, ?, 'Internet Archives (IA)', identifier, oclc, 'Internet Archives (IA)',  'Public Domain', "
+	    		+ " current_timestamp,  CASE WHEN dnp='T' THEN 'T' ELSE null END  "
+				+ " from internetarchive_working " 
+	    		+ " where is_selected = 'T' and state = ?";
+	    getJdbcTemplate().update(sql, driveNumber, driveName, InternetArchiveService.statusInsertTfdb);
+		 
+		
+		//next update timestamp and state to complete
+		sql = "UPDATE internetarchive_working SET state = ?,  complete_date = CURRENT_TIMESTAMP where  is_selected = 'T'  and state = ?";
+		getJdbcTemplate().update(sql, InternetArchiveService.statusComplete, InternetArchiveService.statusInsertTfdb);
+
+		//delete folders of any not inserted
+		sql = "SELECT identifier, folder from internetarchive_working where state = ? and  is_selected = 'F' ";
+		Object[] oArgs =  {InternetArchiveService.statusInsertTfdb};
+		List<List> rows = getJdbcTemplate().query(sql, oArgs, new StringXRowMapper());
+		for(List<String> r : rows) {
+			String path = r.get(1);
+			String id = r.get(0);
+			String pdfDir;
+			String xmlDir;
+			if(path != null && !path.equals("")) {
+				pdfDir = path + "/dcms/assets/" + id;
+				iaService.deleteFolder(new File(pdfDir));
+				xmlDir = path + "/dcms/metadata/ldssip/" + id + ".sip.xml";
+				iaService.deleteFolder(new File(xmlDir));
+			}
+		}
+		
+		
+		//next delete any not inserted
+		sql = "DELETE from internetarchive_working where state = ? and  is_selected = 'F' ";
+		getJdbcTemplate().update(sql,   InternetArchiveService.statusInsertTfdb);
+		
+		
+    } 
+    
+    
 	//non book sql start
 
 	/* (non-Javadoc)

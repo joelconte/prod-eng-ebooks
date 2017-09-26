@@ -67,7 +67,7 @@ public class UserAdminController  implements MessageSourceAware{
 
 	//do update/create
 	@RequestMapping(value="admin/userAdmin", params="save", method=RequestMethod.POST)
-	public String doUserSave(User user, String userIdNew, String userIdOriginal, String search, String metadata, String scan, String process, String admin, String supervisor, String doCreate, Model model) {
+	public String doUserSave(User user, String userIdNew, String userIdOriginal, String search, String metadata, String scan, String process, String admin, String supervisor, String ia, String ia_admin, String doCreate, Model model) {
 		
 		List<String> auths = new ArrayList<String>();
 		 
@@ -83,7 +83,11 @@ public class UserAdminController  implements MessageSourceAware{
 			auths.add("supervisor");
 		if(admin != null && !admin.equals(""))
 			auths.add("admin");
-			
+		if(ia != null && !ia.equals(""))
+			auths.add("ia");
+		if(ia_admin != null && !ia_admin.equals(""))
+			auths.add("ia_admin");
+		
 		user.setAuthorities(auths);
 		user.setUserId(userIdNew);//to get dropdown to show current user, had to not use spring mvc path in tag, set var here
 		
