@@ -105,7 +105,7 @@
 		<sec:intercept-url pattern="/xmlMetadata/getTn/**" access="permitAll"/>
 		<sec:intercept-url pattern="/xmlMetadata/getCatalogingBySecondaryId/**" access="permitAll"/> 
 		<sec:intercept-url pattern="/xmlMetadata/getIACountTotal/**" access="permitAll"/>
-		<sec:intercept-url pattern="/**" access="isAuthenticated() and hasAnyRole( 'admin', 'supervisor', 'scan', 'process', 'metadata', 'search')" />
+		<sec:intercept-url pattern="/**" access="isAuthenticated() and hasAnyRole( 'admin', 'supervisor', 'scan', 'process', 'metadata', 'search', 'ia', 'ia_admin')" />
   		<sec:http-basic/>
 	
 		<sec:access-denied-handler error-page="/errors/accessDenied" />

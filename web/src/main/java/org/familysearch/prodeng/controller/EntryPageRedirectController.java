@@ -39,8 +39,12 @@ public class EntryPageRedirectController {
 			return "redirect:admin/switchboard"; 
 		else if("supervisor".equals(u.getEntryPage()))
 			return "redirect:admin/switchboard"; 
-		else if("asearch".equals(u.getEntryPage()))
+		else if("search".equals(u.getEntryPage()))
 			return "redirect:search/switchboard"; 
+		else if("ia".equals(u.getEntryPage()))
+			return "redirect:ia/switchboard"; 
+		else if("ia_admin".equals(u.getEntryPage()))
+			return "redirect:ia/switchboard"; 
 		else	
 			return "redirect:admin/switchboard"; 
 	}
