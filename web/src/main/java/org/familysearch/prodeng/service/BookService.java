@@ -337,6 +337,8 @@ public interface BookService {
  
 	
 	public Set<String> doBibcheck(String inClause);
+
+    public List<String> getInternetArchiveWorkingBookById(String identifier);
 	public Set<String> getIneternetArchiveBooksInProcess(String inClause);
 	public void insertInternetArchiveSearchedBooks(List<List<String>> rows, String ownerUserId);
 	

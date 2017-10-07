@@ -8455,6 +8455,23 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
             return dupeSet;
     }
 
+    public List<String> getInternetArchiveWorkingBookById(String identifier){
+      
+    	List<List> row; 
+    
+
+    	row = getJdbcTemplate().query("select  IS_SELECTED, BIBCHECK, TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, SITE, BATCH_NUMBER, OWNER_USERID, " +
+    			       " STATE, STATE_ERROR, START_DATE, END_DATE, FOLDER,  COMPLETE_DATE, DNP   from internetarchive_working  " +
+    				   " where identifier = '" + identifier + "' " , new  StringXRowMapper());
+		  
+    	if(row.size()>0)
+    		return row.get(0);
+    	else
+    		return null;
+	
+    }
+    
    
     public Set<String> getIneternetArchiveBooksInProcess(String inClause){
 		Set<String> dupeSet = new HashSet<String>();
@@ -8505,18 +8522,25 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				if(x.contains("\n"))
 				{
 					x = x.replace("\n", " "); //was \\n and others, but they all just messed up the onclick js calling code
-					r.set(i, x);
+				 
 				}
+				if(x.contains("\u00a0"))
+				{
+					//apple_-_1988_hotmail_1_20161028 has 00a0 char that messes up overlay population
+					x = x.replace("\u00a0", "");  
+					 
+				}/*
 				if(x.contains("'"))
 				{
 					x = x.replace("'", "\\'");
-					r.set(i, x);
+					 
 				}
 				if(x.contains("\""))
 				{
 					x = x.replace("\"", "\\'");
-					r.set(i, x);
-				}
+					 
+				}*/
+				r.set(i, x);
 			}
 		}
 		//List<List<String>> rowx = new ArrayList();

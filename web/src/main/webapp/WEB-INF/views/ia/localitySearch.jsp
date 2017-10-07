@@ -212,7 +212,7 @@ function doIaSearch(){
 
 	  <%@include file="/WEB-INF/views/includes/iaMenu.html"%>
       <h1 class="serif">${pageTitle}</h1>
-	   
+	    <security:authorize access="hasAnyRole('ia', 'ia_admin', 'admin')">  
 		<sf:form id="f1" style="margin: 0 0 60px 0;" class="" name="localitySearch"  onsubmit=""  method="post" action="" >
 			<div class="trackingFormTop1">
 		 		<button id="startLocalitySearch" name="startLocalitySearch" value="startLocalitySearch" onclick="doLocalitySearch1(); return false;">${messages['ia.startLocalitySearch']}</button>
@@ -280,7 +280,10 @@ function doIaSearch(){
 		 	
 		 
 		</sf:form>
-	  		
+	    </security:authorize>
+	    <security:authorize access="hasAnyRole('ia', 'ia_admin', 'admin') == false">
+ 			<p>${messages['ia.notAuthorized']}</p>
+ 		</security:authorize>	
 		      
     </div>
  

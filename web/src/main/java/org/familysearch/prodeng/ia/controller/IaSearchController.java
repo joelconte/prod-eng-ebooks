@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
@@ -439,6 +440,76 @@ public class IaSearchController implements MessageSourceAware{
 	}  
 		
 
+	//ajax query book data for overlay
+	@RequestMapping(value="ia/queryAjaxBookData",  method=RequestMethod.POST)
+	public  HttpEntity<byte[]> queryAjaxBookData( String identifier, HttpServletRequest req, Locale locale, Principal principal ) {		
+		String err = null;
+		StringBuffer sb = new StringBuffer();
+		 
+		List<String> row = bookService.getInternetArchiveWorkingBookById(identifier);//for now all users' books
+		  
+		//convert list to xml string
+		sb.append("<rows>");
+		
+		//escape values for html
+		sb.append("<row><identifier>" + identifier + "</identifier>");
+		sb.append("<IS_SELECTED>" + row.get(0) + "</IS_SELECTED>");
+		sb.append("<BIBCHECK>" + row.get(1) + "</BIBCHECK>");
+		sb.append("<TITLE>" + StringEscapeUtils.escapeXml( row.get(2)) +  "</TITLE>"); 
+		sb.append("<IMAGE_COUNT>" + row.get(3) + "</IMAGE_COUNT>");
+		sb.append("<LANGUAGE>" + StringEscapeUtils.escapeXml(row.get(4)) + "</LANGUAGE>");
+		sb.append("<PUBLISH_DATE>" + row.get(5) + "</PUBLISH_DATE>");
+		sb.append("<SUBJECT>" +  StringEscapeUtils.escapeXml(row.get(6)) + "</SUBJECT>");
+		sb.append("<DESCRIPTION>" + StringEscapeUtils.escapeXml(row.get(7)) + "</DESCRIPTION>");
+		sb.append("<PUBLISHER>" + StringEscapeUtils.escapeXml(row.get(8)) + "</PUBLISHER>");
+		sb.append("<LICENSEURL>" + StringEscapeUtils.escapeXml(row.get(9)) + "</LICENSEURL>");
+		sb.append("<RIGHTS>" + StringEscapeUtils.escapeXml(row.get(10)) + "</RIGHTS>");
+		sb.append("<AUTHOR>" + StringEscapeUtils.escapeXml(row.get(11)) + "</AUTHOR>");
+		sb.append("<OCLC>" + StringEscapeUtils.escapeXml(row.get(12)) + "</OCLC>");
+		sb.append("<TN>" + StringEscapeUtils.escapeXml(row.get(13)) + "</TN>");
+		sb.append("<SITE>" + StringEscapeUtils.escapeXml(row.get(14)) + "</SITE>");
+		sb.append("<BATCH_NUMBER>" + StringEscapeUtils.escapeXml(row.get(15)) + "</BATCH_NUMBER>");
+		sb.append("<OWNER_USERID>" + StringEscapeUtils.escapeXml(row.get(16)) + "</OWNER_USERID>");
+		sb.append("<STATE>" + row.get(17) + "</STATE>");
+		sb.append("<STATE_ERROR>" + row.get(18) + "</STATE_ERROR>");
+		sb.append("<START_DATE>" + row.get(19) + "</START_DATE>");
+		sb.append("<END_DATE>" + row.get(20) + "</END_DATE>");
+		sb.append("<FOLDER>" + StringEscapeUtils.escapeXml(row.get(21)) + "</FOLDER>");
+		sb.append("<COMPLETE_DATE>" + row.get(22) + "</COMPLETE_DATE>");
+		sb.append("<DNP>" + row.get(23) + "</DNP>");
+
+		sb.append("</row>");
+		sb.append("</rows>");
+
+		/*
+		sb.append("<rows><row><identifier>1111</identifier>");
+		sb.append("<state>2222</state>");
+		sb.append("<start_date>3333</start_date>");
+		sb.append("<end_date>4444</end_date></row>");
+		sb.append("<row><identifier>bb1111</identifier>");
+		sb.append("<state>bb2222</state>");
+		sb.append("<start_date>bb3333</start_date>");
+		sb.append("<end_date>bb4444</end_date></row></rows>");
+*/
+		
+		byte[] documentBody;
+		if(err !=  null) {
+			documentBody = err.getBytes();
+		}else {
+			documentBody =   sb.toString().getBytes();
+		}
+		
+		//byte[] documentBody = null;
+		String localityStr = null;
+		 
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(new MediaType("application", "xml"));
+		header.setContentLength(documentBody.length);
+		return new HttpEntity<byte[]>(documentBody, header);
+	 
+	}  
+		
+
 	//re-run downloads in Monitor page in case of some error
 	@RequestMapping(value="ia/iaDoBooksDownloadRedo",  method=RequestMethod.POST)
 	public String doIaDoBooksDownloadRedoGet( HttpServletRequest req, Locale locale, Principal principal ) {		
@@ -473,7 +544,7 @@ public class IaSearchController implements MessageSourceAware{
 		//return "redirect:iaImportBooks";
 	}  
 
-	//re-run downloads - don't restart any in xml adn pdf complete state
+	//re-run downloads - don't restart any in "xml and pdf complete" state
 	@RequestMapping(value="ia/iaDoBooksDownloadRedo2",  method=RequestMethod.POST)
 	public String doIaDoBooksDownloadRedo2Get( HttpServletRequest req, Locale locale, Principal principal ) {		
 	 

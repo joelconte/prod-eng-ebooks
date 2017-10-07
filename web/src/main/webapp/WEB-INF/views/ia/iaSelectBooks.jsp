@@ -17,7 +17,7 @@ div#overlay2{
 	left: 0px;
 	text-align: center;
 }
-
+ 
 div#specialBox2{
     background: none repeat scroll 0 0 transparent;
     
@@ -89,49 +89,18 @@ window.onload=function(){
 <c:set var="maxFieldLen" value="75"/>
 var maxFieldLen = <c:out value = "${maxFieldLen}"/>;
 
-function showDetailsOverlay(selectedRow, selected, bibCheck, identifier, title, imageCount, language, publishDate, subject, description, publisher, licenseUrl, rights, author, oclc, tn, dnp){
-	//!!since we can update selected, tn, and oclc, need to get from table since they may have been updated.  Assume lengths shown in table do not cut off any part.
-	
+function showDetailsOverlay(selectedRow, identifier){
+ 	 
 	
 	///////////set values
 	var hiddenField = document.getElementById('ol_selectedId');
 	hiddenField.value= 'cell' + selectedRow;// + '_0';//column 0 has 'add to fs' field //save in hidden area in order to update when closing overlay
 	
-	//get selected value dynamically from TD html since it may have changed via ajax after page initially loaded.
-	var selected = document.getElementById('cell' + selectedRow + '_0').innerHTML;
-	if(selected.trim() == 'T'){
-		document.getElementById('ol_selected').checked=true;
-		pdfChecked = true;//set to true since already selected
-	}else{
-		document.getElementById('ol_selected').checked=false;
-		pdfChecked = false;
-	}
+	////////////ajax call and set html values
+	queryAjaxBookData(identifier);//return map
 	
-	var oclc = document.getElementById('cell' + selectedRow + '_13').innerHTML.trim();
-	var tn = document.getElementById('cell' + selectedRow + '_14').innerHTML.trim();
+	//////////////
 	
-	var dnp = document.getElementById('cell' + selectedRow + '_15').innerHTML;
-	if(dnp.trim() == 'T'){
-		document.getElementById('ol_dnp').checked=true;
-	}else{
-		document.getElementById('ol_dnp').checked=false;
-	}
-	
-	
-	document.getElementById('ol_bibCheck').value=bibCheck;
-	document.getElementById('ol_identifier').value=identifier;
-	document.getElementById('ol_tn').value=tn;
-	document.getElementById('ol_oclc').value=oclc;
-	document.getElementById('ol_title').value=title;
-	document.getElementById('ol_imageCount').value=imageCount;
-	document.getElementById('ol_language').value=language;
-	document.getElementById('ol_publishDate').value=publishDate;
-	document.getElementById('ol_subject').value=subject;
-	document.getElementById('ol_description').value=description;
-	document.getElementById('ol_publisher').value=publisher;
-	document.getElementById('ol_licenseUrl').value=licenseUrl;
-	document.getElementById('ol_rights').value=rights;
-	document.getElementById('ol_author').value=author;
 	 
 	///////////display
 	var overlay = document.getElementById('overlay1');
@@ -171,6 +140,156 @@ function closeDetailsOverlayAndSave( ){
 	
 	
 	toggleOverlay();//close
+}
+
+
+function queryAjaxBookData(id){
+	 	
+	var u = document.URL;
+	var i = u.indexOf('/ia/');
+	u = u.substring(0, i) + "/ia/queryAjaxBookData";//"http://localhost:8180/BookScan-web/ia/localitySearch"
+	var request = $.ajax({
+	  url: u,
+	  type: "POST",
+	  dataType: "text",
+	  data: {"identifier" : id}
+	});
+
+	request.done(function(data) {
+	    if(data.indexOf('Info:') != -1){
+	    	//if error, show it here and don't keep refreshing
+	    	alert(data);
+	    	//setRefreshingIndicator(false);
+	    	return;
+	    }
+	    /*if(data != 'updated'){
+	    	alert("Error while updating database...please try again.  Value returned from server update: " + data);
+	    	return;
+	    }*/
+	    
+	    try{
+	    	/*	pend("<rows>");
+
+		sb.append("<row><identifier>" + identifier + "</identifier>");
+		sb.append("<IS_SELECTED>" + row.get(0) + "</IS_SELECTED>");
+		sb.append("<BIBCHECK>" + row.get(1) + "</BIBCHECK>");
+		sb.append("<TITLE>" + row.get(2) + "</TITLE>");
+		sb.append("<IMAGE_COUNT>" + row.get(3) + "</IMAGE_COUNT>");
+		sb.append("<LANGUAGE>" + row.get(4) + "</LANGUAGE>");
+		sb.append("<PUBLISH_DATE>" + row.get(5) + "</PUBLISH_DATE>");
+		sb.append("<SUBJECT>" + row.get(6) + "</SUBJECT>");
+		sb.append("<DESCRIPTION>" + row.get(7) + "</DESCRIPTION>");
+		sb.append("<PUBLISHER>" + row.get(8) + "</PUBLISHER>");
+		sb.append("<LICENSEURL>" + row.get(9) + "</LICENSEURL>");
+		sb.append("<RIGHTS>" + row.get(10) + "</RIGHTS>");
+		sb.append("<AUTHOR>" + row.get(11) + "</AUTHOR>");
+		sb.append("<OCLC>" + row.get(12) + "</OCLC>");
+		sb.append("<TN>" + row.get(13) + "</TN>");
+		sb.append("<SITE>" + row.get(14) + "</SITE>");
+		sb.append("<BATCH_NUMBER >" + row.get(15) + "</BATCH_NUMBER >");
+		sb.append("<OWNER_USERID >" + row.get(16) + "</OWNER_USERID >");
+		sb.append("<STATE >" + row.get(17) + "</STATE >");
+		sb.append("<STATE_ERROR >" + row.get(18) + "</STATE_ERROR >");
+		sb.append("<START_DATE >" + row.get(19) + "</START_DATE >");
+		sb.append("<END_DATE >" + row.get(20) + "</END_DATE >");
+		sb.append("<FOLDER >" + row.get(21) + "</FOLDER >");
+		sb.append("<COMPLETE_DATE >" + row.get(22) + "</COMPLETE_DATE >");
+		sb.append("<DNP >" + row.get(23) + "</DNP >");
+		sb.append("</row>");
+		sb.append("</rows>");
+				*/
+	    	 
+		//alert("ssssss" + data);
+			xmlDoc = $.parseXML(data);
+			$xml = $(xmlDoc);
+			var $row = $xml.find("row");
+			var retVal = {};
+			$row.each(function(){
+ 
+				var identifier = $(this).find('identifier').text().trim();
+			
+				//console.log('!!!!!!!!!!mapOfBooks in db ajax= ' + identifier);
+/*
+console.log("!!SSSSTTTARTTTidentifier" + identifier);
+if(identifier == 'Firestone_Company_Electric_Generating_Sets_Service_Manual_And_Parts_Catalog_' || identifier == 'Firestone_Service_Manual_And_Parts_Catalog_For_Bendix_Westinghouse_Tire_Servic'  || identifier == 'identifieryourkeytogodsban00humb'){
+	var okheredebug = 3;
+}*/
+				var IS_SELECTED = $(this).find('IS_SELECTED').text().trim();
+				var BIBCHECK = $(this).find('BIBCHECK').text().trim();
+				var TITLE = $(this).find('TITLE').text().trim();
+				var IMAGE_COUNT = $(this).find('IMAGE_COUNT').text().trim();
+				var LANGUAGE = $(this).find('LANGUAGE').text().trim();
+				var PUBLISH_DATE = $(this).find('PUBLISH_DATE').text().trim();
+				var SUBJECT = $(this).find('SUBJECT').text().trim();
+				var DESCRIPTION = $(this).find('DESCRIPTION').text().trim();
+				var PUBLISHER = $(this).find('PUBLISHER').text().trim();
+				var LICENSEURL = $(this).find('LICENSEURL').text().trim();
+				var RIGHTS = $(this).find('RIGHTS').text().trim();
+				var AUTHOR = $(this).find('AUTHOR').text().trim();
+				var OCLC = $(this).find('OCLC').text().trim();
+				var TN = $(this).find('TN').text().trim();
+				var SITE = $(this).find('SITE').text().trim();
+				var BATCH_NUMBER = $(this).find('BATCH_NUMBER').text().trim();
+				var OWNER_USERID = $(this).find('OWNER_USERID').text().trim();
+				var STATE = $(this).find('STATE').text().trim();
+				var STATE_ERROR = $(this).find('STATE_ERROR').text().trim();
+				var START_DATE = $(this).find('START_DATE').text().trim();
+				var END_DATE = $(this).find('END_DATE').text().trim();
+				var FOLDER = $(this).find('FOLDER').text().trim();
+				var COMPLETE_DATE = $(this).find('COMPLETE_DATE').text().trim();
+				var DNP = $(this).find('DNP').text().trim();
+				
+				 
+				//get selected value dynamically from TD html since it may have changed via ajax after page initially loaded.
+				var selected = IS_SELECTED;
+				if(selected.trim() == 'T'){
+					document.getElementById('ol_selected').checked=true;
+					pdfChecked = true;//set to true since already selected
+				}else{
+					document.getElementById('ol_selected').checked=false;
+					pdfChecked = false;
+				}
+				 
+				
+				var dnp =  DNP;
+				if(dnp.trim() == 'T'){
+					document.getElementById('ol_dnp').checked=true;
+				}else{
+					document.getElementById('ol_dnp').checked=false;
+				}
+				
+				
+				
+				document.getElementById('ol_bibCheck').value = BIBCHECK;
+				document.getElementById('ol_identifier').value=identifier;
+				document.getElementById('ol_tn').value= TN;
+				document.getElementById('ol_oclc').value= OCLC;
+				document.getElementById('ol_title').value= TITLE;
+				document.getElementById('ol_imageCount').value= IMAGE_COUNT;
+				document.getElementById('ol_language').value= LANGUAGE;
+				document.getElementById('ol_publishDate').value= PUBLISH_DATE;
+				document.getElementById('ol_subject').value= SUBJECT;
+				document.getElementById('ol_description').value= DESCRIPTION;
+				document.getElementById('ol_publisher').value= PUBLISHER;
+				document.getElementById('ol_licenseUrl').value= LICENSEURL;
+				document.getElementById('ol_rights').value= RIGHTS;
+				document.getElementById('ol_author').value= AUTHOR;
+				
+			});
+	   	 //alert("eeeeeeee");
+
+	    }catch(e){
+	    	alert("Error while getting book data from server...");
+	    	alert("Error msg: " + e);
+	    }
+	    
+
+	  
+	});
+
+	request.fail(function(jqXHR, textStatus) {
+	  alert( "Error while getting book data from server...: " + textStatus );
+	});
 }
 
 function validatePdfCheck(){
@@ -362,7 +481,7 @@ function doCopyPasteList(){
      
 	  	<%@include file="/WEB-INF/views/includes/iaMenu.html"%>
 		<h1 class="serif">${pageTitle}</h1>
-	   
+	   <security:authorize access="hasAnyRole('ia', 'ia_admin', 'admin')">  
 		<form id="f1" class="" name="f1" method="post" >
 			<input type="hidden" id="dupeList" value="${dupeTnsInfo}"/>
 			<table id="buttonsTable">
@@ -401,16 +520,16 @@ function doCopyPasteList(){
 					<td valign="top" align="left" style="white-space: nowrap;">${rowNum+1}&nbsp; </td>
 					<c:forEach var="i" begin="0" end="${colLabels.size()-1}">
 						<td id="cell${rowNum}_${i}" valign="top" align="left">
-							 	
+							 
 							<c:set var="fieldValue" value="${row.get(i)}"/>
 							<c:choose>
 							<c:when test='${i==2}'>
 								<c:choose>
 								<c:when test="${ fn:length( fieldValue ) le 35}" >
-									<a title="View Details" href="javascript:void(0);" onclick="showDetailsOverlay( '${rowNum}', '${row.get(0)}', '${row.get(1)}', '${row.get(2)}', '${row.get(3)}', '${row.get(4)}', '${row.get(5)}', '${row.get(6)}', '${row.get(7)}', '${row.get(8)}', '${row.get(9)}', '${row.get(10)}',  '${row.get(11)}', '${row.get(12)}',  '${row.get(13)}',  '${row.get(14)}',  '${row.get(15)}'); return false;" ><c:out value="${fieldValue}"/></a>
+									<a title="View Details" href="javascript:void(0);" onclick="showDetailsOverlay( '${rowNum}', '${row.get(2)}' ); return false;" ><c:out value="${fieldValue}"/></a>
 								</c:when>
 								<c:otherwise>
-									<a title="View Details" href="javascript:void(0);" onclick="showDetailsOverlay( '${rowNum}', '${row.get(0)}', '${row.get(1)}', '${row.get(2)}', '${row.get(3)}', '${row.get(4)}', '${row.get(5)}', '${row.get(6)}', '${row.get(7)}', '${row.get(8)}', '${row.get(9)}', '${row.get(10)}', '${row.get(11)}', '${row.get(12)}',  '${row.get(13)}',  '${row.get(14)}',  '${row.get(15)}'); return false;" ><c:out value="${fn:substring(fieldValue, 0, 34)}..."/></a>
+									<a title="View Details" href="javascript:void(0);" onclick="showDetailsOverlay( '${rowNum}', '${row.get(2)}' ); return false;" ><c:out value="${fn:substring(fieldValue, 0, 34)}..."/></a>
 								</c:otherwise>
 								</c:choose>
 							</c:when>
@@ -443,7 +562,10 @@ function doCopyPasteList(){
 				</c:forEach>
 			</table>
 		</form>
-	  	     
+	    </security:authorize>
+	    <security:authorize access="hasAnyRole('ia', 'ia_admin', 'admin') == false">
+ 			<p>${messages['ia.notAuthorized']}</p>
+ 		</security:authorize>
     </div>
   </div>
 </div>
@@ -548,7 +670,7 @@ function doCopyPasteList(){
 		</tr>
 		<tr>
 		<td>Description</td>
-		<td><textarea id="ol_description" type="text" value=""  rows="3"  cols="50" style="width: 100%">></textarea></td>
+		<td><textarea id="ol_description" type="text" value=""  rows="3"  cols="50" style="width: 100%"></textarea></td>
 		</tr>
 		<tr>
 		<td>Publisher </td>
