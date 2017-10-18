@@ -13,14 +13,24 @@ window.onload=function(){
 }
 
 function showDupeMsgAfterPasteNewDataPost(){
+	//two cases:  1 copypaste data contains dupe.  2 dupe already in metadata table
 	
 	
-	var sel= document.getElementById("tnData");
+	var sel = document.getElementById("copyPasteDupeTnList");//case 1
+	var copyPasteDupeTnList = sel.value;
+	sel= document.getElementById("tnData");
 	var pastedData = sel.innerHTML;
-	sel= document.getElementById("dupeList");
+	sel= document.getElementById("dupeList");//case 2
 	var dupTns = sel.value;
- 
-	if(pastedData != "" && dupTns != ""){
+	
+	if(pastedData != "" && copyPasteDupeTnList != ""){
+		toggleOverlay(); //show overlay when first open page since it contained dupes
+		
+		alert("The following book(s) are duplicates in your copy/paste data.  \n" + copyPasteDupeTnList);
+		//same url since we don't allow user to continue if data contains a dupe
+	
+		
+	}else if(pastedData != "" && dupTns != ""){
 		toggleOverlay(); //show overlay when first open page since it contained dupe MD and need to confirm to do updates
 		
 		var updateit = confirm("The following book(s) already exist in the Metadata table.  \n" + dupTns + "\n\nThey will be updated with this metadata.  Click 'OK' and then 'Save' to continue.\n");
@@ -47,6 +57,7 @@ function showDupeMsgAfterPasteNewDataPost(){
 	   
 		<sf:form id="f1" class="" name="f1" method="post" action="${buttonsAction}" modelAttribute="book">
 			<input type="hidden" id="dupeList" value="${dupeTnsInfo}"/>
+			<input type="hidden" id="copyPasteDupeTnList" value="${copyPasteDupeTnList}"/>
 			<table id="buttonsTable">
 			<tr>
 				<td></td><!-- space for checkboxes if I remember correctly -->

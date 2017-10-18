@@ -416,6 +416,10 @@ function validateFormData(){
 					<td><sf:input  path="dnp" readonly="${isReadOnly}" /></td>
 					</tr>
 					<tr>
+					<td>${messages['trackingForm.dnpDeletedOffLine']}</td>
+					<td><sf:input  path="dnpDeletedOffLine" readonly="${isReadOnly}" /></td>
+					</tr>
+					<tr>
 					<td>${messages['trackingForm.tnChangeHistory']}</td>
 					<td><sf:textarea path="tnChangeHistory" readonly="${isReadOnly}" class="textarea3" /></td>
 					</tr>

@@ -4097,7 +4097,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
 
 	@Override
-	public boolean queryXmlMetadataOracle( String tn, String[][] mdValues, String[][] recordValues){
+	public boolean queryXmlMetadata( String tn, String[][] mdValues, String[][] recordValues){
 		try{
 			//ResultSet rs = s.executeQuery("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_num, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'");
 			List tnList = getJdbcTemplate().query("select title, author, to_char(current_date, 'MM/DD/YYYY'), pages_physical_description, coalesce(b.publish_name , e.publish_name), subject, c.publish_name as language, publisher_original, publication_type as serial, call_num, filmno, dgsno, property_right, num_of_pages, summary, filename from book a  left outer join  site b on (a.owning_institution = b.id )  left outer join site e on (a.scanned_by = e.id )  left outer join  languages c on ( a.language = c.id) where tn = '"+tn+"'", new StringXRowMapper() );
@@ -4156,7 +4156,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				mdValues[21][0] = "ldsterms:filmno"; mdValues[21][1] =  row.get(10);
 				mdValues[22][0] = "ldsterms:dgsno"; mdValues[22][1] = row.get(11);
 				mdValues[23][0] = "ldsterms:editor"; mdValues[23][1] = "";
-				if("Copyright Protected".equals(propertyRight)){
+				if("Copyright Protected".equals(propertyRight) || "Denied".equals(propertyRight)){
 					mdValues[24][0] = "dcterms:accessRights"; mdValues[24][1] = "Protected";
 				}else{
 					mdValues[24][0] = "dcterms:accessRights"; mdValues[24][1] = "Public";

@@ -7,6 +7,7 @@ package org.familysearch.prodeng.metadata.controller;
 import java.security.Principal;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -284,6 +285,23 @@ public class MiscInternetArchiveController implements MessageSourceAware{
 			List<String> siteList = bookService.getAllSiteIds();
 			
 			List<List<String>> rows = bookService.parseExcelData(tnData, 57);//!!need to update count when add new columnds
+		
+			//check for dupes within copy/paste list
+			Set<String> set = new HashSet();
+			boolean isDupe = false;
+			String copyPasteDupeTnList = "";
+			for(List<String> r : rows) {
+				isDupe = set.add(r.get(0));
+				if(isDupe==false) {
+					copyPasteDupeTnList += ", '" + r.get(0) + "'";
+				}
+			}
+			if(copyPasteDupeTnList.equals("") == false) {
+				//contains dupe
+				copyPasteDupeTnList = copyPasteDupeTnList.substring(2);
+			}
+			
+			
 			String tnList = "";
 			for(List<String> r : rows) {
 				tnList += ", '" + r.get(0) + "'";
@@ -316,7 +334,11 @@ public class MiscInternetArchiveController implements MessageSourceAware{
 			tnList = tnList.substring(2);
 			
 			String dupTnList = bookService.getDuplicateTnsInInternetArchiveMetadata(tnList); //get list of tns already in bookmetadata col=titleno 3rd(0based) elem in rnData rows
-			if(dupTnList != "" && doUpdates == null) {
+			if( copyPasteDupeTnList.equals("") == false) {
+				model.addAttribute("copyPasteDupeTnList", copyPasteDupeTnList);
+				model.addAttribute("pastedData", tnData); 
+				return getMetadataInternetArchiveNewBooks(req, model, locale);//forward request but first pass in copypaste dupe list to show user
+			}else if(dupTnList != "" && doUpdates == null) {
 				//redisplay page with dupTnList msg
 				
 				//model.addAttribute("bookErrorMessage", messageSource.getMessage("metadata.alreadyExistMetadata", null, locale) + "\n" + dupTnList);

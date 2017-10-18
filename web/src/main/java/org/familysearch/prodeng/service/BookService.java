@@ -319,7 +319,7 @@ public interface BookService {
 	
 	////end dashboard/////
 	//xml medatdata//
-	public boolean queryXmlMetadataOracle( String tn, String[][] mdValues, String[][] recordValues);
+	public boolean queryXmlMetadata( String tn, String[][] mdValues, String[][] recordValues);
 	public boolean queryXmlCatalogingData( String secondaryId, String[][] mdValues);
 	public boolean queryGetXmlIACountTotal(String[][] mdValues);
 	//xml medatdata end//

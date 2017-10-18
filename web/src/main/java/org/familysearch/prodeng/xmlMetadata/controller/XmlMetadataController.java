@@ -84,7 +84,7 @@ public class XmlMetadataController {
 
 			String[][] mdValues =  new String[37][2];
 			String[][] recordValues = new String[8][2];	//put in id attr names and key inner-html in this array
-			boolean pass = bookService.queryXmlMetadataOracle(tn, mdValues, recordValues);
+			boolean pass = bookService.queryXmlMetadata(tn, mdValues, recordValues);
 			if(!pass){
 				//error not in db
 				return null;
