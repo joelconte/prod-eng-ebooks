@@ -2,6 +2,9 @@
 Insert into propertyright values ('Public Domain Stanford DB');
 
 
+Insert into propertyright values ('Copyright Permission Granted');
+
+
 
 
 
