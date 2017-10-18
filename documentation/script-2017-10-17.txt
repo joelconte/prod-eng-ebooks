@@ -1,0 +1,8 @@
+
+Insert into propertyright values ('Public Domain Stanford DB');
+
+
+
+
+
+ 
