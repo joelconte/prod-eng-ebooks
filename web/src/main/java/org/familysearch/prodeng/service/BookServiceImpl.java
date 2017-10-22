@@ -177,9 +177,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		List tnList;
 		 
 		if(location == null || location.equals("") || location.equals("All Sites"))
-			tnList = getJdbcTemplate().query("select a.tn, q.step,  a.status,  problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num, a.scanned_by,  b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn  inner join book b on a.tn=b.tn ", new StringXRowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, coalesce(q.step, 'Complete'),  a.status,  problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num, a.scanned_by,  b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn  inner join book b on a.tn=b.tn ", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select a.tn, q.step, a.status, a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num, a.scanned_by  , b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn  inner join book b on a.tn=b.tn where  a.solution_owner = ? ", new Object[]{location},  new StringXRowMapper());
+			tnList = getJdbcTemplate().query("select a.tn, coalesce(q.step, 'Complete'), a.status, a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num, a.scanned_by  , b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn  inner join book b on a.tn=b.tn where  a.solution_owner = ? ", new Object[]{location},  new StringXRowMapper());
 		return tnList;
 	}
 	
@@ -279,9 +279,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	public List<List> getProcessProblemTnsInfo(String location){
 		List tnList;
 		if(location == null || location.equals("") || location.equals("All Sites"))
-			tnList = getJdbcTemplate().query("select   a.tn, q.step, a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,  b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn inner join book b on a.tn=b.tn ", new StringXRowMapper());
+			tnList = getJdbcTemplate().query("select   a.tn, coalesce(q.step, 'Complete'), a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,  b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn inner join book b on a.tn=b.tn ", new StringXRowMapper());
 		else
-			tnList = getJdbcTemplate().query("select   a.tn, q.step, a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,   b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a  left outer join TFALL_0x_All_queues q on  a.tn = q.tn inner join book b on a.tn=b.tn where  a.solution_owner = ?", new Object[]{location},  new StringXRowMapper());
+			tnList = getJdbcTemplate().query("select   a.tn, coalesce(q.step, 'Complete'), a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,   b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a  left outer join TFALL_0x_All_queues q on  a.tn = q.tn inner join book b on a.tn=b.tn where  a.solution_owner = ?", new Object[]{location},  new StringXRowMapper());
 		
 		return tnList;
 	}
@@ -289,9 +289,13 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 	
 	
 	@Override
-	public List<List> getAdminProblemTnsInfo(){
-		//paul todo???
-		List tnList = getJdbcTemplate().query("select a.tn,   coalesce(q.step, 'Complete'),  a.status,  a.problem_reason,  a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num,  b.scanned_by, b.scan_complete_date, b.files_sent_to_orem, a.solution_owner  from tf_allproblems a  left outer join TFALL_0x_All_queues q on  a.tn = q.tn  inner join book b on a.tn=b.tn ", new StringXRowMapper());
+	public List<List> getAdminProblemTnsInfo(String location){
+		List tnList;
+		if(location == null || location.equals("") || location.equals("All Sites"))
+			tnList = getJdbcTemplate().query("select   a.tn, coalesce(q.step, 'Complete'), a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,  b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a left outer join TFALL_0x_All_queues q on  a.tn = q.tn inner join book b on a.tn=b.tn ", new StringXRowMapper());
+		else
+			tnList = getJdbcTemplate().query("select   a.tn, coalesce(q.step, 'Complete'), a.site, a.scanned_by, a.status, a.problem_reason, a.problem_text,  TO_CHAR(a.problem_date, 'mm/dd/yyyy'), a.problem_initials, a.call_num ,   b.scan_complete_date, b.files_sent_to_orem, a.solution_owner from tf_allproblems a  left outer join TFALL_0x_All_queues q on  a.tn = q.tn inner join book b on a.tn=b.tn where  a.solution_owner = ?", new Object[]{location},  new StringXRowMapper());
+		
 		return tnList;
 	}
 
@@ -5586,7 +5590,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
 	@Override
 	public List<List> getDashboardOpenIssues(){
-		List tnList = getJdbcTemplate().query("select solution_owner, count(solution_owner) as issueCounts from TF_NOTES where status = 'Problem' or status = 'Solution Found' group by solution_owner union select solution_owner, count(solution_owner) as issueCounts from TF_NOTES where solution_owner is null and (status = 'Problem' or status = 'Solution Found' ) group by solution_owner  order by issueCounts ", new StringX2RowMapper());
+		List tnList = getJdbcTemplate().query("select a.solution_owner, count(*) as issueCounts from TF_NOTES a, BOOK b where a.tn = b.tn and a.status != 'Problem Fixed' and a.status != 'Notes' and a.status is not null AND b.dnp IS NULL AND b.property_right != 'Denied' group by a.solution_owner order by issueCounts ", new StringX2RowMapper());
+									  // " union select a.solution_owner, count(*) as issueCounts from TF_NOTES a, BOOK b where a.tn = b.tn and  a.solution_owner is null and a.status != 'Problem Fixed' and a.status != 'Notes' and a.status is not null   AND b.dnp IS NULL AND b.property_right != 'Denied' group by a.solution_owner  order by issueCounts ", new StringX2RowMapper());
 		return tnList;
 	}
 	

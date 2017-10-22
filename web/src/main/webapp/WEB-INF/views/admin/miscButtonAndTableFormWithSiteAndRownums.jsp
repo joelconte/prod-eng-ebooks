@@ -22,6 +22,9 @@ window.onload=function(){
 	  	<%@include file="/WEB-INF/views/includes/adminMenu.html"%>
 		<h1 class="serif">${pageTitle}</h1>
 	   
+		<!-- admin only access waiting for files to be feceived page -->
+	   	<security:authorize access="hasAnyRole( 'admin', 'supervisor')">
+	   		
 		<sf:form id="f1" class="" name="f1" method="post" action="${buttonsAction}" modelAttribute="book">
 			<table id="buttonsTable">
 			<tr>
@@ -39,26 +42,50 @@ window.onload=function(){
 					</c:otherwise>
 					</c:choose>
 				</c:forEach>
+				<td>
+					<select id="siteDropdown" onchange="reloadProcessListWithSite('f1', 'siteDropdown' );">
+					<option value=""/>
+					<c:forEach var="i" items="${allLocations}">
+	    				<c:if test="${i==location}"><option selected>${i}</option> </c:if>
+						<c:if test="${i!=location}"><option>${i}</option> </c:if>
+					</c:forEach>
+					</select>
+				</td>
 			</tr>
 			</table>
 			 
 			 <table id="tnTable" class="sortable colSpace">
 			 	<tr>
+			 		<th><p style="margin: 0px 0px 0px 16px;"> &nbsp;</p></th> <!-- column for row count -->
 			 		<c:forEach var="colLabel" items="${colLabels}">
 			 		<th   class="sorttable_alpha">${colLabel}</th>
 			 		</c:forEach>
 			 	</tr>
+			 				 	
+			 	<c:set var="rowNum" value="0"/>
 			 	<c:forEach var="tn" items="${allTnsInfo}">
 				<tr>
+					<td valign="top" align="left" style="white-space: nowrap;">${rowNum+1}&nbsp;</td>
 					<c:forEach var="i" begin="0" end="${colLabels.size()-1}">
-					<td><a href="trackingForm?read&tn=${tn.get(0)}" ><c:out value="${tn.get(i)}"/></a></td>
 				 
+				 	<c:set var="encodedTN" value="${tn.get(0)}"/>
+				 	<c:if test="${encodedTN.contains('&')}">
+				 		<c:set var="encodedTN" value="${fn:replace(encodedTN,'&','&#37;26')}"/>
+				 	</c:if>
+				 	
+					<td><a href="trackingForm?update&tn=${encodedTN}&returnTo=${returnTo}&siteSelected=${location}" ><c:out value="${tn.get(i)}"/></a></td>
+
 					</c:forEach>
+					<c:set var="rowNum" value="${rowNum+1}"/>
 				</tr>
 				</c:forEach>
 			</table>
 		</sf:form>
 	  	
+	  	</security:authorize>
+ 		<security:authorize access="hasAnyRole( 'admin', 'supervisor') == false">
+			<p>${messages['process.notAuthorizedWaitingForFiles']}</p>
+ 		</security:authorize>
 		      
     </div>
  

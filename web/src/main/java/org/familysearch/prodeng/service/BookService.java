@@ -52,7 +52,7 @@ public interface BookService {
 	public List<List> getProcessProblemTnsInfo(String location);
 	
 	public List<List> getCatalogProblemTnsInfo();
-	public List<List> getAdminProblemTnsInfo();
+	public List<List> getAdminProblemTnsInfo(String location);
 	public List<List> getAdminPdfDateNoReleaseDateTnsInfo();
 	public List<List> getAdminReceivedNotesTnsInfo();
 	public List<List> getAdminReceivedImagesWithoutMatchingBooksTnsInfo();

@@ -76,16 +76,17 @@ public class TrackingFormController implements MessageSourceAware{
 
  
 	
-	//show populated form - for update - used with button "update"
-	@RequestMapping(value="admin/trackingForm", params="update", method=RequestMethod.GET)
-	public String displayBookUpdateGet(String tn, Model model, Locale locale, Principal principal ) {
-		return displayBookUpdatePost(tn, model, locale, principal);
+	//show populated form - for update - used with anchor link "update" - 
+	//same as below but GET for use in list of book links
+	@RequestMapping(value="admin/trackingForm",  params="update", method=RequestMethod.GET)
+	public String displayBookUpdate(String tn, String returnTo, String siteSelected, Model model, Locale locale, Principal principal ) {
+		return displayBookUpdatePost(tn, returnTo, siteSelected, model, locale, principal );
 	} 
 
 	//show populated form - for update - used with button "update"
 	@RequestMapping(value="admin/trackingForm", params="update", method=RequestMethod.POST)
-	public String displayBookUpdatePost(String tn, Model model, Locale locale, Principal principal ) {		
-		model.addAttribute("pageTitle", messageSource.getMessage("admin.pageTitle.trackingForm", null, locale));
+	public String displayBookUpdatePost(String tn,  String returnTo, String siteSelected, Model model, Locale locale, Principal principal ) {		
+		model.addAttribute("pageTitle", getTrackingFormTitle(returnTo, locale));
 		String failLockMsg = bookService.getBookLock(tn, principal.getName());
 		if(failLockMsg != null) {
 			model.addAttribute("bookErrorMessage", messageSource.getMessage("trackingform.error.lockFail", null, locale) + "\n\n" + failLockMsg);
@@ -95,6 +96,7 @@ public class TrackingFormController implements MessageSourceAware{
 		model.addAttribute("mode", "update"); 
 		model.addAttribute("book", bookService.getBook(tn)); 
 		model.addAttribute("allSites", bookService.getAllSites()); 
+		model.addAttribute("siteSelected", siteSelected ); 
 		model.addAttribute("ocrSites", bookService.getAllOcrSites()); 
 		model.addAttribute("allScanSitesIncludingInactive", bookService.getAllScanSitesIncludingInactive());
 		model.addAttribute("allPropertyRights", bookService.getAllPropertyRights()); 
@@ -116,7 +118,7 @@ public class TrackingFormController implements MessageSourceAware{
 	 
 	//do update
 	@RequestMapping(value="admin/trackingForm", params="saveAndClose", method=RequestMethod.POST)
-	public String doBookSaveAndClose(Book book, String tn, String tnOriginal, Model model, Locale locale, Principal principal ) {
+	public String doBookSaveAndClose(Book book, String tn, String returnTo, String siteSelected, String tnOriginal, Model model, Locale locale, Principal principal ) {
 		String failReleaseLockMsg = bookService.checkAndReleaseBookLock(tnOriginal, principal.getName()); 
 		if(failReleaseLockMsg != null) {
 			model.addAttribute("bookErrorMessage", failReleaseLockMsg);
@@ -127,6 +129,12 @@ public class TrackingFormController implements MessageSourceAware{
 		//save book object which was linked in displayBookUpdatePost and form modelAttribute attr
 
 		bookService.updateBook(principal.getName(), book, tnOriginal); //tn param can be updated in admin also
+		
+		if(siteSelected==null)
+			siteSelected = "";
+        if(returnTo != null && returnTo != "") 
+			return "redirect:" + returnTo + "?site=" + siteSelected; //back to admin/adminProblems, and it uses "site" 
+		
 		//tn in url cannot contain &
 		if(tn.contains("&")) {
 			tn = tn.replace("&", "%26");
@@ -137,7 +145,7 @@ public class TrackingFormController implements MessageSourceAware{
 
 	//do update
 	@RequestMapping(value="admin/trackingForm", params="save", method=RequestMethod.POST)
-	public String doBookSave(Book book, String tn, String tnOriginal,  Model model, Principal principal ) {
+	public String doBookSave(Book book, String tn,  String returnTo,  String siteSelected, String tnOriginal,  Model model, Principal principal ) {
 		String failReleaseLockMsg = bookService.checkAndReleaseBookLock(tnOriginal, principal.getName()); 
 		if(failReleaseLockMsg != null) {
 			model.addAttribute("bookErrorMessage", failReleaseLockMsg);
@@ -153,12 +161,20 @@ public class TrackingFormController implements MessageSourceAware{
 		if(tn.contains("&")) {
 			tn = tn.replace("&", "%26");
 		}
+		/* if(returnTo != null && returnTo != "") 
+				return "redirect:" + returnTo + "?site=" + siteSelected; //back to admin/adminProblems, and it uses "site" 
+*/
+		if(siteSelected==null)
+			siteSelected = "";
+        if(returnTo != null && returnTo != "") 
+			return "redirect:trackingForm?update&tn=" + tn + "&returnTo=" + returnTo+ "&siteSelected=" + siteSelected;  //keep on same page with returnTo parm added again
+	
 		return "redirect:trackingForm?update&tn=" + tn; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
 	
 	//do cancel
 	@RequestMapping(value="admin/trackingForm", params="cancel", method=RequestMethod.POST)
-	public String doBookCancel(@RequestParam("tn") String tn, Model model, Principal principal ) {
+	public String doBookCancel(@RequestParam("tn") String tn, String returnTo, String siteSelected, Model model, Principal principal ) {
 		bookService.checkAndReleaseBookLock(tn, principal.getName());//ignore any return error msg since it is just a cancel (ie even if admin unlocked it, it is ok)
 		
 		//do nothing
@@ -166,6 +182,12 @@ public class TrackingFormController implements MessageSourceAware{
 		if(tn.contains("&")) {
 			tn = tn.replace("&", "%26");
 		}
+
+		if(siteSelected==null)
+			siteSelected = "";
+        if(returnTo != null && returnTo != "") 
+			return "redirect:" + returnTo + "?site=" + siteSelected; //back to admin/adminProblems, and it uses "site" 
+
 		return "redirect:trackingForm?read&tn=" + tn; //redirect - guard against refresh-multi-updates and also update displayed url
 	} 
 	
@@ -177,5 +199,13 @@ public class TrackingFormController implements MessageSourceAware{
 	}
 	
  
+
+	public String getTrackingFormTitle(String returnTo, Locale locale){
+	
+		 
+		//if("/admin/adminProblems".equals(returnTo))
+			return messageSource.getMessage("admin.problems", null, locale);
+	 
+	}
 	
 }

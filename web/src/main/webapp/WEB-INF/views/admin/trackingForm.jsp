@@ -120,6 +120,22 @@ function validateFormData(){
 };
 
 
+
+//update action on form formId with mode and page url - (use to update url on form right before button click submits it) 
+function updateUrl2(formId, page, mode){
+	 	
+	//var el = document.getElementById(selectId);
+	//var tn = el.options[el.selectedIndex].text;//select box tn
+	var f = document.getElementById(formId); //form
+	var url = page + "?" + mode;//tn already in form data    + "&tn=" + tn; //mode read,update,create
+	if( getUrlParm("returnTo")!= null &&  getUrlParm("returnTo")!= "")
+		url = url + "&returnTo=" + getUrlParm("returnTo");
+	if( getUrlParm("siteSelected")!= null &&  getUrlParm("siteSelected")!= "")
+		url = url + "&siteSelected=" + getUrlParm("siteSelected");
+	 
+	f.action = url; 
+}
+
 </script>
 
 

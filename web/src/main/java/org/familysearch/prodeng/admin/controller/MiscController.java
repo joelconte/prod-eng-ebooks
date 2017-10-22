@@ -4,11 +4,14 @@
  */
 package org.familysearch.prodeng.admin.controller;
 
+import java.security.Principal;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.familysearch.prodeng.model.SqlTimestampPropertyEditor;
 import org.familysearch.prodeng.service.BookService;
@@ -39,25 +42,35 @@ public class MiscController implements MessageSourceAware{
 	}
 
 	@RequestMapping(value="admin/adminProblems", method=RequestMethod.GET)
-	public String getadminProblems(Model model, Locale locale) {
+	public String getadminProblems(Principal principal, HttpServletRequest req, Model model, Locale locale) {
+		model.addAttribute("returnTo", req.getServletPath());
+		
+		String location = req.getParameter("site"); //from dropdown on page
+		if(location == null)
+			location = bookService.getUser(principal.getName()).getPrimaryLocation();
+		model.addAttribute("location", location);
+		
+		//String location = bookService.getUser(principal.getName()).getPrimaryLocation();
 		List<String> labels = new ArrayList<String>();
 		labels.add(messageSource.getMessage("titleNumber", null, locale));
 		labels.add(messageSource.getMessage("step", null, locale));
+		labels.add(messageSource.getMessage("ocrSite", null, locale));
+		labels.add(messageSource.getMessage("scannedBy", null, locale));
 		labels.add(messageSource.getMessage("problemStatus", null, locale));
 		labels.add(messageSource.getMessage("problemReason", null, locale));
-		labels.add(messageSource.getMessage("problemText", null, locale));	
+		labels.add(messageSource.getMessage("problemText", null, locale));
 		labels.add(messageSource.getMessage("problemDate", null, locale));
 		labels.add(messageSource.getMessage("problemInitials", null, locale));		
 		labels.add(messageSource.getMessage("callNumber", null, locale));
-		labels.add(messageSource.getMessage("scanningLocation", null, locale));
 		labels.add(messageSource.getMessage("scanDate", null, locale));
 		labels.add(messageSource.getMessage("sentToOcr", null, locale));
 		labels.add(messageSource.getMessage("solutionOwner", null, locale));
  
-		model.addAttribute("pageTitle", messageSource.getMessage("admin.pageTitle.problems", null, locale));
+		model.addAttribute("pageTitle", messageSource.getMessage("admin.pageTitle.problems", null, locale) + " (" + ((location==null||location=="")?"All Locations":location) + ")");
 		model.addAttribute("colLabels", labels);
-		model.addAttribute("allTnsInfo", bookService.getAdminProblemTnsInfo()); 
-
+		model.addAttribute("allTnsInfo", bookService.getAdminProblemTnsInfo(location)); 
+		model.addAttribute("allLocations", bookService.getAllSites());
+		
 		//buttons
 		List<List<String>> buttons = new ArrayList<List<String>>();
 		List<String> details = new ArrayList<String>();
@@ -66,7 +79,7 @@ public class MiscController implements MessageSourceAware{
 		buttons.add(details);
 		model.addAttribute("buttons", buttons);
 
-		return "admin/miscButtonAndTableForm";
+		return "admin/miscButtonAndTableFormWithSiteAndRownums";
 	} 
 
 	@RequestMapping(value="admin/catalogProblems", method=RequestMethod.GET)

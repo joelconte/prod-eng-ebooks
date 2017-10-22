@@ -655,10 +655,13 @@ $(function() {
 					
 					<tr>
 				 
+				 
+				  
+				 
 					<c:forEach items="${openIssues}" var="row">
 						<tr>
-					    <td class="bodyTd"  width='177'>${row.get(0)}</td>
-					    <td class="bodyTd" align="center" width='80'>${row.get(1)} </td>
+					    <td class="bodyTd"  width='177'><a href="../admin/adminProblems?site=${row.get(0)}" >${row.get(0)}</a></td>
+					    <td class="bodyTd" align="center" width='80'><a href="../admin/adminProblems?site=${row.get(0)}" >${row.get(1)}</a> </td>
 					    </tr>
 		            </c:forEach>
 		
