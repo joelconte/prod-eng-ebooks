@@ -677,7 +677,7 @@ public class IaSearchController implements MessageSourceAware{
 		List<List<String>> searchResults = new ArrayList<List<String>>();
          
         try{
-        	 String uri ="http://archive.org/advancedsearch.php?q=(" + searchKey + ")%20AND%20mediatype%3A(texts)&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=language&fl%5B%5D=mediatype&fl%5B%5D=rights&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=creator&fl%5B%5D=licenseurl&fl%5B%5D=oclc-id&fl%5B%5D=publisher&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=10000&page=1&callback=callback&output=json";
+        	 String uri ="http://archive.org/advancedsearch.php?q=(" + searchKey + ")%20AND%20mediatype%3A(texts)&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=language&fl%5B%5D=mediatype&fl%5B%5D=rights&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=creator&fl%5B%5D=licenseurl&fl%5B%5D=oclc-id&fl%5B%5D=volume&fl%5B%5D=publisher&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=10000&page=1&callback=callback&output=json";
              //String uri = "https://archive.org/search.php?query=(" + searchKey + ")&and[]=mediatype%3A%22texts%22";
         	 System.out.println("Internet Archive REST: " + uri);
              URL url = new URL(uri);
@@ -939,6 +939,7 @@ public class IaSearchController implements MessageSourceAware{
         String creator = "";//author
         String tn = "";//same as identifier
         String oclc = "";
+        String volume = "";//special case for now, not displayed, but appended to title
         
         List<String> attrList = new ArrayList<String>();
         
@@ -1004,9 +1005,15 @@ public class IaSearchController implements MessageSourceAware{
                 creator = val;
             }else if("oclc-id".equalsIgnoreCase(name)){
                 oclc = val;
+            }else if("volume".equalsIgnoreCase(name)){
+                volume = val;
             }
             
         }    
+        
+        if(volume.equals("") == false) {
+        	title += ", " + volume;
+        }
         
         if(isSelectedBool)
         	attrList.add("T");//0
@@ -1026,6 +1033,7 @@ public class IaSearchController implements MessageSourceAware{
         attrList.add(creator);//12
         attrList.add(tn);//13
         attrList.add(oclc);//14
+        //not visible for now attrList.add(volume);
         
 
         return attrList;

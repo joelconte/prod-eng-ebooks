@@ -3327,6 +3327,10 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				+ "  CASE "
 				+ "   WHEN filename like 'CP%' "
 				+ "     THEN 'Copyright Protected' "
+				+ "   WHEN filename like 'PG%' "
+				+ "     THEN 'Copyright Permission Granted' "
+				+ "   WHEN filename like 'PDS%' "
+				+ "     THEN 'Public Domain Stanford DB' "
 				+ "   ELSE  'Public Domain' "
 				+ "   END where tn IN  ( " + tnList + " )";	  
 		
