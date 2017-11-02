@@ -83,6 +83,7 @@ window.onload=function(){
 	if(sorttable != null && sorttable.innerSortFunction != null)
 		sorttable.innerSortFunction.apply(myTH, []);
 	
+	showErrorMsgAfterPastePost();//if search archive.org has parse error of weird text, show ugly msg.
 	showMsgAfterPastePost();//show any messages after paste of book list
 }  
 
@@ -444,7 +445,16 @@ function toggleCopyPasteListOverlay() {
 	specialBox.style.display = "block";
 	}
 }
-
+function getURLParameter(name) {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+}
+function showErrorMsgAfterPastePost(){
+ 
+    var msg = getURLParameter('msg');  
+    if(msg != null && msg != ""){
+        alert(msg);
+    }
+}
 function showMsgAfterPastePost(){
 	
 	var sel= document.getElementById("textData");

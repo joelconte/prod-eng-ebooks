@@ -4,9 +4,11 @@
  */
 package org.familysearch.prodeng.ia.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +27,7 @@ import org.familysearch.prodeng.service.InternetArchiveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -61,15 +64,21 @@ public class IaSearchController implements MessageSourceAware{
 		//delete existing in step2 for this userid
 		bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(principal.getName());
 		 //search and insert into db results
-		doIaSearchRestCall(searchKeyword, principal.getName(), false);//do search and insert into table 
+		String msg = doIaSearchRestCall(searchKeyword, principal.getName(), false);//do search and insert into table 
+		if(msg != null) {
+			StringEscapeUtils.escapeHtml(msg);
+			return "redirect:iaSelectBooks?msg=" + msg;//view results from table step 2 select books
+		}
 		return "redirect:iaSelectBooks";//view results from table step 2 select books
 	}  
 	
 
 	//view books that were previously inserted into ia_book_selection 
 	@RequestMapping(value="ia/iaSelectBooks", method=RequestMethod.GET)
-	public String displayIaSelectBooks( Model model, Locale locale, Principal principal) {
-		 
+	public String displayIaSelectBooks(HttpServletRequest req, Model model, Locale locale, Principal principal) {
+		String msg = req.getParameter("msg");
+		model.addAttribute("msg", msg);
+
 		model.addAttribute("pageTitle", messageSource.getMessage("ia.selectBooks", null, locale));
 
 		//title and table labels
@@ -171,7 +180,7 @@ public class IaSearchController implements MessageSourceAware{
 				//return "errors/generalError";
 				model.addAttribute("dupeTnsInfo", dupTnList);  
 				model.addAttribute("pastedData", textData); 
-				return displayIaSelectBooks( model, locale, principal);//forward request but first pass in dupe list to show user
+				return displayIaSelectBooks(req, model, locale, principal);//forward request but first pass in dupe list to show user
 			}
 		 
 			filterOutDupes(rows, dupTnListList);
@@ -672,12 +681,12 @@ public class IaSearchController implements MessageSourceAware{
 	 
 	}  
 	
-	private String doIaSearchRestCall(String searchKey, String ownerUserId, boolean isSelected ) {                                            
-		  
-		List<List<String>> searchResults = new ArrayList<List<String>>();
-         
-        try{
-        	 String uri ="http://archive.org/advancedsearch.php?q=(" + searchKey + ")%20AND%20mediatype%3A(texts)&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=language&fl%5B%5D=mediatype&fl%5B%5D=rights&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=creator&fl%5B%5D=licenseurl&fl%5B%5D=oclc-id&fl%5B%5D=volume&fl%5B%5D=publisher&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=10000&page=1&callback=callback&output=json";
+	//returns rowCount number of books and batchNumber frame (ie rowCount=5 batchNumber=2 will return rows 6-10)
+	private byte[] batchedSearchRestCall(String searchKey, int frameSize, int ithFrame ) {
+		java.io.InputStream istr = null;
+		try{
+			 
+        	 String uri ="http://archive.org/advancedsearch.php?q=(" + searchKey + ")%20AND%20mediatype%3A(texts)&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=language&fl%5B%5D=mediatype&fl%5B%5D=rights&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=creator&fl%5B%5D=licenseurl&fl%5B%5D=oclc-id&fl%5B%5D=volume&fl%5B%5D=publisher&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=" + frameSize + "&page=" + ithFrame + "&callback=callback&output=json";
              //String uri = "https://archive.org/search.php?query=(" + searchKey + ")&and[]=mediatype%3A%22texts%22";
         	 System.out.println("Internet Archive REST: " + uri);
              URL url = new URL(uri);
@@ -685,122 +694,175 @@ public class IaSearchController implements MessageSourceAware{
              HttpURLConnection connection = (HttpURLConnection) url.openConnection();
              connection.setRequestMethod("GET");
              connection.setRequestProperty("Accept", "application/json");
-             java.io.InputStream istr = connection.getInputStream();
+             istr = connection.getInputStream();
              byte[] b = IOUtils.toByteArray(istr);
+            // istr.close();
+             return b;
              
+		 }catch(Exception e) {
+			 System.out.println(e);
+			 
+			 return null;
+		 }finally {
+			 if(istr!=null) {
+				 try{ 
+					 istr.close();
+				 }catch(Exception e2) {}
+			 }
+		 }
+		 
             
+	}
+	
+	private String doIaSearchRestCall(String searchKey, String ownerUserId, boolean isSelected ) {                                            
+		  
+		List<List<String>> searchResults = new ArrayList<List<String>>();
+         
+        try{
+        	//1 get total rows matching search
+            byte[] b = batchedSearchRestCall(searchKey, 1, 1);
+            String totalCountJsonStr = new String(b);
+            int startCount = totalCountJsonStr.indexOf("numFound") + 10;
+            if(startCount==9)
+            	return "Error: no results found.  Book count not returned.";
+            int endCount = totalCountJsonStr.indexOf(",", startCount); //"numFound":10032,
+            String countStr = totalCountJsonStr.substring(startCount, endCount);
+            int totalCount = Integer.parseInt(countStr);
+            
+            if(totalCount > 5000) {
+            	//todo some kind of warning that they need to narrow down search to get all rows since 5000 is missionary limit
+            }
+            
+            String bibcheckInClause = "";
+            int callCount = totalCount/1001 + 1;
+            if(callCount > 5)
+            	callCount = 5;//5 max = 5k books
+            
+            //todo undo xx
+            callCount =1; //todo undo xx
+            
+            for(int i = 1; i <= callCount ; i++) {
+            	b = batchedSearchRestCall(searchKey, 1000, i);//get 5 batches of 1000 max
              
-         ///////////////////////tmp 
-        /* Scanner s = new Scanner(istr);
-         String xmlStr = "";
-         while (s.hasNext()) {
-             xmlStr += s.nextLine() + "\r\n";
-         }
-         System.out.println(xmlStr);  */
-         ///////////////////////////
-        
-        /*return from search
-     
-           callback({
-    "responseHeader":{
-       "status":0,
-       "QTime":130,
-       "params":{
-          "q":"( (title:korea^100 OR description:korea^15 OR collection:korea^10 OR language:korea^10 OR text:korea^1) ) AND mediatype:(texts )",
-          "qin":"(korea) AND mediatype:(texts)",
-          "fl":"date,description,identifier,imagecount,language,mediatype,rights,subject,title,type",
-          "wt":"json",
-          "rows":"5",
-          "json.wrf":"callback",
-          "start":0
-       }
-    },
-    "response":{
-       "numFound":10032,
-       "start":0,
-       "docs":[
-          {
-             "creator":"Defense Technical Information Center",
-             "date":"1954-07-26T00:00:00Z",
-             "identifier":"DTIC_AD0045284",
-             "imagecount":27,
-             "language":"english",
-             "mediatype":"texts",
-             "subject":[
-                "DTIC Archive",
-                "KUHN, RICHARD B.",
-                "GOODYEAR AEROSPACE CORP AKRON OH",
-                "*CATHODE RAY TUBES",
-                "ERRORS",
-                "MEASUREMENT",
-                "TEST EQUIPMENT"
-             ],
-             "title":"DTIC AD0045284: AN INSTRUMENT FOR MEASURING SPOT SIZE"
-          },
-          {
-  
-        */
-             JsonFactory jf = new JsonFactory();
-             JsonParser parser = jf.createJsonParser(b, "callback(".length(), b.length-10);//remove garbage callback str
-              
-             //skip headerResponse
-             JsonToken tok;
-             while (!parser.isClosed()) {
-                 tok = parser.nextToken();
-               
-                 
-                 if("responseHeader".equalsIgnoreCase( parser.getText())) { // .getValueAsString())){
-                     parser.nextToken();//go to OJBECT part and skip
-                     parser.skipChildren();
-                     break;
-                 }
-             }
-       
-             int count = 0;
-             while (!parser.isClosed()) {
-                 tok = parser.nextToken();
-               
-                 
-                 if("numfound".equalsIgnoreCase( parser.getText())){
-                     parser.nextToken();
-                     count = parser.getIntValue();
-                     
-                     break;
-                 }
-             }
-             if(count <= 0){
-                 return "Warning: no results found";
-             }
-             
-             boolean foundDocs = false;
-             while (!parser.isClosed()) {
-                 tok = parser.nextToken();
-              
-                 if("docs".equalsIgnoreCase( parser.getText())){
-                     parser.nextToken();//should be array of len count
-                     foundDocs = true;
-                     break;
-                 }
-             }
-  
-             if(foundDocs==false){
-                     return "Error, no DOCS in json returned, but got '" + parser.getText() + "' instead.   Array count=" + count;
-             }
-
-                 
-             String bibcheckInClause = "";
-             List<String> attrList = null;
-             for(int x = 0; x < count; x++){
-//                 System.out.println("hhhh"+x);
-                 attrList = parseJsonValues( parser, x+1, isSelected);
-                 if(attrList==null)
-                     break;//ended early.  ie count specified in url was smaller than actual total count on server (only count get sent back)
-                
-                 searchResults.add(attrList);
-                 
-                 bibcheckInClause += ", '" + attrList.get(6) + "'";//list of TNs for bibchecking
-             }
-
+	         ///////////////////////tmp 
+	        /*Scanner s = new Scanner(istr);
+	         String xmlStr = "";
+	         int xx=0;
+	         while (s.hasNext()) {
+	             xmlStr += xx++ + "  " + s.nextLine() + "\r\n";
+	         }
+	         System.out.println(xmlStr);  */
+	         ///////////////////////////
+	        
+	        /*return from search
+	     
+	         0  callback({
+	    "responseHeader":{
+	       "status":0,
+	       "QTime":130,
+	       "params":{
+	          "q":"( (title:korea^100 OR description:korea^15 OR collection:korea^10 OR language:korea^10 OR text:korea^1) ) AND mediatype:(texts )",
+	          "qin":"(korea) AND mediatype:(texts)",
+	          "fl":"date,description,identifier,imagecount,language,mediatype,rights,subject,title,type",
+	          "wt":"json",
+	          "rows":"5",
+	          "json.wrf":"callback",
+	          "start":0
+	       }
+	    },
+	    "response":{
+	       "numFound":10032,
+	       "start":0,
+	       "docs":[
+	          {
+	             "creator":"Defense Technical Information Center",
+	             "date":"1954-07-26T00:00:00Z",
+	             "identifier":"DTIC_AD0045284",
+	             "imagecount":27,
+	             "language":"english",
+	             "mediatype":"texts",
+	             "subject":[
+	                "DTIC Archive",
+	                "KUHN, RICHARD B.",
+	                "GOODYEAR AEROSPACE CORP AKRON OH",
+	                "*CATHODE RAY TUBES",
+	                "ERRORS",
+	                "MEASUREMENT",
+	                "TEST EQUIPMENT"
+	             ],
+	             "title":"DTIC AD0045284: AN INSTRUMENT FOR MEASURING SPOT SIZE"
+	          },
+	          {
+	  
+	        */
+	             JsonFactory jf = new JsonFactory();
+	             JsonParser parser = jf.createJsonParser(b, "callback(".length(), b.length-10);//remove garbage callback str
+	              
+	             //skip headerResponse
+	             JsonToken tok;
+	             while (!parser.isClosed()) {
+	                 tok = parser.nextToken();
+	               
+	                 
+	                 if("responseHeader".equalsIgnoreCase( parser.getText())) { // .getValueAsString())){
+	                     parser.nextToken();//go to OJBECT part and skip
+	                     parser.skipChildren();
+	                     break;
+	                 }
+	             }
+	       
+	             int count = 0;
+	             while (!parser.isClosed()) {
+	                 tok = parser.nextToken();
+	               
+	                 
+	                 if("numfound".equalsIgnoreCase( parser.getText())){
+	                     parser.nextToken();
+	                     count = parser.getIntValue();
+	                     
+	                     break;
+	                 }
+	             }
+	             if(count <= 0){
+	                 return "Warning: no results found";
+	             }
+	             
+	             boolean foundDocs = false;
+	             while (!parser.isClosed()) {
+	                 tok = parser.nextToken();
+	              
+	                 if("docs".equalsIgnoreCase( parser.getText())){
+	                     parser.nextToken();//should be array of len count
+	                     foundDocs = true;
+	                     break;
+	                 }
+	             }
+	  
+	             if(foundDocs==false){
+	                     return "Error, no DOCS in json returned, but got '" + parser.getText() + "' instead.   Array count=" + count;
+	             }
+	
+	                 
+	              
+	             List<String> attrList = null;
+	             for(int x = 0; x < count; x++){
+	//                 System.out.println("hhhh"+x);
+	            	 try {
+	            		
+	            		 attrList = parseJsonValues( parser, x+1, isSelected);
+	            		 if(attrList==null)
+	                         break;//ended early.  ie count specified in url was smaller than actual total count on server (only count get sent back)
+	            	                
+	            		 searchResults.add(attrList);
+	                 
+	            		 bibcheckInClause += ", '" + attrList.get(6) + "'";//list of TNs for bibchecking
+	            	 
+	            	 }catch(Exception e) {
+	            		 System.out.println(e);//choke on 1 book and continue
+	            		  
+	            	 }
+	             }
+             }//end for loop of batch rest calls data parsing
  
              //bibcheck - filter out non T bibchecks
              Set<String> dupes = bookService.doBibcheck(bibcheckInClause.substring(1, bibcheckInClause.length()));//returns any dupes in tn or secondary_identifier  
@@ -908,10 +970,31 @@ public class IaSearchController implements MessageSourceAware{
                 	 iter.remove();
                  }
              }   
-             
-             bookService.insertInternetArchiveSearchedBooks(searchResults, ownerUserId); 
-             
-             istr.close();
+             try {
+            	 bookService.insertInternetArchiveSearchedBooks(searchResults, ownerUserId); 
+             }catch(Exception ex) {
+            	 System.out.println(ex);
+            	 String msg1 = ex.getMessage();
+ 
+            	 SQLException sqlex = null;
+            	 if(ex instanceof InvocationTargetException || ex instanceof DataIntegrityViolationException) {
+            		 sqlex = (SQLException)ex.getCause();
+            	 
+	            	 if(sqlex.getNextException() != null) {
+	            		 msg1 += "\n" + sqlex.getNextException().getMessage();
+	            		 
+	            		 if(sqlex.getNextException().getNextException() != null ) {
+	            			 msg1 +=  "\n" + sqlex.getNextException().getNextException().getMessage();
+	            			 if(sqlex.getNextException().getNextException().getNextException() != null ) {
+	                			 msg1 +=  "\n" + sqlex.getNextException().getNextException().getNextException().getMessage();
+	            			 }
+	            		 }
+	            	 }
+            	 }
+            	 
+            	 //!!!todo have to figure out how to show user error message
+            	 return "Error: one or more books was not added to internet archive working table.  Most likely due to non-parsable data in one of the fields. \n" +  " \n " + msg1;
+             }
              return null;//no errors
          
         }
@@ -980,6 +1063,8 @@ public class IaSearchController implements MessageSourceAware{
             }
             
             if("title".equalsIgnoreCase(name)){
+            	if(val.length()>1023)
+                 	val = val.substring(0, 1023);
                 title = val;
             }else if("imageCount".equalsIgnoreCase(name)){
                 imageCount = val;
@@ -991,20 +1076,33 @@ public class IaSearchController implements MessageSourceAware{
                 identifier = val;
                 tn = val;
             }else if("subject".equalsIgnoreCase(name)){
+            	if(val.length()>1023)
+                 	val = val.substring(0, 1023);
                 subject = val;
             }else if("description".equalsIgnoreCase(name)){
+            	if(val.length()>90023)
+                 	val = val.substring(0, 90023);
                 description = val;
             }else if("publisher".equalsIgnoreCase(name)){
+            	if(val.length()>254)
+                 	val = val.substring(0, 254);
                 publisher = val;
             }else if("licenseurl".equalsIgnoreCase(name)){
             	//if(licenseurl.equals(""))//could be set as loan below - actually it is not till later step when generating xml metadata file that this "loan" tag is visible
-            		licenseurl = val;
+            	if(val.length()>254)
+                 	val = val.substring(0, 254);
+            	licenseurl = val;
             }else if("rights".equalsIgnoreCase(name)){
+            	if(val.length()>254)
+                 	val = val.substring(0, 254);
                 rights = val;
             }else if("creator".equalsIgnoreCase(name)){
                 creator = val;
             }else if("oclc-id".equalsIgnoreCase(name)){
-                oclc = val;
+            	oclc = val;
+            	if(oclc.length()>254)
+            		oclc = oclc.substring(0, 254);
+            		 
             }else if("volume".equalsIgnoreCase(name)){
                 volume = val;
             }
@@ -1013,6 +1111,8 @@ public class IaSearchController implements MessageSourceAware{
         
         if(volume.equals("") == false) {
         	title += ", " + volume;
+        	if(title.length()>1023)
+        		title = title.substring(0, 1023);
         }
         
         if(isSelectedBool)
