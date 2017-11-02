@@ -764,9 +764,7 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			paramsArray[iRow++] = params; 
 			params = new HashMap<String, Object>();
 		}
-		
 		getNamedParameterJdbcTemplate().batchUpdate(sql, paramsArray);
-
 	}
 
 	@Override
