@@ -14,8 +14,16 @@ window.onload=function(){
 <c:set var="maxFieldLen" value="75"/>
 var maxFieldLen = <c:out value = "${maxFieldLen}"/>;
 
+var selectedHighlightedRow = null;
 function showDetailsOverlay(selectedRow, identifier){
-	  
+	//highlight row
+	if(selectedHighlightedRow != null){
+		selectedHighlightedRow.style.cssText="";
+	}
+	var rowIdName = "tablerow" + selectedRow;
+	var rowElem = document.getElementById(rowIdName);
+	rowElem.style.cssText="background-color: #BCD4EC;";
+	selectedHighlightedRow = rowElem;
 	 
 	///////////set values
 	var hiddenField = document.getElementById('ol_selectedId');
@@ -333,7 +341,7 @@ function doPost(url){
 			 	<c:set var="rowNum" value="0"/>
 			 	<c:forEach var="row" items="${allRows}">
 				
-				<tr>
+				<tr id="tablerow${rowNum}">
 					<td valign="top" align="left" style="white-space: nowrap;">${rowNum+1}&nbsp; </td>
 					<c:forEach var="i" begin="0" end="${colLabels.size()-1}">
 						<td id="cell${rowNum}_${i}" valign="top" align="left">
