@@ -140,11 +140,12 @@ function closeDetailsOverlayAndSave( ){
 	var oclc = document.getElementById('ol_oclc').value; 
 	var tn = document.getElementById('ol_tn').value; 
 	var dnp = document.getElementById('ol_dnp').checked;
+	var volume = document.getElementById('ol_volume').value;
 	
 	if(cb.checked == true){
-		doUpdateAddToFs('true', bookId, oclc, tn, dnp);//rest call to update in db
+		doUpdateAddToFs('true', bookId, oclc, tn, dnp, volume);//rest call to update in db
 	}else{
-		doUpdateAddToFs('false', bookId, oclc, tn, dnp);//rest call to update in db
+		doUpdateAddToFs('false', bookId, oclc, tn, dnp, volume);//rest call to update in db
 	}
 	
 	
@@ -248,6 +249,7 @@ if(identifier == 'Firestone_Company_Electric_Generating_Sets_Service_Manual_And_
 				var FOLDER = $(this).find('FOLDER').text().trim();
 				var COMPLETE_DATE = $(this).find('COMPLETE_DATE').text().trim();
 				var DNP = $(this).find('DNP').text().trim();
+				var VOLUME = $(this).find('VOLUME').text().trim();
 				
 				 
 				//get selected value dynamically from TD html since it may have changed via ajax after page initially loaded.
@@ -284,6 +286,7 @@ if(identifier == 'Firestone_Company_Electric_Generating_Sets_Service_Manual_And_
 				document.getElementById('ol_licenseUrl').value= LICENSEURL;
 				document.getElementById('ol_rights').value= RIGHTS;
 				document.getElementById('ol_author').value= AUTHOR;
+				document.getElementById('ol_volume').value= VOLUME;
 				
 			});
 	   	 //alert("eeeeeeee");
@@ -318,7 +321,7 @@ function viewPdf(){
 	pdfChecked = true;
 }
 
-function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp){
+function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume){
 	 
 	var u = document.URL;
 	var i = u.indexOf('/ia/');
@@ -326,7 +329,7 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp){
 	var request = $.ajax({
 	  url: u,
 	  type: "POST",
-	  data: {"addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp},
+	  data: {"addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp, "volume" : volume},
 	  dataType: "html"
 	});
 
@@ -348,11 +351,13 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp){
 	    		cellToUpdateElem.innerHTML = 'F';
 	    	}
 	    	
-	    	cellToUpdateElem = document.getElementById(selectedId + '_13');//td cell
-	    	cellToUpdateElem.innerHTML = oclc;
+	    	cellToUpdateElem = document.getElementById(selectedId + '_4');//td cell
+	    	cellToUpdateElem.innerHTML = volume;
 	    	cellToUpdateElem = document.getElementById(selectedId + '_14');//td cell
-	    	cellToUpdateElem.innerHTML = tn;
+	    	cellToUpdateElem.innerHTML = oclc;
 	    	cellToUpdateElem = document.getElementById(selectedId + '_15');//td cell
+	    	cellToUpdateElem.innerHTML = tn;
+	    	cellToUpdateElem = document.getElementById(selectedId + '_16');//td cell
 		    if(dnp==true){
 		    	cellToUpdateElem.innerHTML = 'T';
 		    }else{
@@ -552,7 +557,7 @@ function doCopyPasteList(){
 								</c:otherwise>
 								</c:choose>
 							</c:when>
-							<c:when test='${i==13}'>
+							<c:when test='${i==14}'>
 								<c:choose>
 								<c:when test="${ fn:length( fieldValue ) le 35}" >
 									<c:out value="${fieldValue}"/>
@@ -670,6 +675,10 @@ function doCopyPasteList(){
 		<tr>
 		<td>Title</td>
 		<td><input id="ol_title" type="text" value="" style="width: 100%"></td>
+		</tr>
+		<tr>
+		<td>Volume*</td>
+		<td><input id="ol_volume" type="text" value="" style="width: 100%"></td>
 		</tr>
 		<tr>
 		<td>ImageCount </td>

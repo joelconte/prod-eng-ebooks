@@ -35,7 +35,8 @@ CREATE TABLE internetarchive_working (
 	END_DATE timestamp(6) without time zone,
 	FOLDER varchar(255),
 	COMPLETE_DATE timestamp(6) without time zone,
-	DNP varchar(1) );
+	DNP varchar(1),
+	VOLUME varchar(255) );
 
  
 

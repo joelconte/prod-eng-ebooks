@@ -8473,7 +8473,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 
     	row = getJdbcTemplate().query("select  IS_SELECTED, BIBCHECK, TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
     				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, SITE, BATCH_NUMBER, OWNER_USERID, " +
-    			       " STATE, STATE_ERROR, START_DATE, END_DATE, FOLDER,  COMPLETE_DATE, DNP   from internetarchive_working  " +
+    			       " STATE, STATE_ERROR, START_DATE, END_DATE, FOLDER,  COMPLETE_DATE, DNP, VOLUME   from internetarchive_working  " +
     				   " where identifier = '" + identifier + "' " , new  StringXRowMapper());
 		  
     	if(row.size()>0)
@@ -8513,6 +8513,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
         attrList.add(creator);//12
         attrList.add(tn);//13
         attrList.add(oclc);//14
+        attrList.add(volume);//15
+        
         
         
         */
@@ -8557,7 +8559,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		//List<List<String>> rowx = new ArrayList();
 		//rowx.add(rows.get(0));
 		//rows = rowx;
-	    insertBatch("internetarchive_working", new String[]{"is_selected",  "bibcheck", "title", "image_Count", "language", "publish_date", "identifier", "subject", "description", "publisher", "licenseurl", "rights", "author", "tn", "oclc", "batch_Number", "owner_userid", "state"}, new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR }, rows); 
+	    insertBatch("internetarchive_working", new String[]{"is_selected",  "bibcheck", "title", "image_Count", "language", "publish_date", "identifier", "subject", "description", "publisher", "licenseurl", "rights", "author", "tn", "oclc", "volume", "batch_Number", "owner_userid", "state"}, new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR }, rows); 
 
     }
  
@@ -8606,11 +8608,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
       	}*/
     	
     	if(userId != null) {
-		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
 		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, DNP, u.name  from internetarchive_working, users u " +
 		   " where u.id = owner_userid and  owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}else {
-    		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
     				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, DNP, u.name   from internetarchive_working, users u  " +
     				   " where  where u.id = owner_userid and   state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}
@@ -8674,19 +8676,20 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	List<List> rows;
     
     	//if one of the download states, then get all rows in any of those states
+    	//state will be comma list of download states, so just check first one (statusDownloadNotStartedBooks)
     	String extraColumns = "";
-    	if(state.contains(InternetArchiveService.allDownloadStates[0]) || state.contains(InternetArchiveService.statusInsertTfdb)) {//hack to see if a download state
+    	if(state.contains(InternetArchiveService.statusDownloadNotStartedBooks) || state.contains(InternetArchiveService.statusInsertTfdb)) {//hack to see if a download state
     			extraColumns = " STATE, START_DATE, END_DATE, FOLDER, ";
       	}else {
       		extraColumns = "  ";
       	}
     	
     	if(userId != null) {
-		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
 		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name   from internetarchive_working, users u  " +
 		   " where  u.id = owner_userid and owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}else {
-    		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
     				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name   from internetarchive_working, users u  " +
     				   " where u.id = owner_userid and  state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}
@@ -8752,11 +8755,11 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	String extraColumns = " STATE, START_DATE, END_DATE, FOLDER, IS_SELECTED, ";
     	
     	if(userId != null) {
-		rows = getJdbcTemplate().query("select " + extraColumns + " BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+		rows = getJdbcTemplate().query("select " + extraColumns + " BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
 		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name   from internetarchive_working, users u  " +
 		   " where  u.id = owner_userid and  owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}else {
-    		rows = getJdbcTemplate().query("select " + extraColumns + " BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    		rows = getJdbcTemplate().query("select " + extraColumns + " BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
     				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name   from internetarchive_working, users u  " +
     				   " where  u.id = owner_userid and state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}
@@ -8820,19 +8823,20 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	List<List> rows;
     
     	//if one of the download states, then get all rows in any of those states
+    	//state will be comma list of download states, so just check first one (statusDownloadNotStartedBooks)
     	String extraColumns = "";
-    	if(state.contains(InternetArchiveService.allDownloadStates[0]) || state.contains(InternetArchiveService.statusInsertTfdb)) {//hack to see if a download state
+    	if(state.contains(InternetArchiveService.statusDownloadNotStartedBooks) || state.contains(InternetArchiveService.statusInsertTfdb)) {//hack to see if a download state
     			extraColumns = " STATE, START_DATE, END_DATE, FOLDER, ";
       	}else {
       		extraColumns = "  ";
       	}
     	
     	if(userId != null) {
-		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
 		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name, trim(state_error)   from internetarchive_working, users u  " +
 		   " where  u.id = owner_userid and owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}else {
-    		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
     				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, site, u.name, trim(state_error)  from internetarchive_working, users u  " +
     				   " where u.id = owner_userid and  state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}
@@ -8898,7 +8902,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     
     
     
-    public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String user) {
+    public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String user) {
     	 
     		
     	//first do a dupe check
@@ -8909,7 +8913,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     		return "Error, book with same TN or OCLC already exists in TFDB: " + dupeTn;
     	}
     	
-    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ? where identifier = ?  ";
+    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ? where identifier = ?  ";
     	if(addToFs.equals("true"))
     		addToFs = "T";
     	else
@@ -8920,7 +8924,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	else
     		dnp = "F";
     	
-		int count = getJdbcTemplate().update(sql1, addToFs, oclc, tn, dnp, bookId);	
+		int count = getJdbcTemplate().update(sql1, addToFs, oclc, tn, dnp, volume, bookId);	
 
 		if(count != 1) {
 			return "Error, book identifier not found";
@@ -9007,7 +9011,14 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	 updateInternetArchiveWorkingBooksChangeState(InternetArchiveService.statusVerifyBooks, InternetArchiveService.statusPreDownloadBooks, userId);
     }
     public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooks(String userId){
+    	
+		//move all to next state
     	updateInternetArchiveWorkingBooksChangeState( InternetArchiveService.statusPreDownloadBooks, InternetArchiveService.statusDownloadNotStartedBooks, userId);
+    	
+    	//then update to complete if DNP=t
+	   	String sql1 = "UPDATE internetarchive_working SET state = ?, start_date = null, end_date = null, folder = null where state in ( '" + InternetArchiveService.statusDownloadNotStartedBooks + "' )  and dnp = 'T' ";
+		getJdbcTemplate().update(sql1, InternetArchiveService.statusCompleteDownloadAndXml);
+
     }
     
     public String updateInternetArchiveWorkingBookToState(String bookId, String state) {
@@ -9022,6 +9033,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     		return null;
     	     
     }
+    
     
     private void updateInternetArchiveWorkingBooksChangeState(String fromState, String toState, String userId){
     	String sql1; 
@@ -9128,7 +9140,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	    		+ " priority_item, withdrawn, digital_copy_only, batch_class, scanned_by, pdf_ready, date_released, compression_code, "
 	    		+ " pdf_orem_archived_date, pdf_orem_drive_serial_num, pdf_orem_drive_name, site, secondary_identifier, oclc_number, owning_institution, property_right, "
 	    		+ "  scan_ia_complete_date, dnp ) "
-				+ " SELECT tn, title, author,  CASE WHEN language ='' THEN null ELSE language END , cast( CASE WHEN image_count='' THEN null ELSE image_count END as int), publisher, "
+				+ " SELECT tn, case when volume is not null and volume != '' then CONCAT(title, ', ', volume)  else title end, author,  CASE WHEN language ='' THEN null ELSE language END , cast( CASE WHEN image_count='' THEN null ELSE image_count END as int), publisher, "
 	    		+ " 'F', 'F', 'F', 'Internet Archives (IA)', site, current_timestamp, current_timestamp, 'Iarchive',  "
 				+ " current_timestamp, ?, ?, 'Internet Archives (IA)', identifier, oclc, 'Internet Archives (IA)',  'Public Domain', "
 	    		+ " current_timestamp,  CASE WHEN dnp='T' THEN 'T' ELSE null END  "

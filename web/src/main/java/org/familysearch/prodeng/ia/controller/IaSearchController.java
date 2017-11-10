@@ -90,6 +90,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("BibCheck");
 		labels.add("Identifier");
 		labels.add("Title");
+		labels.add("Volume");
 		labels.add("ImageCount");
 		labels.add("Language");
 		labels.add("PublishDate");
@@ -137,9 +138,9 @@ public class IaSearchController implements MessageSourceAware{
 
 	//update addToFs checkbox selection (add to familysearch)
 	@RequestMapping(value="ia/updateAddToFsAjax",  method=RequestMethod.POST)
-	public  HttpEntity<byte[]> updateAddToFsAjaxPost(String bookId, String addToFs, String oclc, String tn, String dnp, HttpServletRequest req, Locale locale, Principal principal ) {		
+	public  HttpEntity<byte[]> updateAddToFsAjaxPost(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, HttpServletRequest req, Locale locale, Principal principal ) {		
 		 
-		String rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, oclc, tn, dnp, principal.getName());
+		String rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, oclc, tn, dnp, volume, principal.getName());
  
 		byte[] documentBody = "updated".getBytes();
 		if(rc != null) {
@@ -239,6 +240,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("BibCheck");
 		labels.add("Identifier");
 		labels.add("Title");
+		labels.add("Volume");
 		labels.add("ImageCount");
 		labels.add("Language");
 		labels.add("PublishDate");
@@ -290,6 +292,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("BibCheck");
 		labels.add("Identifier");
 		labels.add("Title");
+		labels.add("Volume");
 		labels.add("ImageCount");
 		labels.add("Language");
 		labels.add("PublishDate");
@@ -322,6 +325,7 @@ public class IaSearchController implements MessageSourceAware{
 	 
 		//first move to next downlaod not yet started state, so they move to next page in gui and show state 
 		bookService.updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooks(null);//all users' books for now.  These are books that WGET code will pickup and process in todoList below
+		//also dnp books auto complete since no wget needed
 		bookService.deleteInternetArchiveWorkingBooksStatePreDownloadBooks(null);//delete all remaining non-flagged books  
 		bookService.updateInternetArchiveWorkingBooksStateDownloadNotStartedBooksErrorMsg(null);
 		
@@ -367,6 +371,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("BibCheck");
 		labels.add("Identifier");
 		labels.add("Title");
+		labels.add("Volume");
 		labels.add("ImageCount");
 		labels.add("Language");
 		labels.add("PublishDate");
@@ -488,6 +493,7 @@ public class IaSearchController implements MessageSourceAware{
 		sb.append("<FOLDER>" + StringEscapeUtils.escapeXml(row.get(21)) + "</FOLDER>");
 		sb.append("<COMPLETE_DATE>" + row.get(22) + "</COMPLETE_DATE>");
 		sb.append("<DNP>" + row.get(23) + "</DNP>");
+		sb.append("<VOLUME>" + row.get(24) + "</VOLUME>");
 
 		sb.append("</row>");
 		sb.append("</rows>");
@@ -648,6 +654,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("BibCheck");
 		labels.add("Identifier");
 		labels.add("Title");
+		labels.add("Volume");
 		labels.add("ImageCount");
 		labels.add("Language");
 		labels.add("PublishDate");
@@ -1118,15 +1125,17 @@ public class IaSearchController implements MessageSourceAware{
             		 
             }else if("volume".equalsIgnoreCase(name)){
                 volume = val;
+                if(volume.length()>254)
+                	volume = volume.substring(0, 254);
             }
             
         }    
         
-        if(volume.equals("") == false) {
+        /*if(volume.equals("") == false) {
         	title += ", " + volume;
         	if(title.length()>1023)
         		title = title.substring(0, 1023);
-        }
+        }*/
         
         if(isSelectedBool)
         	attrList.add("T");//0
@@ -1146,7 +1155,7 @@ public class IaSearchController implements MessageSourceAware{
         attrList.add(creator);//12
         attrList.add(tn);//13
         attrList.add(oclc);//14
-        //not visible for now attrList.add(volume);
+        attrList.add(volume);//15
         
 
         return attrList;
