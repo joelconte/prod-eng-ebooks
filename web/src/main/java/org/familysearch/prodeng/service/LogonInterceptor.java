@@ -1,4 +1,5 @@
 package org.familysearch.prodeng.service;
+import java.net.InetAddress;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,31 @@ public class LogonInterceptor extends HandlerInterceptorAdapter  {
 	   		else {
 	   			//could return dialog to enter user id and store in session
 	   		}
+			
+	   		String hostname = "";
+			try
+			{
+			    InetAddress addr;
+			    addr = InetAddress.getLocalHost();
+			    hostname = addr.getHostName();
+			    if(hostname.contains("bookprod-wf-app01"))
+			    	hostname = "";//prod1
+			    else if(hostname.contains("bookstage-wf-app01"))
+			    	hostname = "Stage Server";
+			    else if(hostname.contains("bookprod-wf-app02"))
+			    	hostname = "Mining Server";
+			    else
+			    	hostname = "Local Server";
+			    
+			   
+			}
+			catch (Exception ex)
+			{
+			    System.out.println("Hostname can not be resolved");
+			}
+			request.setAttribute( "hostname", hostname); 
+   			
+
       
    }
    

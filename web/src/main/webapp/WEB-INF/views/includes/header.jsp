@@ -8,7 +8,10 @@
 
         
                 <!--<security:authentication property="principal.username" var="userId"/>-->
-		        
+		        <c:if test="${hostname!='prod'}">
+	        		<li id="host" style="padding-top: 3px; padding-right: 20px; color: orange;">${hostname}
+	  	  	  		</li>
+	        	</c:if>
 	        	<c:if test="${loggedOnUserName==null}">
 	        		<li style="padding-top: 3px;"><a href="${pageContext.request.contextPath}">Login</a> 
 	  	  	  		</li>
