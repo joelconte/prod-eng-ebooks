@@ -141,11 +141,13 @@ function closeDetailsOverlayAndSave( ){
 	var tn = document.getElementById('ol_tn').value; 
 	var dnp = document.getElementById('ol_dnp').checked;
 	var volume = document.getElementById('ol_volume').value;
+	var imageCount = document.getElementById('ol_imageCount').value;
+	var title = document.getElementById('ol_title').value;
 	
 	if(cb.checked == true){
-		doUpdateAddToFs('true', bookId, oclc, tn, dnp, volume);//rest call to update in db
+		doUpdateAddToFs('true', bookId, oclc, tn, dnp, volume, imageCount, title);//rest call to update in db
 	}else{
-		doUpdateAddToFs('false', bookId, oclc, tn, dnp, volume);//rest call to update in db
+		doUpdateAddToFs('false', bookId, oclc, tn, dnp, volume, imageCount, title);//rest call to update in db
 	}
 	
 	
@@ -321,7 +323,7 @@ function viewPdf(){
 	pdfChecked = true;
 }
 
-function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume){
+function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, title){
 	 
 	var u = document.URL;
 	var i = u.indexOf('/ia/');
@@ -329,7 +331,7 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume){
 	var request = $.ajax({
 	  url: u,
 	  type: "POST",
-	  data: {"addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp, "volume" : volume},
+	  data: {"addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp, "volume" : volume, "imageCount": imageCount, "title": title},
 	  dataType: "html"
 	});
 
@@ -347,12 +349,18 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume){
 	    	var cellToUpdateElem = document.getElementById(selectedId + '_0');//td cell
 	    	if(isSelected=='true'){
 	    		cellToUpdateElem.innerHTML = 'T';
+	    		cellToUpdateElem.style= 'Color: green';
 	    	}else{
 	    		cellToUpdateElem.innerHTML = 'F';
+	    		cellToUpdateElem.style= 'Color: red';
 	    	}
 	    	
+	    	cellToUpdateElem = document.getElementById(selectedId + '_3');//td cell
+	    	cellToUpdateElem.innerHTML = title;
 	    	cellToUpdateElem = document.getElementById(selectedId + '_4');//td cell
 	    	cellToUpdateElem.innerHTML = volume;
+	    	cellToUpdateElem = document.getElementById(selectedId + '_5');//td cell
+	    	cellToUpdateElem.innerHTML = imageCount;
 	    	cellToUpdateElem = document.getElementById(selectedId + '_14');//td cell
 	    	cellToUpdateElem.innerHTML = oclc;
 	    	cellToUpdateElem = document.getElementById(selectedId + '_15');//td cell
@@ -557,6 +565,16 @@ function doCopyPasteList(){
 								</c:otherwise>
 								</c:choose>
 							</c:when>
+							<c:when test='${i==0}'>
+								<c:choose>
+								<c:when test="${ fieldValue == 'F'}" >
+									<div style="Color: red;"/><c:out value="${fieldValue}"/></div>
+								</c:when>
+								<c:otherwise>
+									<div style="Color: green;"/><c:out value="${fieldValue}"/></div>
+								</c:otherwise>
+							    </c:choose>
+							</c:when>
 							<c:when test='${i==14}'>
 								<c:choose>
 								<c:when test="${ fn:length( fieldValue ) le 35}" >
@@ -654,7 +672,7 @@ function doCopyPasteList(){
 	<table style="width: 100%; height: 100%;">
 		<tr>
 		<td style="width: 110px;">Add to FS* </td>
-		<td><input id="ol_selected" type="checkbox" value="" style="xwidth: 100%"></td>
+		<td><input id="ol_selected" type="checkbox" value="" style="zoom: 2; xwidth: 100%"></td>
 		</tr>
 		<tr>
 		<td>BibCheck </td>
@@ -662,7 +680,7 @@ function doCopyPasteList(){
 		</tr>
 		<tr>
 		<td>Identifier </td>
-		<td><input id="ol_identifier" type="text" value="" style="width: 100%"></td>
+		<td><input id="ol_identifier" type="text" value="" style="width: 100%" readonly></td>
 		</tr>
 		<tr>
 		<td>TN*</td>
@@ -674,51 +692,51 @@ function doCopyPasteList(){
 		</tr>
 		<tr>
 		<td>Title</td>
-		<td><input id="ol_title" type="text" value="" style="width: 100%"></td>
+		<td><input id="ol_title" type="text" value="" style="width: 100%" readonly></td>
 		</tr>
 		<tr>
 		<td>Volume*</td>
 		<td><input id="ol_volume" type="text" value="" style="width: 100%"></td>
 		</tr>
 		<tr>
-		<td>ImageCount </td>
+		<td>ImageCount*</td>
 		<td><input id="ol_imageCount" type="text" value="" style="width: 100%"></td>
 		</tr>
 		<tr>
 		<td>Language </td>
-		<td><input id="ol_language" type="text" value="" style="width: 100%"></td>
+		<td><input id="ol_language" type="text" value="" style="width: 100%" readonly></td>
 		</tr>
 		<tr>
 		<td>PublishDate </td>
-		<td><input id="ol_publishDate" type="text" value="" style="width: 100%"></td>
+		<td><input id="ol_publishDate" type="text" value="" style="width: 100%" readonly></td>
 		</tr>
 		<tr>
 		<td>Subject </td>
-		<td><textarea id="ol_subject" type="text" value="" rows="3" cols="50" style="width: 100%"></textarea></td>
+		<td><textarea id="ol_subject" type="text" value="" rows="3" cols="50" style="width: 100%" readonly></textarea></td>
 		</tr>
 		<tr>
 		<td>Description</td>
-		<td><textarea id="ol_description" type="text" value=""  rows="3"  cols="50" style="width: 100%"></textarea></td>
+		<td><textarea id="ol_description" type="text" value=""  rows="3"  cols="50" style="width: 100%" readonly></textarea></td>
 		</tr>
 		<tr>
 		<td>Publisher </td>
-		<td><input id="ol_publisher" type="text" value="" style="width: 100%"></td>
+		<td><input id="ol_publisher" type="text" value="" style="width: 100%" readonly></td>
 		</tr>
 		<tr>
 		<td>LicenseUrl </td>
-		<td><input id="ol_licenseUrl" type="text" value="" style="width: 100%"></td>
+		<td><input id="ol_licenseUrl" type="text" value="" style="width: 100%" readonly></td>
 		</tr>
 		<tr>
 		<td>Rights </td>
-		<td><input id="ol_rights" type="text" value="" style="width: 100%"></td>
+		<td><input id="ol_rights" type="text" value="" style="width: 100%" readonly></td>
 		</tr>
 		<tr>
 		<td>Author</td>
-		<td><input id="ol_author" type="text" value="" style="width: 100%"></td>
+		<td><input id="ol_author" type="text" value="" style="width: 100%" readonly></td>
 		</tr>
 		<tr>
 		<td>DNP*</td>
-		<td><input id="ol_dnp" type="checkbox" value="" style="xwidth: 100%"></td>
+		<td><input id="ol_dnp" type="checkbox" value="" style="zoom: 2; xwidth: 100%"></td>
 		</tr>
 	</table>  
    <br>

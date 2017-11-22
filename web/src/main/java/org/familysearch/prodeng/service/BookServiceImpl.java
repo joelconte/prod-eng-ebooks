@@ -8902,7 +8902,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     
     
     
-    public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String user) {
+    public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, String user) {
     	 
     		
     	//first do a dupe check
@@ -8913,7 +8913,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     		return "Error, book with same TN or OCLC already exists in TFDB: " + dupeTn;
     	}
     	
-    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ? where identifier = ?  ";
+    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ?, image_count = ?, title = ? where identifier = ?  ";
     	if(addToFs.equals("true"))
     		addToFs = "T";
     	else
@@ -8924,7 +8924,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	else
     		dnp = "F";
     	
-		int count = getJdbcTemplate().update(sql1, addToFs, oclc, tn, dnp, volume, bookId);	
+		int count = getJdbcTemplate().update(sql1, addToFs, oclc, tn, dnp, volume, imageCount, title, bookId);	
 
 		if(count != 1) {
 			return "Error, book identifier not found";

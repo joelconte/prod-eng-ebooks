@@ -138,9 +138,12 @@ public class IaSearchController implements MessageSourceAware{
 
 	//update addToFs checkbox selection (add to familysearch)
 	@RequestMapping(value="ia/updateAddToFsAjax",  method=RequestMethod.POST)
-	public  HttpEntity<byte[]> updateAddToFsAjaxPost(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, HttpServletRequest req, Locale locale, Principal principal ) {		
-		 
-		String rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, oclc, tn, dnp, volume, principal.getName());
+	public  HttpEntity<byte[]> updateAddToFsAjaxPost(String onlyAddToFsParam, String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, HttpServletRequest req, Locale locale, Principal principal ) {		
+		String rc = null;
+		if(onlyAddToFsParam != null && onlyAddToFsParam.equals("true"))
+			rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, principal.getName());
+		else
+			rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, oclc, tn, dnp, volume, imageCount, title, principal.getName());
  
 		byte[] documentBody = "updated".getBytes();
 		if(rc != null) {
