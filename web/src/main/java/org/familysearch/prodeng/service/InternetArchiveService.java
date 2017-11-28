@@ -209,6 +209,11 @@ public class InternetArchiveService {
 							//JOptionPane.showMessageDialog(null, "Error while performing WGET command to download books from IA.\n" + e.toString());
 							System.out.println("Error while performing WGET command to download books from IA.\n" + e.toString());
 							e.printStackTrace();
+
+							//save status of book to error
+							setBookToDownloadStatus(bookId, statusErrorPdfMetadata, destDirFinal);
+							 
+							bookService.updateInternetArchiveWorkingBooksError( bookId, e.toString());
 						}
 					}
 					System.out.println("Thread ended - " + Thread.currentThread());

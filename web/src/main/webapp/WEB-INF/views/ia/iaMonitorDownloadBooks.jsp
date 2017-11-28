@@ -165,29 +165,87 @@ console.log("!!identifier" + identifier);
 	    	alert("Error msg: " + e);
 	    }
 	    
-
+/* from InternetArchiveService.java download states
+	public static String statusDownloadNotStartedBooks ="download not started";
+	public static String statusDownloadStartedBooks = "download started";
+	public static String statusGenerateMetadata = "generating xml";
+	public static String statusCompleteDownloadAndXml = "download and xml complete";
+	public static String statusErrorPdfMetadata = "pdf or xml error";
+	public static String statusErrorCopyright = "copyright - not public domain";
+	*/
 	    
 	    //if all are complete stop refreshing page
 		var keys = Object.keys(mapOfBooks);
+		//check states for all complete, has erros, and hasCopyright book.
 		var allComplete = true;
+		var totalCount = keys.length;
+		var pendingCount = 0;
+		var runningCount = 0;
+		var successCount = 0;
+		var errorCount = 0;
+		var copyprotectedCount = 0;
+		
 		for(var i = 0; i< keys.length; i++){
-	 
-	    	if(mapOfBooks[keys[i]].fieldState != 'download and xml complete'){
+			var thisBookState = mapOfBooks[keys[i]].fieldState;
+	    	if(thisBookState == 'download not started'){
+	    		allComplete = false;
+	    		pendingCount++;
+	    	}else if(thisBookState == 'download started'){
 	    	 	allComplete = false;
-	    		break;
+	    	 	runningCount++;
+	    	}else if(thisBookState == 'generating xml'){
+	    		allComplete = false;
+	    		runningCount++;
+	    	}else if(thisBookState == 'pdf or xml error'){
+	    		errorCount++;
+	    		
+	      	}else if(thisBookState == 'copyright - not public domain'){
+		    	copyprotectedCount++;
+	    		 
+	      	}else if(thisBookState == 'download and xml complete'){
+	      		successCount++;
+	    		 
 	    	}
+	    	
 		}
     
+		var finalMessageTitle = '';
+		finalMessageTitle = 'Total=' + totalCount.toString()  + '  Successful=' + successCount.toString()  + '  Running=' + runningCount.toString()+ '  Pending=' + pendingCount.toString()  + '  CopyProtected=' + copyprotectedCount.toString() + '  Errors=' + errorCount.toString();
+	 
+		 
+		   
+	    title = document.getElementById('title').innerHTML;
+	    var dotIndex = title.indexOf('.');
+	    var dotCount = title.length - dotIndex;
+	    
+	    if(dotIndex == -1){
+	    	title = finalMessageTitle + '..';
+	    }else{
+	    	if(dotCount < 40){
+	    		var dots = '..';
+	    		for(i = 0 ; i < dotCount ; i++){
+	    			dots += '..';
+	    		}
+	    		title = finalMessageTitle + dots;
+	    	}else
+	    		title = finalMessageTitle;
+	    		
+	    }
+	    
+		document.getElementById('title').innerHTML =  title;
+		
+		
+		
     	if(allComplete == true){
-    		setRefreshingIndicator(false);
-    		
-    		title = document.getElementById('title').innerHTML;
-    		document.getElementById('title').innerHTML =  title + ' - (all complete)';
-        			
+    		setRefreshingIndicator(false);		
+    		//enable Done button
+    		document.getElementById('doneButton').disabled = false;
+    		document.getElementById('doneButton').style.cssText="background-color: green;";
+    		 
     		return false;//done
     	}
     	
-	    //queryStatusOfDownloads();//restart
+    	document.getElementById('doneButton').disabled = true;
 	  	setRefreshingIndicator(false);
 	    setTimeout(queryStatusOfDownloads, 5000);
 	});
@@ -205,13 +263,6 @@ function setRefreshingIndicator(enableIt){
 			$("body").css("cursor", "default");
 		}
 	   
-	   
-	    title = document.getElementById('title').innerHTML;
-		if(title.length < 35){
-			document.getElementById('title').innerHTML =  title + '.';
-		}else{
-			document.getElementById('title').innerHTML =  title.substring(0, title.length - 9);
-		}
 }
 /*
 function setRefreshingIndicator(enableIt){
@@ -615,7 +666,7 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, 
 				<td></td><!-- space for checkboxes if I remember correctly -->
 				 
 			  <!--  <td><button id="release" name="button" value="release"  onclick="queryStatusOfDownloads(); return false; ">Refresh</button></td>  -->
-			    <td><button id="" name="button" value=""  onclick="releaseBooksToInsert(); return false; ">DONE - All downloaded books and xml are ready for next step</button></td>
+			    <td><button id="doneButton" name="button" value="" enabled='false' onclick="releaseBooksToInsert(); return false; ">DONE - All downloaded books and xml are ready for next step</button></td>
 			  	<td><button id="" name="button" value=""  onclick="stopDownloads(); return false; ">STOP Downloads - In case of error</button></td>
 				<td><button id="" name="button" value=""  onclick="retryDownloads(); return false; ">RETRY ALL Downloads - In case of error</button></td>
 				<td><button id="" name="button" value=""  onclick="retryDownloads2(); return false; ">RETRY Non-Complete Downloads - In case of error</button></td>
