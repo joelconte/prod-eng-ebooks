@@ -745,8 +745,9 @@ public class IaSearchController implements MessageSourceAware{
             
             String bibcheckInClause = "";
             int callCount = totalCount/1001 + 1;
-            if(callCount > 5)
-            	callCount = 5;//5 max = 5k books
+            int batchCount = 10;//20k books worth
+            if(callCount > batchCount)
+            	callCount = batchCount;//10 max = 20k books
             
             for(int i = 1; i <= callCount ; i++) {
             	b = batchedSearchRestCall(searchKey, 1000, i);//get 5 batches of 1000 max
@@ -1011,9 +1012,9 @@ public class IaSearchController implements MessageSourceAware{
             	 return "Error: one or more books was not added to internet archive working table.  Most likely due to non-parsable data in one of the fields. \n" +  " \n " + msg1;
              }
              
-             if(totalCount > 5000) {
-             	//todo some kind of warning that they need to narrow down search to get all rows since 5000 is missionary limit
-            	return "Warning:  Your search finds " + totalCount + " books.  This page can only retrieve 5000 books (before filtering copyright and duplicates).  Consider narrowing down your search criteria.";
+             if(totalCount > batchCount*1000) {
+             	//todo some kind of warning that they need to narrow down search to get all rows since 20000 is missionary limit
+            	return "Warning:  Your search finds " + totalCount + " books.  This page can only retrieve 10000 books (before filtering copyright and duplicates).  Consider narrowing down your search criteria.";
              }
              
              return null;//no errors

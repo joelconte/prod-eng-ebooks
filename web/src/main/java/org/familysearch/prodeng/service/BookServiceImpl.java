@@ -8907,10 +8907,10 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     		
     	//first do a dupe check
     	List<List> dupe = getJdbcTemplate().query("select tn, oclc_number from book " +
-    			   " where  (tn = '" + tn + "' and tn != '') or (oclc_number = '" + oclc + "' and oclc_number != '') " ,  new StringXRowMapper());
+    			   " where  (tn = '" + tn + "' and tn != '')  " ,  new StringXRowMapper());//or (oclc_number = '" + oclc + "' and oclc_number != '')
     	if(dupe.size()>0) {
     		String dupeTn = (String) dupe.get(0).get(0);
-    		return "Error, book with same TN or OCLC already exists in TFDB: " + dupeTn;
+    		return "Error, book with same TN already exists in TFDB: " + dupeTn;
     	}
     	
     	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ?, image_count = ?, title = ? where identifier = ?  ";

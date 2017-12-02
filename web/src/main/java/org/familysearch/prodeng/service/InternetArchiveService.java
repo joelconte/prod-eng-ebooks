@@ -113,7 +113,7 @@ public class InternetArchiveService {
 		//int downloadCountTotal = 0;
 		//List rows = this.getTodoList();
 		
-		int threadCount = 10;
+		int threadCount = 2;
 		countLeftThread = threadCount;
 		for(int x = 0; x< threadCount; x++){
 
