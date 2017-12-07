@@ -227,7 +227,7 @@
 		<repository>
 			<id>x</id>
 			<name>x</name>
-			<url>https://mvn.fsglobal.net/content/repositories/approved</url>
+			<url>http://nexus.a.fsglobal.net/content/repositories/approved</url>
 			<snapshots>
 				<enabled>false</enabled>
 				<updatePolicy>always</updatePolicy>
