@@ -54,6 +54,7 @@ public class InternetArchiveService {
 	
 	public static String statusInsertTfdb = "ready to add tfdb";
 	public static String statusComplete = "complete";
+	public static String statusCompleteRejected = "complete and rejected";//of no interest to familysearch
 	//these are part of whole download threads states (all show up on page what shows monitoring)
 	public static String[] allDownloadStates = {statusDownloadNotStartedBooks, statusDownloadStartedBooks, statusGenerateMetadata ,statusCompleteDownloadAndXml, statusErrorPdfMetadata, statusErrorCopyright};//just valid states that can be changed from...into another download state
 	public static String[] allDownloadStatesExceptComplete = {statusDownloadNotStartedBooks, statusDownloadStartedBooks, statusGenerateMetadata ,statusErrorPdfMetadata , statusErrorCopyright};

@@ -353,6 +353,8 @@ public interface BookService {
 	public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, String user);
 	public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String user);
 	public String updateInternetArchiveWorkingBookToState(String bookId, String state);
+	public String updateInternetArchiveWorkingBookChecked(String bookId, String user);
+	public void recordCompletionCheckedBooks( String user );
 	
 	public void updateInternetArchiveWorkingBooksChangeStateVerifyBooks(String userId, String site);
 	public void updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(String userId);

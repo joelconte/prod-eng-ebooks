@@ -8463,6 +8463,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
                 dupeSet.add(r.get(0));
             }
 
+         
+            
             return dupeSet;
     }
 
@@ -8484,6 +8486,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     }
     
    
+    //match any book already in working table including those that were flagged as F in the past and not added 
     public Set<String> getIneternetArchiveBooksInProcess(String inClause){
 		Set<String> dupeSet = new HashSet<String>();
         List<List> vals;
@@ -8514,6 +8517,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
         attrList.add(tn);//13
         attrList.add(oclc);//14
         attrList.add(volume);//15
+        attrList.add(checked);//16
         
         
         
@@ -8559,7 +8563,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		//List<List<String>> rowx = new ArrayList();
 		//rowx.add(rows.get(0));
 		//rows = rowx;
-	    insertBatch("internetarchive_working", new String[]{"is_selected",  "bibcheck", "title", "image_Count", "language", "publish_date", "identifier", "subject", "description", "publisher", "licenseurl", "rights", "author", "tn", "oclc", "volume", "batch_Number", "owner_userid", "state"}, new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR }, rows); 
+	    insertBatch("internetarchive_working", new String[]{"is_selected",  "bibcheck", "title", "image_Count", "language", "publish_date", "identifier", "subject", "description", "publisher", "licenseurl", "rights", "author", "tn", "oclc", "volume", "checked", "batch_Number", "owner_userid", "state"}, new int[] {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR }, rows); 
 
     }
  
@@ -8590,7 +8594,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	return getInternetArchiveWorkingBooks4(userId, allDownloadStates); 
     	
     } 
-     
+      
+    //with CHECKED
     private List<List> getInternetArchiveWorkingBooks(String userId, String state){
     	if(state.startsWith("'") == false) {
     		state = "'" + state + "'";
@@ -8601,19 +8606,14 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     
     	//if one of the download states, then get all rows in any of those states
     	String extraColumns = "";
-    	/*if(state.contains(InternetArchiveService.allDownloadStates[0]) || state.contains(InternetArchiveService.statusInsertTfdb)) {//hack to see if a download state
-    			//not used anymoreextraColumns = " STATE, START_DATE, END_DATE, FOLDER, ";
-      	}else {
-      		extraColumns = "   ";
-      	}*/
-    	
+    
     	if(userId != null) {
 		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
-		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, DNP, u.name  from internetarchive_working, users u " +
+		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, DNP, CHECKED, u.name  from internetarchive_working, users u " +
 		   " where u.id = owner_userid and  owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}else {
     		rows = getJdbcTemplate().query("select " + extraColumns + " IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
-    				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, DNP, u.name   from internetarchive_working, users u  " +
+    				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, DNP, CHECKED, u.name   from internetarchive_working, users u  " +
     				   " where  where u.id = owner_userid and   state in (" + state + ") order by identifier " , new StringXRowMapper());
     	}
 		
@@ -8665,7 +8665,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		return rows;
 	
     }
- 
+    
     //same as 1, but with extra column
     private List<List> getInternetArchiveWorkingBooks2(String userId, String state){
     	if(state.startsWith("'") == false) {
@@ -8913,7 +8913,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     		return "Error, book with same TN already exists in TFDB: " + dupeTn;
     	}
     	
-    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ?, image_count = ?, title = ? where identifier = ?  ";
+    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ?, image_count = ?, title = ?, checked = 'T' where identifier = ?  ";
     	if(addToFs.equals("true"))
     		addToFs = "T";
     	else
@@ -8933,7 +8933,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     }
 
     public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String user) {
-    	String sql1 = "UPDATE internetarchive_working SET is_selected = ? where identifier = ?  ";
+    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, checked = 'T' where identifier = ?  ";
     	if(addToFs.equals("true"))
     		addToFs = "T";
     	else
@@ -8947,7 +8947,29 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		return null;
     }
     
+    public void recordCompletionCheckedBooks( String user ) {
+    	//update complete date if Checked and still in Select state (and add final state rejected)
+    	String sql = "UPDATE internetarchive_working SET complete_date = current_timestamp, state = ? where checked = 'T' and state = ? and owner_userid = ? ";
+    	
+		int count = getJdbcTemplate().update(sql, InternetArchiveService.statusCompleteRejected, InternetArchiveService.statusSelectBooks, user);
+		
 
+    }
+    
+    //record that book was checked by missionary (may or maynot have been selected for familysearch)
+    public String updateInternetArchiveWorkingBookChecked(String bookId, String user) {
+    	String sql1 = "UPDATE internetarchive_working SET checked = 'T' where identifier = ?  ";
+    	 
+    	
+		int count = getJdbcTemplate().update(sql1, bookId);	
+
+		if(count != 1) {
+			return "error, not found";
+		}
+		return null;
+    }
+    
+    
     public void deleteInternetArchiveWorkingBooks(List<String> identifier) {
     	if(identifier.size()==0)
     		return;

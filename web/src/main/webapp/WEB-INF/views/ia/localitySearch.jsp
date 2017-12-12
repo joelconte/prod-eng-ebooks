@@ -192,7 +192,7 @@ function doLocalitySearchX(localityNumber, selectedValue){
 }
 
 function doIaSearch(){
-	rc = confirm("A search of archive.org will now be performed.  \nResults will be shown in step '2- Select Books' for further review. \n\nAny existing books you are working on in '2- Select Books' will be removed in order to process this new search.");
+	rc = confirm("A search of archive.org will now be performed.  \nResults will be shown in step '2- Select Books' for further review. \n\nAny existing books you are working on in '2- Select Books' will NOT be removed.");
 	if(rc != true){
 		return;
 	}

@@ -64,7 +64,7 @@ public class IaSearchController implements MessageSourceAware{
 	public String doIaSearchGet( String searchKeyword, HttpServletRequest req, Locale locale, Principal principal ) {		
 		 
 		//delete existing in step2 for this userid
-		bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(principal.getName());
+		//no delete since may want to run multiple queries.  bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(principal.getName());
 		 //search and insert into db results
 		String msg = doIaSearchRestCall(searchKeyword, principal.getName(), false);//do search and insert into table 
 		if(msg != null) {
@@ -103,6 +103,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("Oclc");
 		labels.add("Tn");
 		labels.add("DNP");
+		labels.add("Checked");
 		labels.add("BookMiner");
 		 
 		List<List> allRows = bookService.getInternetArchiveWorkingBooksStateSelectBooks(principal.getName());
@@ -138,13 +139,17 @@ public class IaSearchController implements MessageSourceAware{
 
 	//update addToFs checkbox selection (add to familysearch)
 	@RequestMapping(value="ia/updateAddToFsAjax",  method=RequestMethod.POST)
-	public  HttpEntity<byte[]> updateAddToFsAjaxPost(String onlyAddToFsParam, String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, HttpServletRequest req, Locale locale, Principal principal ) {		
+	public  HttpEntity<byte[]> updateAddToFsAjaxPost(String onlyAddToFsParam, String checked, String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, HttpServletRequest req, Locale locale, Principal principal ) {		
 		String rc = null;
-		if(onlyAddToFsParam != null && onlyAddToFsParam.equals("true"))
+		if(checked != null && checked.equals("true")) {
+			rc = bookService.updateInternetArchiveWorkingBookChecked(bookId, principal.getName());
+			
+		}else if(onlyAddToFsParam != null && onlyAddToFsParam.equals("true")) {
 			rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, principal.getName());
-		else
+		}else {
 			rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, oclc, tn, dnp, volume, imageCount, title, principal.getName());
- 
+		}
+		
 		byte[] documentBody = "updated".getBytes();
 		if(rc != null) {
 			String retVal =  "Problem updating book.  " + rc;
@@ -222,6 +227,7 @@ public class IaSearchController implements MessageSourceAware{
 	public String doIaMoveToVerifyGet( String site, HttpServletRequest req, Locale locale, Principal principal ) {		
 		 //move to next verify state
 		bookService.updateInternetArchiveWorkingBooksChangeStateVerifyBooks(principal.getName(), site);//change books flagged for familysearch to verify books state
+		bookService.recordCompletionCheckedBooks(principal.getName());//update complete date if Checked and still in Select state (and add final state rejected)
 		bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(principal.getName());//delete all remaining non-flagged books in select books state
 	
 		
@@ -729,7 +735,7 @@ public class IaSearchController implements MessageSourceAware{
 	private String doIaSearchRestCall(String searchKey, String ownerUserId, boolean isSelected ) {                                            
 		  
 		List<List<String>> searchResults = new ArrayList<List<String>>();
-        Map<String, String> dupeReturnedFromIACheck = new HashMap(); //for some reason ia returns duplicate identifiers sometimes 
+        Map<String, String> dupeReturnedFromIACheck = new HashMap(); //for some reason IA searching returns duplicate identifiers sometimes 
         
         try{
         	//1 get total rows matching search
@@ -1044,7 +1050,8 @@ public class IaSearchController implements MessageSourceAware{
         String creator = "";//author
         String tn = "";//same as identifier
         String oclc = "";
-        String volume = "";//special case for now, not displayed, but appended to title
+        String volume = "";
+        String checked = "F";//default to F
         
         List<String> attrList = new ArrayList<String>();
         
@@ -1160,6 +1167,7 @@ public class IaSearchController implements MessageSourceAware{
         attrList.add(tn);//13
         attrList.add(oclc);//14
         attrList.add(volume);//15
+        attrList.add(checked);//16
         
 
         return attrList;

@@ -16,6 +16,28 @@ var maxFieldLen = <c:out value = "${maxFieldLen}"/>;
 
 var selectedHighlightedRow = null;
 function showDetailsOverlay(selectedRow, identifier){
+ 	 
+	//clear out fields in case prev book data is still there... ajax is slow to load, don't want confusion
+	document.getElementById('ol_identifier').value = ''; 
+	//var cb = document.getElementById('ol_selected'); 
+	document.getElementById('ol_oclc').value = ''; 
+	document.getElementById('ol_tn').value = ''; 
+	//var dnp = document.getElementById('ol_dnp').checked;
+	document.getElementById('ol_volume').value = '';
+	document.getElementById('ol_imageCount').value = '';
+	document.getElementById('ol_title').value = '';
+	document.getElementById('ol_language').value= '';
+	document.getElementById('ol_publishDate').value= '';
+	document.getElementById('ol_subject').value='';
+	document.getElementById('ol_description').value= '';
+	document.getElementById('ol_publisher').value= '';
+	document.getElementById('ol_licenseUrl').value= '';
+	document.getElementById('ol_rights').value= '';
+	document.getElementById('ol_author').value='';
+	 
+				
+				
+				
 	//highlight row
 	if(selectedHighlightedRow != null){
 		selectedHighlightedRow.style.cssText="";
@@ -293,6 +315,7 @@ function doUpdateAddToFs( selectedRow, isSelected, bookId, oclc, tn, dnp, volume
                 cellToUpdateElem = document.getElementById(selectedId + '_3');//td cell
 	    	    cellToUpdateElem.innerHTML = title;
 		    	cellToUpdateElem = document.getElementById(selectedId + '_4');//td cell
+	    	    cellToUpdateElem.innerHTML = volume;
 	    	    cellToUpdateElem = document.getElementById(selectedId + '_5');//td cell
 	    	    cellToUpdateElem.innerHTML = imageCount;
 		    	cellToUpdateElem = document.getElementById(selectedId + '_14');//td cell
