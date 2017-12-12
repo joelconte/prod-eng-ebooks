@@ -38,9 +38,9 @@ function showDetailsOverlay(selectedRow, identifier){
 				
 				
 				
-	//highlight row
+	//highlight row from previous click
 	if(selectedHighlightedRow != null){
-		selectedHighlightedRow.style.cssText="";
+		selectedHighlightedRow.style.cssText="background-color: lightgreen;";
 	}
 	var rowIdName = "tablerow" + selectedRow;
 	var rowElem = document.getElementById(rowIdName);
@@ -96,6 +96,16 @@ function closeDetailsOverlayAndSave( ){
 	toggleOverlay();//close
 }
 
+
+function closeDetailsOverlay(){
+
+    var bookId = document.getElementById('ol_identifier').value; 
+	//do update to db that this book was reviewed (id clicked and canceled/saved)
+	doUpdateAddToFsChecked( bookId);//rest call to update in db that book was checked
+	
+	toggleOverlay();//close
+	
+}
 
 function queryAjaxBookData(id){
 	 	
@@ -340,6 +350,32 @@ function doUpdateAddToFs( selectedRow, isSelected, bookId, oclc, tn, dnp, volume
 	});
 } 
 
+//just record fact that book was checked
+function doUpdateAddToFsChecked( bookId ){
+	 
+	var u = document.URL;
+	var i = u.indexOf('/ia/');
+	u = u.substring(0, i) + "/ia/updateAddToFsAjax";//"http://localhost:8180/BookScan-web/ia/localitySearch"
+	var request = $.ajax({
+	  url: u,
+	  type: "POST",
+	  data: {"checked" : "true", "bookId" : bookId},
+	  dataType: "html"
+	});
+
+	request.done(function(data) {
+	    //alert(data);
+	    if(data != 'updated'){
+	    	alert("Error while updating database...please try again.  \n" + data);
+	    	return;
+	    }
+	     
+	});
+
+	request.fail(function(jqXHR, textStatus) {
+	  alert( "Request to update Add to FamilySearch checkbox failed: " + textStatus );
+	});
+}
 function releaseBooksToPreDownload(){
 	rc = confirm("Books that you have specified to put into FamilySearch will now be moved to the next step '4- Import Books'. \nBooks that are not flagged for FamilySearch will be cleared from table.");
 	if(rc == false){
@@ -402,7 +438,12 @@ function doPost(url){
 			 	<c:set var="rowNum" value="0"/>
 			 	<c:forEach var="row" items="${allRows}">
 				
-				<tr id="tablerow${rowNum}">
+			 	<c:set var="rowColor" value=""/>
+				<c:if test="${row.get(17)=='T'}">
+					<c:set var="rowColor" value="lightgreen"/>
+				</c:if>
+				
+				<tr id="tablerow${rowNum}" style="background-color: ${rowColor};">
 					<td valign="top" align="left" style="white-space: nowrap;">${rowNum+1}&nbsp; </td>
 					<c:forEach var="i" begin="0" end="${colLabels.size()-1}">
 						<td id="cell${rowNum}_${i}" valign="top" align="left">
@@ -553,7 +594,7 @@ function doPost(url){
    <br>
 	<button onclick="closeDetailsOverlayAndSave(   ); return false;" id="btnSave" name="button" value="closeSave" >Save Checkbox Selection and Close</button>	
 	<button onclick="viewPdf(); return false;" id="btnViewPdf" name="button" value="viewPdf" >View PDF</button>	
-	<button onclick="toggleOverlay(); return false;" id="btnCancel" name="button" value="cancel" >Cancel</button>					
+	<button onclick="closeDetailsOverlay(); return false;" id="btnCancel" name="button" value="cancel" >Cancel</button>					
   </form>
 </div>
 <!-- End Special Centered Box -->

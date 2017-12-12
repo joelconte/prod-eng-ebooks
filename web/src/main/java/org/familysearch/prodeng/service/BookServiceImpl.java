@@ -8572,7 +8572,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	
     }
     public List<List> getInternetArchiveWorkingBooksStateVerifyBooks(String userId){
-    	return getInternetArchiveWorkingBooks2(userId, InternetArchiveService.statusVerifyBooks); 
+    	return getInternetArchiveWorkingBooksVerifyPage(userId, InternetArchiveService.statusVerifyBooks); 
     	
     }
 
@@ -8742,6 +8742,29 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		return rows;
 	
     }
+    //same with extra col Checked
+    private List<List> getInternetArchiveWorkingBooksVerifyPage(String userId, String state){
+    	if(state.startsWith("'") == false) {
+    		state = "'" + state + "'";
+    	}
+    	 
+    	List<List> rows;
+     
+    	
+    	if(userId != null) {
+		rows = getJdbcTemplate().query("select  IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, checked, site, u.name   from internetarchive_working, users u  " +
+		   " where  u.id = owner_userid and owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}else {
+    		rows = getJdbcTemplate().query("select  IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
+    				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, checked, site, u.name   from internetarchive_working, users u  " +
+    				   " where u.id = owner_userid and  state in (" + state + ") order by identifier " , new StringXRowMapper());
+    	}
+		 
+		return rows;
+	
+    }
+    
   //same as 2, but with extra column
     private List<List> getInternetArchiveWorkingBooks3(String userId, String state){
     	if(state.startsWith("'") == false) {
@@ -8946,12 +8969,29 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		}
 		return null;
     }
-    
+
+    //run this after moving rows to Verify state to change all left over
     public void recordCompletionCheckedBooks( String user ) {
     	//update complete date if Checked and still in Select state (and add final state rejected)
     	String sql = "UPDATE internetarchive_working SET complete_date = current_timestamp, state = ? where checked = 'T' and state = ? and owner_userid = ? ";
     	
 		int count = getJdbcTemplate().update(sql, InternetArchiveService.statusCompleteRejected, InternetArchiveService.statusSelectBooks, user);
+		
+
+    }
+
+    //run this instead of deleting after steps 2
+    public void recordCompletionCheckedBooksB( String state, String[] stateList ) {
+    	//update complete date if Checked and still in Select state (and add final state rejected)
+    	if(stateList != null) {
+    		state = generateQuotedListStringFromArray(stateList);
+    	}else {
+    		state = "'" + state + "'";
+    	}
+    	//i think any that are checked, but not added to tfdb should have is_selected=f also
+    	String sql = "UPDATE internetarchive_working SET is_selected = 'F', complete_date = current_timestamp, state = ? where state in ( " + state + " )";
+    	
+		int count = getJdbcTemplate().update(sql, InternetArchiveService.statusCompleteRejected);
 		
 
     }
@@ -9060,12 +9100,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     private void updateInternetArchiveWorkingBooksChangeState(String fromState, String toState, String userId){
     	String sql1; 
     	int count = 0;
-    	
+    	//just set checked to T on all post 2 steps since they have been checked
     	if(userId != null) {
-    		sql1 = "UPDATE internetarchive_working SET state = ? where state = ? and OWNER_USERID = ? and is_selected = ?";
+    		sql1 = "UPDATE internetarchive_working SET state = ?, checked = 'T' where state = ? and OWNER_USERID = ? and is_selected = ?";
     		count = getJdbcTemplate().update(sql1, toState, fromState, userId, "T");
     	}else {
-    		sql1 = "UPDATE internetarchive_working SET state = ? where state = ?   and is_selected = ?";
+    		sql1 = "UPDATE internetarchive_working SET state = ?, checked = 'T'  where state = ?   and is_selected = ?";
     		count = getJdbcTemplate().update(sql1, toState, fromState,  "T");
     	}
     }
@@ -9074,11 +9114,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	String sql1; 
     	int count = 0;
     	
+    	//note we will just clear Checked for all updates since it is only used in steps 1 and 2
     	if(userId != null) {
-    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ? where state = ? and OWNER_USERID = ? and is_selected = ?";
+    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ?, checked = 'F' where state = ? and OWNER_USERID = ? and is_selected = ?";
     		count = getJdbcTemplate().update(sql1,  toState, site, fromState, userId, "T");
     	}else {
-    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ? where state = ?   and is_selected = ?";
+    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ? , checked = 'F' where state = ?   and is_selected = ?";
     		count = getJdbcTemplate().update(sql1,  toState, site, fromState,  "T");
     	}
     }
@@ -9192,10 +9233,10 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 			}
 		}
 		
-		
+		//not deleted, but complete_date and state (complet and rejected) set in controller
 		//next delete any not inserted
-		sql = "DELETE from internetarchive_working where state = ? and  is_selected = 'F' ";
-		getJdbcTemplate().update(sql,   InternetArchiveService.statusInsertTfdb);
+		//sql = "DELETE from internetarchive_working where state = ? and  is_selected = 'F' ";
+		//getJdbcTemplate().update(sql,   InternetArchiveService.statusInsertTfdb);
 		
 		
     } 

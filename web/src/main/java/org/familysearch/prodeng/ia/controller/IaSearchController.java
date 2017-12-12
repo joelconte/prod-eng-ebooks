@@ -179,7 +179,7 @@ public class IaSearchController implements MessageSourceAware{
 			}
 			tnList = tnList.substring(2);
 			 
-			String dupTnBookList = bookService.getDuplicateTnsInBook(tnList); //get list of tns already in bookmetadata col=titleno 3rd(0based) elem in rnData rows
+			String dupTnBookList = bookService.getDuplicateTnsInBook(tnList); //get list of tns already in book
 			Set<String>  dupInternetArchiveWorkingList = bookService.getIneternetArchiveBooksInProcess(tnList);
 			List<String> dupTnListList = bookService.getDuplicateTnsInBookList(tnList);
 			String dupTnList = bookService.generateQuotedListString(dupTnListList);
@@ -201,6 +201,7 @@ public class IaSearchController implements MessageSourceAware{
 			//do call to archive.org to get data
 			for(List<String> idl : rows) {
 				String id = idl.get(0);
+				
 				doIaSearchRestCall(id, principal.getName(), true);//also does insert into internetarchive_woring
 			}
 			
@@ -262,6 +263,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("Oclc");
 		labels.add("Tn");
 		labels.add("DNP");
+		labels.add("Checked");
 		labels.add("MiningSite");
 		labels.add("BookMiner");
 		 
@@ -280,8 +282,8 @@ public class IaSearchController implements MessageSourceAware{
 	public String doIaMoveToPreDownloadGet( HttpServletRequest req, Locale locale, Principal principal ) {		
 		 //move to next import state
 		bookService.updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(null);//all users' books for now
-		bookService.deleteInternetArchiveWorkingBooksStateVerifyBooks(null);//delete all remaining non-flagged books in select books state
-	
+		//bookService.deleteInternetArchiveWorkingBooksStateVerifyBooks(null);//delete all remaining non-flagged books in select books state
+		bookService.recordCompletionCheckedBooksB(InternetArchiveService.statusVerifyBooks, null);//set complete_date, state (complete and rejected), checked to flag that this is a no-go book
 		
 		return "redirect:iaPreDownloadBooks";//view results from table step 3 verify books
 	}  
@@ -335,7 +337,9 @@ public class IaSearchController implements MessageSourceAware{
 		//first move to next downlaod not yet started state, so they move to next page in gui and show state 
 		bookService.updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooks(null);//all users' books for now.  These are books that WGET code will pickup and process in todoList below
 		//also dnp books auto complete since no wget needed
-		bookService.deleteInternetArchiveWorkingBooksStatePreDownloadBooks(null);//delete all remaining non-flagged books  
+		//bookService.deleteInternetArchiveWorkingBooksStatePreDownloadBooks(null);//delete all remaining non-flagged books  
+		bookService.recordCompletionCheckedBooksB(InternetArchiveService.statusPreDownloadBooks, null);//set complete_date, state (complete and rejected), checked to flag that this is a no-go book
+		
 		bookService.updateInternetArchiveWorkingBooksStateDownloadNotStartedBooksErrorMsg(null);
 		
 		if(iaServ!=null) {
@@ -637,7 +641,8 @@ public class IaSearchController implements MessageSourceAware{
 		//move to next state, so they move to next page in gui  
 		bookService.updateInternetArchiveWorkingBooksChangeStateReadyInsertTfdbBooks(null);//return id if not all in complete state
 		//delete any not flagged to import (xml metadata copyright check...only public domain books).  Flag is set to F by xml generating code.
-		bookService.deleteInternetArchiveWorkingBooksAnyDownloadingState();//delete all remaining non-flagged books  
+		//bookService.deleteInternetArchiveWorkingBooksAnyDownloadingState();//delete all remaining non-flagged books  
+		bookService.recordCompletionCheckedBooksB(null, InternetArchiveService.allDownloadStates);//set complete_date, state (complete and rejected), checked to flag that this is a no-go book
 			
 			    
 		return "redirect:iaInsertTfdbBooks";//view results step 6
@@ -694,7 +699,8 @@ public class IaSearchController implements MessageSourceAware{
 		 
 	 
 		bookService.updateInternetArchiveWorkingBooksChangeStateCompleteBooks(null, driveName, driveNumber,  new InternetArchiveService(null) );//todo later return id if not all in complete state
-		 	    
+		bookService.recordCompletionCheckedBooksB(InternetArchiveService.statusInsertTfdb, null);//set complete_date, state (complete and rejected), checked to flag that this is a no-go book
+		
 		return "redirect:iaInsertTfdbBooks";//view results step 6
 	 
 	}  
@@ -735,6 +741,7 @@ public class IaSearchController implements MessageSourceAware{
 	private String doIaSearchRestCall(String searchKey, String ownerUserId, boolean isSelected ) {                                            
 		  
 		List<List<String>> searchResults = new ArrayList<List<String>>();
+		//weird thing is that IA return count is always same, but each search, it returns some duplicate rows for some reason and then sometimes no duplicate rows...just a few 
         Map<String, String> dupeReturnedFromIACheck = new HashMap(); //for some reason IA searching returns duplicate identifiers sometimes 
         
         try{
@@ -742,12 +749,13 @@ public class IaSearchController implements MessageSourceAware{
             byte[] b = batchedSearchRestCall(searchKey, 0, 1);//just need to get count back
             String totalCountJsonStr = new String(b);
             int startCount = totalCountJsonStr.indexOf("numFound") + 10;
+           
             if(startCount==9)
             	return "Error: no results found.  Book count not returned.";
             int endCount = totalCountJsonStr.indexOf(",", startCount); //"numFound":10032,
             String countStr = totalCountJsonStr.substring(startCount, endCount);
             int totalCount = Integer.parseInt(countStr);
-           
+            System.out.println("***IA query returned count="+totalCount);
             
             String bibcheckInClause = "";
             int callCount = totalCount/1001 + 1;
@@ -757,7 +765,7 @@ public class IaSearchController implements MessageSourceAware{
             
             for(int i = 1; i <= callCount ; i++) {
             	b = batchedSearchRestCall(searchKey, 1000, i);//get 5 batches of 1000 max
-             
+            
 	         ///////////////////////tmp 
 	        /*Scanner s = new Scanner(istr);
 	         String xmlStr = "";
@@ -832,7 +840,8 @@ public class IaSearchController implements MessageSourceAware{
 	                 
 	                 if("numfound".equalsIgnoreCase( parser.getText())){
 	                     parser.nextToken();
-	                     count = parser.getIntValue();
+	                     count = parser.getIntValue();//row count for this batch 
+	                     System.out.println("***batch count in json ="+count);
 	                     
 	                     break;
 	                 }
@@ -873,6 +882,7 @@ public class IaSearchController implements MessageSourceAware{
 	                 
 	            			 bibcheckInClause += ", '" + attrList.get(6) + "'";//list of TNs for bibchecking
 	            		 }else {
+	            			 //already in list 1 time, so this is a duplicat return from IA
 	            			// System.out.println("dupppppp" + attrList.get(6));
 	            		 }
 	            	 
@@ -882,10 +892,10 @@ public class IaSearchController implements MessageSourceAware{
 	            	 }
 	             }
              }//end for loop of batch rest calls data parsing
- 
+            System.out.println("***IA count after removing duplicates from IA="+searchResults.size());
              //bibcheck - filter out non T bibchecks
              Set<String> dupes = bookService.doBibcheck(bibcheckInClause.substring(1, bibcheckInClause.length()));//returns any dupes in tn or secondary_identifier  
-             
+             System.out.println("***IA BIBheckcount="+dupes.size());    
              for(List<String> row : searchResults){
                  if(dupes.contains(row.get(6))){
                      row.remove(1);
@@ -992,7 +1002,7 @@ public class IaSearchController implements MessageSourceAware{
              }   
              try {
             	 
-            	 
+            	   System.out.println("***IA total inserted in tfdb count after copyright also="+searchResults.size());
             	 bookService.insertInternetArchiveSearchedBooks(searchResults, ownerUserId); 
              }catch(Exception ex) {
             	 System.out.println(ex);
