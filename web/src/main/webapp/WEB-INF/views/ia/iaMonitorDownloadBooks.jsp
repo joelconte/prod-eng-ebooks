@@ -12,7 +12,7 @@ window.onload=function(){
 	populateMapOfBooks();
 	queryStatusOfDownloads();//call once and then it iterates
 	//while(true){
-		//alert("hell");
+		//alert("hello");
 		//setTimeout(alert("hell0"), 5000000);
 	//}
 	//queryStatusOfDownloads();//get ajax querying started
@@ -115,6 +115,7 @@ if(identifier == 'Firestone_Company_Electric_Generating_Sets_Service_Manual_And_
 				var fieldStartNew = $(this).find('start_date').text().trim();
 				var fieldEndNew = $(this).find('end_date').text().trim();
 				var fieldFolderNew = $(this).find('folder').text().trim();
+				var fieldIsSelectedNew = $(this).find('is_selected').text().trim();
 				
 				if(mapOfBooks == undefined){
 					console.log('mapOfBooks is undefined ' + identifier);
@@ -135,6 +136,7 @@ if(identifier == 'Firestone_Company_Electric_Generating_Sets_Service_Manual_And_
 					var fieldStartExisting = mapOfBooks[identifier].fieldStart;
 					var fieldEndExisting = mapOfBooks[identifier].fieldEnd;
 					var fieldFolderExisting = mapOfBooks[identifier].fieldFolder;
+					var fieldIsSelectedExisting = mapOfBooks[identifier].fieldIsSelected;
 /*
 console.log("!!identifier" + identifier);
 	console.log("!!fieldStateExisting" + fieldStateExisting);
@@ -142,17 +144,19 @@ console.log("!!identifier" + identifier);
 	console.log("!!fieldEndExisting" + fieldEndExisting);
 	*/
 					//if any 3 fields changed, then update html
-					if(fieldStateNew != fieldStateExisting || fieldStartNew != fieldStartExisting || fieldEndNew != fieldEndExisting || fieldFolderNew != fieldFolderExisting){
+					if(fieldStateNew != fieldStateExisting || fieldStartNew != fieldStartExisting || fieldEndNew != fieldEndExisting || fieldFolderNew != fieldFolderExisting || fieldIsSelectedNew != fieldIsSelectedExisting){
 						//console.log("!!!!!rownum=" + rowNum);
 						document.getElementById('cell' + rowNum + '_0').innerHTML = fieldStateNew;//state
 						document.getElementById('cell' + rowNum + '_1').innerHTML = fieldStartNew;//start date
 						document.getElementById('cell' + rowNum + '_2').innerHTML = fieldEndNew;//end date
 						document.getElementById('cell' + rowNum + '_3').innerHTML = fieldFolderNew;//folder
+						document.getElementById('cell' + rowNum + '_4').innerHTML = fieldIsSelectedNew;//is_selected
 						
 						mapOfBooks[identifier].fieldState = fieldStateNew;
 						mapOfBooks[identifier].fieldStart = fieldStartNew;
 						mapOfBooks[identifier].fieldEnd = fieldEndNew;
 						mapOfBooks[identifier].fieldFolder = fieldFolderNew;
+						mapOfBooks[identifier].fieldIsSelected = fieldIsSelectedNew;
 					}
 				}
 				
@@ -161,7 +165,7 @@ console.log("!!identifier" + identifier);
 	   	 //alert("eeeeeeee");
 
 	    }catch(e){
-	    	alert("Error while getting status from server...");
+	    	alert("Error while getting status from server... Your session may have timed out or there may be temporary connection issue.  Please try reloading the page.");
 	    	alert("Error msg: " + e);
 	    }
 	    

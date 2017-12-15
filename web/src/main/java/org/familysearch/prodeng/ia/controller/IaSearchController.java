@@ -436,7 +436,9 @@ public class IaSearchController implements MessageSourceAware{
 			sb.append("<state>" + row.get(0) + "</state>");
 			sb.append("<start_date>" + row.get(1) + "</start_date>");
 			sb.append("<end_date>" + row.get(2) + "</end_date>");
-			sb.append("<folder>" + row.get(3) + "</folder></row>");
+			sb.append("<folder>" + row.get(3) + "</folder>");
+			sb.append("<is_selected>" + row.get(4) + "</is_selected></row>");
+			
 		}
 		sb.append("</rows>");
 
