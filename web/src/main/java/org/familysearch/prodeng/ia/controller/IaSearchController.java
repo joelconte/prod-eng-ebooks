@@ -222,6 +222,15 @@ public class IaSearchController implements MessageSourceAware{
 		}
 	}
 	 
+	
+	//delete books in step 2 for this user (no others)
+	@RequestMapping(value="ia/iaDeleteWorkingBooksList",  method=RequestMethod.POST)
+	public String doIaMoveToVerifyGet( HttpServletRequest req, Locale locale, Principal principal ) {		
+		bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(principal.getName());//delete all remaining non-flagged books in select books state
+		return "redirect:iaSelectBooks";//back to same view
+	}  
+		
+		
 
 	//move books to be Verified.  IE. change state and delete books with 'n' add to fs flag
 	@RequestMapping(value="ia/iaMoveToVerify",  method=RequestMethod.POST)
@@ -712,8 +721,10 @@ public class IaSearchController implements MessageSourceAware{
 		java.io.InputStream istr = null;
 		try{
 			 
-        	 String uri ="http://archive.org/advancedsearch.php?q=(" + searchKey + ")%20AND%20mediatype%3A(texts)&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=language&fl%5B%5D=mediatype&fl%5B%5D=rights&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=creator&fl%5B%5D=licenseurl&fl%5B%5D=oclc-id&fl%5B%5D=volume&fl%5B%5D=publisher&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=" + frameSize + "&page=" + ithFrame + "&callback=callback&output=json";
-             //String uri = "https://archive.org/search.php?query=(" + searchKey + ")&and[]=mediatype%3A%22texts%22";
+			 String uri ="http://archive.org/advancedsearch.php?q=(" + searchKey + ")%20AND%20mediatype%3A(texts)&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=language&fl%5B%5D=mediatype&fl%5B%5D=rights&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=creator&fl%5B%5D=licenseurl&fl%5B%5D=oclc-id&fl%5B%5D=volume&fl%5B%5D=publisher&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=" + frameSize + "&callback=callback&output=json";
+			 //with pageing String uri ="http://archive.org/advancedsearch.php?q=(" + searchKey + ")%20AND%20mediatype%3A(texts)&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=language&fl%5B%5D=mediatype&fl%5B%5D=rights&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=creator&fl%5B%5D=licenseurl&fl%5B%5D=oclc-id&fl%5B%5D=volume&fl%5B%5D=publisher&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=" + frameSize + "&page=" + ithFrame + "&callback=callback&output=json";
+	         
+			 //String uri = "https://archive.org/search.php?query=(" + searchKey + ")&and[]=mediatype%3A%22texts%22";
         	 System.out.println("Internet Archive REST: " + uri);
              URL url = new URL(uri);
 //             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -765,8 +776,11 @@ public class IaSearchController implements MessageSourceAware{
             if(callCount > batchCount)
             	callCount = batchCount;//10 max = 20k books
             
+            //since we are not using page param in archive.org call, leave loop, but callCount = 1 hardcode for now
+            callCount = 1;
+            int batchSize = 50000;//50k, was 1000, but without page param, we can get all rows
             for(int i = 1; i <= callCount ; i++) {
-            	b = batchedSearchRestCall(searchKey, 1000, i);//get 5 batches of 1000 max
+            	b = batchedSearchRestCall(searchKey, batchSize, i);//get 5 batches of 1000 max
             
 	         ///////////////////////tmp 
 	        /*Scanner s = new Scanner(istr);
@@ -1030,10 +1044,15 @@ public class IaSearchController implements MessageSourceAware{
             	 return "Error: one or more books was not added to internet archive working table.  Most likely due to non-parsable data in one of the fields. \n" +  " \n " + msg1;
              }
              
+             /*
              if(totalCount > batchCount*1000) {
              	//todo some kind of warning that they need to narrow down search to get all rows since 20000 is missionary limit
             	return "Warning:  Your search finds " + totalCount + " books.  This page can only retrieve 10000 books (before filtering copyright and duplicates).  Consider narrowing down your search criteria.";
-             }
+             }*/
+             if(totalCount>5000) { //if alot (5k+ warn that it will take a while to query...  
+              	//todo some kind of warning 
+             	return "Warning:  Your search finds " + totalCount + " books. (before filtering copyright and duplicates).  Downloading booklist may take some time...";
+              }
              
              return null;//no errors
          

@@ -471,6 +471,18 @@ function releaseBooksToVerify(firstShowOverlay){
 	doPost(url + "?site=" + site);
 	
 }
+//delete books this user is working on in step 2 (no others)
+function deleteBooksWorking(){
+	rc = confirm("Are you sure you want to clear out your list of books you are working on?  After removing them, you can then do a fresh search in step 1.");
+	if(rc == false){
+		return false;
+	}
+	var url = "iaDeleteWorkingBooksList";//in IaSearchController
+	////window.location.href=url;
+	doPost(url);
+	
+}
+
 
 
 function showSiteOverlay( ){
@@ -590,6 +602,7 @@ function doCopyPasteList(){
 			 
 			   <td><button id="release" name="button" value="releaseToVerify"  onclick="releaseBooksToVerify(true); return false; ">DONE - Release Books Selected for FamilySearch</button></td>
 			   <td><button id="copyPasteList" name="button" value="copyPasteList"  onclick="toggleCopyPasteListOverlay(); return false; ">CopyPaste List of Identifiers</button></td>
+			   <td><button id="delete" name="button" value="delete"  onclick="deleteBooksWorking(); return false; ">Remove books in THIS list (when searched by mistake)</button></td>
 			 
 			</tr>
 					
