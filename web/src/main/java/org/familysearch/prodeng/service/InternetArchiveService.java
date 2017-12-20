@@ -256,6 +256,7 @@ public class InternetArchiveService {
 	}
  
 	public void stopWorkerThreadsAndDownloadProcesses() {
+		todoListIndex = 9999999;//hack to just trick loop that we are done.
 		for(SwingWorker sw : runningThreadWorkers) {
 			try {
 				sw.cancel(true);
