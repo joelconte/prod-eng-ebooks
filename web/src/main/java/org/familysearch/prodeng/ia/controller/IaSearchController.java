@@ -1,4 +1,4 @@
-/*test
+/*
  * Copyright 2012 Intellectual Reserve, Inc. All rights reserved.
  * This notice may not be removed.
  */
@@ -617,7 +617,7 @@ public class IaSearchController implements MessageSourceAware{
 	
 		return "redirect:iaMonitorDownloadBooks";//view results step 5 
 		//return "redirect:iaImportBooks";
-	}   
+	}  
 	
 
 	//stop downloads in Monitor page in case of some error
