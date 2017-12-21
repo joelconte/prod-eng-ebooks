@@ -342,7 +342,8 @@ public interface BookService {
 	public Set<String> getIneternetArchiveBooksInProcess(String inClause);
 	public void insertInternetArchiveSearchedBooks(List<List<String>> rows, String ownerUserId);
 	
-	public List<List> getInternetArchiveWorkingBooksStateSelectBooks(String userId);
+	public List<List> getInternetArchiveWorkingBooksStateSelectBooks(String batchNumber, String userId);
+	public List<String>  getInternetArchiveWorkingBooksStateSelectBooksBatchCounts(String userId);
 	public List<List> getInternetArchiveWorkingBooksStateVerifyBooks(String userId);
 	public List<List> getInternetArchiveWorkingBooksStatePreDownloadBooks(String userId);
 	public List<List> getInternetArchiveWorkingBooksStateDownloadNotStartedBooks(String userId);
@@ -355,9 +356,11 @@ public interface BookService {
 	public String updateInternetArchiveWorkingBookToState(String bookId, String state);
 	public String updateInternetArchiveWorkingBookChecked(String bookId, String user);
 	public void recordCompletionCheckedBooks( String user );
+	public void recordCompletionCheckedBooks(String batchNumber, String user );
 	public void recordCompletionCheckedBooksB(  String state, String[] stateList );
 	
-	public void updateInternetArchiveWorkingBooksChangeStateVerifyBooks(String userId, String site);
+	//public void updateInternetArchiveWorkingBooksChangeStateVerifyBooks(String userId, String site);
+	public void updateInternetArchiveWorkingBooksChangeStateVerifyBooks(String batchNumber, String userId, String site);
 	public void updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(String userId);
 	public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooks(String userId);
 	public void updateInternetArchiveWorkingBooksChangeStateDownloadX(String bookId, String[] fromStates, String toState, String folder);
@@ -371,6 +374,7 @@ public interface BookService {
 	public void deleteInternetArchiveWorkingBooksAnyDownloadingState();
     public void deleteInternetArchiveWorkingBooks(List<String> identifier);
 	public void deleteInternetArchiveWorkingBooksStateSelectBooks(String ownerUserId);
+	public void deleteInternetArchiveWorkingBooksStateSelectBooks(String batchNumber, String ownerUserId);
 	public void deleteInternetArchiveWorkingBooksStateVerifyBooks(String ownerUserId);
 	public void deleteInternetArchiveWorkingBooksStatePreDownloadBooks(String ownerUserId);
 	public void deleteInternetArchiveWorkingBooksStateDownloadCompleteBooks(String ownerUserId);

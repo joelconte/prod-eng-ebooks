@@ -77,7 +77,9 @@ public class IaSearchController implements MessageSourceAware{
 
 	//view books that were previously inserted into ia_book_selection 
 	@RequestMapping(value="ia/iaSelectBooks", method=RequestMethod.GET)
-	public String displayIaSelectBooks(HttpServletRequest req, Model model, Locale locale, Principal principal) {
+	public String displayIaSelectBooks( String batchNumber , HttpServletRequest req, Model model, Locale locale, Principal principal) {
+		if(batchNumber == null || batchNumber.equals(""))
+			batchNumber = "1";
 		String msg = req.getParameter("msg");
 		model.addAttribute("msg", msg);
 
@@ -100,39 +102,30 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("LicenseUrl");
 		labels.add("Rights");
 		labels.add("Author");
-		labels.add("Oclc");
+		labels.add("OCLC");
 		labels.add("Tn");
 		labels.add("DNP");
 		labels.add("Checked");
 		labels.add("BookMiner");
 		 
-		List<List> allRows = bookService.getInternetArchiveWorkingBooksStateSelectBooks(principal.getName());
- 
+		//get list of actual distinct batch numbers in step 2
+		List<String> batchCounts = bookService.getInternetArchiveWorkingBooksStateSelectBooksBatchCounts(principal.getName());
+		if(batchCounts.size()>0 && batchCounts.contains(batchNumber)==false) {
+			batchNumber = batchCounts.get(0);
+		}
+				
+		List<List> allRows = bookService.getInternetArchiveWorkingBooksStateSelectBooks(batchNumber, principal.getName());
+		
+		
 		model.addAttribute("colLabels", labels);
 		model.addAttribute("allRows", allRows);
-		
+		 
+		model.addAttribute("batchNumber", batchNumber);//dropdown selected
+		model.addAttribute("batchCounts", batchCounts);
+
 		List allIaScanSites = bookService.getAllIaScanSites();
 		model.addAttribute("allIaScanSites", allIaScanSites);
-		 
-		//model.addAttribute("allSites", bookService.getAllSites()); 
-		//model.addAttribute("tnColumnNumber", "0");//column where tn is located for creating url
-	    
-		
-		//buttons
-		/*List<List<String>> buttons = new ArrayList<List<String>>();
-		List<String> details = new ArrayList<String>();
-		details.add("overlayButton");//flag
-		details.add(messageSource.getMessage("addViewingData", null, locale));
-		buttons.add(details);
-		details = new ArrayList<String>();
-		details.add("deleteSelected");
-		details.add(messageSource.getMessage("deleteSelectedRows", null, locale));
-		buttons.add(details); 
-		model.addAttribute("buttons", buttons);
-		
-		//form actions
-		model.addAttribute("buttonsAction", "viewingReports");
-		model.addAttribute("overlayAction", "doViewingReportsInserts"); */
+		  
 		
 		return "ia/iaSelectBooks";
 	} 
@@ -191,7 +184,7 @@ public class IaSearchController implements MessageSourceAware{
 				//return "errors/generalError";
 				model.addAttribute("dupeTnsInfo", dupTnList);  
 				model.addAttribute("pastedData", textData); 
-				return displayIaSelectBooks(req, model, locale, principal);//forward request but first pass in dupe list to show user
+				return displayIaSelectBooks("1", req, model, locale, principal);//forward request but first pass in dupe list to show user
 			}
 		 
 			filterOutDupes(rows, dupTnListList);
@@ -225,7 +218,7 @@ public class IaSearchController implements MessageSourceAware{
 	
 	//delete books in step 2 for this user (no others)
 	@RequestMapping(value="ia/iaDeleteWorkingBooksList",  method=RequestMethod.POST)
-	public String doIaMoveToVerifyGet( HttpServletRequest req, Locale locale, Principal principal ) {		
+	public String doIaDeleteWorkingBooksList( HttpServletRequest req, Locale locale, Principal principal ) {		
 		bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(principal.getName());//delete all remaining non-flagged books in select books state
 		return "redirect:iaSelectBooks";//back to same view
 	}  
@@ -234,14 +227,14 @@ public class IaSearchController implements MessageSourceAware{
 
 	//move books to be Verified.  IE. change state and delete books with 'n' add to fs flag
 	@RequestMapping(value="ia/iaMoveToVerify",  method=RequestMethod.POST)
-	public String doIaMoveToVerifyGet( String site, HttpServletRequest req, Locale locale, Principal principal ) {		
+	public String doIaMoveToVerifyGet(String batchNumber, String site, HttpServletRequest req, Locale locale, Principal principal ) {		
 		 //move to next verify state
-		bookService.updateInternetArchiveWorkingBooksChangeStateVerifyBooks(principal.getName(), site);//change books flagged for familysearch to verify books state
-		bookService.recordCompletionCheckedBooks(principal.getName());//update complete date if Checked and still in Select state (and add final state rejected)
-		bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(principal.getName());//delete all remaining non-flagged books in select books state
+		bookService.updateInternetArchiveWorkingBooksChangeStateVerifyBooks(batchNumber, principal.getName(), site);//change books flagged for familysearch to verify books state
+		bookService.recordCompletionCheckedBooks(batchNumber, principal.getName());//update complete date if Checked and still in Select state (and add final state rejected)
+		bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(batchNumber, principal.getName());//delete all remaining non-flagged books in select books state
 	
 		
-		return "redirect:iaVerifyBooks";//view results from table step 3 verify books
+		return "redirect:iaSelectBooks";//keep missionaries on same page... view results from table step 3 verify books
 	}  
 	
 	
@@ -269,7 +262,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("LicenseUrl");
 		labels.add("Rights");
 		labels.add("Author");
-		labels.add("Oclc");
+		labels.add("OCLC");
 		labels.add("Tn");
 		labels.add("DNP");
 		labels.add("Checked");
@@ -322,7 +315,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("LicenseUrl");
 		labels.add("Rights");
 		labels.add("Author");
-		labels.add("Oclc");
+		labels.add("OCLC");
 		labels.add("Tn");
 		labels.add("DNP");
 		labels.add("MiningSite");
@@ -403,7 +396,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("LicenseUrl");
 		labels.add("Rights");
 		labels.add("Author");
-		labels.add("Oclc");
+		labels.add("OCLC");
 		labels.add("Tn");
 		labels.add("DNP");
 		labels.add("MiningSite");
@@ -689,7 +682,7 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("LicenseUrl");
 		labels.add("Rights");
 		labels.add("Author");
-		labels.add("Oclc");
+		labels.add("OCLC");
 		labels.add("Tn");
 		labels.add("DNP");
 		labels.add("MiningSite");
@@ -908,7 +901,7 @@ public class IaSearchController implements MessageSourceAware{
 	            	 }
 	             }
              }//end for loop of batch rest calls data parsing
-            System.out.println("***IA count after removing duplicates from IA="+searchResults.size());
+            System.out.println("***IA count before removing duplicates from IA="+searchResults.size());
              //bibcheck - filter out non T bibchecks
              Set<String> dupes = bookService.doBibcheck(bibcheckInClause.substring(1, bibcheckInClause.length()));//returns any dupes in tn or secondary_identifier  
              System.out.println("***IA BIBheckcount="+dupes.size());    

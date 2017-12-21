@@ -338,6 +338,8 @@ function doUpdateAddToFs( selectedRow, isSelected, bookId, oclc, tn, dnp, volume
 			    }else{
 			    	cellToUpdateElem.innerHTML = 'F';
 			    }
+			    cellToUpdateElem = document.getElementById(selectedId + '_17');//viewed
+			    cellToUpdateElem.innerHTML = 'T';
 	    	}
 	    }catch(e){
 	    	alert("Error while updating database...please try again.");
@@ -369,6 +371,10 @@ function doUpdateAddToFsChecked( bookId ){
 	    	alert("Error while updating database...please try again.  \n" + data);
 	    	return;
 	    }
+	    var hidden = document.getElementById('ol_selectedId');
+   		var selectedId = hidden.value;//id of td field containing yn value to update
+   		cellToUpdateElem = document.getElementById(selectedId + '_17');//viewed
+	    cellToUpdateElem.innerHTML = 'T';
 	     
 	});
 

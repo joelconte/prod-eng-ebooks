@@ -402,6 +402,9 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, 
 		    }else{
 		    	cellToUpdateElem.innerHTML = 'F';
 		    }
+		    cellToUpdateElem = document.getElementById(selectedId + '_17');//viewed
+		    cellToUpdateElem.innerHTML = 'T';
+		    
 	    }catch(e){
 	    	alert("Error while updating database...please try again.");
 	    	alert("Error msg: " + e);
@@ -432,6 +435,11 @@ function doUpdateAddToFsChecked( bookId ){
 	    	alert("Error while updating database...please try again.  \n" + data);
 	    	return;
 	    }
+	    
+	    var hidden = document.getElementById('ol_selectedId');
+   		var selectedId = hidden.value;//id of td field containing yn value to update
+   		cellToUpdateElem = document.getElementById(selectedId + '_17');//viewed
+	    cellToUpdateElem.innerHTML = 'T';
 	     
 	});
 
@@ -462,13 +470,17 @@ function releaseBooksToVerify(firstShowOverlay){
 		return false;//not selected yet
 	}
 	
+ 
+	var elem = document.getElementById('batchNumberDropdown'); 
+	var batchNumber = elem.options[elem.selectedIndex].text;
+	
 	rc = confirm("Site selected: " + site + "\n\nBooks that you have specified to put into FamilySearch will now be moved to the next step '3- Verify Books'. \nBooks that are not flagged for FamilySearch will be cleared from table.");
 	if(rc == false){
 		return false;
 	}
 	var url = "iaMoveToVerify";//in IaSearchController
 	////window.location.href=url;
-	doPost(url + "?site=" + site);
+	doPost(url + "?site=" + site + "&batchNumber="+batchNumber);
 	
 }
 //delete books this user is working on in step 2 (no others)
@@ -537,6 +549,17 @@ function toggleCopyPasteListOverlay() {
 	specialBox.style.display = "block";
 	}
 }
+
+function reloadWithBatch(){
+	var elem = document.getElementById('batchNumberDropdown'); 
+	var batchNumber = elem.options[elem.selectedIndex].text;
+	var url =  "iaSelectBooks?batchNumber=" + batchNumber;//current page + batchNumber
+ 
+	//document.location.href
+	window.location.href=url;//get
+	 
+}
+
 function getURLParameter(name) {
     return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
 }
@@ -600,10 +623,16 @@ function doCopyPasteList(){
 				</c:forEach>
 				-->
 			 
-			   <td><button id="release" name="button" value="releaseToVerify"  onclick="releaseBooksToVerify(true); return false; ">DONE - Release Books Selected for FamilySearch</button></td>
+			   <td><button id="release" name="button" value="releaseToVerify"  onclick="releaseBooksToVerify(true); return false; ">Batch Done - Release Books Selected for FamilySearch</button></td>
 			   <td><button id="copyPasteList" name="button" value="copyPasteList"  onclick="toggleCopyPasteListOverlay(); return false; ">CopyPaste List of Identifiers</button></td>
 			   <td><button id="delete" name="button" value="delete"  onclick="deleteBooksWorking(); return false; ">Remove books in THIS list (when searched by mistake)</button></td>
-			 
+			   <td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Batch#&nbsp;<select id="batchNumberDropdown" onchange="reloadWithBatch( );"  style="width: 80px;">					
+					<c:forEach var="i" items="${batchCounts}">
+	    				<c:if test="${i==batchNumber}"><option selected>${i}</option> </c:if>
+						<c:if test="${i!=batchNumber}"><option>${i}</option> </c:if>
+					</c:forEach>
+			    </select>
+			  </td>
 			</tr>
 					
 			</table>
