@@ -9253,7 +9253,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	    		+ " priority_item, withdrawn, digital_copy_only, batch_class, scanned_by, pdf_ready, date_released, compression_code, "
 	    		+ " pdf_orem_archived_date, pdf_orem_drive_serial_num, pdf_orem_drive_name, site, secondary_identifier, oclc_number, owning_institution, property_right, "
 	    		+ "  scan_ia_complete_date, dnp ) "
-				+ " SELECT tn, case when volume is not null and volume != '' then CONCAT(title, ', ', volume)  else title end, author,  CASE WHEN language ='' THEN null ELSE language END , cast( CASE WHEN image_count='' THEN null ELSE image_count END as int), publisher, "
+				+ " SELECT tn, case when volume is not null and volume != '' then CONCAT(title, ', ', volume)  else title end, left(author, 512),  CASE WHEN language ='' THEN null ELSE language END , cast( CASE WHEN image_count='' THEN null ELSE image_count END as int), publisher, "
 	    		+ " 'F', 'F', 'F', 'Internet Archives (IA)', site, current_timestamp, current_timestamp, 'Iarchive',  "
 				+ " current_timestamp, ?, ?, 'Internet Archives (IA)', identifier, oclc, 'Internet Archives (IA)',  'Public Domain', "
 	    		+ " current_timestamp,  CASE WHEN dnp='T' THEN 'T' ELSE null END  "

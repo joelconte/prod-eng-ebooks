@@ -623,9 +623,9 @@ function doCopyPasteList(){
 				</c:forEach>
 				-->
 			 
-			   <td><button id="release" name="button" value="releaseToVerify"  onclick="releaseBooksToVerify(true); return false; ">Batch Done - Release Books Selected for FamilySearch</button></td>
+			   <td><button id="release" name="button" value="releaseToVerify"  onclick="releaseBooksToVerify(true); return false; ">Batch Done - Release batch to step 3</button></td>
 			   <td><button id="copyPasteList" name="button" value="copyPasteList"  onclick="toggleCopyPasteListOverlay(); return false; ">CopyPaste List of Identifiers</button></td>
-			   <td><button id="delete" name="button" value="delete"  onclick="deleteBooksWorking(); return false; ">Remove books in THIS list (when searched by mistake)</button></td>
+			   <td><button id="delete" name="button" value="delete"  onclick="deleteBooksWorking(); return false; ">Remove books in step 2 (when searched by mistake)</button></td>
 			   <td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Batch#&nbsp;<select id="batchNumberDropdown" onchange="reloadWithBatch( );"  style="width: 80px;">					
 					<c:forEach var="i" items="${batchCounts}">
 	    				<c:if test="${i==batchNumber}"><option selected>${i}</option> </c:if>
