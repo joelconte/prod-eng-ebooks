@@ -225,12 +225,14 @@ public class IaSearchController implements MessageSourceAware{
 		
 		
 
-	//move books to be Verified.  IE. change state and delete books with 'n' add to fs flag
+	//move books to be Verified.  IE. change state and delete books with 'n' add to fs flag (actually, don't delete if checked=T)
 	@RequestMapping(value="ia/iaMoveToVerify",  method=RequestMethod.POST)
 	public String doIaMoveToVerifyGet(String batchNumber, String site, HttpServletRequest req, Locale locale, Principal principal ) {		
 		 //move to next verify state
 		bookService.updateInternetArchiveWorkingBooksChangeStateVerifyBooks(batchNumber, principal.getName(), site);//change books flagged for familysearch to verify books state
-		bookService.recordCompletionCheckedBooks(batchNumber, principal.getName());//update complete date if Checked and still in Select state (and add final state rejected)
+		//remaining books in step2 are is_selected=F 
+		bookService.recordCompletionCheckedBooks(batchNumber, principal.getName());//update complete date if Checked and still in Select state (and add final state rejected) (or soft rejected if checked=F)
+		//after this step there should not be any books left, but just in case.. delete remaining
 		bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(batchNumber, principal.getName());//delete all remaining non-flagged books in select books state
 	
 		

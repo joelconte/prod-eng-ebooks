@@ -9001,10 +9001,12 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	
     	//update complete date if Checked and still in Select state (and add final state rejected)
     	String sql = "UPDATE internetarchive_working SET complete_date = current_timestamp, state = ? where checked = 'T' and state = ? and owner_userid = ? and batch_number = ? ";
-    	
 		int count = getJdbcTemplate().update(sql, InternetArchiveService.statusCompleteRejected, InternetArchiveService.statusSelectBooks, user, batchNumber);
 		
-
+		//next if checked=F then the book was not viewed in detail in overlay, so update state to soft rejected
+		sql = "UPDATE internetarchive_working SET complete_date = current_timestamp, state = ? where checked = 'F' and state = ? and owner_userid = ? and batch_number = ? ";
+		count = getJdbcTemplate().update(sql, InternetArchiveService.statusCompleteSoftRejected, InternetArchiveService.statusSelectBooks, user, batchNumber);
+		
     }
     
     //run this instead of deleting after steps 2

@@ -55,6 +55,7 @@ public class InternetArchiveService {
 	public static String statusInsertTfdb = "ready to add tfdb";
 	public static String statusComplete = "complete";
 	public static String statusCompleteRejected = "complete and rejected";//of no interest to familysearch
+	public static String statusCompleteSoftRejected = "complete and soft rejected";//of no interest to familysearch probably (if missionary does not click on book, but does not select for import) (ie if they have a list of books and look down the list and say these are all no-go, then they will be recorded as such)
 	//these are part of whole download threads states (all show up on page what shows monitoring)
 	public static String[] allDownloadStates = {statusDownloadNotStartedBooks, statusDownloadStartedBooks, statusGenerateMetadata ,statusCompleteDownloadAndXml, statusErrorPdfMetadata, statusErrorCopyright};//just valid states that can be changed from...into another download state
 	public static String[] allDownloadStatesExceptComplete = {statusDownloadNotStartedBooks, statusDownloadStartedBooks, statusGenerateMetadata ,statusErrorPdfMetadata , statusErrorCopyright};
