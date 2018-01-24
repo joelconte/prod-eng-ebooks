@@ -51,9 +51,9 @@ public class LogonInterceptor extends HandlerInterceptorAdapter  {
 			    if(hostname.contains("bookprod-wf-app01"))
 			    	hostname = "";//prod1
 			    else if(hostname.contains("bookstage-wf-app01"))
-			    	hostname = "Stage Server";
+			    	hostname = "Stage (test) Server";
 			    else if(hostname.contains("bookprod-wf-app02"))
-			    	hostname = "Mining Server";
+			    	hostname = "Mining (production) Server";
 			    else
 			    	hostname = "Local Server";
 			    
