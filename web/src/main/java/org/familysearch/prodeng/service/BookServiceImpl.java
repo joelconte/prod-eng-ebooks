@@ -8962,7 +8962,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	
     	//check internetarchive_working dupe check
     	dupe = getJdbcTemplate().query("select identifier from internetarchive_working " +
- 			   " where  (tn = '" + tn + "' and tn != '')  " ,  new StringXRowMapper());//or (oclc_number = '" + oclc + "' and oclc_number != '')
+ 			   " where  (tn = '" + tn + "' and tn != '') and identifier != '"+bookId+ "'  " ,  new StringXRowMapper());//or (oclc_number = '" + oclc + "' and oclc_number != '')
  		if(dupe.size()>0) {
  			String dupeIdentifier = (String) dupe.get(0).get(0);
  			return "Error, book with same TN already exists in the internet archive list being processed by you or someone else: " + dupeIdentifier;
