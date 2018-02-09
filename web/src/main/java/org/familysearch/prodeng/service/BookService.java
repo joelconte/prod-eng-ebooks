@@ -343,8 +343,9 @@ public interface BookService {
 	public void insertInternetArchiveSearchedBooks(List<List<String>> rows, String ownerUserId);
 	
 	public List<List> getInternetArchiveWorkingBooksStateSelectBooks(String batchNumber, String userId);
-	public List<String>  getInternetArchiveWorkingBooksStateSelectBooksBatchCounts(String userId);
-	public List<List> getInternetArchiveWorkingBooksStateVerifyBooks(String userId);
+	public List<String> getInternetArchiveWorkingBooksStateSelectBooksBatchCounts(String userId);
+	public List<String> getInternetArchiveWorkingBooksStateVerifyBooksBatchCounts();
+	public List<List> getInternetArchiveWorkingBooksStateVerifyBooks(String batchNumber, String userId);
 	public List<List> getInternetArchiveWorkingBooksStatePreDownloadBooks(String userId);
 	public List<List> getInternetArchiveWorkingBooksStateDownloadNotStartedBooks(String userId);
     public List<List> getInternetArchiveWorkingBooksStateAnyDownloadBooks(String userId);
@@ -357,11 +358,12 @@ public interface BookService {
 	public String updateInternetArchiveWorkingBookChecked(String bookId, String user);
 	public void recordCompletionCheckedBooks( String user );
 	public void recordCompletionCheckedBooks(String batchNumber, String user );
-	public void recordCompletionCheckedBooksB(  String state, String[] stateList );
+	public void recordCompletionCheckedBooksB( String state, String[] stateList );
+	public void recordCompletionCheckedBooksC( String batchNumber,  String state, String[] stateList );
 	
 	//public void updateInternetArchiveWorkingBooksChangeStateVerifyBooks(String userId, String site);
 	public void updateInternetArchiveWorkingBooksChangeStateVerifyBooks(String batchNumber, String userId, String site);
-	public void updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(String userId);
+	public void updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(String batchNumber, String userId);
 	public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooks(String userId);
 	public void updateInternetArchiveWorkingBooksChangeStateDownloadX(String bookId, String[] fromStates, String toState, String folder);
 	public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooksFromAnyDownloadingState(String userId);

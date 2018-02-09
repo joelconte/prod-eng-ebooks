@@ -8583,11 +8583,15 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     public List<String>  getInternetArchiveWorkingBooksStateSelectBooksBatchCounts(String userId){
     	List<String> c = getJdbcTemplate().query("SELECT distinct CAST(batch_number AS int) from internetarchive_working where  owner_userid = '" + userId + "' and state in ('" + InternetArchiveService.statusSelectBooks + "') ORDER BY CAST(batch_number AS int)" , new StringRowMapper());
         return c;
-    	
-    	
     }
-    public List<List> getInternetArchiveWorkingBooksStateVerifyBooks(String userId){
-    	return getInternetArchiveWorkingBooksVerifyPage(userId, InternetArchiveService.statusVerifyBooks); 
+
+    public List<String>  getInternetArchiveWorkingBooksStateVerifyBooksBatchCounts( ){
+    	List<String> c = getJdbcTemplate().query("SELECT distinct start_date from internetarchive_working where state in ('" + InternetArchiveService.statusVerifyBooks + "') ORDER BY start_date" , new StringRowMapper());
+        return c;
+    }
+    
+    public List<List> getInternetArchiveWorkingBooksStateVerifyBooks(String batchNumber, String userId){
+    	return getInternetArchiveWorkingBooksVerifyPage(batchNumber, userId, InternetArchiveService.statusVerifyBooks); 
     	
     }
 
@@ -8758,22 +8762,27 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 	
     }
     //same with extra col Checked
-    private List<List> getInternetArchiveWorkingBooksVerifyPage(String userId, String state){
+    private List<List> getInternetArchiveWorkingBooksVerifyPage(String batchNumber, String userId, String state){
     	if(state.startsWith("'") == false) {
     		state = "'" + state + "'";
     	}
     	 
     	List<List> rows;
      
+    	String batchClause = " start_date = '" + batchNumber + "' ";
+    	if(batchNumber == null || batchNumber.equals("")) {
+    		batchClause = " start_date is null ";
+    		
+    	}
     	
     	if(userId != null) {
 		rows = getJdbcTemplate().query("select  IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
 		   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, checked, site, u.name   from internetarchive_working, users u  " +
-		   " where  u.id = owner_userid and owner_userid = '" + userId + "' and state in (" + state + ") order by identifier " , new StringXRowMapper());
+		   " where  u.id = owner_userid and owner_userid = '" + userId + "' and state in (" + state + ")  and " + batchClause + " order by identifier " , new StringXRowMapper());
     	}else {
     		rows = getJdbcTemplate().query("select  IS_SELECTED, BIBCHECK, IDENTIFIER , TITLE, VOLUME, IMAGE_COUNT, LANGUAGE, PUBLISH_DATE, "+
     				   "  SUBJECT, DESCRIPTION, PUBLISHER, LICENSEURL, RIGHTS, AUTHOR, OCLC, TN, dnp, checked, site, u.name   from internetarchive_working, users u  " +
-    				   " where u.id = owner_userid and  state in (" + state + ") order by identifier " , new StringXRowMapper());
+    				   " where u.id = owner_userid and  state in (" + state + ")  and " + batchClause + " order by identifier " , new StringXRowMapper());
     	}
 		 
 		return rows;
@@ -8951,6 +8960,14 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     		return "Error, book with same TN already exists in TFDB: " + dupeTn;
     	}
     	
+    	//check internetarchive_working dupe check
+    	dupe = getJdbcTemplate().query("select identifier from internetarchive_working " +
+ 			   " where  (tn = '" + tn + "' and tn != '')  " ,  new StringXRowMapper());//or (oclc_number = '" + oclc + "' and oclc_number != '')
+ 		if(dupe.size()>0) {
+ 			String dupeIdentifier = (String) dupe.get(0).get(0);
+ 			return "Error, book with same TN already exists in the internet archive list being processed by you or someone else: " + dupeIdentifier;
+ 		}
+    	
     	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ?, image_count = ?, title = ?, checked = 'T' where identifier = ?  ";
     	if(addToFs.equals("true"))
     		addToFs = "T";
@@ -9024,6 +9041,23 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 		
 
     }
+
+    //run this instead of deleting after steps 3
+    public void recordCompletionCheckedBooksC(String batchNumber,  String state, String[] stateList ) {
+    	//update complete date if Checked and still in Select state (and add final state rejected)
+    	if(stateList != null) {
+    		state = generateQuotedListStringFromArray(stateList);
+    	}else {
+    		state = "'" + state + "'";
+    	}
+    	//i think any that are checked, but not added to tfdb should have is_selected=f also
+    	String sql = "UPDATE internetarchive_working SET is_selected = 'F', complete_date = current_timestamp, state = ? where start_date = cast(? as timestamp) and state in ( " + state + " )";
+    	
+		int count = getJdbcTemplate().update(sql, InternetArchiveService.statusCompleteRejected, batchNumber);
+		
+
+    }
+    
     
     //record that book was checked by missionary (may or maynot have been selected for familysearch)
     public String updateInternetArchiveWorkingBookChecked(String bookId, String user) {
@@ -9121,8 +9155,8 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	updateInternetArchiveWorkingBooksChangeState2(batchNumber, InternetArchiveService.statusSelectBooks, InternetArchiveService.statusVerifyBooks, userId, site);
     }
     
-    public void updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(String userId){
-    	 updateInternetArchiveWorkingBooksChangeState(InternetArchiveService.statusVerifyBooks, InternetArchiveService.statusPreDownloadBooks, userId);
+    public void updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(String batchNumber, String userId){
+    	 updateInternetArchiveWorkingBooksChangeState(batchNumber, InternetArchiveService.statusVerifyBooks, InternetArchiveService.statusPreDownloadBooks, userId);
     }
     public void updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooks(String userId){
     	
@@ -9162,16 +9196,29 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	}
     }
     
+    private void updateInternetArchiveWorkingBooksChangeState(String batchNumber, String fromState, String toState, String userId){
+    	String sql1; 
+    	int count = 0;
+    	//just set checked to T on all post 2 steps since they have been checked
+    	if(userId != null) {
+    		sql1 = "UPDATE internetarchive_working SET state = ?, checked = 'T' where state = ? and OWNER_USERID = ? and is_selected = ? and start_date = cast( ? as timestamp) ";
+    		count = getJdbcTemplate().update(sql1, toState, fromState, userId, "T", batchNumber);//using start_date for batch
+    	}else {
+    		sql1 = "UPDATE internetarchive_working SET state = ?, checked = 'T'  where state = ?   and is_selected = ? and start_date = cast( ? as timestamp) ";
+    		count = getJdbcTemplate().update(sql1, toState, fromState,  "T", batchNumber);
+    	}
+    }
+    
     private void updateInternetArchiveWorkingBooksChangeState2(String batchNumber, String fromState, String toState, String userId, String site){
     	String sql1; 
     	int count = 0;
-    	
+    	//when going from select books to verify books, need to record timestamp for step3 batching
     	//note we will just clear Checked for all updates since it is only used in steps 1 and 2
     	if(userId != null) {
-    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ?, checked = 'F' where state = ? and OWNER_USERID = ? and is_selected = ? and batch_number = ?";
+    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ?, checked = 'F', start_date = current_timestamp where state = ? and OWNER_USERID = ? and is_selected = ? and batch_number = ?";
     		count = getJdbcTemplate().update(sql1,  toState, site, fromState, userId, "T", batchNumber);
     	}else {
-    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ? , checked = 'F' where state = ?   and is_selected = ? and batch_number = ?";
+    		sql1 = "UPDATE internetarchive_working SET state = ?, site = ? , checked = 'F', start_date = current_timestamp where state = ?   and is_selected = ? and batch_number = ?";
     		count = getJdbcTemplate().update(sql1,  toState, site, fromState,  "T", batchNumber);
     	}
     }

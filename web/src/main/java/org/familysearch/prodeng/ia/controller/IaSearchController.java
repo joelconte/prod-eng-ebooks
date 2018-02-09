@@ -140,6 +140,7 @@ public class IaSearchController implements MessageSourceAware{
 		}else if(onlyAddToFsParam != null && onlyAddToFsParam.equals("true")) {
 			rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, principal.getName());
 		}else {
+			//dupecheck tn 
 			rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, oclc, tn, dnp, volume, imageCount, title, principal.getName());
 		}
 		
@@ -233,7 +234,7 @@ public class IaSearchController implements MessageSourceAware{
 		//remaining books in step2 are is_selected=F 
 		bookService.recordCompletionCheckedBooks(batchNumber, principal.getName());//update complete date if Checked and still in Select state (and add final state rejected) (or soft rejected if checked=F)
 		//after this step there should not be any books left, but just in case.. delete remaining
-		bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(batchNumber, principal.getName());//delete all remaining non-flagged books in select books state
+		//no need bookService.deleteInternetArchiveWorkingBooksStateSelectBooks(batchNumber, principal.getName());//delete all remaining non-flagged books in select books state
 	
 		
 		return "redirect:iaSelectBooks";//keep missionaries on same page... view results from table step 3 verify books
@@ -243,7 +244,7 @@ public class IaSearchController implements MessageSourceAware{
 
 	//view books that were previously inserted into ia_book_selection 
 	@RequestMapping(value="ia/iaVerifyBooks", method=RequestMethod.GET)
-	public String displayIaVerifyBooks( Model model, Locale locale, Principal principal) {
+	public String displayIaVerifyBooks( String batchNumber,  Model model, Locale locale, Principal principal) {
 	
 		model.addAttribute("pageTitle", messageSource.getMessage("ia.verifyBooks", null, locale));
 
@@ -270,8 +271,18 @@ public class IaSearchController implements MessageSourceAware{
 		labels.add("Checked");
 		labels.add("MiningSite");
 		labels.add("BookMiner");
+		  
+
+		//get list of actual distinct batch numbers in step 2
+		List<String> batchCounts = bookService.getInternetArchiveWorkingBooksStateVerifyBooksBatchCounts();
+		if(batchCounts.size()>0 && batchCounts.contains(batchNumber)==false) {
+			batchNumber = batchCounts.get(0);
+		}
+				
+		List<List> allRows = bookService.getInternetArchiveWorkingBooksStateVerifyBooks(batchNumber, null); //all users, but batching on date, so will be per user anyway, since one user has unique date when pressed release button
 		 
-		List<List> allRows = bookService.getInternetArchiveWorkingBooksStateVerifyBooks(null);//for now all users' books
+		model.addAttribute("batchNumber", batchNumber);//dropdown selected
+		model.addAttribute("batchCounts", batchCounts);	
  
 		model.addAttribute("colLabels", labels);
 		model.addAttribute("allRows", allRows);
@@ -283,11 +294,11 @@ public class IaSearchController implements MessageSourceAware{
 
 	//move books to next state on step 4
 	@RequestMapping(value="ia/iaMoveToPreDownload",  method=RequestMethod.POST)
-	public String doIaMoveToPreDownloadGet( HttpServletRequest req, Locale locale, Principal principal ) {		
-		 //move to next import state
-		bookService.updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(null);//all users' books for now
+	public String doIaMoveToPreDownloadGet( String batchNumber, HttpServletRequest req, Locale locale, Principal principal ) {		
+		//move to next import state
+		bookService.updateInternetArchiveWorkingBooksChangeStatePreDownloadBooks(batchNumber, null);//all users' books for now
 		//bookService.deleteInternetArchiveWorkingBooksStateVerifyBooks(null);//delete all remaining non-flagged books in select books state
-		bookService.recordCompletionCheckedBooksB(InternetArchiveService.statusVerifyBooks, null);//set complete_date, state (complete and rejected), checked to flag that this is a no-go book
+		bookService.recordCompletionCheckedBooksC(batchNumber, InternetArchiveService.statusVerifyBooks, null);//set complete_date, state (complete and rejected), checked to flag that this is a no-go book
 		
 		return "redirect:iaPreDownloadBooks";//view results from table step 3 verify books
 	}  

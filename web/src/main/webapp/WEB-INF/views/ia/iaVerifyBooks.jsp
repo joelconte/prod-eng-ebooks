@@ -383,13 +383,17 @@ function doUpdateAddToFsChecked( bookId ){
 	});
 }
 function releaseBooksToPreDownload(){
-	rc = confirm("Books that you have specified to put into FamilySearch will now be moved to the next step '4- Import Books'. \nBooks that are not flagged for FamilySearch will be cleared from table.");
+	rc = confirm("Books in this batch that you have specified to put into FamilySearch will now be moved to the next step '4- Import Books'. \nBooks that are not flagged for FamilySearch will be cleared from table.");
 	if(rc == false){
 		return false;
 	}
+	 
+	var elem = document.getElementById('batchNumberDropdown'); 
+	var batchNumber = elem.options[elem.selectedIndex].text;
+	
 	var url = "iaMoveToPreDownload";//in IaSearchController
 	//window.location.href=url;
-	doPost(url);
+	doPost(url + "?batchNumber="+batchNumber);
 }
 function doPost(url){
 	var form= document.createElement('form');
@@ -399,6 +403,16 @@ function doPost(url){
     form.submit();
 }
 
+
+function reloadWithBatch(){
+	var elem = document.getElementById('batchNumberDropdown'); 
+	var batchNumber = elem.options[elem.selectedIndex].text;
+	var url =  "iaVerifyBooks?batchNumber=" + batchNumber;//current page + batchNumber
+ 
+	//document.location.href
+	window.location.href=url;//get
+	 
+}
 </script> 
 
 
@@ -428,7 +442,13 @@ function doPost(url){
 				-->
 			 
 			   <td><button id="release" name="button" value="release"  onclick="releaseBooksToPreDownload(); return false; ">DONE - Release Books Selected for Import into FamilySearch</button></td>
-			 
+			   <td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Batch#&nbsp;<select id="batchNumberDropdown" onchange="reloadWithBatch( );"  style="width: 280px;">					
+					<c:forEach var="i" items="${batchCounts}">
+	    				<c:if test="${i==batchNumber}"><option selected>${i}</option> </c:if>
+						<c:if test="${i!=batchNumber}"><option>${i}</option> </c:if>
+					</c:forEach>
+			    </select>
+			   </td>
 			</tr>
 					
 			</table>
