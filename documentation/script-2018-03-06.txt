@@ -1,0 +1,19 @@
+
+CREATE OR REPLACE VIEW tf_in_proc_pdf_date_no_rel_dat AS 
+ SELECT book.tn,
+    book.num_of_pages,
+    book.filename,
+    book.scanned_by,
+    book.pdf_ready,
+    book.date_released,
+    book.owning_institution
+   FROM book
+  WHERE book.pdf_ready IS NOT NULL AND book.date_released IS NULL AND dnp is NULL 
+  ORDER BY book.site, book.pdf_ready;
+
+ALTER TABLE tf_in_proc_pdf_date_no_rel_dat
+  OWNER TO pgsql;
+GRANT ALL ON TABLE tf_in_proc_pdf_date_no_rel_dat TO pgsql;
+GRANT SELECT, UPDATE, INSERT, DELETE, REFERENCES ON TABLE tf_in_proc_pdf_date_no_rel_dat TO bookscan;
+GRANT SELECT ON TABLE tf_in_proc_pdf_date_no_rel_dat TO postgresquery;
+
