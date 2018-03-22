@@ -7,8 +7,6 @@ package org.familysearch.prodeng.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import javax.validation.constraints.Size;
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.lds.stack.security.web.validate.jsr303.SafeHtml;
 
@@ -22,7 +20,6 @@ public class Book implements Serializable {
     private String tn = "";
     
     @NotBlank(message="{manageBook.namerequired}")
-    @Size(min = 0, max = 200, message="{manageBook.sizebetween}")
     private String title;
     
     @SafeHtml
