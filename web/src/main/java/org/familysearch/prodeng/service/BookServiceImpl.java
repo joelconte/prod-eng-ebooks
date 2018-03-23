@@ -8975,18 +8975,22 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
  		}
     	
  		//check language foreign key if valid
-    	List<List> langList = getJdbcTemplate().query("select id from languages where id = '" + language + "'" ,  new StringXRowMapper());//or (oclc_number = '" + oclc + "' and oclc_number != '')
-    	if(langList.size()==0) {
-    		String langListMsg = "";
-    				
-    		langList = getJdbcTemplate().query("select id from languages order by id" ,  new StringXRowMapper());
-    		for(List langRow : langList) {
-    			langListMsg += langRow.get(0) + ", ";
-    		}
-    		langListMsg = langListMsg.substring(0, langListMsg.length()-2);
-    		
-    		return "Error, invalid language.  The following are valid languages: " + langListMsg;
-    	}
+ 		if(language != null && language.equals("")==false) {
+	    	List<List> langList = getJdbcTemplate().query("select id from languages where id = '" + language + "'" ,  new StringXRowMapper());//or (oclc_number = '" + oclc + "' and oclc_number != '')
+	    	if(langList.size()==0) {
+	    		String langListMsg = "";
+	    				
+	    		langList = getJdbcTemplate().query("select id from languages order by id" ,  new StringXRowMapper());
+	    		for(List langRow : langList) {
+	    			langListMsg += langRow.get(0) + ", ";
+	    		}
+	    		langListMsg = langListMsg.substring(0, langListMsg.length()-2);
+	    		
+	    		return "Error, invalid language.  The following are valid languages: " + langListMsg;
+	    	}
+ 		}else {
+ 			language = "";
+ 		}
     	
     	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ?, image_count = ?, title = ?, language = ?, checked = 'T' where identifier = ?  ";
     	if(addToFs.equals("true"))
