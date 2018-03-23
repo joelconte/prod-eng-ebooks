@@ -102,11 +102,12 @@ function closeDetailsOverlayAndSave( ){
 	var volume = document.getElementById('ol_volume').value;
 	var imageCount = document.getElementById('ol_imageCount').value;
 	var title = document.getElementById('ol_title').value;
+	var language = document.getElementById('ol_language').value;
 	
 	if(cb.checked == true){
-		doUpdateAddToFs('true', bookId, oclc, tn, dnp, volume, imageCount, title);//rest call to update in db
+		doUpdateAddToFs('true', bookId, oclc, tn, dnp, volume, imageCount, title, language);//rest call to update in db
 	}else{
-		doUpdateAddToFs('false', bookId, oclc, tn, dnp, volume, imageCount, title);//rest call to update in db
+		doUpdateAddToFs('false', bookId, oclc, tn, dnp, volume, imageCount, title, language);//rest call to update in db
 	}
 	
 	
@@ -273,7 +274,7 @@ function viewPdf(){
 	
 }
 
-function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, title){
+function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, title, language){
 	 
 	var u = document.URL;
 	var i = u.indexOf('/ia/');
@@ -281,7 +282,7 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, 
 	var request = $.ajax({
 	  url: u,
 	  type: "POST",
-	  data: {"addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp, "volume" : volume, "imageCount": imageCount, "title": title},
+	  data: {"addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp, "volume" : volume, "imageCount": imageCount, "title": title, "language": language},
 	  dataType: "html"
 	});
 
@@ -311,6 +312,8 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, 
 	    	cellToUpdateElem.innerHTML = volume;
 			cellToUpdateElem = document.getElementById(selectedId + '_9');//td cell
 	    	cellToUpdateElem.innerHTML = imageCount;
+			cellToUpdateElem = document.getElementById(selectedId + '_10');//td cell
+	    	cellToUpdateElem.innerHTML = language;
 	    	cellToUpdateElem = document.getElementById(selectedId + '_18');//td cell
 	    	 cellToUpdateElem.innerHTML = oclc;
 	    	cellToUpdateElem = document.getElementById(selectedId + '_19');//td cell
@@ -566,9 +569,9 @@ function toggleOverlay2(){
 		<td><input id="ol_imageCount" type="text" value="" style="width: 100%"></td>
 		</tr>
 		<tr>
-		<td>Language </td>
-		<td><input id="ol_language" type="text" value="" style="width: 100%" readonly></td>
-		</tr> 
+		<td>Language* </td>
+		<td><input id="ol_language" type="text" value="" style="width: 100%" ></td>
+		</tr>
 		<tr>
 		<td>PublishDate </td>
 		<td><input id="ol_publishDate" type="text" value="" style="width: 100%" readonly></td>

@@ -352,7 +352,7 @@ public interface BookService {
     public List<List> getInternetArchiveWorkingBooksStateAnyDownloadBooksExceptComplete(String userId);
     public List<List> getInternetArchiveWorkingBooksStateInsertTfdb(String userId);
 	  
-	public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, String user);
+	public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, String language, String user);
 	public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String user);
 	public String updateInternetArchiveWorkingBookToState(String bookId, String state);
 	public String updateInternetArchiveWorkingBookChecked(String bookId, String user);

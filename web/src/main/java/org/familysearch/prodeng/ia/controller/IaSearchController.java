@@ -132,7 +132,7 @@ public class IaSearchController implements MessageSourceAware{
 
 	//update addToFs checkbox selection (add to familysearch)
 	@RequestMapping(value="ia/updateAddToFsAjax",  method=RequestMethod.POST)
-	public  HttpEntity<byte[]> updateAddToFsAjaxPost(String onlyAddToFsParam, String checked, String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, HttpServletRequest req, Locale locale, Principal principal ) {		
+	public  HttpEntity<byte[]> updateAddToFsAjaxPost(String onlyAddToFsParam, String checked, String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, String language, HttpServletRequest req, Locale locale, Principal principal ) {		
 		String rc = null;
 		if(checked != null && checked.equals("true")) {
 			rc = bookService.updateInternetArchiveWorkingBookChecked(bookId, principal.getName());
@@ -141,7 +141,7 @@ public class IaSearchController implements MessageSourceAware{
 			rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, principal.getName());
 		}else {
 			//dupecheck tn 
-			rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, oclc, tn, dnp, volume, imageCount, title, principal.getName());
+			rc = bookService.updateInternetArchiveWorkingBook(bookId, addToFs, oclc, tn, dnp, volume, imageCount, title, language, principal.getName());
 		}
 		
 		byte[] documentBody = "updated".getBytes();

@@ -8522,10 +8522,16 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
         
         
         */
-    	
-	 
+    	int batchNumber = 0;
+    	List sList = getJdbcTemplate().query("select max(cast(batch_number as integer))  from internetarchive_working where owner_userid = '" + ownerUserId + "'",  new StringRowMapper());
+		if(sList.size()>=1) {
+			if(sList.get(0)!=null) {
+				batchNumber = Integer.valueOf((String)sList.get(0));
+				batchNumber++;
+			}
+		}
 		  
-		int batchNumber = 0;
+		
 		int count = -1;
 		String batchNumberStr = "";
 		for(List<String> r : rows) {
@@ -8949,7 +8955,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     
     
     
-    public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, String user) {
+    public String updateInternetArchiveWorkingBook(String bookId, String addToFs, String oclc, String tn, String dnp, String volume, String imageCount, String title, String language, String user) {
     	 
     		
     	//first do a dupe check
@@ -8968,7 +8974,21 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
  			return "Error, book with same TN already exists in the internet archive list being processed by you or someone else: " + dupeIdentifier;
  		}
     	
-    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ?, image_count = ?, title = ?, checked = 'T' where identifier = ?  ";
+ 		//check language foreign key if valid
+    	List<List> langList = getJdbcTemplate().query("select id from languages where id = '" + language + "'" ,  new StringXRowMapper());//or (oclc_number = '" + oclc + "' and oclc_number != '')
+    	if(langList.size()==0) {
+    		String langListMsg = "";
+    				
+    		langList = getJdbcTemplate().query("select id from languages order by id" ,  new StringXRowMapper());
+    		for(List langRow : langList) {
+    			langListMsg += langRow.get(0) + ", ";
+    		}
+    		langListMsg = langListMsg.substring(0, langListMsg.length()-2);
+    		
+    		return "Error, invalid language.  The following are valid languages: " + langListMsg;
+    	}
+    	
+    	String sql1 = "UPDATE internetarchive_working SET is_selected = ?, oclc = ?, tn = ?, dnp = ?, volume = ?, image_count = ?, title = ?, language = ?, checked = 'T' where identifier = ?  ";
     	if(addToFs.equals("true"))
     		addToFs = "T";
     	else
@@ -8979,7 +8999,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	else
     		dnp = "F";
     	
-		int count = getJdbcTemplate().update(sql1, addToFs, oclc, tn, dnp, volume, imageCount, title, bookId);	
+		int count = getJdbcTemplate().update(sql1, addToFs, oclc, tn, dnp, volume, imageCount, title, language, bookId);	
 
 		if(count != 1) {
 			return "Error, book identifier not found";

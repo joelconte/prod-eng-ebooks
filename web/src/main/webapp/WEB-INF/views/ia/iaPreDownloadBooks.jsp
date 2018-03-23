@@ -16,8 +16,29 @@ var maxFieldLen = <c:out value = "${maxFieldLen}"/>;
 
 var selectedHighlightedRow = null;
 function showDetailsOverlay(selectedRow, identifier){
-	  
-	//highlight row
+ 	 
+	//clear out fields in case prev book data is still there... ajax is slow to load, don't want confusion
+	document.getElementById('ol_identifier').value = ''; 
+	//var cb = document.getElementById('ol_selected'); 
+	document.getElementById('ol_oclc').value = ''; 
+	document.getElementById('ol_tn').value = ''; 
+	//var dnp = document.getElementById('ol_dnp').checked;
+	document.getElementById('ol_volume').value = '';
+	document.getElementById('ol_imageCount').value = '';
+	document.getElementById('ol_title').value = '';
+	document.getElementById('ol_language').value= '';
+	document.getElementById('ol_publishDate').value= '';
+	document.getElementById('ol_subject').value='';
+	document.getElementById('ol_description').value= '';
+	document.getElementById('ol_publisher').value= '';
+	document.getElementById('ol_licenseUrl').value= '';
+	document.getElementById('ol_rights').value= '';
+	document.getElementById('ol_author').value='';
+	 
+				
+				
+				
+	//highlight row from previous click
 	if(selectedHighlightedRow != null){
 		selectedHighlightedRow.style.cssText="";
 	}
@@ -64,11 +85,12 @@ function closeDetailsOverlayAndSave( ){
 	var volume = document.getElementById('ol_volume').value;
 	var imageCount = document.getElementById('ol_imageCount').value;
 	var title = document.getElementById('ol_title').value;
+	var language = document.getElementById('ol_language').value;
 	
 	if(cb.checked == true){
-		doUpdateAddToFs('true', bookId, oclc, tn, dnp, volume, imageCount, title);//rest call to update in db
+		doUpdateAddToFs('true', bookId, oclc, tn, dnp, volume, imageCount, title, language);//rest call to update in db
 	}else{
-		doUpdateAddToFs('false', bookId, oclc, tn, dnp, volume, imageCount, title);//rest call to update in db
+		doUpdateAddToFs('false', bookId, oclc, tn, dnp, volume, imageCount, title, language);//rest call to update in db
 	}
 	
 	
@@ -234,7 +256,7 @@ function viewPdf(){
 	
 }
 
-function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, title){
+function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, title, language){
 	 
 	var u = document.URL;
 	var i = u.indexOf('/ia/');
@@ -242,7 +264,7 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, 
 	var request = $.ajax({
 	  url: u,
 	  type: "POST",
-	  data: {"addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp, "volume" : volume, "imageCount": imageCount, "title": title},
+	  data: {"addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp, "volume" : volume, "imageCount": imageCount, "title": title, "language": language},
 	  dataType: "html"
 	});
 
@@ -272,6 +294,8 @@ function doUpdateAddToFs(isSelected, bookId, oclc, tn, dnp, volume, imageCount, 
 	    	cellToUpdateElem.innerHTML = volume;
 	    	cellToUpdateElem = document.getElementById(selectedId + '_5');//td cell
 	    	cellToUpdateElem.innerHTML = imageCount;
+			cellToUpdateElem = document.getElementById(selectedId + '_6');//td cell
+    		cellToUpdateElem.innerHTML = language;
 	    	 cellToUpdateElem = document.getElementById(selectedId + '_14');//td cell
 	    	cellToUpdateElem.innerHTML = oclc;
 	    	cellToUpdateElem = document.getElementById(selectedId + '_15');//td cell
@@ -466,8 +490,8 @@ function doPost(url){
 		<td><input id="ol_imageCount" type="text" value="" style="width: 100%"></td>
 		</tr>
 		<tr>
-		<td>Language </td>
-		<td><input id="ol_language" type="text" value="" style="width: 100%" readonly></td>
+		<td>Language* </td>
+		<td><input id="ol_language" type="text" value="" style="width: 100%"></td>
 		</tr>
 		<tr>
 		<td>PublishDate </td>

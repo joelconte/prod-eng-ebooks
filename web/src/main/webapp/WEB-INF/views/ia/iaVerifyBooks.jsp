@@ -85,11 +85,12 @@ function closeDetailsOverlayAndSave( ){
 	var volume = document.getElementById('ol_volume').value;
 	var imageCount = document.getElementById('ol_imageCount').value;
 	var title = document.getElementById('ol_title').value;
+	var language = document.getElementById('ol_language').value;
 	
 	if(cb.checked == true){
-		doUpdateAddToFs('', true, bookId, oclc, tn, dnp, volume, imageCount, title);//rest call to update in db
+		doUpdateAddToFs('', true, bookId, oclc, tn, dnp, volume, imageCount, title, language);//rest call to update in db
 	}else{
-		doUpdateAddToFs('', false, bookId, oclc, tn, dnp, volume, imageCount, title);//rest call to update in db
+		doUpdateAddToFs('', false, bookId, oclc, tn, dnp, volume, imageCount, title, language);//rest call to update in db
 	}
 	
 	
@@ -266,7 +267,7 @@ function viewPdf(){
 }
 
 //if selectedRow != "" then only update isSelected of bookId
-function doUpdateAddToFs( selectedRow, isSelected, bookId, oclc, tn, dnp, volume, imageCount, title){
+function doUpdateAddToFs( selectedRow, isSelected, bookId, oclc, tn, dnp, volume, imageCount, title, language){
 	
 	if(isSelected == true){
 		isSelected = "true";
@@ -291,7 +292,7 @@ function doUpdateAddToFs( selectedRow, isSelected, bookId, oclc, tn, dnp, volume
 	var request = $.ajax({
 	  url: u,
 	  type: "POST",
-	  data: {"onlyAddToFsParam":onlyAddToFsParam, "addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp, "volume" : volume, "imageCount": imageCount, "title": title},
+	  data: {"onlyAddToFsParam":onlyAddToFsParam, "addToFs" : isSelected, "bookId" : bookId, "oclc" : oclc, "tn" : tn, "dnp" : dnp, "volume" : volume, "imageCount": imageCount, "title": title, "language": language},
 	  dataType: "html"
 	});
 
@@ -328,6 +329,8 @@ function doUpdateAddToFs( selectedRow, isSelected, bookId, oclc, tn, dnp, volume
 	    	    cellToUpdateElem.innerHTML = volume;
 	    	    cellToUpdateElem = document.getElementById(selectedId + '_5');//td cell
 	    	    cellToUpdateElem.innerHTML = imageCount;
+				cellToUpdateElem = document.getElementById(selectedId + '_6');//td cell
+	    		cellToUpdateElem.innerHTML = language;
 		    	cellToUpdateElem = document.getElementById(selectedId + '_14');//td cell
 		    	cellToUpdateElem.innerHTML = oclc;
 		    	cellToUpdateElem = document.getElementById(selectedId + '_15');//td cell
@@ -581,8 +584,8 @@ function reloadWithBatch(){
 		<td><input id="ol_imageCount" type="text" value="" style="width: 100%"></td>
 		</tr>
 		<tr>
-		<td>Language </td>
-		<td><input id="ol_language" type="text" value="" style="width: 100%" readonly></td>
+		<td>Language*</td>
+		<td><input id="ol_language" type="text" value="" style="width: 100%" ></td>
 		</tr>
 		<tr>
 		<td>PublishDate </td>
