@@ -8523,7 +8523,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
         
         */
     	int batchNumber = 0;
-    	List sList = getJdbcTemplate().query("select max(cast(batch_number as integer))  from internetarchive_working where owner_userid = '" + ownerUserId + "'",  new StringRowMapper());
+    	List sList = getJdbcTemplate().query("select max(cast(batch_number as integer))  from internetarchive_working where state = 'select books' and owner_userid = '" + ownerUserId + "'",  new StringRowMapper());
 		if(sList.size()>=1) {
 			if(sList.get(0)!=null) {
 				batchNumber = Integer.valueOf((String)sList.get(0));
