@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX identifierindex
+   ON internetarchive_working (identifier ASC NULLS LAST);
