@@ -115,7 +115,7 @@ public class InternetArchiveService {
 		//int downloadCountTotal = 0;
 		//List rows = this.getTodoList();
 		
-		int threadCount = 2;
+		int threadCount = 5;
 		countLeftThread = threadCount;
 		for(int x = 0; x< threadCount; x++){
 
@@ -347,6 +347,9 @@ public class InternetArchiveService {
 	        String msgs = "";
 	        String inNameFolder = inDir.getName(); //name of book folder..use it to rename if files don't match
 
+	        //select TN 
+	        String tn = bookService.getInternetArchiveWorkingBookById(bookId).get(13);
+	        
 	        File metaInputFile = null;
 	        File pdfInputFile = null;
 	        
@@ -500,10 +503,10 @@ public class InternetArchiveService {
 	        pdfOutputDir = new File(pdfOutputDir.getAbsoluteFile() + "/assets/");
 	        pdfOutputDir.mkdir();
 	      
-	        pdfOutputDir = new File(pdfOutputDir.getAbsoluteFile() + "/" + inNameFolder);
+	        pdfOutputDir = new File(pdfOutputDir.getAbsoluteFile() + "/" + tn);// use TN name
 	      
 	        pdfOutputDir.mkdir();
-	        String newPdfFileName = pdfOutputDir.getName();//same as inNameFolder - use in xml output also in case pdf name was updated by code and diff from input metadata
+	        String newPdfFileName = pdfOutputDir.getName();//TN - use in xml output also in case pdf name was updated by code and diff from input metadata
 	        pdfOutputDir = new File(pdfOutputDir.getAbsoluteFile()  + "/PRESERVATION_MASTER" );
 	        pdfOutputDir.mkdir();
 	         
@@ -530,7 +533,7 @@ public class InternetArchiveService {
 	        //3.  generate and copy sip xml file R:\Internet Archives\Elder Shaver Downloads\In Process\2016_04_28_IA_Florida_Mar_2016_converted\dcms\metadata\ldssip
 	        File sipOutputFile;
 	        
-	        sipOutputFile = new File(sipOutputDir + "/" + inNameFolder + ".sip.xml");
+	        sipOutputFile = new File(sipOutputDir + "/" + tn + ".sip.xml");
        
             HashMap<String, String> inTagsValues;
 
@@ -555,6 +558,7 @@ public class InternetArchiveService {
                 addedTagsKeys[2][1] = fileName; //{"ldsterms:filename","3347482.pdf"}
                 addedTagsKeys[3][1] = fileSize; //{"ldsterms:filesize","20728.24 KB"}
                 addedTagsKeys[14][1] = dateStamp; //{"dc:date",""}
+                addedTagsKeys[15][1] = tn; //{"dc:identifier",tn}
                 recordValues[3][1] = dateStamp; // {"eventDateTime",dateStamp},
             
                 //Need to also get tag licenseurl and possible-copyright-status tags to check it for public domain status.   
@@ -841,6 +845,7 @@ public class InternetArchiveService {
 
 	    }
 
+	    //NOTE:  these are parallel arrays used for maping from IA tags to lds tags
 	    private int translationCount = 16; 
 	    private String[] translationKeys = {"title","creator","description",
 	    "subject","publisher","date","language","possible-copyright-status",
@@ -850,7 +855,7 @@ public class InternetArchiveService {
 	    private String[] translationValues = {"dc:title","dc:creator","dc:description",
 	    "dc:subject","dc:publisher","dcterms:created","dc:language","dcterms:accessRights",
 	    "ldsterms:owninst","ldsterms:pubdigital","dc:format","dcterms:isPartOf",
-	    "ldsterms:callno3","dc:identifier","ldsterms:pagecount","dcterms:oclc"};       
+	    "ldsterms:callno3","ldsterms:titleno","ldsterms:pagecount","dcterms:oclc"};       
 	        
 	 
 	    private String[][] addedTagsKeys = {{"ldsterms:pubdigital","Internet Archive"},
@@ -867,7 +872,8 @@ public class InternetArchiveService {
 	        {"dc:source","Manuscript"},  
 	        {"dcterms:rightsHolder","Refer to document for copyright information"},
 	        {"dc:type","text"},
-	        {"dc:date","x"}};
+	        {"dc:date","x"},
+	        {"dc:identifier","x"} };
 	 
 	    private String[][]  recordValues = {{"eventIdentifierType","Provenance Event"},
 	            {"eventType","Scan"},

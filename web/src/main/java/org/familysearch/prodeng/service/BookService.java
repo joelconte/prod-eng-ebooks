@@ -371,6 +371,7 @@ public interface BookService {
 	public void updateInternetArchiveWorkingBooksChangeStateReadyInsertTfdbBooks(String userId);
 	public void updateInternetArchiveWorkingBooksChangeStateCompleteBooks(String userId, String driveName, String driveNumber, InternetArchiveService iaService); 
 	public void updateInternetArchiveWorkingBooksError(String bookId, String err);
+	public void updateInternetArchiveWorkingBookNullTN(String state);
 	public void updateInternetArchiveWorkingBooksStateDownloadNotStartedBooksErrorMsg(String msg);
 	
 	public void deleteInternetArchiveWorkingBooksAnyDownloadingState();

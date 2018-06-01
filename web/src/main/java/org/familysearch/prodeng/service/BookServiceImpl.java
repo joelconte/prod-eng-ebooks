@@ -9237,7 +9237,7 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     	String sql1; 
     	int count = 0;
     	//when going from select books to verify books, need to record timestamp for step3 batching
-    	//note we will just clear Checked for all updates since it is only used in steps 1 and 2
+    	//note we will just clear Checked for all updates since it is only used in steps 2 and 3 (select books and validate books)
     	if(userId != null) {
     		sql1 = "UPDATE internetarchive_working SET state = ?, site = ?, checked = 'F', start_date = current_timestamp where state = ? and OWNER_USERID = ? and is_selected = ? and batch_number = ?";
     		count = getJdbcTemplate().update(sql1,  toState, site, fromState, userId, "T", batchNumber);
@@ -9300,10 +9300,21 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
     public void updateInternetArchiveWorkingBooksChangeStateCompleteBooks(String userId, String driveName, String driveNumber, InternetArchiveService iaService) {
     	//insert into tfdb books table
     	//skip scan/process steps (done already via date_release!=null)
+    	
+    	//update tn to be ia identifier if '' or null
+    	updateInternetArchiveWorkingBookNullTN(InternetArchiveService.statusInsertTfdb);
+    	
     	//update state complete
     	internetArchiveWorkingBooksInsertIntoTfdb( userId, driveName, driveNumber, iaService );//ready to insert into tfdb	
     }
     
+    @Override
+    public void updateInternetArchiveWorkingBookNullTN(String state) {
+    	//update tn to be ia identifier if '' or null
+    	String sql1 = "UPDATE internetarchive_working SET TN = IDENTIFIER where state =  ? and (TN = '' or TN is NULL)";
+		getJdbcTemplate().update(sql1,state);
+		
+    }
 	public void updateInternetArchiveWorkingBooksError(String bookId, String err) {
 	 
 		err = err.replace("\n", "");

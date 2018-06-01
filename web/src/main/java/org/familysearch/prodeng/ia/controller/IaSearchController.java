@@ -349,6 +349,9 @@ public class IaSearchController implements MessageSourceAware{
 	@RequestMapping(value="ia/iaDoBooksDownload",  method=RequestMethod.POST)
 	public String doIaDoBooksDownloadsGet( HttpServletRequest req, Locale locale, Principal principal ) {		
 	 
+		//update tn to be ia identifier if '' or null
+    	bookService.updateInternetArchiveWorkingBookNullTN(InternetArchiveService.statusPreDownloadBooks);
+    	
 		//first move to next downlaod not yet started state, so they move to next page in gui and show state 
 		bookService.updateInternetArchiveWorkingBooksChangeStateDownloadNotStartedBooks(null);//all users' books for now.  These are books that WGET code will pickup and process in todoList below
 		//also dnp books auto complete since no wget needed
