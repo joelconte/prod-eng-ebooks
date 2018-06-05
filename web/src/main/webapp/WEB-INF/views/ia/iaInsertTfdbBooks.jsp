@@ -354,7 +354,8 @@ function doBooksToInsert(firstShowOverlay){
 	
 	var driveName = document.getElementById('ol_driveName').value; //if opening overlay, then will be null
 	var driveNumber = document.getElementById('ol_driveNumber').value; 
-	 
+	
+	
 	
 	
 	rc = confirm("Books will now be add into the TFDB.");
@@ -362,6 +363,8 @@ function doBooksToInsert(firstShowOverlay){
 		return false;
 	}
 	var url = "iaDoInsertTfdb";//in IaSearchController
+	driveName = encodeURIComponent(driveName);
+	driveNumber = encodeURIComponent(driveNumber);
 	doPost(url + "?driveName=" + driveName + "&driveNumber=" + driveNumber );//window.location.href=url;
 }
 
