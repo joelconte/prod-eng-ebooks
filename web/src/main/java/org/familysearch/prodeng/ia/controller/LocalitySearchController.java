@@ -172,7 +172,7 @@ public class LocalitySearchController implements MessageSourceAware{
         try{
             //https://familysearch.org/platform/places/search
             //https://beta.familysearch.org/platform/places/search
-            String uri = "https://familysearch.org/platform/places/types"  + "?access_token=" + identSession;
+            String uri = "https://api.familysearch.org/platform/places/types"  + "?access_token=" + identSession;
 
             URL url = new URL(uri);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -287,7 +287,7 @@ public class LocalitySearchController implements MessageSourceAware{
         try{
             //https://familysearch.org/platform/places/search
             //https://beta.familysearch.org/platform/places/search
-            String uri = "https://familysearch.org/platform/places/search?q=%2B" + searchKeyword + parentId + "&access_token=" + identSession;
+            String uri = "https://api.familysearch.org/platform/places/search?q=%2B" + searchKeyword + parentId + "&access_token=" + identSession;
 
             URL url = new URL(uri);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
