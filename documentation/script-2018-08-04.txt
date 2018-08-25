@@ -1,0 +1,3 @@
+
+ alter TABLE book add publication_date varchar(20);
+ alter TABLE book add copyright_date varchar(20);
