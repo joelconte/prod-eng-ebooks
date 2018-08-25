@@ -424,6 +424,18 @@ function updateUrl2(formId, page, mode){
 					<td><sf:input  id="publisher_original" path="publisherOriginal"  readonly="${isReadOnly}"  />
 					</td>
 					</tr>
+					<tr>
+					<td>${messages['trackingForm.publicationDate']}</td>
+					<td><sf:input  id="publication_date" path="publicationDate"  readonly="${isReadOnly}"  />
+					</td>
+					</tr>
+			 		<tr>
+					<td>${messages['trackingForm.copyrightDate']}</td>
+					<td><sf:input  id="copyright_date" path="copyrightDate"  readonly="${isReadOnly}"  />
+					</td>
+					</tr>
+			 
+					
 					
 					
 					<tr><td class="rowSpace"></td></tr>

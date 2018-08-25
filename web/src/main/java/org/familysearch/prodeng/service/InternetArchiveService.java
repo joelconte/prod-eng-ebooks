@@ -569,7 +569,7 @@ public class InternetArchiveService {
                 if(loanStatus != null) {
                 	//contains tag indicating an on-loan book
                 	inTagsValues.put(translationKeys[7], "Protected");
-                }else if (propertyRight != null && ( propertyRight.equalsIgnoreCase("NOT_IN_COPYRIGHT")  ||  propertyRight.toLowerCase().contains("public domain") || propertyRight.toLowerCase().contains("is unaware of any copyright restrictions"))) {
+                }else if (propertyRight != null && ( propertyRight.equalsIgnoreCase("NOT_IN_COPYRIGHT")  ||  propertyRight.toLowerCase().contains("public domain") || propertyRight.toLowerCase().contains("is unaware of any copyright restrictions") || propertyRight.toLowerCase().contains("Copyright Permission Granted"))) {
                     inTagsValues.put(translationKeys[7], "Public");
                     isPublicDomain = true;
                 }else if(licenseUrl!=null && (licenseUrl.toLowerCase().contains("publicdomain") || licenseUrl.toLowerCase().contains("www.usa.gov/government-works"))){
@@ -859,7 +859,7 @@ public class InternetArchiveService {
 	        
 	 
 	    private String[][] addedTagsKeys = {{"ldsterms:pubdigital","Internet Archive"},
-	        {"dcterms:isPartOf","Family History Archive - Internet Archive"},            
+	        {"dcterms:isPartOf","Family History Archive - Internet Archive"},               
 	        {"ldsterms:filename","x"},
 	        {"ldsterms:filesize","x KB"},
 	        {"dc:rights","https://www.familysearch.org/terms"},

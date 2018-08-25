@@ -110,6 +110,8 @@ public class Book implements Serializable {
     private String fhcTn;
     private Timestamp dateRepublished;
     private Timestamp pullDate;
+    private String publicationDate;
+    private String copyrightDate;
     
     //since html form will only set values that are on a particular form, need to keep track of changed data
     private boolean tnSet = false;
@@ -200,6 +202,8 @@ public class Book implements Serializable {
     private boolean fhcTnSet = false;
     private boolean dateRepublishedSet = false;
     private boolean pullDateSet = false;
+    private boolean publicationDateSet = false;
+    private boolean copyrightDateSet = false;
     
     
  
@@ -467,6 +471,12 @@ public class Book implements Serializable {
 	}
 	public Timestamp getPullDate() {
 		return pullDate;
+	}
+	public String getPublicationDate() {
+		return publicationDate;
+	}
+	public String getCopyrightDate() {
+		return copyrightDate;
 	}
 	
 	///////////////set methods///////////////
@@ -829,7 +839,14 @@ public class Book implements Serializable {
 		this.pullDate = pullDate;
 		this.pullDateSet = true;
 	}
-	
+	public void setPublicationDate (String publicationDate ) {
+		this.publicationDate = publicationDate;
+		this.publicationDateSet = true;
+	}
+	public void setCopyrightDate (String copyrightDate ) {
+		this.copyrightDate = copyrightDate;
+		this.copyrightDateSet = true;
+	}
 
 	
 	
@@ -1099,5 +1116,11 @@ public class Book implements Serializable {
 	}
 	public boolean isPullDateSet() {
 		return pullDateSet;
+	}
+	public boolean isPublicationDateSet() {
+		return publicationDateSet;
+	}
+	public boolean isCopyrightDateSet() {
+		return copyrightDateSet;
 	}
 }

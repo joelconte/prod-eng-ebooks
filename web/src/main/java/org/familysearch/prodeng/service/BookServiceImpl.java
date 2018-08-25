@@ -621,6 +621,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			book.setFhcTn(rs.getString("fhc_tn"));
 			book.setDateRepublished(rs.getTimestamp("date_republished"));
 			book.setPullDate(rs.getTimestamp("pull_date"));
+			book.setPublicationDate(rs.getString("publication_date"));
+			book.setCopyrightDate(rs.getString("copyright_date"));
 
 			return book;
 		}
@@ -1442,6 +1444,14 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		if (book.isPullDateSet()) {
 			sql += "pull_date = :pullDate, ";
 			params.put("pullDate", book.getPullDate());
+		}
+		if (book.isPublicationDateSet()) {
+			sql += "publication_date = :publicationDate, ";
+			params.put("publicationDate", book.getPublicationDate());
+		}
+		if (book.isCopyrightDateSet()) {
+			sql += "copyright_date = :copyrightDate, ";
+			params.put("copyrightDate", book.getCopyrightDate());
 		}
 		
 
