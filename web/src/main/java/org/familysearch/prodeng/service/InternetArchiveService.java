@@ -846,15 +846,15 @@ public class InternetArchiveService {
 	    }
 
 	    //NOTE:  these are parallel arrays used for maping from IA tags to lds tags
-	    private int translationCount = 16; 
+	    private int translationCount = 15; 
 	    private String[] translationKeys = {"title","creator","description",
 	    "subject","publisher","date","language","possible-copyright-status",
-	    "sponsor","contributor",   "mediatype","collection",
+	    "contributor", "mediatype","collection",
 	    "call_number","identifier","imagecount","oclc-id"};
 
 	    private String[] translationValues = {"dc:title","dc:creator","dc:description",
 	    "dc:subject","dc:publisher","dcterms:created","dc:language","dcterms:accessRights",
-	    "ldsterms:owninst","ldsterms:pubdigital","dc:format","dcterms:isPartOf",
+	    "ldsterms:owninst","dc:format","dcterms:isPartOf",
 	    "ldsterms:callno3","ldsterms:titleno","ldsterms:pagecount","dcterms:oclc"};       
 	        
 	 
@@ -873,7 +873,8 @@ public class InternetArchiveService {
 	        {"dcterms:rightsHolder","Refer to document for copyright information"},
 	        {"dc:type","text"},
 	        {"dc:date","x"},
-	        {"dc:identifier","x"} };
+	        {"dc:identifier","x"},
+	        {"ldsterms:pubdigital","Internet Archive"}};
 	 
 	    private String[][]  recordValues = {{"eventIdentifierType","Provenance Event"},
 	            {"eventType","Scan"},
