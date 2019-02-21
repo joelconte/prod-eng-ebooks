@@ -1,0 +1,4 @@
+Insert into propertyright values ('Full Permission Granted'); 
+Insert into propertyright values ('Limited Permission Granted'); 
+Insert into propertyright values ('Member Permission Granted'); 
+ 

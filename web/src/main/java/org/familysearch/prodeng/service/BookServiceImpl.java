@@ -2147,6 +2147,9 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 			sql = "update tf_notes set solution_owner = '"+newId+"' where solution_owner = '" + oldId +"'";
 			getJdbcTemplate().update(sql);
 		
+			
+			//todo update fk columns in nonbook also
+			
 			deleteSiteGoals(oldId);
 			deleteSite(oldId);
 		}else {
@@ -3327,10 +3330,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 		String sql1 = "UPDATE book "
 				+ " SET publication_type = "
 				+ " CASE "
-				+ "  WHEN filename like 'SE%' "
+				+ "  WHEN filename like '%SE-%' "
 				+ "   THEN 'Serial' "
-				+ "  WHEN filename like 'CP_SE%' "
-		        + "   THEN 'Serial' "
 		        + "  ELSE 'Book' "
 		        + " END where tn IN ( " + tnList + " )";	  
 		
@@ -3339,13 +3340,22 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				+ "  CASE "
 				+ "   WHEN filename like 'CP%' "
 				+ "     THEN 'Copyright Protected' "
+				+ "   WHEN filename like 'PD%' "
+				+ "     THEN 'Public Domain' "
 				+ "   WHEN filename like 'PG%' "
-				+ "     THEN 'Copyright Permission Granted' "
+				+ "     THEN 'Full Permission Granted' "
+				+ "   WHEN filename like 'LPG%' "
+				+ "     THEN 'Limited Permission Granted' "
+				+ "   WHEN filename like 'MPG%' "
+				+ "     THEN 'Member Permission Granted' "
 				+ "   WHEN filename like 'PDS%' "
 				+ "     THEN 'Public Domain Stanford DB' "
-				+ "   ELSE  'Public Domain' "
+				+ "   WHEN filename like 'D%' "
+				+ "     THEN 'Denied' "
+				+ "   ELSE  'Denied' "
 				+ "   END where tn IN  ( " + tnList + " )";	  
 		
+		//Arizona may be done ...check with Michael sometime -feb2019
 		//update ocr site for two temp sites for LIMB
 		String sql3 = "UPDATE book " 
 				+ " SET site = "
@@ -4176,10 +4186,24 @@ ORDER BY Year([Date Loaded]), Books.[Date Loaded], Month([Date Loaded]);
 				mdValues[21][0] = "ldsterms:filmno"; mdValues[21][1] =  row.get(10);
 				mdValues[22][0] = "ldsterms:dgsno"; mdValues[22][1] = row.get(11);
 				mdValues[23][0] = "ldsterms:editor"; mdValues[23][1] = "";
-				if("Copyright Protected".equals(propertyRight) || "Denied".equals(propertyRight)){
-					mdValues[24][0] = "dcterms:accessRights"; mdValues[24][1] = "Protected";
+				if("Copyright Protected".equals(propertyRight)){
+					mdValues[24][0] = "dcterms:accessRights"; 
+					mdValues[24][1] = "Protected";
+				}else if("Public Domain".equals(propertyRight)){
+					mdValues[24][0] = "dcterms:accessRights"; 
+					mdValues[24][1] = "Public";
+				}else if("Full Permission Granted".equals(propertyRight)){
+					mdValues[24][0] = "dcterms:accessRights"; 
+					mdValues[24][1] = "Full Permission";
+				}else if("Limited Permission Granted".equals(propertyRight)){
+					mdValues[24][0] = "dcterms:accessRights"; 
+					mdValues[24][1] = "Limited Permission";
+				}else if("Member Permission Granted".equals(propertyRight)){
+					mdValues[24][0] = "dcterms:accessRights"; 
+					mdValues[24][1] = "Member Permission";
 				}else{
-					mdValues[24][0] = "dcterms:accessRights"; mdValues[24][1] = "Public";
+					mdValues[24][0] = "dcterms:accessRights"; 
+					mdValues[24][1] = "Denied";
 				}
 				mdValues[25][0] = "dcterms:requires"; mdValues[25][1] = "Internet Connectivity. Worldwide Web browser. Adobe Acrobat reader.";
 				mdValues[26][0] = "ldsterms:subinst"; mdValues[26][1] = "FHD";
