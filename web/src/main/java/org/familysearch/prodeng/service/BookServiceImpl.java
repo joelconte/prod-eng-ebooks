@@ -3352,6 +3352,8 @@ public class BookServiceImpl extends NamedParameterJdbcDaoSupport implements Boo
 				+ "     THEN 'Public Domain Stanford DB' "
 				+ "   WHEN filename like 'D%' "
 				+ "     THEN 'Denied' "
+				+ "   WHEN filename like 'TN%' "
+				+ "     THEN 'Public Domain' "
 				+ "   ELSE  'Denied' "
 				+ "   END where tn IN  ( " + tnList + " )";	  
 		
